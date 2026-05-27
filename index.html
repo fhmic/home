@@ -839,7 +839,7 @@ _0x1823.classList.add('loading');
 _0x1823.disabled = true;
 _0x2934.classList.remove('show');
 try {
-const data = await _0xe10d('/auth/login', {
+const data = await _0xe10d('/login', {
 method: 'POST',
 body: JSON.stringify({ username: u, password: p }),
 });
@@ -869,7 +869,7 @@ const saved = sessionStorage.getItem('eis_token');
 if (saved) {
 _0xd4e5(saved);
 try {
-const data = await _0xe10d('/auth/me');
+const data = await _0xe10d('/me');
 _0xd0fc(data.user);
 } catch { _0xe5f6(); }
 }
@@ -1740,7 +1740,7 @@ _0x3a45.focus();
 
       signupBtn.classList.add('loading'); signupBtn.disabled=true;
       try{
-        var res=await fetch(API+'/auth/signup',{
+        var res=await fetch(API+'/signup',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify({surname:sur,otherNames:oth,email:eml,phone:ph})
@@ -1774,7 +1774,7 @@ _0x3a45.focus();
     var btn=document.getElementById('setpwd-btn');
 
     try{
-      var res=await fetch(API+'/auth/confirm/'+token);
+      var res=await fetch(API+'/confirm/'+token);
       var data=await res.json();
       if(!res.ok) throw new Error(data.error||'Invalid or expired link.');
       document.getElementById('setpwd-greeting').textContent=
@@ -1814,7 +1814,7 @@ _0x3a45.focus();
 
       setpwdBtn.classList.add('loading'); setpwdBtn.disabled=true;
       try{
-        var res=await fetch(API+'/auth/set-password',{
+        var res=await fetch(API+'/set-password',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify({token:tok,password:pwd})
@@ -1897,7 +1897,7 @@ _0x3a45.focus();
     var errEl=document.getElementById('resetpwd-err');
     var btn=document.getElementById('resetpwd-btn');
     try{
-      var res=await fetch(API+'/auth/verify-reset/'+token);
+      var res=await fetch(API+'/verify-reset/'+token);
       var data=await res.json();
       if(!res.ok) throw new Error(data.error||'Invalid or expired link.');
       document.getElementById('resetpwd-greeting').textContent='Hi '+data.name+'! Enter your new password below.';
@@ -1921,7 +1921,7 @@ _0x3a45.focus();
       if(pwd!==cpwd){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}
       resetBtn.classList.add('loading'); resetBtn.disabled=true;
       try{
-        var res=await fetch(API+'/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:tok,password:pwd})});
+        var res=await fetch(API+'/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:tok,password:pwd})});
         var data=await res.json();
         if(!res.ok) throw new Error(data.error||'Reset failed.');
         okEl.textContent=data.message+' Redirecting to login...';
@@ -1985,7 +1985,7 @@ _0x3a45.focus();
       bl.style.display='flex';
       sendBtn.disabled=true;
       try{
-        var res=await fetch(API+'/auth/contact-admin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:uname,email:email,message:msg})});
+        var res=await fetch(API+'/contact-admin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:uname,email:email,message:msg})});
         var data=await res.json();
         if(!res.ok) throw new Error(data.error||'Send failed.');
         okEl.textContent=data.message;
