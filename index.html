@@ -1745,7 +1745,7 @@ _0x3a45.focus();
         var res=await fetch(API+'/signup',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({surname:sur,otherNames:oth,email:eml,phone:ph})
+             body:JSON.stringify({surname:sur,otherNames:oth,email:eml,phone:ph})
         });
         var data=await res.json();
         if(!res.ok) throw new Error(data.error||'Signup failed.');
