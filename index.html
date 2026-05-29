@@ -3,553 +3,1064 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Felix Happy Michael — ACA, FMVA, Head of Finance</title>
-<meta name="description" content="Felix Happy Michael — Chartered Accountant, Financial Strategist, and FinTech Builder based in Lagos, Nigeria.">
+<title>EIS Receivables Manager</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --n:#050d1a;--n2:#0a1628;--n3:#0f1f3d;--n4:#162747;
-  --t:#00c9a7;--t2:#00a98e;
+  --n:#0a1628;--n2:#0f1f3d;--n3:#162747;--n4:#1c3057;
+  --t:#00c9a7;--t2:#00a98e;--td:rgba(0,201,167,.13);--tg:rgba(0,201,167,.06);
   --am:#f5a623;--rd:#e05252;--gr:#22c55e;--bl:#63b3ed;
   --tx:#e8edf5;--tx2:#8fa3bf;--tx3:#4a6080;
-  --b:rgba(255,255,255,.06);--b2:rgba(255,255,255,.11);
+  --b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
+  --sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.08);
+  --r:10px;--rl:16px;
   --mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif;
+  --sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
 }
-html{font-size:15px;scroll-behavior:smooth;}
-body{font-family:var(--sa);background:var(--n);color:var(--tx);line-height:1.6;overflow-x:hidden;}
+html{font-size:15px}
+body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6}
 
-/* ── NAV ─────────────────────────────────────────────────── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  height:64px;display:flex;align-items:center;justify-content:space-between;
-  padding:0 2.5rem;
-  background:rgba(5,13,26,.85);backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,255,255,.06);
-  transition:all .3s;
+/* ── LOGIN ── */
+
+
+
+
+
+
+.lname span{color:var(--t)}
+
+
+
+.lerr.on{display:block}
+
+.lfield label{display:block;font-size:11px;font-family:var(--mo);color:var(--tx2);margin-bottom:7px;letter-spacing:.06em;text-transform:uppercase}
+
+
+.linput:focus{border-color:var(--t);box-shadow:0 0 0 3px rgba(0,201,167,.12)}
+.linput::placeholder{color:var(--tx3)}
+
+.eyebtn:hover{color:var(--tx2)}
+
+.lbtn:hover:not(:disabled){background:var(--t2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,201,167,.25)}
+.lbtn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.lbtn 
+.lbtn 
 }
-.nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
-.nav-mark{width:36px;height:36px;background:var(--t);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--di);font-size:11px;font-weight:700;color:var(--n);flex-shrink:0;}
-.nav-name{font-family:var(--di);font-size:16px;font-weight:700;letter-spacing:-.03em;color:var(--tx);}
-.nav-name span{color:var(--t)}
-.nav-links{display:flex;align-items:center;gap:2rem;}
-.nav-links a{font-size:13px;color:var(--tx3);text-decoration:none;font-family:var(--mo);transition:color .2s;letter-spacing:.02em;}
-.nav-links a:hover{color:var(--t)}
-.nav-cta{display:flex;align-items:center;gap:.75rem;}
-.btn-nav{padding:8px 18px;border-radius:8px;font-size:13px;font-family:var(--di);font-weight:600;text-decoration:none;transition:all .2s;letter-spacing:-.01em;}
-.btn-nav.ghost{background:transparent;border:1px solid var(--b2);color:var(--tx2);}
-.btn-nav.ghost:hover{background:rgba(255,255,255,.06);color:var(--tx)}
-.btn-nav.primary{background:var(--t);color:var(--n);border:1px solid var(--t);}
-.btn-nav.primary:hover{background:var(--t2);}
-@media(max-width:768px){.nav-links{display:none;} nav{padding:0 1.5rem;}}
 
-/* ── HERO ─────────────────────────────────────────────────── */
-#hero{
-  min-height:100vh;display:flex;align-items:center;
-  padding:7rem 2.5rem 4rem;position:relative;overflow:hidden;
-}
-.hero-bg{
-  position:absolute;inset:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,201,167,.06) 0%,transparent 65%),
-    radial-gradient(ellipse 50% 50% at 90% 60%,rgba(99,179,237,.04) 0%,transparent 60%),
-    radial-gradient(ellipse 40% 40% at 10% 80%,rgba(245,166,35,.03) 0%,transparent 60%);
-  pointer-events:none;
-}
-.hero-grid{
-  position:absolute;inset:0;
-  background-image:
-    repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.015) 59px,rgba(255,255,255,.015) 60px),
-    repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,.015) 59px,rgba(255,255,255,.015) 60px);
-  pointer-events:none;
-}
-.hero-inner{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 420px;gap:4rem;align-items:center;}
-@media(max-width:900px){.hero-inner{grid-template-columns:1fr;}.hero-right{display:none;}}
-.hero-left{position:relative;z-index:1;}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.18);border-radius:20px;padding:6px 16px;font-family:var(--mo);font-size:11px;color:var(--t);margin-bottom:2rem;animation:fadeUp .6s ease both;}
-.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--t);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
-.hero-title{font-family:var(--di);font-size:clamp(2.6rem,5vw,4.2rem);font-weight:800;letter-spacing:-.05em;line-height:1.05;margin-bottom:1.25rem;animation:fadeUp .6s .1s ease both;}
-.hero-title .line2{display:block;color:var(--t);}
-.hero-sub{font-size:16px;color:var(--tx2);max-width:540px;line-height:1.7;margin-bottom:2.5rem;animation:fadeUp .6s .2s ease both;}
-.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;animation:fadeUp .6s .3s ease both;}
-.btn-hero{padding:13px 28px;border-radius:10px;font-family:var(--di);font-size:15px;font-weight:600;text-decoration:none;transition:all .25s;display:inline-flex;align-items:center;gap:8px;letter-spacing:-.01em;}
-.btn-hero.primary{background:var(--t);color:var(--n);}
-.btn-hero.primary:hover{background:var(--t2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,201,167,.3);}
-.btn-hero.ghost{background:transparent;border:1px solid var(--b2);color:var(--tx2);}
-.btn-hero.ghost:hover{background:rgba(255,255,255,.06);color:var(--tx);transform:translateY(-2px);}
-.hero-stats{display:flex;gap:2.5rem;margin-top:3rem;animation:fadeUp .6s .4s ease both;}
-.stat-item{}
-.stat-num{font-family:var(--di);font-size:28px;font-weight:700;letter-spacing:-.04em;color:var(--t);}
-.stat-label{font-size:12px;color:var(--tx3);font-family:var(--mo);margin-top:2px;}
-.hero-right{position:relative;z-index:1;animation:fadeUp .7s .2s ease both;}
-.profile-card{background:linear-gradient(135deg,var(--n3) 0%,var(--n4) 100%);border:1px solid var(--b2);border-radius:20px;padding:2rem;position:relative;overflow:hidden;}
-.profile-card::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(0,201,167,.06);}
-.profile-avatar{width:72px;height:72px;background:linear-gradient(135deg,var(--t) 0%,var(--t2) 100%);border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:var(--di);font-size:26px;font-weight:800;color:var(--n);margin-bottom:1.25rem;position:relative;z-index:1;}
-.profile-name{font-family:var(--di);font-size:20px;font-weight:700;letter-spacing:-.03em;margin-bottom:4px;position:relative;z-index:1;}
-.profile-role{font-size:13px;color:var(--t);font-family:var(--mo);margin-bottom:1.5rem;position:relative;z-index:1;}
-.profile-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem;position:relative;z-index:1;}
-.tag{padding:3px 10px;border-radius:6px;font-size:11px;font-family:var(--mo);font-weight:500;}
-.tag.teal{background:rgba(0,201,167,.1);color:var(--t);border:1px solid rgba(0,201,167,.2);}
-.tag.amber{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2);}
-.tag.blue{background:rgba(99,179,237,.1);color:var(--bl);border:1px solid rgba(99,179,237,.2);}
-.profile-location{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx3);font-family:var(--mo);position:relative;z-index:1;}
+/* ── APP SHELL ── */
+#app{display:none;min-height:100vh;flex-direction:column}
 
-/* ── SECTION BASE ────────────────────────────────────────── */
-section{padding:5rem 2.5rem;}
-.section-inner{max-width:1100px;margin:0 auto;}
-.section-label{font-family:var(--mo);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--t);margin-bottom:.75rem;}
-.section-title{font-family:var(--di);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:700;letter-spacing:-.04em;margin-bottom:1rem;line-height:1.1;}
-.section-sub{font-size:14px;color:var(--tx2);max-width:560px;line-height:1.7;margin-bottom:3rem;}
+#topbar{background:var(--n2);border-bottom:1px solid var(--b);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;flex-shrink:0;position:sticky;top:0;z-index:100}
+.logo{font-family:var(--di);font-weight:700;font-size:17px;letter-spacing:-.03em;display:flex;align-items:center;gap:10px}
+.lm{width:30px;height:30px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--n);font-weight:700;letter-spacing:-.5px;flex-shrink:0}
+.la{color:var(--t)}
+.tbr{display:flex;align-items:center;gap:10px}
 
-/* ── ABOUT ───────────────────────────────────────────────── */
-#about{background:var(--n2);}
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
-@media(max-width:768px){.about-grid{grid-template-columns:1fr;}}
-.about-text p{font-size:14px;color:var(--tx2);line-height:1.8;margin-bottom:1rem;}
-.about-text p strong{color:var(--tx);}
-.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
-.skill-item{background:var(--n3);border:1px solid var(--b);border-radius:8px;padding:10px 14px;font-size:12px;font-family:var(--mo);color:var(--tx2);display:flex;align-items:center;gap:8px;}
-.skill-dot{width:5px;height:5px;border-radius:50%;background:var(--t);flex-shrink:0;}
 
-/* ── EXPERIENCE ──────────────────────────────────────────── */
-#experience{}
-.timeline{position:relative;padding-left:2rem;}
-.timeline::before{content:'';position:absolute;left:0;top:8px;bottom:0;width:1px;background:linear-gradient(to bottom,var(--t),transparent);}
-.tl-item{position:relative;margin-bottom:2.5rem;}
-.tl-item::before{content:'';position:absolute;left:-2rem;top:6px;width:10px;height:10px;border-radius:50%;background:var(--t);border:2px solid var(--n);box-shadow:0 0 0 3px rgba(0,201,167,.2);}
-.tl-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem;}
-.tl-company{font-family:var(--di);font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--tx);}
-.tl-period{font-size:11px;font-family:var(--mo);color:var(--t);background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.15);padding:3px 10px;border-radius:20px;white-space:nowrap;}
-.tl-role{font-size:13px;color:var(--tx2);font-family:var(--mo);margin-bottom:.75rem;}
-.tl-points{list-style:none;display:flex;flex-direction:column;gap:5px;}
-.tl-points li{font-size:13px;color:var(--tx3);padding-left:1.25rem;position:relative;line-height:1.6;}
-.tl-points li::before{content:'→';position:absolute;left:0;color:var(--t);font-size:11px;top:1px;}
+.lgout:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
 
-/* ── CERTIFICATIONS ──────────────────────────────────────── */
-#certifications{background:var(--n2);}
-.certs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;}
-.cert-card{background:var(--n3);border:1px solid var(--b);border-radius:12px;padding:1.25rem;transition:all .2s;}
-.cert-card:hover{border-color:rgba(0,201,167,.3);background:rgba(0,201,167,.04);transform:translateY(-2px);}
-.cert-abbr{font-family:var(--di);font-size:18px;font-weight:700;color:var(--t);margin-bottom:4px;}
-.cert-name{font-size:12px;color:var(--tx2);line-height:1.4;margin-bottom:6px;}
-.cert-body{font-size:11px;font-family:var(--mo);color:var(--tx3);}
+/* ── LAYOUT ── */
+#layout{display:flex;flex:1;overflow:hidden}
+#sidebar{width:220px;flex-shrink:0;background:var(--n2);border-right:1px solid var(--b);overflow-y:auto;padding:1rem 0}
+.nav-section{font-size:10px;font-family:var(--mo);color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;padding:8px 18px 4px;margin-top:8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13px;color:var(--tx2);cursor:pointer;transition:all .2s;border-left:3px solid transparent;user-select:none}
+.nav-item:hover{background:var(--sf2);color:var(--tx)}
+.nav-item.active{background:var(--td);color:var(--t);border-left-color:var(--t)}
+.nav-item svg{flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+#content{flex:1;overflow-y:auto;padding:1.75rem}
 
-/* ── TOOLS ───────────────────────────────────────────────── */
-#tools{}
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem;}
-.tool-pill{background:var(--n3);border:1px solid var(--b);border-radius:8px;padding:12px 16px;font-size:12px;font-family:var(--mo);color:var(--tx2);text-align:center;transition:all .2s;}
-.tool-pill:hover{border-color:rgba(0,201,167,.3);color:var(--t);}
+/* ── VIEWS ── */
+.view{display:none}.view.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.view.on{animation:fu .3s ease both}
+.vhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem}
+.vttl{font-family:var(--di);font-size:22px;font-weight:700;letter-spacing:-.03em}
+.vsub{font-size:12px;color:var(--tx3);font-family:var(--mo);margin-top:3px}
+.vacts{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 
-/* ── PORTFOLIO CTA ───────────────────────────────────────── */
-#portfolio{
-  background:linear-gradient(135deg,var(--n3) 0%,rgba(0,201,167,.05) 50%,var(--n3) 100%);
-  border-top:1px solid var(--b);border-bottom:1px solid var(--b);
-}
-.portfolio-inner{text-align:center;max-width:680px;margin:0 auto;}
-.portfolio-inner .section-sub{margin-left:auto;margin-right:auto;}
-.apps-preview{display:flex;justify-content:center;gap:1rem;margin:2rem 0;flex-wrap:wrap;}
-.app-chip{display:flex;align-items:center;gap:8px;background:var(--n4);border:1px solid var(--b2);border-radius:10px;padding:10px 18px;font-size:13px;color:var(--tx2);transition:all .2s;}
-.app-chip:hover{border-color:var(--t);color:var(--t);}
-.app-chip span{font-size:18px;}
+/* ── CARDS & METRICS ── */
+.card{background:var(--n2);border:1px solid var(--b);border-radius:var(--rl);padding:1.5rem;box-shadow:var(--sh)}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:1.5rem}
+.kpi{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:16px 18px}
+.kpi.ac{border-color:rgba(0,201,167,.3);background:var(--td)}
+.kpi.rd{border-color:rgba(224,82,82,.3);background:rgba(224,82,82,.06)}
+.kpi.am{border-color:rgba(245,166,35,.3);background:rgba(245,166,35,.06)}
+.kl{font-size:10px;font-family:var(--mo);color:var(--tx3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.kv{font-family:var(--di);font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.ks{font-size:10px;font-family:var(--mo);color:var(--tx2);margin-top:4px}
+.kv.tl{color:var(--t)}.kv.rd{color:var(--rd)}.kv.am{color:var(--am)}.kv.gr{color:var(--gr)}.kv.bl{color:var(--bl)}
 
-/* ── CONTACT ─────────────────────────────────────────────── */
-#contact{background:var(--n2);}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
-@media(max-width:768px){.contact-grid{grid-template-columns:1fr;}}
-.contact-info{display:flex;flex-direction:column;gap:1.25rem;}
-.contact-item{display:flex;align-items:center;gap:14px;padding:1rem 1.25rem;background:var(--n3);border:1px solid var(--b);border-radius:10px;transition:all .2s;}
-.contact-item:hover{border-color:rgba(0,201,167,.3);}
-.contact-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-.contact-label{font-size:11px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
-.contact-value{font-size:13px;color:var(--tx);}
-.contact-right .section-title{font-size:1.4rem;margin-bottom:.75rem;}
-.contact-right p{font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:1.5rem;}
-.contact-links{display:flex;flex-direction:column;gap:.75rem;}
-.contact-link{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--n3);border:1px solid var(--b);border-radius:10px;text-decoration:none;color:var(--tx2);font-size:13px;transition:all .2s;}
-.contact-link:hover{border-color:var(--t);color:var(--t);transform:translateX(4px);}
+/* ── AGEING BAR ── */
+.ag-bar-wrap{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:16px 18px;margin-bottom:1.5rem}
+.ag-bar-title{font-size:13px;font-weight:500;margin-bottom:12px}
+.ag-bar-row{display:grid;grid-template-columns:120px 1fr 100px;align-items:center;gap:12px;margin-bottom:8px}
+.ag-bar-lbl{font-size:11px;font-family:var(--mo);color:var(--tx2);white-space:nowrap}
+.ag-bar-track{background:var(--sf);border-radius:4px;height:10px;overflow:hidden}
+.ag-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.ag-bar-amt{font-size:11px;font-family:var(--mo);color:var(--tx);text-align:right}
+.ag-colors{current:'#22c55e','1_30':'#84cc16','31_60':'#f59e0b','61_90':'#ef4444','91_180':'#dc2626','180_plus':'#991b1b'}
 
-/* ── FOOTER ──────────────────────────────────────────────── */
-footer{padding:2rem 2.5rem;border-top:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
-.footer-copy{font-size:11px;color:var(--tx3);font-family:var(--mo);}
-.footer-copy span{color:var(--t);}
-.footer-links{display:flex;gap:1.5rem;}
-.footer-links a{font-size:11px;font-family:var(--mo);color:var(--tx3);text-decoration:none;transition:color .2s;}
-.footer-links a:hover{color:var(--t)}
+/* ── BUTTONS ── */
+button{font-family:var(--sa);font-size:13px;font-weight:500;border-radius:var(--r);padding:8px 18px;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--tx2);transition:all .2s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+button:hover:not(:disabled){background:var(--sf2);color:var(--tx)}
+button:disabled{opacity:.35;cursor:not-allowed}
+.bp{background:var(--t);border-color:var(--t);color:var(--n);font-weight:600}
+.bp:hover:not(:disabled){background:var(--t2);color:var(--n)}
+.bd{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
+.bd:hover:not(:disabled){background:rgba(224,82,82,.2)}
+.bsm{padding:5px 12px;font-size:12px}
 
-/* ── SCROLL ANIMATIONS ───────────────────────────────────── */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
-.reveal.visible{opacity:1;transform:none;}
+/* ── TABLES ── */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--b)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--n3);color:var(--tx3);font-family:var(--mo);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;text-align:left;border-bottom:1px solid var(--b);white-space:nowrap}
+tbody td{padding:8px 12px;border-bottom:1px solid var(--b);vertical-align:middle;color:var(--tx)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--sf)}
+.trt td{background:var(--n3);font-weight:600;font-family:var(--mo);border-top:1px solid var(--b2)!important}
+.nm{font-family:var(--mo);text-align:right}
+.nr{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx2)}
+.pl{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:600;white-space:nowrap}
+.pt{background:var(--td);color:var(--t);border:1px solid rgba(0,201,167,.2)}
+.pg{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
+.pa{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2)}
+.pr{background:rgba(224,82,82,.1);color:var(--rd);border:1px solid rgba(224,82,82,.2)}
+.pb{background:rgba(99,179,237,.1);color:var(--bl);border:1px solid rgba(99,179,237,.2)}
+.pdark{background:rgba(153,27,27,.2);color:#fca5a5;border:1px solid rgba(153,27,27,.4)}
+
+/* ── FORMS & INPUTS ── */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:600px){.fg{grid-template-columns:1fr}}
+.fld{margin-bottom:1rem}
+.fld label{display:block;font-size:11px;font-family:var(--mo);color:var(--tx2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
+.finput{width:100%;padding:9px 13px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;transition:border-color .2s;outline:none}
+.finput:focus{border-color:var(--t);box-shadow:0 0 0 2px rgba(0,201,167,.1)}
+.finput::placeholder{color:var(--tx3)}
+textarea.finput{resize:vertical;min-height:80px;font-family:var(--sa)}
+select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238fa3bf' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px;cursor:pointer}
+
+/* ── MODAL ── */
+#modal-bg{display:none;position:fixed;inset:0;background:rgba(5,12,24,.75);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
+#modal-bg.on{display:flex}
+.modal{background:var(--n2);border:1px solid var(--b2);border-radius:var(--rl);width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.modal.wide{max-width:780px}
+.mhdr{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--b);flex-shrink:0}
+.mttl{font-family:var(--di);font-size:16px;font-weight:600}
+.mclose{width:30px;height:30px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
+.mclose:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
+.mbody{padding:1.5rem;overflow-y:auto;flex:1}
+.mfoot{padding:1rem 1.5rem;border-top:1px solid var(--b);display:flex;justify-content:flex-end;gap:.5rem;flex-shrink:0}
+.merr{display:none;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--rd);margin-bottom:1rem;font-family:var(--mo)}
+.merr.on{display:block}
+.mok{display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--gr);margin-bottom:1rem;font-family:var(--mo)}
+.mok.on{display:block}
+
+/* ── MISC ── */
+.ep{text-align:center;padding:3rem 1rem;color:var(--tx3);font-family:var(--mo);font-size:12px}
+.ei{font-size:2rem;margin-bottom:10px}
+.nt{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--tx2);margin-bottom:1rem;line-height:1.5}
+.loading-row{text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);padding:10px 18px;font-size:12px;font-family:var(--mo);color:var(--tx);z-index:500;box-shadow:var(--sh);display:none;align-items:center;gap:8px;white-space:nowrap;max-width:90vw}
+#toast.on{display:flex}
+#toast.ok{border-color:rgba(34,197,94,.4);color:var(--gr)}
+#toast.err{border-color:rgba(224,82,82,.4);color:var(--rd)}
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.row{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.sep{height:1px;background:var(--b);margin:1rem 0}
+.section-ttl{font-family:var(--di);font-size:15px;font-weight:600;margin-bottom:1rem}
+.cb{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--tx2)}
+.cb input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--t)}
+.cb:hover{color:var(--tx)}
+
+
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a class="nav-brand" href="#">
-    <div class="nav-mark">FM</div>
-    <div class="nav-name">Felix <span>Michael</span></div>
-  </a>
-  <div class="nav-links">
-    <a href="#about">About</a>
-    <a href="#experience">Experience</a>
-    <a href="#certifications">Credentials</a>
-    <a href="#portfolio">Portfolio</a>
-    <a href="#contact">Contact</a>
+<!-- ═══════════════ MAIN APP ═══════════════ -->
+<div id="app" style="display:flex;flex-direction:column;min-height:100vh">
+  <div id="topbar">
+    <div class="logo"><div class="lm">EIS</div>EIS <span class="la">&nbsp;Receivables</span></div>
+    <div class="tbr">
+      
+      
+    </div>
   </div>
-  <div class="nav-cta">
-    <a href="portal/" class="btn-nav primary">Access Resources →</a>
-  </div>
-</nav>
+  <div id="layout">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+      <div class="nav-item active" data-view="dashboard">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" data-view="debtors">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Debtors
+      </div>
+      <div class="nav-item" data-view="ageing">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Ageing Report
+      </div>
+      <div class="nav-item" data-view="reminders">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 15a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 4.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 11.7a16 16 0 0 0 6 6l.91-1.01a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Send Reminders
+      </div>
+      <div class="nav-item" data-view="logs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Email Logs
+      </div>
+      <div class="nav-section">Config</div>
+      <div class="nav-item" data-view="settings">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </div>
+    </nav>
 
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-inner">
-    <div class="hero-left">
-      <div class="hero-badge"><span class="hero-badge-dot"></span>Available for strategic engagements</div>
-      <h1 class="hero-title">
-        Felix Happy<br>
-        <span class="line2">Michael</span>
-      </h1>
-      <p class="hero-sub">Chartered Accountant · Financial Strategist · FinTech Builder.<br>Driving financial excellence, regulatory compliance and digital transformation across complex organisations in Nigeria.</p>
-      <div class="hero-actions">
-        <a href="portal/" class="btn-hero primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          Access Resources
-        </a>
-        <a href="#contact" class="btn-hero ghost">Get in Touch</a>
-      </div>
-      <div class="hero-stats">
-        <div class="stat-item"><div class="stat-num">12+</div><div class="stat-label">Years Experience</div></div>
-        <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">Certifications</div></div>
-        <div class="stat-item"><div class="stat-num">₦600M+</div><div class="stat-label">Tax Savings Led</div></div>
-      </div>
-    </div>
-    <div class="hero-right">
-      <div class="profile-card">
-        <div class="profile-avatar">FM</div>
-        <div class="profile-name">Felix Happy Michael</div>
-        <div class="profile-role">Head, Finance &amp; Admin</div>
-        <div class="profile-tags">
-          <span class="tag teal">ACA</span>
-          <span class="tag teal">ACTI</span>
-          <span class="tag amber">FMVA®</span>
-          <span class="tag amber">BIDA™</span>
-          <span class="tag blue">CBCA™</span>
-          <span class="tag blue">CMSA®</span>
-          <span class="tag teal">CFO — FRC</span>
-          <span class="tag amber">MBA Finance</span>
-        </div>
-        <div class="profile-location">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          Lagos, Nigeria
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    <!-- Content -->
+    <main id="content">
 
-<!-- ABOUT -->
-<section id="about">
-  <div class="section-inner">
-    <div class="section-label">About</div>
-    <div class="section-title">Financial Excellence<br>Meets Digital Innovation</div>
-    <div class="about-grid reveal">
-      <div class="about-text">
-        <p>A <strong>proven accounting professional</strong> with a track record of driving financial excellence and ensuring regulatory compliance. I offer expertise in financial reporting, tax management, and strategic financial planning to support company growth.</p>
-        <p>Currently serving as <strong>Head of Finance and Admin</strong> at Factoring &amp; Supply Chain Finance Ltd (a subsidiary of Pan-African Holdings), where I led a successful CBN examination exercise, maintained 100% regulatory compliance, and achieved a <strong>21.2% YOY increase</strong> in treasury operations.</p>
-        <p>Beyond traditional finance, I build <strong>bespoke financial tools and web applications</strong> — including automated reconciliation engines, financial models, and reporting systems — leveraging my deep domain knowledge to solve real business problems with technology.</p>
-      </div>
-      <div>
-        <p style="font-size:11px;font-family:var(--mo);color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;">Core Competencies</p>
-        <div class="skills-grid">
-          <div class="skill-item"><span class="skill-dot"></span>Financial Reporting</div>
-          <div class="skill-item"><span class="skill-dot"></span>Treasury Management</div>
-          <div class="skill-item"><span class="skill-dot"></span>IFRS Compliance</div>
-          <div class="skill-item"><span class="skill-dot"></span>Tax Management</div>
-          <div class="skill-item"><span class="skill-dot"></span>Financial Modelling</div>
-          <div class="skill-item"><span class="skill-dot"></span>Data Analysis</div>
-          <div class="skill-item"><span class="skill-dot"></span>Budgeting &amp; Forecasting</div>
-          <div class="skill-item"><span class="skill-dot"></span>Internal Controls</div>
-          <div class="skill-item"><span class="skill-dot"></span>Audit Coordination</div>
-          <div class="skill-item"><span class="skill-dot"></span>Investment Appraisal</div>
-          <div class="skill-item"><span class="skill-dot"></span>Stakeholder Reporting</div>
-          <div class="skill-item"><span class="skill-dot"></span>FinTech Development</div>
+      <!-- Dashboard -->
+      <div class="view on" id="view-dashboard">
+        <div class="vhdr">
+          <div><div class="vttl">Portfolio Overview</div><div class="vsub" id="dash-ts">—</div></div>
+          <button class="bp" onclick="loadDashboard()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>
+            Refresh
+          </button>
         </div>
+        <div class="kpi-grid" id="dash-kpis"></div>
+        <div id="dash-ageing"></div>
+        <div class="section-ttl">Recent Email Activity</div>
+        <div id="dash-emails"></div>
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- EXPERIENCE -->
-<section id="experience">
-  <div class="section-inner">
-    <div class="section-label">Experience</div>
-    <div class="section-title">Career Journey</div>
-    <div class="timeline reveal">
-      <div class="tl-item">
-        <div class="tl-header">
-          <div>
-            <div class="tl-company">Factoring &amp; Supply Chain Finance Ltd</div>
-            <div class="tl-role">Head, Finance and Admin &nbsp;·&nbsp; Pan-African Holdings Subsidiary</div>
-          </div>
-          <span class="tl-period">Sep 2024 – Present</span>
-        </div>
-        <ul class="tl-points">
-          <li>Led a successful CBN examination exercise covering two accounting years within the first month.</li>
-          <li>Maintained 100% compliance across CBN returns, cybersecurity filings, and audited financial statement requirements.</li>
-          <li>Delivered Management Accounts within 3 days and CBN Returns within 5 days of month-end.</li>
-          <li>Achieved 21.2% YOY increase on treasury operations through dynamic ALM financial models.</li>
-          <li>Led digital transformation by deploying a bespoke Core Banking System integrated with NIBSS and Remita.</li>
-          <li>Developed Corporate Governance Policies: Treasury Policy, Finance Policy, Capital Management Plan.</li>
-        </ul>
-      </div>
-      <div class="tl-item">
-        <div class="tl-header">
-          <div>
-            <div class="tl-company">Catamaran Group Nigeria Limited</div>
-            <div class="tl-role">Group Finance Manager</div>
-          </div>
-          <span class="tl-period">Apr 2024 – Sep 2024</span>
-        </div>
-        <ul class="tl-points">
-          <li>Negotiated tax liabilities following a 5-year audit across two subsidiaries, saving over ₦600M.</li>
-          <li>Implemented financial strategies, policies, and controls across subsidiaries.</li>
-          <li>Led budgeting processes and delivered timely financial reports for management decision-making.</li>
-        </ul>
-      </div>
-      <div class="tl-item">
-        <div class="tl-header">
-          <div>
-            <div class="tl-company">Max International Nigeria</div>
-            <div class="tl-role">Performance Reporting Manager · Lagos</div>
-          </div>
-          <span class="tl-period">Sep 2021 – Mar 2024</span>
-        </div>
-        <ul class="tl-points">
-          <li>Improved regulatory compliance from 85% to 98% year-on-year.</li>
-          <li>Delivered 20% increase in profitability through financial data analysis and strategic insights.</li>
-          <li>Developed Excel templates that reduced reporting time by 95%.</li>
-          <li>Led accounts team of 10 across 3 regions.</li>
-        </ul>
-      </div>
-      <div class="tl-item">
-        <div class="tl-header">
-          <div>
-            <div class="tl-company">Adewale Semiu &amp; Co Chartered Accountants</div>
-            <div class="tl-role">Audit Associate</div>
-          </div>
-          <span class="tl-period">Jan 2016 – May 2020</span>
-        </div>
-        <ul class="tl-points">
-          <li>Executed audit engagements, tax management, and IFRS-compliant financial statements for diverse clients.</li>
-          <li>Built financial models, Excel templates and Excel-based VBA applications for clients.</li>
-          <li>Installed accounting software and provided bespoke financial technology solutions.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CERTIFICATIONS -->
-<section id="certifications">
-  <div class="section-inner">
-    <div class="section-label">Credentials</div>
-    <div class="section-title">Certifications &amp; Education</div>
-    <div class="certs-grid reveal">
-      <div class="cert-card">
-        <div class="cert-abbr">ACA</div>
-        <div class="cert-name">Associate Chartered Accountant</div>
-        <div class="cert-body">ICAN — Institute of Chartered Accountants of Nigeria</div>
-      </div>
-      <div class="cert-card">
-        <div class="cert-abbr">ACTI</div>
-        <div class="cert-name">Associate Chartered Tax Institute</div>
-        <div class="cert-body">CITN — Chartered Institute of Taxation of Nigeria</div>
-      </div>
-      <div class="cert-card">
-        <div class="cert-abbr">FMVA®</div>
-        <div class="cert-name">Financial Modelling &amp; Valuation Analyst</div>
-        <div class="cert-body">Corporate Finance Institute (CFI), Canada</div>
-      </div>
-      <div class="cert-card">
-        <div class="cert-abbr">BIDA™</div>
-        <div class="cert-name">Business Intelligence &amp; Data Analyst</div>
-        <div class="cert-body">Corporate Finance Institute (CFI), Canada</div>
-      </div>
-      <div class="cert-card">
-        <div class="cert-abbr">CBCA™</div>
-        <div class="cert-name">Commercial Banking &amp; Credit Analyst</div>
-        <div class="cert-body">Corporate Finance Institute (CFI), Canada</div>
-      </div>
-      <div class="cert-card">
-        <div class="cert-abbr">CMSA®</div>
-        <div class="cert-name">Capital Markets &amp; Securities Analyst</div>
-        <div class="cert-body">Corporate Finance Institute (CFI), Canada</div>
-      </div>
-      <div class="cert-card">
-        <div class="cert-abbr">FPWMP®</div>
-        <div class="cert-name">Financial Planning &amp; Wealth Management</div>
-        <div class="cert-body">Corporate Finance Institute (CFI), Canada</div>
-      </div>
-      <div class="cert-card">
-        <div class="cert-abbr">CFO</div>
-        <div class="cert-name">Chief Financial Officer Certification</div>
-        <div class="cert-body">Federal Reporting Council of Nigeria (FRC)</div>
-      </div>
-    </div>
-    <div style="margin-top:2.5rem;" class="reveal">
-      <p style="font-size:11px;font-family:var(--mo);color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;">Education</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.75rem;">
-        <div class="skill-item" style="flex-direction:column;align-items:flex-start;gap:3px;padding:14px;">
-          <span style="color:var(--tx);font-size:13px;font-family:var(--di);font-weight:600;">MBA in Finance</span>
-          <span style="font-size:11px;">University of Lagos · 2024</span>
-        </div>
-        <div class="skill-item" style="flex-direction:column;align-items:flex-start;gap:3px;padding:14px;">
-          <span style="color:var(--tx);font-size:13px;font-family:var(--di);font-weight:600;">BSc Accounting (In View)</span>
-          <span style="font-size:11px;">Southwestern University, Nigeria</span>
-        </div>
-        <div class="skill-item" style="flex-direction:column;align-items:flex-start;gap:3px;padding:14px;">
-          <span style="color:var(--tx);font-size:13px;font-family:var(--di);font-weight:600;">HND Accounting</span>
-          <span style="font-size:11px;">Lagos State Polytechnic · 2015</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TOOLS -->
-<section id="tools">
-  <div class="section-inner">
-    <div class="section-label">Tech Stack</div>
-    <div class="section-title">Tools &amp; Platforms</div>
-    <div class="tools-grid reveal">
-      <div class="tool-pill">Microsoft Excel</div>
-      <div class="tool-pill">PowerPoint</div>
-      <div class="tool-pill">Sage Accounting</div>
-      <div class="tool-pill">QuickBooks</div>
-      <div class="tool-pill">MS Dynamics ERP</div>
-      <div class="tool-pill">Oracle NetSuite</div>
-      <div class="tool-pill">Gemini Core-Banking</div>
-      <div class="tool-pill">BankOne</div>
-      <div class="tool-pill">NIBSS Integration</div>
-      <div class="tool-pill">Remita</div>
-      <div class="tool-pill">VBA / Macros</div>
-      <div class="tool-pill">JavaScript</div>
-      <div class="tool-pill">Node.js</div>
-      <div class="tool-pill">MongoDB</div>
-      <div class="tool-pill">Power BI</div>
-      <div class="tool-pill">Google Analytics</div>
-    </div>
-  </div>
-</section>
-
-<!-- PORTFOLIO CTA -->
-<section id="portfolio">
-  <div class="section-inner">
-    <div class="portfolio-inner">
-      <div class="section-label">Portfolio</div>
-      <div class="section-title">Financial Tools &amp; Applications</div>
-      <p class="section-sub">I build practical, production-grade financial applications that solve real problems. Sign in to access the full suite of tools.</p>
-      <div class="apps-preview">
-        <div class="app-chip"><span>🏦</span> Bank Reconciliation Engine</div>
-        <div class="app-chip"><span>📊</span> Financial Models <span style="font-size:10px;color:var(--am);font-family:var(--mo);margin-left:4px;">Soon</span></div>
-        <div class="app-chip"><span>📋</span> Management Reports <span style="font-size:10px;color:var(--am);font-family:var(--mo);margin-left:4px;">Soon</span></div>
-        <div class="app-chip"><span>🧾</span> Tax Computation <span style="font-size:10px;color:var(--am);font-family:var(--mo);margin-left:4px;">Soon</span></div>
-      </div>
-      <a href="portal/" class="btn-hero primary" style="display:inline-flex;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Sign In to Access Tools
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-  <div class="section-inner">
-    <div class="section-label">Contact</div>
-    <div class="contact-grid reveal">
-      <div>
-        <div class="section-title" style="margin-bottom:1rem;">Let's Connect</div>
-        <div class="contact-info">
-          <div class="contact-item">
-            <div class="contact-icon" style="background:rgba(0,201,167,.1);">📍</div>
-            <div><div class="contact-label">Location</div><div class="contact-value">Lagos, Nigeria</div></div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-icon" style="background:rgba(99,179,237,.1);">📞</div>
-            <div><div class="contact-label">Phone</div><div class="contact-value">+234 806 327 2819</div></div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-icon" style="background:rgba(245,166,35,.1);">✉️</div>
-            <div><div class="contact-label">Email</div><div class="contact-value">felixh.michael@gmail.com</div></div>
+      <!-- Debtors -->
+      <div class="view" id="view-debtors">
+        <div class="vhdr">
+          <div><div class="vttl">Debtors</div><div class="vsub">Manage debtor accounts and invoices</div></div>
+          <div class="vacts">
+            <button onclick="openImportModal()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Import Excel
+            </button>
+            <button class="bp" onclick="openDebtorModal()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Debtor
+            </button>
           </div>
         </div>
+        <div id="debtors-list"></div>
       </div>
-      <div class="contact-right">
-        <div class="section-title">Open to Opportunities</div>
-        <p>I'm available for strategic CFO engagements, financial consulting, and collaboration on fintech projects. Feel free to reach out directly.</p>
-        <div class="contact-links">
-          <a href="mailto:felixh.michael@gmail.com" class="contact-link">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            felixh.michael@gmail.com
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:auto;"><path d="m9 18 6-6-6-6"/></svg>
-          </a>
-          <a href="tel:+2348063272819" class="contact-link">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            +234 806 327 2819
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:auto;"><path d="m9 18 6-6-6-6"/></svg>
-          </a>
-          <a href="portal/" class="contact-link" style="border-color:rgba(0,201,167,.3);color:var(--t);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-            Access Resource Portal
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:auto;"><path d="m9 18 6-6-6-6"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-copy">&copy; <span id="yr2"></span> <span>Felix Happy Michael</span> &nbsp;·&nbsp; All rights reserved</div>
-  <div class="footer-links">
-    <a href="#hero">Home</a>
-    <a href="#about">About</a>
-    <a href="#experience">Experience</a>
-    <a href="portal/">Portal</a>
+      <!-- Ageing Report -->
+      <div class="view" id="view-ageing">
+        <div class="vhdr">
+          <div><div class="vttl">Ageing Report</div><div class="vsub" id="ageing-ts">—</div></div>
+          <div class="vacts">
+            <button onclick="exportAgeingXLSX()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+              Export Excel
+            </button>
+            <button onclick="exportAgeingPDF()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Export PDF
+            </button>
+          </div>
+        </div>
+        <div id="ageing-table"></div>
+      </div>
+
+      <!-- Send Reminders -->
+      <div class="view" id="view-reminders">
+        <div class="vhdr">
+          <div><div class="vttl">Send Reminders</div><div class="vsub">Select debtors and dispatch collection emails</div></div>
+        </div>
+        <div class="nt">Emails are sent via Brevo SMTP using your configured templates. The system picks the appropriate template (First/Second/Final) based on how overdue each debtor is. You can override the template below.</div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="fg" style="align-items:flex-end">
+            <div class="fld" style="margin:0">
+              <label>Template Override (optional)</label>
+              <select class="finput" id="tpl-override">
+                <option value="">Auto-select based on ageing</option>
+                <option value="firstReminder">First Reminder (≤30 days)</option>
+                <option value="secondReminder">Second Reminder (31–60 days)</option>
+                <option value="finalNotice">Final Notice (60+ days)</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:.5rem;padding-bottom:1rem">
+              <button onclick="selectAllDebtors(true)">Select All</button>
+              <button onclick="selectAllDebtors(false)">Clear</button>
+              <button class="bp" id="send-btn" onclick="sendReminders()" disabled>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Send Selected
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="reminders-list"></div>
+      </div>
+
+      <!-- Email Logs -->
+      <div class="view" id="view-logs">
+        <div class="vhdr">
+          <div><div class="vttl">Email Logs</div><div class="vsub">History of all sent reminders</div></div>
+          <button onclick="loadLogs()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>
+            Refresh
+          </button>
+        </div>
+        <div id="logs-table"></div>
+      </div>
+
+      <!-- Settings -->
+      <div class="view" id="view-settings">
+        <div class="vhdr">
+          <div><div class="vttl">Settings</div><div class="vsub">Email configuration, templates and auto-reminders</div></div>
+        </div>
+        <div id="settings-form"></div>
+      </div>
+
+    </main>
   </div>
-</footer>
+</div>
+
+<!-- Modal -->
+<div id="modal-bg">
+  <div class="modal" id="modal-box">
+    <div class="mhdr">
+      <div class="mttl" id="modal-title">—</div>
+      <button class="mclose" onclick="closeModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="mbody" id="modal-body"></div>
+    <div class="mfoot" id="modal-foot"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
 
 <script>
-document.getElementById('yr2').textContent = new Date().getFullYear();
+'use strict';
+// ════════════════════════════════════════════════════
+// CONFIG — replace with your Render.com backend URL
+// ════════════════════════════════════════════════════
+const API_BASE = 'YOUR_RENDER_BACKEND_URL';  // ← REPLACE THIS
 
-// Scroll reveal
-var observer = new IntersectionObserver(function(entries){
-  entries.forEach(function(entry){
-    if(entry.isIntersecting){ entry.target.classList.add('visible'); }
+// ════════════════════════════════════════════════════
+// API HELPER
+// ════════════════════════════════════════════════════
+let currentUser = null;
+
+async function api(endpoint, opts = {}) {
+  const res = await fetch(API_BASE + endpoint, {
+    ...opts,
+    headers: { 'Content-Type':'application/json', ...(opts.headers||{}) }
   });
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(function(el){ observer.observe(el); });
+  const data = await res.json().catch(() => ({ success:false, message:'No response from server.' }));
+  if (!res.ok) throw new Error(data.message || 'Server error ' + res.status);
+  return data;
+}
 
-// Nav scroll effect
-window.addEventListener('scroll', function(){
-  var nav = document.querySelector('nav');
-  if(window.scrollY > 60){
-    nav.style.background = 'rgba(5,13,26,.97)';
-    nav.style.boxShadow = '0 4px 24px rgba(0,0,0,.4)';
-  } else {
-    nav.style.background = 'rgba(5,13,26,.85)';
-    nav.style.boxShadow = 'none';
-  }
+async function apiForm(endpoint, formData) {
+  const res = await fetch(API_BASE + endpoint, { method:'POST', body: formData });
+  const data = await res.json().catch(() => ({ success:false, message:'No response.' }));
+  if (!res.ok) throw new Error(data.message || 'Upload failed');
+  return data;
+}
+
+// ════════════════════════════════════════════════════
+// UI HELPERS
+// ════════════════════════════════════════════════════
+const $  = id => document.getElementById(id);
+const fN = n  => n == null || isNaN(n) ? '0.00'
+  : Number(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fD = d  => !d ? '—' : new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+const ts = () => new Date().toISOString().slice(0,10);
+
+function toast(msg, type='ok') {
+  const el = $('toast'); el.textContent = (type==='ok'?'✓  ':'⚠  ') + msg;
+  el.className = 'on ' + type;
+  setTimeout(() => el.className = '', 4000);
+}
+
+function showApi(msg) { /* portal handles auth */ }
+function hideApi()    { }
+
+function openModal(title, bodyHTML, footHTML, wide=false) {
+  $('modal-title').textContent = title;
+  $('modal-body').innerHTML    = bodyHTML;
+  $('modal-foot').innerHTML    = footHTML || '<button onclick="closeModal()">Close</button>';
+  $('modal-box').className     = 'modal' + (wide?' wide':'');
+  $('modal-bg').classList.add('on');
+}
+function closeModal() { $('modal-bg').classList.remove('on'); }
+$('modal-bg').addEventListener('click', e => { if(e.target === $('modal-bg')) closeModal(); });
+
+const BUCKET_LABELS = { current:'Current', '1_30':'1–30 days', '31_60':'31–60 days', '61_90':'61–90 days', '91_180':'91–180 days', '180_plus':'180+ days' };
+const BUCKET_COLORS = { current:'#22c55e', '1_30':'#84cc16', '31_60':'#f59e0b', '61_90':'#ef4444', '91_180':'#dc2626', '180_plus':'#991b1b' };
+const BUCKET_CLASSES= { current:'pg', '1_30':'pg', '31_60':'pa', '61_90':'pr', '91_180':'pr', '180_plus':'pdark' };
+
+function bucketPill(key, days) {
+  const cls  = BUCKET_CLASSES[key] || 'pa';
+  const lbl  = key === 'current' ? 'Current' : (days||0) + ' days';
+  return `<span class="pl ${cls}">${lbl}</span>`;
+}
+
+function empty(msg) { return `<div class="ep"><div class="ei">📭</div>${msg}</div>`; }
+
+// ════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const view = item.dataset.view;
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+    item.classList.add('active');
+    $('view-'+view).classList.add('on');
+    if (view==='dashboard') loadDashboard();
+    else if (view==='debtors') loadDebtors();
+    else if (view==='ageing') loadAgeing();
+    else if (view==='reminders') loadReminders();
+    else if (view==='logs') loadLogs();
+    else if (view==='settings') loadSettings();
+  });
 });
+
+// ════════════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════════════
+async function loadDashboard() {
+  $('dash-kpis').innerHTML = '<div class="loading-row">Loading…</div>';
+  try {
+    const d = await api('/api/dashboard');
+    const s = d.stats;
+    $('dash-ts').textContent = 'As at ' + new Date().toLocaleString('en-GB');
+
+    $('dash-kpis').innerHTML = [
+      { l:'Total Outstanding', v:'₦'+fN(s.totalOutstanding), c:'tl', ac:true },
+      { l:'Total Overdue',     v:'₦'+fN(s.totalOverdue),     c:'rd', cl:'rd' },
+      { l:'Overdue Invoices',  v:s.overdueInvoices,          c:'am', cl:'am' },
+      { l:'Total Debtors',     v:s.totalDebtors,             c:'bl' },
+      { l:'Total Invoices',    v:s.totalInvoices,            c:'' },
+      { l:'Portfolio DSO',     v:s.dso + ' days',            c:'am', cl:'am' },
+    ].map(k => `<div class="kpi${k.ac?' ac':k.cl?' '+k.cl:''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div></div>`).join('');
+
+    // Ageing bar chart
+    const ag = d.ageing;
+    const maxVal = Math.max(...Object.values(ag), 1);
+    const barRows = Object.entries(BUCKET_LABELS).map(([key, lbl]) => {
+      const val = ag[key] || 0;
+      const pct = Math.round((val / maxVal) * 100);
+      const col = BUCKET_COLORS[key];
+      return `<div class="ag-bar-row">
+        <div class="ag-bar-lbl">${lbl}</div>
+        <div class="ag-bar-track"><div class="ag-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+        <div class="ag-bar-amt">₦${fN(val)}</div>
+      </div>`;
+    }).join('');
+    $('dash-ageing').innerHTML = `<div class="ag-bar-wrap"><div class="ag-bar-title">Outstanding by Ageing Bucket</div>${barRows}</div>`;
+
+    // Recent emails
+    if (!d.recentEmails?.length) {
+      $('dash-emails').innerHTML = empty('No emails sent yet');
+    } else {
+      $('dash-emails').innerHTML = `<div class="tw"><table>
+        <thead><tr><th>Debtor</th><th>Template</th><th>Email</th><th>Amount</th><th>Status</th><th>Sent</th></tr></thead>
+        <tbody>${d.recentEmails.map(e=>`<tr>
+          <td>${e.debtorName}</td>
+          <td><span class="pl pb">${e.template}</span></td>
+          <td style="font-family:var(--mo);font-size:11px">${e.toEmail}</td>
+          <td class="nm">₦${fN(e.totalAmount)}</td>
+          <td><span class="pl ${e.status==='sent'?'pg':'pr'}">${e.status}</span></td>
+          <td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">${fD(e.createdAt)}</td>
+        </tr>`).join('')}</tbody></table></div>`;
+    }
+  } catch(e) {
+    $('dash-kpis').innerHTML = `<div class="nt">⚠ ${e.message}</div>`;
+  }
+}
+
+// ════════════════════════════════════════════════════
+// DEBTORS
+// ════════════════════════════════════════════════════
+let debtorsCache = [];
+
+async function loadDebtors() {
+  $('debtors-list').innerHTML = '<div class="loading-row">Loading debtors…</div>';
+  try {
+    const d = await api('/api/debtors');
+    debtorsCache = d.debtors;
+    renderDebtors(d.debtors);
+  } catch(e) { $('debtors-list').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
+}
+
+function renderDebtors(debtors) {
+  if (!debtors.length) { $('debtors-list').innerHTML = empty('No debtors yet. Add one or import from Excel.'); return; }
+  const rows = debtors.map(d => {
+    const highBucket = ['180_plus','91_180','61_90','31_60','1_30','current'].find(k => (d.ageing[k]||0) > 0) || 'current';
+    const score = d.collectionScore;
+    const scoreCls = score > 5000 ? 'pr' : score > 1000 ? 'pa' : 'pg';
+    return `<tr>
+      <td><strong>${d.name}</strong>${d.contactPerson?`<div style="font-size:11px;color:var(--tx3)">${d.contactPerson}</div>`:''}</td>
+      <td style="font-family:var(--mo);font-size:11px">${d.email||'—'}</td>
+      <td class="nm">₦${fN(d.totalOutstanding)}</td>
+      <td><span class="pl ${BUCKET_CLASSES[highBucket]}">${BUCKET_LABELS[highBucket]}</span></td>
+      <td class="nm">${d.invoiceCount}</td>
+      <td><span class="pl ${scoreCls}">${score > 5000?'High':score > 1000?'Medium':'Low'}</span></td>
+      <td>
+        <div style="display:flex;gap:5px">
+          <button class="bsm" title="View invoices" onclick="viewInvoices('${d._id}','${d.name.replace(/'/g,'\\\'')}')" style="padding:4px 10px">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="bsm" title="Edit debtor" onclick="openDebtorModal('${d._id}')" style="padding:4px 10px">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="bsm bd" title="Delete debtor" onclick="deleteDebtor('${d._id}','${d.name.replace(/'/g,'\\\'')}')" style="padding:4px 10px">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  $('debtors-list').innerHTML = `<div class="tw"><table>
+    <thead><tr><th>Debtor</th><th>Email</th><th>Outstanding</th><th>Oldest Bucket</th><th>Invoices</th><th>Risk</th><th>Actions</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
+function openDebtorModal(id) {
+  const deb = id ? debtorsCache.find(d => d._id === id) : null;
+  const title = deb ? 'Edit Debtor' : 'Add New Debtor';
+  const body = `
+    <div class="merr" id="deb-err"></div>
+    <div class="fg">
+      <div class="fld"><label>Full Name *</label><input class="finput" id="deb-name" value="${deb?.name||''}" placeholder="e.g. ABC Ltd"></div>
+      <div class="fld"><label>Contact Person</label><input class="finput" id="deb-contact" value="${deb?.contactPerson||''}" placeholder="e.g. John Doe"></div>
+    </div>
+    <div class="fg">
+      <div class="fld"><label>Email Address</label><input class="finput" type="email" id="deb-email" value="${deb?.email||''}" placeholder="For sending reminders"></div>
+      <div class="fld"><label>Phone</label><input class="finput" id="deb-phone" value="${deb?.phone||''}" placeholder="+234..."></div>
+    </div>
+    <div class="fg">
+      <div class="fld"><label>Credit Limit (₦)</label><input class="finput" type="number" id="deb-limit" value="${deb?.creditLimit||0}" min="0"></div>
+      <div class="fld"><label>Address</label><input class="finput" id="deb-addr" value="${deb?.address||''}" placeholder="Office address"></div>
+    </div>
+    <div class="fld"><label>Notes</label><textarea class="finput" id="deb-notes" placeholder="Internal notes...">${deb?.notes||''}</textarea></div>`;
+  const foot = `<button onclick="closeModal()">Cancel</button>
+    <button class="bp" onclick="saveDebtor('${id||''}')"><span id="deb-save-txt">${deb?'Save Changes':'Add Debtor'}</span></button>`;
+  openModal(title, body, foot);
+}
+
+async function saveDebtor(id) {
+  const errEl = $('deb-err');
+  errEl.classList.remove('on');
+  const name = $('deb-name').value.trim();
+  if (!name) { errEl.textContent='Name is required.'; errEl.classList.add('on'); return; }
+  const payload = { name, contactPerson:$('deb-contact').value.trim(), email:$('deb-email').value.trim(),
+    phone:$('deb-phone').value.trim(), creditLimit:parseFloat($('deb-limit').value)||0,
+    address:$('deb-addr').value.trim(), notes:$('deb-notes').value.trim() };
+  const saveTxt = $('deb-save-txt');
+  saveTxt.textContent = 'Saving…';
+  try {
+    if (id) await api('/api/debtors/'+id, { method:'PUT', body:JSON.stringify(payload) });
+    else    await api('/api/debtors', { method:'POST', body:JSON.stringify(payload) });
+    closeModal(); toast(id ? 'Debtor updated.' : 'Debtor added.'); loadDebtors();
+  } catch(e) { errEl.textContent = e.message; errEl.classList.add('on'); saveTxt.textContent = id?'Save Changes':'Add Debtor'; }
+}
+
+async function deleteDebtor(id, name) {
+  if (!confirm(`Delete "${name}" and ALL their invoices?\n\nThis cannot be undone.`)) return;
+  try { await api('/api/debtors/'+id, { method:'DELETE' }); toast('Debtor deleted.'); loadDebtors(); }
+  catch(e) { toast(e.message,'err'); }
+}
+
+// Invoices modal
+async function viewInvoices(debtorId, debtorName) {
+  openModal(`Invoices — ${debtorName}`,
+    '<div class="loading-row">Loading invoices…</div>',
+    `<button onclick="openInvoiceModal('${debtorId}','${debtorName.replace(/'/g,"\\'")}')" class="bp">+ Add Invoice</button><button onclick="closeModal()">Close</button>`, true);
+  try {
+    const d = await api('/api/invoices?debtorId='+debtorId);
+    const invs = d.invoices;
+    if (!invs.length) { $('modal-body').innerHTML = empty('No outstanding invoices for this debtor.'); return; }
+    const rows = invs.map(i => `<tr>
+      <td style="font-family:var(--mo);font-size:11px">${i.invoiceNumber}</td>
+      <td>${fD(i.invoiceDate)}</td><td>${fD(i.dueDate)}</td>
+      <td class="nm">₦${fN(i.amount)}</td>
+      <td class="nm" style="color:var(--gr)">₦${fN(i.amountPaid)}</td>
+      <td class="nm" style="color:var(--rd);font-weight:600">₦${fN(i.balance)}</td>
+      <td>${bucketPill(i.ageingBucket, i.daysOverdue)}</td>
+      <td class="nr">${i.description||'—'}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="bsm" onclick="openPaymentModal('${i._id}','${i.invoiceNumber}',${i.balance})" title="Record payment" style="padding:4px 8px">₦</button>
+        <button class="bsm bd" onclick="deleteInvoice('${i._id}','${i.invoiceNumber}')" style="padding:4px 8px" title="Delete">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+        </button>
+      </div></td>
+    </tr>`).join('');
+    $('modal-body').innerHTML = `<div class="tw"><table>
+      <thead><tr><th>Invoice #</th><th>Issued</th><th>Due</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Status</th><th>Description</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+  } catch(e) { $('modal-body').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
+}
+
+function openInvoiceModal(debtorId, debtorName) {
+  openModal(`Add Invoice — ${debtorName}`, `
+    <div class="merr" id="inv-err"></div>
+    <div class="fg">
+      <div class="fld"><label>Invoice Number *</label><input class="finput" id="inv-no" placeholder="e.g. INV-2025-001"></div>
+      <div class="fld"><label>Description</label><input class="finput" id="inv-desc" placeholder="Goods/services supplied"></div>
+    </div>
+    <div class="fg">
+      <div class="fld"><label>Invoice Date *</label><input class="finput" type="date" id="inv-date"></div>
+      <div class="fld"><label>Due Date *</label><input class="finput" type="date" id="inv-due"></div>
+    </div>
+    <div class="fg">
+      <div class="fld"><label>Invoice Amount (₦) *</label><input class="finput" type="number" id="inv-amt" min="0" step="0.01" placeholder="0.00"></div>
+      <div class="fld"><label>Amount Already Paid (₦)</label><input class="finput" type="number" id="inv-paid" min="0" step="0.01" value="0" placeholder="0.00"></div>
+    </div>`,
+    `<button onclick="viewInvoices('${debtorId}','${debtorName}')">← Back</button>
+     <button class="bp" onclick="saveInvoice('${debtorId}','${debtorName}')"><span id="inv-save-txt">Add Invoice</span></button>`);
+}
+
+async function saveInvoice(debtorId, debtorName) {
+  const err = $('inv-err'); err.classList.remove('on');
+  const no   = $('inv-no').value.trim();
+  const date = $('inv-date').value;
+  const due  = $('inv-due').value;
+  const amt  = parseFloat($('inv-amt').value);
+  if (!no||!date||!due||!amt) { err.textContent='Invoice number, dates and amount are required.'; err.classList.add('on'); return; }
+  $('inv-save-txt').textContent = 'Saving…';
+  try {
+    await api('/api/invoices', { method:'POST', body:JSON.stringify({ debtorId, invoiceNumber:no,
+      invoiceDate:date, dueDate:due, amount:amt, amountPaid:parseFloat($('inv-paid').value)||0,
+      description:$('inv-desc').value.trim() }) });
+    toast('Invoice added.'); viewInvoices(debtorId, debtorName);
+  } catch(e) { err.textContent=e.message; err.classList.add('on'); $('inv-save-txt').textContent='Add Invoice'; }
+}
+
+function openPaymentModal(invId, invNo, balance) {
+  openModal('Record Payment — ' + invNo, `
+    <div class="merr" id="pay-err"></div>
+    <p style="font-size:13px;color:var(--tx2);margin-bottom:1rem">Current outstanding balance: <strong style="color:var(--rd)">₦${fN(balance)}</strong></p>
+    <div class="fld"><label>Payment Amount (₦) *</label><input class="finput" type="number" id="pay-amt" min="0" step="0.01" placeholder="0.00" value="${balance}"></div>`,
+    `<button onclick="closeModal()">Cancel</button>
+     <button class="bp" onclick="recordPayment('${invId}',${balance})"><span id="pay-save-txt">Record Payment</span></button>`);
+}
+
+async function recordPayment(invId, currentBalance) {
+  const err = $('pay-err'); err.classList.remove('on');
+  const amt = parseFloat($('pay-amt').value);
+  if (!amt || amt <= 0) { err.textContent='Enter a valid payment amount.'; err.classList.add('on'); return; }
+  $('pay-save-txt').textContent = 'Saving…';
+  try {
+    const inv = await api('/api/invoices/'+invId);
+    await api('/api/invoices/'+invId, { method:'PUT', body:JSON.stringify({ amountPaid: (inv.invoice?.amountPaid||0) + amt }) });
+    toast('Payment recorded.'); closeModal(); loadDebtors();
+  } catch(e) { err.textContent=e.message; err.classList.add('on'); $('pay-save-txt').textContent='Record Payment'; }
+}
+
+async function deleteInvoice(id, no) {
+  if (!confirm(`Delete invoice ${no}? This cannot be undone.`)) return;
+  try { await api('/api/invoices/'+id, { method:'DELETE' }); toast('Invoice deleted.'); }
+  catch(e) { toast(e.message,'err'); }
+}
+
+// Import modal
+function openImportModal() {
+  openModal('Import from Excel / CSV', `
+    <div class="merr" id="imp-err"></div>
+    <div class="mok"  id="imp-ok"></div>
+    <div class="nt">File must have columns: <strong>Debtor Name, Email, Invoice Number, Invoice Date, Due Date, Amount, Amount Paid</strong><br>
+    Optional: Phone, Credit Limit, Description/Narration<br>
+    Existing invoices with the same number are updated, not duplicated.</div>
+    <div style="border:1.5px dashed var(--b2);border-radius:var(--r);padding:2rem;text-align:center;cursor:pointer;background:var(--tg);position:relative" id="imp-drop">
+      <input type="file" accept=".csv,.xlsx,.xls" id="imp-file" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+      <div style="font-size:1.5rem;margin-bottom:8px">📂</div>
+      <div style="font-size:13px;font-weight:500">Click or drop your Excel/CSV file</div>
+      <div style="font-size:11px;color:var(--tx3);margin-top:4px" id="imp-fname">Accepts .xlsx, .xls, .csv</div>
+    </div>`,
+    `<button onclick="closeModal()">Cancel</button>
+     <button class="bp" id="imp-btn" onclick="doImport()" disabled><span id="imp-txt">Import</span></button>`);
+
+  $('imp-file').addEventListener('change', e => {
+    if (e.target.files[0]) { $('imp-fname').textContent = e.target.files[0].name; $('imp-btn').disabled = false; }
+  });
+}
+
+async function doImport() {
+  const file = $('imp-file').files[0];
+  if (!file) return;
+  const errEl = $('imp-err'), okEl = $('imp-ok');
+  errEl.classList.remove('on'); okEl.classList.remove('on');
+  $('imp-txt').textContent = 'Importing…'; $('imp-btn').disabled = true;
+  try {
+    const fd = new FormData(); fd.append('file', file);
+    const d = await apiForm('/api/debtors/import', fd);
+    okEl.textContent = d.message; okEl.classList.add('on');
+    if (d.errors?.length) { errEl.textContent = 'Some rows had issues: ' + d.errors.slice(0,3).join('; '); errEl.classList.add('on'); }
+    loadDebtors();
+  } catch(e) { errEl.textContent = e.message; errEl.classList.add('on'); }
+  finally { $('imp-txt').textContent = 'Import'; $('imp-btn').disabled = false; }
+}
+
+// ════════════════════════════════════════════════════
+// AGEING REPORT
+// ════════════════════════════════════════════════════
+let ageingCache = null;
+
+async function loadAgeing() {
+  $('ageing-table').innerHTML = '<div class="loading-row">Generating ageing report…</div>';
+  try {
+    const d = await api('/api/invoices/ageing-report');
+    ageingCache = d;
+    $('ageing-ts').textContent = 'Generated ' + new Date().toLocaleString('en-GB');
+    renderAgeingTable(d.report);
+  } catch(e) { $('ageing-table').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
+}
+
+function renderAgeingTable(report) {
+  if (!report.length) { $('ageing-table').innerHTML = empty('No outstanding invoices to report.'); return; }
+
+  const totals = { current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'180_plus':0,total:0 };
+  const rows = report.map(r => {
+    const ag = r.ageing;
+    Object.keys(totals).forEach(k => { if(k!=='total') totals[k] += ag[k]||0; });
+    totals.total += r.totalOutstanding;
+    return `<tr>
+      <td style="font-weight:500">${r.debtor.name}</td>
+      ${['current','1_30','31_60','61_90','91_180','180_plus'].map(k =>
+        `<td class="nm" style="color:${(ag[k]||0)>0?BUCKET_COLORS[k]:'var(--tx3)'}">${(ag[k]||0)>0?'₦'+fN(ag[k]):'—'}</td>`
+      ).join('')}
+      <td class="nm" style="font-weight:700">₦${fN(r.totalOutstanding)}</td>
+    </tr>`;
+  }).join('');
+
+  const totalRow = `<tr class="trt">
+    <td>TOTAL</td>
+    ${['current','1_30','31_60','61_90','91_180','180_plus'].map(k =>
+      `<td class="nm">₦${fN(totals[k])}</td>`
+    ).join('')}
+    <td class="nm">₦${fN(totals.total)}</td>
+  </tr>`;
+
+  $('ageing-table').innerHTML = `<div class="tw"><table>
+    <thead><tr>
+      <th>Debtor</th>
+      ${Object.entries(BUCKET_LABELS).map(([,l]) => `<th style="text-align:right">${l}</th>`).join('')}
+      <th style="text-align:right">Total</th>
+    </tr></thead>
+    <tbody>${rows}${totalRow}</tbody>
+  </table></div>`;
+}
+
+// ════════════════════════════════════════════════════
+// SEND REMINDERS
+// ════════════════════════════════════════════════════
+let remindersCache = [];
+
+async function loadReminders() {
+  $('reminders-list').innerHTML = '<div class="loading-row">Loading overdue debtors…</div>';
+  try {
+    const d = await api('/api/debtors');
+    const overdue = d.debtors.filter(deb => deb.totalOutstanding > 0);
+    remindersCache = overdue;
+    if (!overdue.length) { $('reminders-list').innerHTML = empty('No debtors with outstanding invoices.'); return; }
+
+    const rows = overdue.map(deb => {
+      const highBucket = ['180_plus','91_180','61_90','31_60','1_30','current'].find(k => (deb.ageing[k]||0) > 0) || 'current';
+      const tpl = deb.ageing['180_plus']>0 ? 'Final Notice' : deb.ageing['91_180']>0||deb.ageing['61_90']>0 ? 'Second Reminder' : deb.ageing['31_60']>0 ? 'Second Reminder' : 'First Reminder';
+      return `<tr id="rem-row-${deb._id}">
+        <td><label class="cb"><input type="checkbox" id="chk-${deb._id}" onchange="updateSendBtn()" ${!deb.email?'disabled title="No email address"':''}><span>${deb.name}${!deb.email?'<span style="color:var(--rd);font-size:10px;margin-left:6px">no email</span>':''}</span></label></td>
+        <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${deb.email||'—'}</td>
+        <td class="nm" style="font-weight:600;color:var(--rd)">₦${fN(deb.totalOutstanding)}</td>
+        <td><span class="pl ${BUCKET_CLASSES[highBucket]}">${BUCKET_LABELS[highBucket]}</span></td>
+        <td><span class="pl pb">${tpl}</span></td>
+      </tr>`;
+    }).join('');
+
+    $('reminders-list').innerHTML = `<div class="tw"><table>
+      <thead><tr><th>Debtor</th><th>Email</th><th>Outstanding</th><th>Oldest Bucket</th><th>Default Template</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+  } catch(e) { $('reminders-list').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
+}
+
+function updateSendBtn() {
+  const any = remindersCache.some(d => d.email && $('chk-'+d._id)?.checked);
+  $('send-btn').disabled = !any;
+}
+
+function selectAllDebtors(select) {
+  remindersCache.forEach(d => { const el = $('chk-'+d._id); if(el && !el.disabled) el.checked = select; });
+  updateSendBtn();
+}
+
+async function sendReminders() {
+  const ids = remindersCache.filter(d => d.email && $('chk-'+d._id)?.checked).map(d => d._id);
+  if (!ids.length) { toast('Select at least one debtor.','err'); return; }
+  const tpl = $('tpl-override').value || '';
+  const btn = $('send-btn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  showApi('Sending emails via Brevo…');
+  try {
+    const d = await api('/api/email/send', { method:'POST', body:JSON.stringify({debtorIds:ids, templateOverride:tpl||undefined}) });
+    hideApi();
+    const { sent, failed, skipped } = d.summary;
+    toast(`Done: ${sent} sent, ${failed} failed, ${skipped} skipped.`, failed>0?'err':'ok');
+    selectAllDebtors(false); loadReminders();
+  } catch(e) { hideApi(); toast(e.message,'err'); }
+  finally { btn.disabled=false; btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Selected'; }
+}
+
+// ════════════════════════════════════════════════════
+// EMAIL LOGS
+// ════════════════════════════════════════════════════
+async function loadLogs() {
+  $('logs-table').innerHTML = '<div class="loading-row">Loading email logs…</div>';
+  try {
+    const d = await api('/api/email/logs');
+    if (!d.logs.length) { $('logs-table').innerHTML = empty('No emails sent yet.'); return; }
+    const tplLabels = { firstReminder:'1st Reminder', secondReminder:'2nd Reminder', finalNotice:'Final Notice' };
+    const rows = d.logs.map(l => `<tr>
+      <td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">${fD(l.createdAt)}</td>
+      <td><strong>${l.debtorName}</strong></td>
+      <td style="font-family:var(--mo);font-size:11px">${l.toEmail}</td>
+      <td><span class="pl pb">${tplLabels[l.template]||l.template}</span></td>
+      <td class="nm">₦${fN(l.totalAmount)}</td>
+      <td class="nm">${l.invoiceCount}</td>
+      <td><span class="pl ${l.status==='sent'?'pg':'pr'}">${l.status}</span></td>
+      <td style="font-size:11px;color:var(--tx3)">${l.sentBy}</td>
+    </tr>`).join('');
+    $('logs-table').innerHTML = `<div class="tw"><table>
+      <thead><tr><th>Date</th><th>Debtor</th><th>Email</th><th>Template</th><th>Amount</th><th>Invoices</th><th>Status</th><th>Sent By</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+  } catch(e) { $('logs-table').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
+}
+
+// ════════════════════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════════════════════
+async function loadSettings() {
+  $('settings-form').innerHTML = '<div class="loading-row">Loading settings…</div>';
+  try {
+    const d = await api('/api/email/settings');
+    const s = d.settings;
+    $('settings-form').innerHTML = `
+    <div class="card" style="margin-bottom:1rem">
+      <div class="section-ttl">Company Details</div>
+      <div class="merr" id="set-err"></div>
+      <div class="mok"  id="set-ok"></div>
+      <div class="fg">
+        <div class="fld"><label>Company Name *</label><input class="finput" id="s-cname" value="${s.companyName||''}"></div>
+        <div class="fld"><label>Company Email</label><input class="finput" type="email" id="s-cemail" value="${s.companyEmail||''}"></div>
+      </div>
+      <div class="fld"><label>Company Address</label><input class="finput" id="s-caddr" value="${s.companyAddress||''}"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="section-ttl">Brevo SMTP Configuration</div>
+      <div class="nt">Get these from your Brevo dashboard → SMTP & API → SMTP tab. The From Email must be verified in Brevo.</div>
+      <div class="fg">
+        <div class="fld"><label>Brevo SMTP Login (your Brevo email) *</label><input class="finput" id="s-buser" value="${s.brevoSmtpUser||''}" placeholder="you@yourcompany.com"></div>
+        <div class="fld"><label>Brevo SMTP Key *</label><input class="finput" type="password" id="s-bkey" value="${s.brevoSmtpKey||''}" placeholder="xsmtpsib-..."></div>
+      </div>
+      <div class="fg">
+        <div class="fld"><label>From Email (verified in Brevo)</label><input class="finput" type="email" id="s-from" value="${s.fromEmail||''}" placeholder="noreply@yourcompany.com"></div>
+        <div class="fld"><label>Reply-To Email</label><input class="finput" type="email" id="s-reply" value="${s.replyTo||''}" placeholder="accounts@yourcompany.com"></div>
+      </div>
+      <div style="display:flex;gap:.5rem;align-items:center;margin-top:.5rem">
+        <input class="finput" id="s-test-email" placeholder="Test recipient email" style="max-width:260px">
+        <button onclick="sendTestEmail()">Send Test Email</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="section-ttl">Payment Instructions</div>
+      <div class="fld"><label>Payment Instructions (appears in all reminder emails)</label>
+        <textarea class="finput" id="s-payinstr" rows="3">${s.paymentInstructions||''}</textarea></div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="section-ttl">Auto-Reminder Schedule (GitHub Actions)</div>
+      <div class="nt">When enabled, GitHub Actions triggers the <code style="font-family:var(--mo);background:var(--sf);padding:1px 5px;border-radius:4px">/api/email/send-scheduled</code> endpoint every Monday at 8am WAT to automatically email all debtors with overdue invoices.</div>
+      <label class="cb"><input type="checkbox" id="s-auto" ${s.autoReminderEnabled?'checked':''}><span>Enable automatic weekly reminders</span></label>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="section-ttl">Email Templates</div>
+      <p style="font-size:12px;color:var(--tx2);margin-bottom:1rem">Edit the subject line and opening paragraph for each template. Amounts and invoice tables are appended automatically.</p>
+      ${['firstReminder','secondReminder','finalNotice'].map((k,i) => {
+        const labels = ['First Reminder (≤30 days overdue)','Second Reminder (31–60 days)','Final Notice (60+ days)'];
+        const tpl = s.templates?.[k] || {};
+        return `<div style="margin-bottom:1.25rem">
+          <div style="font-size:12px;font-family:var(--mo);color:var(--t);margin-bottom:8px;font-weight:600">${labels[i]}</div>
+          <div class="fld"><label>Subject</label><input class="finput" id="s-tpl-${k}-subj" value="${(tpl.subject||'').replace(/"/g,'&quot;')}"></div>
+          <div class="fld"><label>Opening Paragraph</label><textarea class="finput" id="s-tpl-${k}-intro" rows="3">${tpl.intro||''}</textarea></div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div style="display:flex;justify-content:flex-end">
+      <button class="bp" onclick="saveSettings()"><span id="set-save-txt">Save All Settings</span></button>
+    </div>`;
+  } catch(e) { $('settings-form').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
+}
+
+async function saveSettings() {
+  const err=$('set-err'), ok=$('set-ok');
+  err.classList.remove('on'); ok.classList.remove('on');
+  $('set-save-txt').textContent = 'Saving…';
+  const payload = {
+    companyName:  $('s-cname').value.trim(),
+    companyEmail: $('s-cemail').value.trim(),
+    companyAddress:$('s-caddr').value.trim(),
+    brevoSmtpUser:$('s-buser').value.trim(),
+    brevoSmtpKey: $('s-bkey').value.trim(),
+    fromEmail:    $('s-from').value.trim(),
+    replyTo:      $('s-reply').value.trim(),
+    paymentInstructions:$('s-payinstr').value.trim(),
+    autoReminderEnabled:$('s-auto').checked,
+    'templates.firstReminder.subject':  $('s-tpl-firstReminder-subj').value.trim(),
+    'templates.firstReminder.intro':    $('s-tpl-firstReminder-intro').value.trim(),
+    'templates.secondReminder.subject': $('s-tpl-secondReminder-subj').value.trim(),
+    'templates.secondReminder.intro':   $('s-tpl-secondReminder-intro').value.trim(),
+    'templates.finalNotice.subject':    $('s-tpl-finalNotice-subj').value.trim(),
+    'templates.finalNotice.intro':      $('s-tpl-finalNotice-intro').value.trim(),
+  };
+  try {
+    await api('/api/email/settings', { method:'PUT', body:JSON.stringify(payload) });
+    ok.textContent = '✓ Settings saved successfully.'; ok.classList.add('on');
+    toast('Settings saved.');
+  } catch(e) { err.textContent = e.message; err.classList.add('on'); }
+  finally { $('set-save-txt').textContent = 'Save All Settings'; }
+}
+
+async function sendTestEmail() {
+  const to = $('s-test-email').value.trim();
+  if (!to) { toast('Enter a test recipient email.','err'); return; }
+  showApi('Sending test email…');
+  try {
+    const d = await api('/api/email/test', { method:'POST', body:JSON.stringify({to}) });
+    hideApi(); toast(d.message);
+  } catch(e) { hideApi(); toast(e.message,'err'); }
+}
+
+// ════════════════════════════════════════════════════
+// EXCEL / PDF EXPORT
+// ════════════════════════════════════════════════════
+async function exportAgeingXLSX() {
+  if (!ageingCache) { await loadAgeing(); }
+  const wb  = XLSX.utils.book_new();
+  const N   = n => +n || 0;
+  const fmtD = d => !d ? '' : new Date(d).toLocaleDateString('en-GB');
+  const BUCKETS = ['current','1_30','31_60','61_90','91_180','180_plus'];
+  const headers = { 'Debtor':'', 'Current':0, '1-30 Days':0, '31-60 Days':0, '61-90 Days':0, '91-180 Days':0, '180+ Days':0, 'Total Outstanding':0 };
+
+  const rows = ageingCache.report.map(r => ({
+    'Debtor': r.debtor.name,
+    'Current':       N(r.ageing.current),
+    '1-30 Days':     N(r.ageing['1_30']),
+    '31-60 Days':    N(r.ageing['31_60']),
+    '61-90 Days':    N(r.ageing['61_90']),
+    '91-180 Days':   N(r.ageing['91_180']),
+    '180+ Days':     N(r.ageing['180_plus']),
+    'Total Outstanding': N(r.totalOutstanding)
+  }));
+
+  // Total row
+  const totals = BUCKETS.reduce((a,k) => { a[k] = ageingCache.report.reduce((s,r)=>s+N(r.ageing[k]),0); return a; }, {});
+  rows.push({
+    'Debtor':'TOTAL','Current':totals.current,'1-30 Days':totals['1_30'],
+    '31-60 Days':totals['31_60'],'61-90 Days':totals['61_90'],
+    '91-180 Days':totals['91_180'],'180+ Days':totals['180_plus'],
+    'Total Outstanding':Object.values(totals).reduce((s,v)=>s+v,0)
+  });
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [40,14,14,14,14,14,14,18].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb, ws, 'Ageing Report');
+
+  // Detail sheet
+  const detail = [];
+  ageingCache.report.forEach(r => r.invoices.forEach(i => detail.push({
+    'Debtor': r.debtor.name, 'Invoice #': i.invoiceNumber,
+    'Invoice Date': fmtD(i.invoiceDate), 'Due Date': fmtD(i.dueDate),
+    'Amount': N(i.amount), 'Paid': N(i.amountPaid), 'Balance': N(i.balance),
+    'Days Overdue': i.daysOverdue, 'Ageing Bucket': BUCKET_LABELS[i.ageingBucket]||i.ageingBucket
+  })));
+  if (detail.length) {
+    const ws2 = XLSX.utils.json_to_sheet(detail);
+    ws2['!cols'] = [28,14,12,12,14,14,14,12,14].map(w=>({wch:w}));
+    XLSX.utils.book_append_sheet(wb, ws2, 'Invoice Detail');
+  }
+
+  XLSX.writeFile(wb, `EIS-Ageing-${ts()}.xlsx`);
+  toast('Excel export downloaded.');
+}
+
+async function exportAgeingPDF() {
+  if (!ageingCache) { await loadAgeing(); }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape', unit:'pt', format:'a4' });
+  const W   = doc.internal.pageSize.getWidth();
+  const fmtD2 = d => new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  const N = n => Number(n||0).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  doc.setFillColor(10,22,40); doc.rect(0,0,W,48,'F');
+  doc.setFillColor(0,201,167); doc.rect(0,0,6,48,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(232,237,245);
+  doc.text('EIS Receivables Manager',22,30);
+  doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(143,163,191);
+  doc.text('Receivables Ageing Report',22,43);
+  doc.setFontSize(9); doc.text(`Generated: ${ts()}`,W-20,30,{align:'right'});
+
+  const COLS=['current','1_30','31_60','61_90','91_180','180_plus'];
+  const totals = COLS.reduce((a,k)=>{ a[k]=ageingCache.report.reduce((s,r)=>s+(r.ageing[k]||0),0);return a;},{});
+  const grandTotal = Object.values(totals).reduce((s,v)=>s+v,0);
+
+  const body = [
+    ...ageingCache.report.map(r => [r.debtor.name,
+      ...COLS.map(k => (r.ageing[k]||0)>0?'₦'+N(r.ageing[k]):'—'),
+      '₦'+N(r.totalOutstanding)]),
+    ['TOTAL',...COLS.map(k=>'₦'+N(totals[k])),'₦'+N(grandTotal)]
+  ];
+
+  doc.autoTable({
+    startY:64, margin:{left:20,right:20},
+    head:[['Debtor',...Object.values(BUCKET_LABELS),'Total Outstanding']],
+    body,
+    headStyles:{fillColor:[10,22,40],textColor:[0,201,167],fontSize:8,fontStyle:'bold'},
+    bodyStyles:{fontSize:8,textColor:[200,210,230]},
+    alternateRowStyles:{fillColor:[15,31,61]},
+    styles:{fillColor:[10,22,40],lineColor:[255,255,255,15],lineWidth:0.3},
+    columnStyles:{0:{cellWidth:80},...COLS.reduce((a,_,i)=>({...a,[i+1]:{halign:'right',cellWidth:60}}),{}),7:{halign:'right',cellWidth:70,fontStyle:'bold'}},
+    didParseCell: c => { if(c.row.index===c.table.body.length-1){c.cell.styles.fontStyle='bold';c.cell.styles.textColor=[0,201,167];} }
+  });
+
+  doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(74,96,128);
+  doc.text('Developed by Michael Felix Happy · EIS Finance Suite',W/2,doc.internal.pageSize.getHeight()-12,{align:'center'});
+  doc.save(`EIS-Ageing-${ts()}.pdf`);
+  toast('PDF export downloaded.');
+}
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+window.addEventListener('load', () => { loadDashboard(); });
 </script>
 </body>
 </html>
