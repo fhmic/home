@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>JobPortal — Live Job Intelligence</title>
+<title>Job Portal — Live Job Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Syne:wght@400;600;700;800&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
@@ -288,7 +288,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
  * PRODUCTION EDGE CONFIGURATION
  * Swap this out with your primary live Cloudflare Workers deployment routing link.
  */
-const WORKER_URL = "https://job.yourdomain.workers.dev"; 
+const WORKER_URL = "https:// job-proxy.elitesprince.workers.dev"; 
 
 let selectedType = "Any";
 document.getElementById("live-date").textContent = new Date().toLocaleDateString(undefined, {weekday:'short', day:'numeric', month:'short'});
