@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>IFRS 9 ECL Model — MFH Finance Suite</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>MFH</text></svg>">
+<title>IFRS 9 ECL Model — FM Finance Suite</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <script async src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -101,7 +101,7 @@ tbody tr:hover{background:var(--sf)}
 </head>
 <body>
 <div id="topnav">
-  <div class="nav-logo"><div class="nav-lm">MFH</div>IFRS 9 <span style="color:var(--t);margin-left:5px">ECL Model</span></div>
+  <div class="nav-logo"><div class="nav-lm">FM</div>IFRS 9 <span style="color:var(--t);margin-left:5px">ECL Model</span></div>
   <div class="nav-right">
     <div class="user-chip" id="user-chip">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -209,16 +209,16 @@ tbody tr:hover{background:var(--sf)}
 // ── AUTH GUARD ────────────────────────────────────────────
 var _API='https://eis-recbackend.onrender.com/api';
 (function(){
-  var tok=sessionStorage.getItem('mfh_token');
+  var tok=sessionStorage.getItem('FM_token');
   if(!tok){window.location.href='../portal/';return;}
   fetch(_API+'/auth/me',{headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'}})
     .then(function(r){return r.json();})
-    .then(function(d){if(d.success&&d.user){document.getElementById('user-name').textContent=d.user.name;}else{sessionStorage.removeItem('mfh_token');window.location.href='../portal/';}})
-    .catch(function(){sessionStorage.removeItem('mfh_token');window.location.href='../portal/';});
+    .then(function(d){if(d.success&&d.user){document.getElementById('user-name').textContent=d.user.name;}else{sessionStorage.removeItem('FM_token');window.location.href='../portal/';}})
+    .catch(function(){sessionStorage.removeItem('FM_token');window.location.href='../portal/';});
 })();
 document.getElementById('logout-btn').addEventListener('click',function(){
   if(!confirm('Sign out?'))return;
-  sessionStorage.removeItem('mfh_token');window.location.href='../portal/';
+  sessionStorage.removeItem('FM_token');window.location.href='../portal/';
 });
 </script>
 <script>
