@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>MFH — Bank Reconciliation Engine</title>
+<title>FM — Bank Reconciliation Engine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -260,12 +260,12 @@ tbody tr:hover{background:var(--sf)}
 
 <div id="bar">
   <div class="logo">
-    <div class="lm">MFH</div>
-    MFH BankRecon<span class="la"> App</span>
+    <div class="lm">FM</div>
+    FM BankRecon<span class="la"> App</span>
   </div>
   <div id="br">
     <span id="sd"></span>
-    <span id="stx">EIS BankRecon — Ready</span>
+    <span id="stx">FM BankRecon — Ready</span>
     <div class="user-chip">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span id="user-display">User</span>
@@ -382,14 +382,14 @@ tbody tr:hover{background:var(--sf)}
 <script>
 'use strict';
 // ── AUTH GUARD — redirect to portal if not logged in ──────
-const _API = 'https://eis-recbackend.onrender.com/api';
+const _API = 'https://FM-recbackend.onrender.com/api';
 (function(){
-  const tok = sessionStorage.getItem('mfh_token');
+  const tok = sessionStorage.getItem('FM_token');
   if(!tok){ window.location.href='../portal/'; return; }
 })();
 
 let _currentUser = null;
-let _token = sessionStorage.getItem('mfh_token');
+let _token = sessionStorage.getItem('FM_token');
 
 async function _apiFetch(path, opts){
   opts = opts||{};
@@ -409,7 +409,7 @@ async function _apiFetch(path, opts){
     document.getElementById('user-display').textContent = data.user.name;
     if(data.user.role==='admin') document.getElementById('admin-nav-btn').classList.add('visible');
   } catch(e){
-    sessionStorage.removeItem('mfh_token');
+    sessionStorage.removeItem('FM_token');
     window.location.href='../portal/';
   }
 })();
@@ -417,7 +417,7 @@ async function _apiFetch(path, opts){
 // ── LOGOUT ────────────────────────────────────────────────
 document.getElementById('logout-btn').addEventListener('click',function(){
   if(!confirm('Sign out?')) return;
-  sessionStorage.removeItem('mfh_token');
+  sessionStorage.removeItem('FM_token');
   window.location.href='../portal/';
 });
 
@@ -803,7 +803,7 @@ const N=n=>(n==null||isNaN(+n))?0:+n;
   var vari=Math.round((N(s.adjBal)-N(s.cashbookBal))*100)/100;
   var rec=Math.abs(vari)<0.01;
   var aoa=[
-    /* 0  */ ['EIS BANK RECONCILIATION SUMMARY','',''],
+    /* 0  */ ['FM BANK RECONCILIATION SUMMARY','',''],
     /* 1  */ ['Elites Integrated Systems  \u00b7  Bank-to-GL Reconciliation Report','',''],
     /* 2  */ ['Generated: '+ts+'    |    Developed by: Michael Felix Happy','',''],
     /* 3  */ ['','',''],
@@ -852,7 +852,7 @@ const N=n=>(n==null||isNaN(+n))?0:+n;
     /* 46 */ ['  Date Gaps Noted',s.gap||0,'flags'],
     /* 47 */ ['  Total Date Entries Audited',(s.totalAudit||(s.ok+s.fail)),'rows'],
     /* 48 */ ['','',''],
-    /* 49 */ ['System: MFH Financial Tools  |  IBRAP  |  v4.1  |  All rights reserved','',''],
+    /* 49 */ ['System: FM Financial Tools  |  BRS  |  v4.1  |  All rights reserved','',''],
   ];
 
   var ws=XLSX.utils.aoa_to_sheet(aoa);
@@ -904,7 +904,7 @@ gl6(d._0xf601a,s.totGC,'GL Credit Not in BS');
 gl6(d._0x0712b,s.totGD,'GL Debit Not in BS');
 const auR=d._0x2934d.map(a=>({'Sheet':a.sheet,'Row':a.row,'Original Value':a.original,'Parsed Date':a.parsed||'—','Comment':a.comment}));
 sht('Date Audit Log',auR.length?auR:[{'Sheet':'No data','Row':'','Original Value':'','Parsed Date':'','Comment':''}],[16,6,22,14,28]);
-XLSX.writeFile(wb,`EIS-BankRecon-${ts}.xlsx`);
+XLSX.writeFile(wb,`FM-BankRecon-${ts}.xlsx`);
 }
 function _0x9a0b(d) {
 const {jsPDF}=window.jspdf;
@@ -918,7 +918,7 @@ if(y>0) doc.addPage();
 doc.setFillColor(10,22,40); doc.rect(0,0,W,48,'F');
 doc.setFillColor(0,201,167); doc.rect(0,0,6,48,'F');
 doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(232,237,245);
-doc.text('MFH Bank Recon',22,30);
+doc.text('FM Bank Recon',22,30);
 doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(143,163,191);
 doc.text(title,22,43);
 doc.setFontSize(9); doc.text(`Generated: ${ts}`,W-20,30,{align:'right'});
@@ -1015,7 +1015,7 @@ bodyStyles:{fontSize:8,textColor:[200,210,230]},
 alternateRowStyles:{fillColor:[15,31,61]},
 styles:{fillColor:[10,22,40],lineColor:[255,255,255,15],lineWidth:0.3}});
 }
-doc.save(`EIS-BankRecon-${ts}.pdf`);
+doc.save(`FM-BankRecon-${ts}.pdf`);
 }
 const _0xST__={bsFile:null,_0xb2cd6:[],glFile:null,_0xc3de7:[],result:null};
 const $=id=>document.getElementById(id);
@@ -1089,7 +1089,7 @@ _0xST__.bsFile=_0xST__.glFile=_0xST__.result=null; _0xST__._0xb2cd6=_0xST__._0xc
 ['bn','gn','bc','gc'].forEach(id=>$(id).textContent='');
 ['bpv','gpv'].forEach(id=>$(id).innerHTML='');
 $('nxt').disabled=true; $('res').style.display='none';
-_0xadcf(1); _0xcfeb('MFH Bank Recon — Ready');
+_0xadcf(1); _0xcfeb('FM Bank Recon — Ready');
 });
 $('bca').addEventListener('click',e=>{e.stopPropagation();$('dmn').classList.toggle('op');});
 document.addEventListener('click',()=>$('dmn').classList.remove('op'));
