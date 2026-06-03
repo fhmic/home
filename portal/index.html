@@ -499,13 +499,44 @@ function showOk(id,msg){var e=document.getElementById(id);e.textContent=msg;e.st
 function hideMsg(){[].slice.call(arguments).forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});}
 function openCard(id){document.querySelectorAll('.auth-card').forEach(function(c){c.classList.remove('open');});document.getElementById(id).classList.add('open');}
 function closeCard(id){document.getElementById(id).classList.remove('open');}
-async function apiFetch(path,opts){
-  opts=opts||{};
-  var headers={'Content-Type':'application/json'};
-  if(_tok)headers['Authorization']='Bearer '+_tok;
-  var res=await fetch(API+path,Object.assign({},opts,{headers:Object.assign(headers,opts.headers||{})}));
-  var data=await res.json();
-  if(!res.ok)throw new Error(data.message||data.error||'Request failed');
+async function apiFetch(path, opts) {
+  opts = opts || {};
+
+  var headers = {
+    'Content-Type': 'application/json'
+  };
+
+  if (_tok) {
+    headers['Authorization'] = 'Bearer ' + _tok;
+  }
+
+  var res = await fetch(
+    API + path,
+    Object.assign({}, opts, {
+      headers: Object.assign(headers, opts.headers || {})
+    })
+  );
+
+  const text = await res.text();
+
+  let data;
+
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    throw new Error(
+      'Server returned HTML instead of JSON. Check API URL.'
+    );
+  }
+
+  if (!res.ok) {
+    throw new Error(
+      data.message ||
+      data.error ||
+      'Request failed'
+    );
+  }
+
   return data;
 }
 
