@@ -486,7 +486,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
 async function loadDashboard() {
   $('dash-kpis').innerHTML = '<div class="loading-row">Loading…</div>';
   try {
-    const d = await api('/api/dashboard');
+    const d = await api('/dashboard');
     const s = d.stats;
     $('dash-ts').textContent = 'As at ' + new Date().toLocaleString('en-GB');
 
@@ -542,7 +542,7 @@ let debtorsCache = [];
 async function loadDebtors() {
   $('debtors-list').innerHTML = '<div class="loading-row">Loading debtors…</div>';
   try {
-    const d = await api('/api/debtors');
+    const d = await api('/debtors');
     debtorsCache = d.debtors;
     renderDebtors(d.debtors);
   } catch(e) { $('debtors-list').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
@@ -617,15 +617,15 @@ async function saveDebtor(id) {
   const saveTxt = $('deb-save-txt');
   saveTxt.textContent = 'Saving…';
   try {
-    if (id) await api('/api/debtors/'+id, { method:'PUT', body:JSON.stringify(payload) });
-    else    await api('/api/debtors', { method:'POST', body:JSON.stringify(payload) });
+    if (id) await api('/debtors/'+id, { method:'PUT', body:JSON.stringify(payload) });
+    else    await api('/debtors', { method:'POST', body:JSON.stringify(payload) });
     closeModal(); toast(id ? 'Debtor updated.' : 'Debtor added.'); loadDebtors();
   } catch(e) { errEl.textContent = e.message; errEl.classList.add('on'); saveTxt.textContent = id?'Save Changes':'Add Debtor'; }
 }
 
 async function deleteDebtor(id, name) {
   if (!confirm(`Delete "${name}" and ALL their invoices?\n\nThis cannot be undone.`)) return;
-  try { await api('/api/debtors/'+id, { method:'DELETE' }); toast('Debtor deleted.'); loadDebtors(); }
+  try { await api('/debtors/'+id, { method:'DELETE' }); toast('Debtor deleted.'); loadDebtors(); }
   catch(e) { toast(e.message,'err'); }
 }
 
@@ -635,7 +635,7 @@ async function viewInvoices(debtorId, debtorName) {
     '<div class="loading-row">Loading invoices…</div>',
     `<button onclick="openInvoiceModal('${debtorId}','${debtorName.replace(/'/g,"\\'")}')" class="bp">+ Add Invoice</button><button onclick="closeModal()">Close</button>`, true);
   try {
-    const d = await api('/api/invoices?debtorId='+debtorId);
+    const d = await api('/invoices?debtorId='+debtorId);
     const invs = d.invoices;
     if (!invs.length) { $('modal-body').innerHTML = empty('No outstanding invoices for this debtor.'); return; }
     const rows = invs.map(i => `<tr>
@@ -688,7 +688,7 @@ async function saveInvoice(debtorId, debtorName) {
   if (!no||!date||!due||!amt) { err.textContent='Invoice number, dates and amount are required.'; err.classList.add('on'); return; }
   $('inv-save-txt').textContent = 'Saving…';
   try {
-    await api('/api/invoices', { method:'POST', body:JSON.stringify({ debtorId, invoiceNumber:no,
+    await api('/invoices', { method:'POST', body:JSON.stringify({ debtorId, invoiceNumber:no,
       invoiceDate:date, dueDate:due, amount:amt, amountPaid:parseFloat($('inv-paid').value)||0,
       description:$('inv-desc').value.trim() }) });
     toast('Invoice added.'); viewInvoices(debtorId, debtorName);
@@ -710,15 +710,15 @@ async function recordPayment(invId, currentBalance) {
   if (!amt || amt <= 0) { err.textContent='Enter a valid payment amount.'; err.classList.add('on'); return; }
   $('pay-save-txt').textContent = 'Saving…';
   try {
-    const inv = await api('/api/invoices/'+invId);
-    await api('/api/invoices/'+invId, { method:'PUT', body:JSON.stringify({ amountPaid: (inv.invoice?.amountPaid||0) + amt }) });
+    const inv = await api('/invoices/'+invId);
+    await api('/invoices/'+invId, { method:'PUT', body:JSON.stringify({ amountPaid: (inv.invoice?.amountPaid||0) + amt }) });
     toast('Payment recorded.'); closeModal(); loadDebtors();
   } catch(e) { err.textContent=e.message; err.classList.add('on'); $('pay-save-txt').textContent='Record Payment'; }
 }
 
 async function deleteInvoice(id, no) {
   if (!confirm(`Delete invoice ${no}? This cannot be undone.`)) return;
-  try { await api('/api/invoices/'+id, { method:'DELETE' }); toast('Invoice deleted.'); }
+  try { await api('/invoices/'+id, { method:'DELETE' }); toast('Invoice deleted.'); }
   catch(e) { toast(e.message,'err'); }
 }
 
@@ -752,7 +752,7 @@ async function doImport() {
   $('imp-txt').textContent = 'Importing…'; $('imp-btn').disabled = true;
   try {
     const fd = new FormData(); fd.append('file', file);
-    const d = await apiForm('/api/debtors/import', fd);
+    const d = await apiForm('/debtors/import', fd);
     okEl.textContent = d.message; okEl.classList.add('on');
     if (d.errors?.length) { errEl.textContent = 'Some rows had issues: ' + d.errors.slice(0,3).join('; '); errEl.classList.add('on'); }
     loadDebtors();
@@ -768,7 +768,7 @@ let ageingCache = null;
 async function loadAgeing() {
   $('ageing-table').innerHTML = '<div class="loading-row">Generating ageing report…</div>';
   try {
-    const d = await api('/api/invoices/ageing-report');
+    const d = await api('/invoices/ageing-report');
     ageingCache = d;
     $('ageing-ts').textContent = 'Generated ' + new Date().toLocaleString('en-GB');
     renderAgeingTable(d.report);
@@ -818,7 +818,7 @@ let remindersCache = [];
 async function loadReminders() {
   $('reminders-list').innerHTML = '<div class="loading-row">Loading overdue debtors…</div>';
   try {
-    const d = await api('/api/debtors');
+    const d = await api('/debtors');
     const overdue = d.debtors.filter(deb => deb.totalOutstanding > 0);
     remindersCache = overdue;
     if (!overdue.length) { $('reminders-list').innerHTML = empty('No debtors with outstanding invoices.'); return; }
@@ -860,7 +860,7 @@ async function sendReminders() {
   btn.disabled = true; btn.textContent = 'Sending…';
   showApi('Sending emails via Brevo…');
   try {
-    const d = await api('/api/email/send', { method:'POST', body:JSON.stringify({debtorIds:ids, templateOverride:tpl||undefined}) });
+    const d = await api('/email/send', { method:'POST', body:JSON.stringify({debtorIds:ids, templateOverride:tpl||undefined}) });
     hideApi();
     const { sent, failed, skipped } = d.summary;
     toast(`Done: ${sent} sent, ${failed} failed, ${skipped} skipped.`, failed>0?'err':'ok');
@@ -875,7 +875,7 @@ async function sendReminders() {
 async function loadLogs() {
   $('logs-table').innerHTML = '<div class="loading-row">Loading email logs…</div>';
   try {
-    const d = await api('/api/email/logs');
+    const d = await api('/email/logs'));
     if (!d.logs.length) { $('logs-table').innerHTML = empty('No emails sent yet.'); return; }
     const tplLabels = { firstReminder:'1st Reminder', secondReminder:'2nd Reminder', finalNotice:'Final Notice' };
     const rows = d.logs.map(l => `<tr>
@@ -901,7 +901,7 @@ async function loadLogs() {
 async function loadSettings() {
   $('settings-form').innerHTML = '<div class="loading-row">Loading settings…</div>';
   try {
-    const d = await api('/api/email/settings');
+    const d = await api('/email/settings');
     const s = d.settings;
     $('settings-form').innerHTML = `
     <div class="card" style="margin-bottom:1rem">
@@ -986,7 +986,7 @@ async function saveSettings() {
     'templates.finalNotice.intro':      $('s-tpl-finalNotice-intro').value.trim(),
   };
   try {
-    await api('/api/email/settings', { method:'PUT', body:JSON.stringify(payload) });
+    await api('/email/settings', { method:'PUT', body:JSON.stringify(payload) });
     ok.textContent = '✓ Settings saved successfully.'; ok.classList.add('on');
     toast('Settings saved.');
   } catch(e) { err.textContent = e.message; err.classList.add('on'); }
@@ -998,7 +998,7 @@ async function sendTestEmail() {
   if (!to) { toast('Enter a test recipient email.','err'); return; }
   showApi('Sending test email…');
   try {
-    const d = await api('/api/email/test', { method:'POST', body:JSON.stringify({to}) });
+    const d = await api('/email/test', { method:'POST', body:JSON.stringify({to}) });
     hideApi(); toast(d.message);
   } catch(e) { hideApi(); toast(e.message,'err'); }
 }
@@ -1096,7 +1096,7 @@ async function exportAgeingPDF() {
   });
 
   doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(74,96,128);
-  doc.text('Developed by Michael Felix Happy · EIS Finance Suite',W/2,doc.internal.pageSize.getHeight()-12,{align:'center'});
+  doc.text('Developed by Michael Felix Happy · FM Finance Suite',W/2,doc.internal.pageSize.getHeight()-12,{align:'center'});
   doc.save(`FM-Ageing-${ts()}.pdf`);
   toast('PDF export downloaded.');
 }
