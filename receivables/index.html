@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Receivables Tracker — MFH Finance Suite</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>MFH</text></svg>">
+<title>Receivables Tracker — FM Finance Suite</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -184,7 +184,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 
 
 
-/* MFH NAV OVERRIDES */
+/* FM NAV OVERRIDES */
 #topbar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
 .logo{font-family:var(--di);font-weight:700;font-size:17px;letter-spacing:-.03em;color:var(--tx);display:flex;align-items:center;gap:9px}
 .lm{width:30px;height:30px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--n);font-weight:700}
@@ -199,7 +199,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 <body>
 <div id="app" style="display:flex;flex-direction:column;min-height:100vh">
   <div id="topbar">
-    <div class="logo"><div class="lm">MFH</div>MFH <span class="la">&nbsp;Receivables</span></div>
+    <div class="logo"><div class="lm">FM</div>FM <span class="la">&nbsp;Receivables</span></div>
     <div class="tbr">
       <div class="user-chip-top">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -375,7 +375,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 <script>
 'use strict';
 (function(){
-  var tok = sessionStorage.getItem('mfh_token');
+  var tok = sessionStorage.getItem('FM_token');
   // No token at all — redirect
   if (!tok) { window.location.href = '../portal/'; return; }
 
@@ -397,7 +397,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         if (el) el.textContent = obj.data.user.name;
       } else if (obj.status === 401) {
         // Genuinely invalid/expired token
-        sessionStorage.removeItem('mfh_token');
+        sessionStorage.removeItem('FM_token');
         window.location.href = '../portal/';
       }
       // Any other status (500, 503, rate-limit) — stay on page
@@ -420,7 +420,7 @@ const API_BASE = 'https://eis-recbackend.onrender.com/api';
 let currentUser = null;
 
 async function api(endpoint, opts = {}) {
-  const tok = sessionStorage.getItem('mfh_token');
+  const tok = sessionStorage.getItem('FM_token');
   const isFormData = opts.body instanceof FormData;
   const headers = { 'Authorization': tok ? 'Bearer ' + tok : '' };
   // Do NOT set Content-Type for FormData — browser sets it with boundary automatically
@@ -432,7 +432,7 @@ async function api(endpoint, opts = {}) {
 }
 
 async function apiForm(endpoint, formData) {
-  const tok = sessionStorage.getItem('mfh_token');
+  const tok = sessionStorage.getItem('FM_token');
   // Do NOT set Content-Type — let browser set multipart/form-data with boundary
   const headers = { 'Authorization': tok ? 'Bearer ' + tok : '' };
   const res = await fetch(API_BASE + endpoint, { method:'POST', body: formData, headers });
@@ -1075,7 +1075,7 @@ async function exportAgeingXLSX() {
     XLSX.utils.book_append_sheet(wb, ws2, 'Invoice Detail');
   }
 
-  XLSX.writeFile(wb, `MFH-Ageing-${ts()}.xlsx`);
+  XLSX.writeFile(wb, `FM-Ageing-${ts()}.xlsx`);
   toast('Excel export downloaded.');
 }
 
@@ -1120,7 +1120,7 @@ async function exportAgeingPDF() {
 
   doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(74,96,128);
   doc.text('Developed by Michael Felix Happy · EIS Finance Suite',W/2,doc.internal.pageSize.getHeight()-12,{align:'center'});
-  doc.save(`MFH-Ageing-${ts()}.pdf`);
+  doc.save(`FM-Ageing-${ts()}.pdf`);
   toast('PDF export downloaded.');
 }
 
@@ -1132,7 +1132,7 @@ window.addEventListener('load', () => {
   var logoutBtn = document.getElementById('logout-btn');
   if(logoutBtn) logoutBtn.addEventListener('click', function(){
     if(!confirm('Sign out?'))return;
-    sessionStorage.removeItem('mfh_token');
+    sessionStorage.removeItem('FM_token');
     window.location.href='../portal/';
   });
   // Attach modal backdrop
