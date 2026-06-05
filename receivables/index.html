@@ -877,7 +877,7 @@ async function sendReminders() {
 async function loadLogs() {
   $('logs-table').innerHTML = '<div class="loading-row">Loading email logs…</div>';
   try {
-    const d = await api('/email/logs'));
+    const d = await api('/email/logs');
     if (!d.logs.length) { $('logs-table').innerHTML = empty('No emails sent yet.'); return; }
     const tplLabels = { firstReminder:'1st Reminder', secondReminder:'2nd Reminder', finalNotice:'Final Notice' };
     const rows = d.logs.map(l => `<tr>
