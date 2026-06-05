@@ -237,17 +237,17 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .setup-banner-text code{font-size:10px;background:rgba(212,168,83,.15);border:1px solid rgba(212,168,83,.25);border-radius:2px;padding:1px 5px;color:var(--gold);font-family:monospace;margin:0 2px}
 .setup-banner-close{background:none;border:none;color:var(--faint);cursor:pointer;font-size:14px;padding:4px;flex-shrink:0;transition:color .15s}
 .setup-banner-close:hover{color:var(--text)}
-  /* MFH NAV */
-#mfh-nav{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:44px;background:rgba(10,22,40,.95);border-bottom:1px solid rgba(0,201,167,.15);position:sticky;top:0;z-index:300;backdrop-filter:blur(12px)}
-.mfh-brand{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#e8edf5;letter-spacing:-.02em}
-.mfh-mark{width:24px;height:24px;background:#00c9a7;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#0a1628}
-.mfh-nav-links{display:flex;align-items:center;gap:6px}
-.mfh-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.11);background:transparent;color:rgba(228,226,220,.55);font-family:'IBM Plex Mono',monospace;font-size:10px;cursor:pointer;transition:all .2s;text-decoration:none;letter-spacing:.02em}
-.mfh-btn:hover{background:rgba(255,255,255,.06);color:#e8edf5}
-.mfh-btn.danger:hover{border-color:rgba(224,82,82,.4);color:#e05252}
-/* adjust topbar so it sits below mfh-nav */
+  /* FM NAV */
+#FM-nav{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:44px;background:rgba(10,22,40,.95);border-bottom:1px solid rgba(0,201,167,.15);position:sticky;top:0;z-index:300;backdrop-filter:blur(12px)}
+.FM-brand{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#e8edf5;letter-spacing:-.02em}
+.FM-mark{width:24px;height:24px;background:#00c9a7;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#0a1628}
+.FM-nav-links{display:flex;align-items:center;gap:6px}
+.FM-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.11);background:transparent;color:rgba(228,226,220,.55);font-family:'IBM Plex Mono',monospace;font-size:10px;cursor:pointer;transition:all .2s;text-decoration:none;letter-spacing:.02em}
+.FM-btn:hover{background:rgba(255,255,255,.06);color:#e8edf5}
+.FM-btn.danger:hover{border-color:rgba(224,82,82,.4);color:#e05252}
+/* adjust topbar so it sits below FM-nav */
 .topbar{top:44px}
-/* match backgrounds to MFH theme */
+/* match backgrounds to FM theme */
 .hero{background:linear-gradient(180deg,rgba(10,22,40,0) 0%,transparent 100%)}
 .search-box{background:#0f1f3d;border-color:rgba(255,255,255,.1)}
 .search-input-row{background:#162747}
@@ -257,25 +257,25 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 </head>
 <body>
 <div class="shell">
-<div id="mfh-nav">
-  <div class="mfh-brand">
-    <div class="mfh-mark">FM</div>
-    MFH <span style="color:#00c9a7;margin-left:3px">Finance Suite</span>
+<div id="FM-nav">
+  <div class="FM-brand">
+    <div class="FM-mark">FM</div>
+    FM <span style="color:#00c9a7;margin-left:3px">Finance Suite</span>
   </div>
-  <div class="mfh-nav-links">
-    <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 10px;font-size:10px;color:rgba(228,226,220,.45);font-family:'IBM Plex Mono',monospace" id="mfh-user-chip">
+  <div class="FM-nav-links">
+    <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 10px;font-size:10px;color:rgba(228,226,220,.45);font-family:'IBM Plex Mono',monospace" id="FM-user-chip">
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span id="mfh-user-name">Loading...</span>
+      <span id="FM-user-name">Loading...</span>
     </div>
-    <a href="../" class="mfh-btn">
+    <a href="../" class="FM-btn">
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Home
     </a>
-    <a href="../portal/" class="mfh-btn">
+    <a href="../portal/" class="FM-btn">
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
       Portal
     </a>
-    <button class="mfh-btn danger" id="mfh-logout">
+    <button class="FM-btn danger" id="FM-logout">
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       Sign out
     </button>
@@ -953,7 +953,7 @@ async function triggerDebug() {
   <script>
 'use strict';
 (function(){
-  var tok = sessionStorage.getItem('mfh_token');
+  var tok = sessionStorage.getItem('FM_token');
   if (!tok) { window.location.href = '../portal/'; return; }
   var att = 0;
   function verify() {
@@ -963,10 +963,10 @@ async function triggerDebug() {
       .then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});})
       .then(function(obj){
         if(obj.s===200&&obj.d.user){
-          var el=document.getElementById('mfh-user-name');
+          var el=document.getElementById('FM-user-name');
           if(el) el.textContent=obj.d.user.name;
         } else if(obj.s===401){
-          sessionStorage.removeItem('mfh_token');
+          sessionStorage.removeItem('FM_token');
           window.location.href='../portal/';
         }
       })
@@ -974,10 +974,10 @@ async function triggerDebug() {
   }
   verify();
   document.addEventListener('DOMContentLoaded',function(){
-    var lb=document.getElementById('mfh-logout');
+    var lb=document.getElementById('FM-logout');
     if(lb) lb.addEventListener('click',function(){
       if(!confirm('Sign out?'))return;
-      sessionStorage.removeItem('mfh_token');
+      sessionStorage.removeItem('FM_token');
       window.location.href='../portal/';
     });
   });
