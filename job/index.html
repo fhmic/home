@@ -280,7 +280,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 <header class="topbar">
 
   <div class="topbar-right">
-    <button class="analytics-btn" onclick="openAnalytics()">
+    <button id="analytics-btn" class="analytics-btn" style="display:none;" onclick="openAnalytics()">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Analytics
     </button>
@@ -318,7 +318,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
         <option value="Global / Remote">Remote / Global</option>
       </select>
       <button class="search-submit" onclick="triggerSearch()">Search</button>
-      <button class="search-submit" style="background:var(--bg3);color:var(--dim);border-left:1px solid var(--border);font-size:10px;padding:0 14px;" onclick="triggerDebug()" title="Show what each source returns">Debug</button>
+      <button id="debug-btn" class="search-submit" style="display:none;background:var(--bg3);color:var(--dim);border-left:1px solid var(--border);font-size:10px;padding:0 14px;" onclick="triggerDebug()" title="Show what each source returns">Debug</button>
     </div>
     <div class="typing-bar" id="typing-bar"><div class="typing-progress" id="typing-progress"></div></div>
     <div class="type-row">
@@ -460,7 +460,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 <script>
 'use strict';
 (function(){
-  var tok = sessionStorage.getItem('FM_token');
+  var tok = sessionStorage.getItem('mfh_token');
   if (!tok) { window.location.href = '../portal/'; return; }
   var att = 0;
   function verify() {
@@ -470,10 +470,17 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
       .then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});})
       .then(function(obj){
         if(obj.s===200&&obj.d.user){
-          var el=document.getElementById('FM-user-name');
+          var el=document.getElementById('mfh-user-name');
           if(el) el.textContent=obj.d.user.name;
+          // Show admin-only buttons only for admin role
+          if(obj.d.user.role==='admin'){
+            var dbg=document.getElementById('debug-btn');
+            var anl=document.getElementById('analytics-btn');
+            if(dbg) dbg.style.display='inline-flex';
+            if(anl) anl.style.display='inline-flex';
+          }
         } else if(obj.s===401){
-          sessionStorage.removeItem('FM_token');
+          sessionStorage.removeItem('mfh_token');
           window.location.href='../portal/';
         }
       })
@@ -481,10 +488,10 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   }
   verify();
   document.addEventListener('DOMContentLoaded',function(){
-    var lb=document.getElementById('FM-logout');
+    var lb=document.getElementById('mfh-logout');
     if(lb) lb.addEventListener('click',function(){
       if(!confirm('Sign out?'))return;
-      sessionStorage.removeItem('FM_token');
+      sessionStorage.removeItem('mfh_token');
       window.location.href='../portal/';
     });
   });
