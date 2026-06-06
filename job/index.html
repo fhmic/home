@@ -460,7 +460,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 <script>
 'use strict';
 (function(){
-  var tok = sessionStorage.getItem('mfh_token');
+  var tok = sessionStorage.getItem('FM_token');
   if (!tok) { window.location.href = '../portal/'; return; }
   var att = 0;
   function verify() {
@@ -470,7 +470,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
       .then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});})
       .then(function(obj){
         if(obj.s===200&&obj.d.user){
-          var el=document.getElementById('mfh-user-name');
+          var el=document.getElementById('FM-user-name');
           if(el) el.textContent=obj.d.user.name;
           // Show admin-only buttons only for admin role
           if(obj.d.user.role==='admin'){
@@ -480,7 +480,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
             if(anl) anl.style.display='inline-flex';
           }
         } else if(obj.s===401){
-          sessionStorage.removeItem('mfh_token');
+          sessionStorage.removeItem('FM_token');
           window.location.href='../portal/';
         }
       })
@@ -488,10 +488,10 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   }
   verify();
   document.addEventListener('DOMContentLoaded',function(){
-    var lb=document.getElementById('mfh-logout');
+    var lb=document.getElementById('FM-logout');
     if(lb) lb.addEventListener('click',function(){
       if(!confirm('Sign out?'))return;
-      sessionStorage.removeItem('mfh_token');
+      sessionStorage.removeItem('FM_token');
       window.location.href='../portal/';
     });
   });
