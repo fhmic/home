@@ -1411,14 +1411,15 @@ function exportEclXLSX() {
 }
 
 // ── SETTINGS ───────────────────────────────────────────────────
-async function async function loadSettings() {
+// ── SETTINGS ───────────────────────────────────────────────────
+async function loadSettings() {
   $('settings-form').innerHTML = '<div class="loading-row">Loading settings…</div>';
   try {
-    const d = await api('/email/settings');
-    const s = d.settings;
-
-    // Check if current user is admin
-    const meRes = await api('/auth/me');
+    const [settingsRes, meRes] = await Promise.all([
+      api('/email/settings'),
+      api('/auth/me')
+    ]);
+    const s = settingsRes.settings;
     const isAdmin = meRes.user?.role === 'admin';
 
     $('settings-form').innerHTML = `
@@ -1435,8 +1436,11 @@ async function async function loadSettings() {
 
     ${isAdmin ? `
     <div class="card" style="margin-bottom:1rem">
-      <div class="section-ttl">Brevo SMTP Configuration <span style="font-size:10px;font-family:var(--mo);background:rgba(245,166,35,.15);color:var(--am);border:1px solid rgba(245,166,35,.3);border-radius:20px;padding:2px 8px;margin-left:8px;vertical-align:middle">Admin only</span></div>
-      <div class="nt">Get these from your Brevo dashboard → SMTP & API → SMTP tab.</div>
+      <div class="section-ttl">
+        Brevo SMTP Configuration
+        <span style="font-size:10px;font-family:var(--mo);background:rgba(245,166,35,.15);color:var(--am);border:1px solid rgba(245,166,35,.3);border-radius:20px;padding:2px 9px;margin-left:8px;vertical-align:middle;font-weight:400">Admin only</span>
+      </div>
+      <div class="nt">Get these from your Brevo dashboard → SMTP &amp; API → SMTP tab. The From Email must be verified in Brevo.</div>
       <div class="fg">
         <div class="fld"><label>Brevo SMTP Login *</label><input class="finput" id="s-buser" value="${s.brevoSmtpUser||''}" placeholder="you@yourcompany.com"></div>
         <div class="fld"><label>Brevo SMTP Key *</label><input class="finput" type="password" id="s-bkey" value="${s.brevoSmtpKey||''}" placeholder="xsmtpsib-..."></div>
@@ -1483,12 +1487,13 @@ async function async function loadSettings() {
     </div>`;
   } catch(e) { $('settings-form').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
 }
+
 async function saveSettings() {
   const err=$('set-err'), ok=$('set-ok');
   err.classList.remove('on'); ok.classList.remove('on');
   $('set-save-txt').textContent = 'Saving…';
 
-  // Core fields always present
+  // Core fields — always present for all users
   const payload = {
     companyName:         $('s-cname').value.trim(),
     companyEmail:        $('s-cemail').value.trim(),
@@ -1503,7 +1508,7 @@ async function saveSettings() {
     'templates.finalNotice.intro':      $('s-tpl-finalNotice-intro').value.trim(),
   };
 
-  // Admin-only fields — only add if inputs exist in DOM
+  // Admin-only fields — only included when the inputs exist in the DOM
   if ($('s-buser')) payload.brevoSmtpUser = $('s-buser').value.trim();
   if ($('s-bkey'))  payload.brevoSmtpKey  = $('s-bkey').value.trim();
   if ($('s-from'))  payload.fromEmail     = $('s-from').value.trim();
@@ -1516,6 +1521,7 @@ async function saveSettings() {
   } catch(e) { err.textContent = e.message; err.classList.add('on'); }
   finally { $('set-save-txt').textContent = 'Save All Settings'; }
 }
+
 async function sendTestEmail() {
   const to = $('s-test-email').value.trim();
   if (!to) { toast('Enter a test recipient email.','err'); return; }
