@@ -821,6 +821,7 @@ async function viewInvoices(debtorId, debtorName) {
   } catch(e) { $('modal-body').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
 }
 function openInvoiceModal(debtorId, debtorName) {
+  const today = new Date().toISOString().slice(0,10);
   openModal(`Add Invoice — ${debtorName}`, `
     <div class="merr" id="inv-err"></div>
     <div class="fg">
@@ -828,8 +829,40 @@ function openInvoiceModal(debtorId, debtorName) {
       <div class="fld"><label>Description</label><input class="finput" id="inv-desc" placeholder="Goods/services supplied"></div>
     </div>
     <div class="fg">
-      <div class="fld"><label>Invoice Date *</label><input class="finput" type="date" id="inv-date"></div>
-      <div class="fld"><label>Due Date *</label><input class="finput" type="date" id="inv-due"></div>
+      <div class="fld">
+        <label>Invoice Date *</label>
+        <input class="finput" type="date" id="inv-date" value="${today}" oninput="calcInvDueDate()">
+      </div>
+      <div class="fld">
+        <label>Payment Terms *</label>
+        <select class="finput" id="inv-terms" onchange="calcInvDueDate()">
+          <option value="0">Due on receipt (0 days)</option>
+          <option value="7">Net 7 days</option>
+          <option value="14">Net 14 days</option>
+          <option value="21">Net 21 days</option>
+          <option value="30" selected>Net 30 days</option>
+          <option value="45">Net 45 days</option>
+          <option value="60">Net 60 days</option>
+          <option value="90">Net 90 days</option>
+          <option value="120">Net 120 days</option>
+          <option value="custom">Custom days...</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg" id="inv-custom-row" style="display:none">
+      <div class="fld">
+        <label>Custom Payment Days *</label>
+        <input class="finput" type="number" id="inv-custom-days" min="1" max="365" placeholder="e.g. 45" oninput="calcInvDueDate()">
+      </div>
+      <div></div>
+    </div>
+    <div style="background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);padding:10px 14px;margin-bottom:1rem;display:flex;align-items:center;gap:12px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div>
+        <div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em">Calculated Due Date</div>
+        <div style="font-size:14px;font-weight:600;color:var(--t);font-family:var(--mo)" id="inv-due-display">—</div>
+        <input type="hidden" id="inv-due">
+      </div>
     </div>
     <div class="fg">
       <div class="fld"><label>Invoice Amount (₦) *</label><input class="finput" type="number" id="inv-amt" min="0" step="0.01" placeholder="0.00"></div>
@@ -837,6 +870,37 @@ function openInvoiceModal(debtorId, debtorName) {
     </div>`,
     `<button onclick="viewInvoices('${debtorId}','${debtorName}')">← Back</button>
      <button class="bp" onclick="saveInvoice('${debtorId}','${debtorName}')"><span id="inv-save-txt">Add Invoice</span></button>`);
+
+  // Calculate initial due date on open
+  calcInvDueDate();
+
+  // Show/hide custom days input when "Custom" is selected
+  $('inv-terms').addEventListener('change', function() {
+    $('inv-custom-row').style.display = this.value === 'custom' ? 'grid' : 'none';
+  });
+}
+
+function calcInvDueDate() {
+  const dateVal  = $('inv-date')?.value;
+  const termsVal = $('inv-terms')?.value;
+  if (!dateVal || !termsVal) return;
+
+  let days;
+  if (termsVal === 'custom') {
+    days = parseInt($('inv-custom-days')?.value) || 0;
+  } else {
+    days = parseInt(termsVal);
+  }
+
+  const invoiceDate = new Date(dateVal);
+  if (isNaN(invoiceDate.getTime())) return;
+
+  const dueDate = new Date(invoiceDate);
+  dueDate.setDate(dueDate.getDate() + days);
+
+  const iso = dueDate.toISOString().slice(0,10);
+  $('inv-due').value = iso;
+  $('inv-due-display').textContent = dueDate.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 }
 async function saveInvoice(debtorId, debtorName) {
   const err = $('inv-err'); err.classList.remove('on');
