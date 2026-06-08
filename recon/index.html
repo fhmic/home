@@ -381,7 +381,6 @@ tbody tr:hover{background:var(--sf)}
 
 <script>
 'use strict';
-// ── AUTH GUARD — redirect to portal if not logged in ──────
 const _API = 'https://eis-recbackend.onrender.com/api';
 (function(){
   const tok = sessionStorage.getItem('FM_token');
@@ -401,7 +400,6 @@ async function _apiFetch(path, opts){
   return data;
 }
 
-// Verify token on load
 (async function(){
   try{
     const data = await _apiFetch('/auth/me');
@@ -414,14 +412,12 @@ async function _apiFetch(path, opts){
   }
 })();
 
-// ── LOGOUT ────────────────────────────────────────────────
 document.getElementById('logout-btn').addEventListener('click',function(){
   if(!confirm('Sign out?')) return;
   sessionStorage.removeItem('FM_token');
   window.location.href='../portal/';
 });
 
-// ── ADMIN ─────────────────────────────────────────────────
 const _adminModal = document.getElementById('admin-modal');
 const _userFormModal = document.getElementById('user-form-modal');
 let _editUserId = null;
@@ -795,10 +791,6 @@ const wb=XLSX.utils.book_new();
 const s=d.summary; const ts=new Date().toISOString().slice(0,10);
 const N=n=>(n==null||isNaN(+n))?0:+n;
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   RECON SUMMARY SHEET — structured AOA layout matching PDF report format
-   Three columns: A = Label (wide), B = Value (numeric), C = Unit/Note
-   ═══════════════════════════════════════════════════════════════════════════ */
 (function(){
   var vari=Math.round((N(s.adjBal)-N(s.cashbookBal))*100)/100;
   var rec=Math.abs(vari)<0.01;
@@ -876,7 +868,7 @@ const N=n=>(n==null||isNaN(+n))?0:+n;
   XLSX.utils.book_append_sheet(wb,ws,'Recon Summary');
 })();
 
-/* ─── remaining sheets (unchanged) ──────────────────────────────────────── */
+
 function sht(name,rows,widths) {
 const ws=XLSX.utils.json_to_sheet(rows.length?rows:[{'':' No entries'}]);
 if (widths) ws['!cols']=widths.map(w=>({wch:w}));
