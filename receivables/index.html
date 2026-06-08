@@ -27,7 +27,7 @@
 html{font-size:15px}
 body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6}
 
-/* ── APP SHELL ── */
+
 #app{display:flex;min-height:100vh;flex-direction:column}
 #topbar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
 .logo{font-family:var(--di);font-weight:700;font-size:17px;letter-spacing:-.03em;color:var(--tx);display:flex;align-items:center;gap:9px}
@@ -38,7 +38,7 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .nav-btn-link:hover{background:var(--sf2);color:var(--tx)}
 .user-chip-top{display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--b2);border-radius:20px;padding:4px 11px;font-size:11.5px;color:var(--tx2);font-family:var(--mo)}
 
-/* ── LAYOUT ── */
+
 #layout{display:flex;flex:1;overflow:hidden}
 #sidebar{width:220px;flex-shrink:0;background:var(--n2);border-right:1px solid var(--b);overflow-y:auto;padding:1rem 0}
 .nav-section{font-size:10px;font-family:var(--mo);color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;padding:8px 18px 4px;margin-top:8px}
@@ -49,7 +49,6 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .nav-item.active svg{opacity:1}
 #content{flex:1;overflow-y:auto;padding:1.75rem}
 
-/* ── VIEWS ── */
 .view{display:none}.view.on{display:block}
 @keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .view.on{animation:fu .3s ease both}
@@ -58,7 +57,7 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .vsub{font-size:12px;color:var(--tx3);font-family:var(--mo);margin-top:3px}
 .vacts{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 
-/* ── CARDS & METRICS ── */
+
 .card{background:var(--n2);border:1px solid var(--b);border-radius:var(--rl);padding:1.5rem;box-shadow:var(--sh)}
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:1.5rem}
 .kpi{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:16px 18px}
@@ -71,7 +70,6 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .ks{font-size:10px;font-family:var(--mo);color:var(--tx2);margin-top:4px}
 .kv.tl{color:var(--t)}.kv.rd{color:var(--rd)}.kv.am{color:var(--am)}.kv.gr{color:var(--gr)}.kv.bl{color:var(--bl)}.kv.pu{color:var(--pu)}
 
-/* ── AGEING BAR ── */
 .ag-bar-wrap{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:16px 18px;margin-bottom:1.5rem}
 .ag-bar-title{font-size:13px;font-weight:500;margin-bottom:12px}
 .ag-bar-row{display:grid;grid-template-columns:120px 1fr 100px;align-items:center;gap:12px;margin-bottom:8px}
@@ -80,7 +78,6 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .ag-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
 .ag-bar-amt{font-size:11px;font-family:var(--mo);color:var(--tx);text-align:right}
 
-/* ── BUTTONS ── */
 button{font-family:var(--sa);font-size:13px;font-weight:500;border-radius:var(--r);padding:8px 18px;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--tx2);transition:all .2s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
 button:hover:not(:disabled){background:var(--sf2);color:var(--tx)}
 button:disabled{opacity:.35;cursor:not-allowed}
@@ -92,7 +89,7 @@ button:disabled{opacity:.35;cursor:not-allowed}
 .bpu:hover:not(:disabled){background:rgba(167,139,250,.2)}
 .bsm{padding:5px 12px;font-size:12px}
 
-/* ── TABLES ── */
+
 .tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--b)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{background:var(--n3);color:var(--tx3);font-family:var(--mo);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;text-align:left;border-bottom:1px solid var(--b);white-space:nowrap}
@@ -111,7 +108,6 @@ tbody tr:hover{background:var(--sf)}
 .pp{background:rgba(167,139,250,.1);color:var(--pu);border:1px solid rgba(167,139,250,.2)}
 .pdark{background:rgba(153,27,27,.2);color:#fca5a5;border:1px solid rgba(153,27,27,.4)}
 
-/* ── FORMS & INPUTS ── */
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 @media(max-width:600px){.fg{grid-template-columns:1fr}}
 .fld{margin-bottom:1rem}
@@ -122,7 +118,7 @@ tbody tr:hover{background:var(--sf)}
 textarea.finput{resize:vertical;min-height:80px;font-family:var(--sa)}
 select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238fa3bf' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px;cursor:pointer}
 
-/* ── MODAL ── */
+
 #modal-bg{display:none;position:fixed;inset:0;background:rgba(5,12,24,.75);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
 #modal-bg.on{display:flex}
 .modal{background:var(--n2);border:1px solid var(--b2);border-radius:var(--rl);width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.5)}
@@ -139,7 +135,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 .mok{display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--gr);margin-bottom:1rem;font-family:var(--mo)}
 .mok.on{display:block}
 
-/* ── ECL specific styles ── */
+
 .ecl-stage-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.5rem}
 .ecl-stage-card{border-radius:var(--r);padding:14px 16px;border:1px solid var(--b)}
 .ecl-stage-card.s1{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05)}
@@ -172,7 +168,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 .ecl-row-saved{animation:eclsave .6s ease}
 @keyframes eclsave{0%{background:rgba(0,201,167,.2)}100%{background:transparent}}
 
-/* ── IFRS 9 improvements ── */
+
 .ecl-provision-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1rem}
 .ecl-provision-fld label{display:block;font-size:10px;font-family:var(--mo);color:var(--tx2);margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase}
 .ecl-provision-fld input{width:100%;padding:6px 10px;background:var(--n4);border:1px solid var(--b2);border-radius:7px;color:var(--tx);font-family:var(--mo);font-size:12px;outline:none}
@@ -203,7 +199,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 .ecl-tab:hover{color:var(--tx);background:var(--sf)}
 .ecl-tab.active{color:var(--t);background:var(--n2);border-color:var(--b);border-bottom-color:var(--n2)}
 
-/* ── Calibration & sensitivity ── */
+
 .calib-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1rem}
 .calib-table th{background:var(--n3);color:var(--tx3);font-family:var(--mo);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:1px solid var(--b)}
 .calib-table td{padding:10px 14px;border-bottom:1px solid var(--b);vertical-align:middle}
@@ -229,7 +225,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 .assump-row .ar-val{color:var(--tx);font-weight:500}
 .assump-row .ar-val.highlight{color:var(--t);font-family:var(--mo)}
 
-/* ── MISC ── */
+
 .ep{text-align:center;padding:3rem 1rem;color:var(--tx3);font-family:var(--mo);font-size:12px}
 .ei{font-size:2rem;margin-bottom:10px}
 .nt{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--tx2);margin-bottom:1rem;line-height:1.5}
@@ -295,7 +291,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 
     <main id="content">
 
-      <!-- Dashboard -->
+      
       <div class="view on" id="view-dashboard">
         <div class="vhdr">
           <div><div class="vttl">Portfolio Overview</div><div class="vsub" id="dash-ts">—</div></div>
@@ -309,7 +305,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div id="dash-emails"></div>
       </div>
 
-      <!-- Debtors -->
+      
       <div class="view" id="view-debtors">
         <div class="vhdr">
           <div><div class="vttl">Debtors</div><div class="vsub">Manage debtor accounts and invoices</div></div>
@@ -325,7 +321,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div id="debtors-list"></div>
       </div>
 
-      <!-- Ageing Report -->
+     
       <div class="view" id="view-ageing">
         <div class="vhdr">
           <div><div class="vttl">Ageing Report</div><div class="vsub" id="ageing-ts">—</div></div>
@@ -341,7 +337,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div id="ageing-table"></div>
       </div>
 
-      <!-- Send Reminders -->
+      
       <div class="view" id="view-reminders">
         <div class="vhdr">
           <div><div class="vttl">Send Reminders</div><div class="vsub">Select debtors and dispatch collection emails</div></div>
@@ -370,7 +366,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div id="reminders-list"></div>
       </div>
 
-      <!-- Email Logs -->
+     
       <div class="view" id="view-logs">
         <div class="vhdr">
           <div><div class="vttl">Email Logs</div><div class="vsub">History of all sent reminders</div></div>
@@ -381,9 +377,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div id="logs-table"></div>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════════
-           ECL MODEL VIEW
-      ════════════════════════════════════════════════════════ -->
+     
       <div class="view" id="view-ecl">
         <div class="vhdr">
           <div>
@@ -406,7 +400,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           </div>
         </div>
 
-        <!-- Tab bar -->
+     
         <div class="ecl-tab-bar">
           <div class="ecl-tab active" onclick="switchEclTab('portfolio',this)">Portfolio</div>
           <div class="ecl-tab" onclick="switchEclTab('provision',this)">Provision Matrix</div>
@@ -416,7 +410,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           <div class="ecl-tab" onclick="switchEclTab('assumptions',this)">Assumption Log</div>
         </div>
 
-        <!-- TAB: Portfolio -->
+     
         <div id="ecl-tab-portfolio">
           <!-- Macro settings panel -->
           <div class="ecl-panel" id="ecl-macro-panel">
@@ -481,7 +475,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 
           <div id="ecl-portfolio-table"></div>
 
-          <!-- Results section (shown after compute) -->
+         
           <div id="ecl-results-section" style="display:none;margin-top:1.5rem">
             <div class="vhdr" style="margin-bottom:1rem">
               <div class="section-ttl" style="margin:0">Computed ECL Results</div>
@@ -492,7 +486,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
             <div id="ecl-results-table"></div>
           </div>
 
-          <!-- Snapshots -->
+          
           <div style="margin-top:1.5rem">
             <div class="vhdr" style="margin-bottom:.75rem">
               <div class="section-ttl" style="margin:0">Saved ECL Snapshots</div>
@@ -502,7 +496,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           </div>
         </div>
 
-        <!-- TAB: Provision Matrix -->
+       
         <div id="ecl-tab-provision" style="display:none">
           <div class="ecl-panel">
             <div class="ecl-panel-title">
@@ -530,7 +524,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           </div>
         </div>
 
-        <!-- TAB: Scenarios -->
+     
         <div id="ecl-tab-scenarios" style="display:none">
           <div class="ecl-panel">
             <div class="ecl-panel-title">
@@ -566,7 +560,6 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           </div>
         </div>
 
-        <!-- TAB: Write-offs -->
         <div id="ecl-tab-writeoffs" style="display:none">
           <div class="vhdr" style="margin-bottom:1rem">
             <div>
@@ -580,7 +573,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           <div id="ecl-writeoffs-table"></div>
         </div>
 
-        <!-- TAB: Calibration -->
+        
         <div id="ecl-tab-calibration" style="display:none">
           <div class="vhdr" style="margin-bottom:1rem">
             <div>
@@ -613,7 +606,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           </div>
         </div>
 
-        <!-- TAB: Assumption Log -->
+       
         <div id="ecl-tab-assumptions" style="display:none">
           <div class="vhdr" style="margin-bottom:1rem">
             <div>
@@ -642,7 +635,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 
       </div>
 
-      <!-- Settings -->
+    
       <div class="view" id="view-settings">
         <div class="vhdr">
           <div><div class="vttl">Settings</div><div class="vsub">Email configuration, templates and auto-reminders</div></div>
@@ -654,7 +647,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
   </div>
 </div>
 
-<!-- Modal -->
+
 <div id="modal-bg">
   <div class="modal" id="modal-box">
     <div class="mhdr">
@@ -669,7 +662,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 </div>
 <div id="toast"></div>
 
-<!-- ═══════════════════ AUTH GUARD ═══════════════════ -->
+
 <script>
 'use strict';
 (function(){
@@ -696,12 +689,12 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 })();
 </script>
 
-<!-- ═══════════════════ MAIN APP ═══════════════════ -->
+
 <script>
 'use strict';
 const API_BASE = 'https://eis-recbackend.onrender.com/api';
 
-// ── API helper ─────────────────────────────────────────────────
+
 async function api(endpoint, opts = {}) {
   const tok = sessionStorage.getItem('FM_token');
   const isFormData = opts.body instanceof FormData;
@@ -720,7 +713,7 @@ async function apiForm(endpoint, formData) {
   return data;
 }
 
-// ── UI helpers ─────────────────────────────────────────────────
+
 const $  = id => document.getElementById(id);
 const fN = n  => n == null || isNaN(n) ? '0.00' : Number(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fD = d  => !d ? '—' : new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
@@ -751,7 +744,7 @@ function bucketPill(key, days) {
 }
 function empty(msg) { return `<div class="ep"><div class="ei">📭</div>${msg}</div>`; }
 
-// ── DASHBOARD ──────────────────────────────────────────────────
+
 async function loadDashboard() {
   $('dash-kpis').innerHTML = '<div class="loading-row">Loading…</div>';
   try {
@@ -797,7 +790,7 @@ async function loadDashboard() {
   } catch(e) { $('dash-kpis').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
 }
 
-// ── DEBTORS ────────────────────────────────────────────────────
+
 let debtorsCache = [];
 async function loadDebtors() {
   $('debtors-list').innerHTML = '<div class="loading-row">Loading debtors…</div>';
@@ -992,7 +985,7 @@ async function doImport() {
   finally { $('imp-txt').textContent = 'Import'; $('imp-btn').disabled = false; }
 }
 
-// ── AGEING REPORT ──────────────────────────────────────────────
+
 let ageingCache = null;
 async function loadAgeing() {
   $('ageing-table').innerHTML = '<div class="loading-row">Generating ageing report…</div>';
@@ -1030,7 +1023,7 @@ function renderAgeingTable(report) {
   </table></div>`;
 }
 
-// ── SEND REMINDERS ─────────────────────────────────────────────
+
 let remindersCache = [];
 async function loadReminders() {
   $('reminders-list').innerHTML = '<div class="loading-row">Loading overdue debtors…</div>';
@@ -1078,7 +1071,7 @@ async function sendReminders() {
   finally { btn.disabled=false; btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Selected'; }
 }
 
-// ── EMAIL LOGS ─────────────────────────────────────────────────
+
 async function loadLogs() {
   $('logs-table').innerHTML = '<div class="loading-row">Loading email logs…</div>';
   try {
@@ -1102,16 +1095,10 @@ async function loadLogs() {
   } catch(e) { $('logs-table').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
 }
 
-// ─────────────────────────────────────────────────────────────────
-// ECL MODEL — IFRS 9 Enhanced
-// Improvements: Provision Matrix, 3-Scenario Probability Weighting,
-//               Write-off Workflow, SICR Qualitative Indicators
-// ─────────────────────────────────────────────────────────────────
 let eclPortfolioRows = [];
 let eclResults       = [];
 let eclModelSettings = { provisionMatrix:{}, eclScenarios:{} };
 
-// ── Constants ──────────────────────────────────────────────────
 const ECL_PROFILES = [
   {key:'overdraft',basePd:.07,lgd:.55,ccf:.75,stage:1},
   {key:'watch',basePd:.08,lgd:.5,ccf:.1,stage:2},
@@ -1144,7 +1131,7 @@ const ECL_COLLATERAL_TYPES = [
   'Vehicle','Equipment','Inventory','Receivable','Guarantee'
 ];
 
-// ── ECL Engine helpers ─────────────────────────────────────────
+
 function eclNorm(v){ return String(v||'').trim().toLowerCase().replace(/[%()]/g,'').replace(/[_-]+/g,' ').replace(/\s+/g,' '); }
 function eclClamp(v,min,max){ return Math.min(Math.max(v,min),max); }
 function eclProfile(cls){
@@ -1160,20 +1147,20 @@ function eclMacroMult(inflPct, gdpPct){
   return eclClamp(1 + ((inflPct - 10) * .025) - ((gdpPct - 3) * .04), .7, 1.8);
 }
 
-// Provision matrix bucket key → settings key mapping
+
 function pmRate(bk, matrix) {
   const map = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '180_plus':'days180plus' };
   return (matrix[map[bk]] ?? 5) / 100;  // convert % to decimal
 }
 
-// Core per-row ECL computation for one macro scenario
+
 function eclComputeRow(row, settings, inflOverride, gdpOverride) {
   const prof   = eclProfile(row.loanClassification);
   const dpd    = row.daysPastDue || 0;
   const ead    = Math.max(row.balance + (settings.includeUndrawn ? Math.max((row.creditLimit||0)-row.balance,0)*prof.ccf : 0), 0);
   const matrix = eclModelSettings.provisionMatrix || {};
 
-  // ── Stage determination ──────────────────────────────────
+  
   let stage = row.stage;  // explicit DB override
   if (!stage) {
     // Credit-impaired debtor → always Stage 3
@@ -1188,7 +1175,7 @@ function eclComputeRow(row, settings, inflOverride, gdpOverride) {
     else { stage = 1; }
   }
 
-  // ── PD estimation ────────────────────────────────────────
+ 
   const infl = inflOverride !== undefined ? inflOverride : settings.inflationRate;
   const gdp  = gdpOverride  !== undefined ? gdpOverride  : settings.gdpGrowthRate;
   const macroMult = eclMacroMult(infl, gdp);
@@ -1199,14 +1186,14 @@ function eclComputeRow(row, settings, inflOverride, gdpOverride) {
   if (stage === 3) {
     pd12 = 1; lifetimePd = 1; pdBasis = 'Stage 3 default — PD = 100%';
   } else if (settings.useMatrix && Object.keys(matrix).length) {
-    // ── PROVISION MATRIX approach (IFRS 9 §5.5.15) ──────
+
     const baseRate = pmRate(bk, matrix);
-    // Apply macro multiplier to matrix rate as a forward-looking overlay
+  
     pd12       = eclClamp(baseRate * macroMult, .001, .99);
     lifetimePd = pd12;  // simplified approach uses lifetime horizon
     pdBasis    = `Provision matrix (${(baseRate*100).toFixed(1)}%) × macro (${macroMult.toFixed(2)})`;
   } else {
-    // ── Formula-based PD fallback ────────────────────────
+   
     const dpdMult    = dpd<=0?.8:dpd<=30?1:dpd<=60?2:dpd<=90?4:12;
     const scoreRatio = Math.max(0, Math.min(1, 1 - dpd/120));
     pd12       = eclClamp(prof.basePd*(1+(1-scoreRatio)*2)*dpdMult*macroMult, .001, .95);
@@ -1216,14 +1203,14 @@ function eclComputeRow(row, settings, inflOverride, gdpOverride) {
     pdBasis    = 'Formula-based (classification + DPD + macro)';
   }
 
-  // ── LGD ─────────────────────────────────────────────────
+ 
   const collVal = row.collateralValue || 0;
   const haircut = eclHaircut(row.collateralType);
   const lgd     = collVal > 0 && ead > 0
     ? eclClamp(1 - Math.min(collVal*haircut, ead)/ead, .02, 1)
     : prof.lgd;
 
-  // ── EAD, horizon, discount ───────────────────────────────
+
   const eir           = (row.eir || settings.defaultDiscount) / 100;
   const dueDate2      = new Date(row.dueDate);
   const lifeMonths2   = isNaN(dueDate2.getTime()) ? 12 : Math.max((dueDate2.getFullYear()-new Date().getFullYear())*12+dueDate2.getMonth()-new Date().getMonth(), 1);
@@ -1260,7 +1247,7 @@ function eclReadScenarios() {
   };
 }
 
-// ── Tab switching ──────────────────────────────────────────────
+
 function switchEclTab(tab, el) {
   ['portfolio','provision','scenarios','calibration','writeoffs','assumptions'].forEach(t => {
     const panel = $('ecl-tab-' + t);
@@ -1273,7 +1260,7 @@ function switchEclTab(tab, el) {
   if(tab === 'provision' || tab === 'scenarios') loadEclModelSettings();
 }
 
-// ── Load ECL model settings (provision matrix + scenarios) ─────
+
 async function loadEclModelSettings() {
   try {
     const d = await api('/ecl/model-settings');
@@ -1286,7 +1273,7 @@ async function loadEclModelSettings() {
     if($('pm-61_90'))    $('pm-61_90').value      = pm.days61_90 ?? 15.0;
     if($('pm-91_180'))   $('pm-91_180').value     = pm.days91_180?? 35.0;
     if($('pm-180plus'))  $('pm-180plus').value    = pm.days180plus??75.0;
-    // Populate scenario inputs
+    
     const sc = d.eclScenarios || {};
     if($('sc-base-wt'))  $('sc-base-wt').value   = sc.baseWeight     ?? 50;
     if($('sc-up-wt'))    $('sc-up-wt').value      = sc.upsideWeight   ?? 20;
@@ -1334,7 +1321,7 @@ async function saveScenarios() {
   finally { $('sc-save-txt').textContent = 'Save Scenarios'; }
 }
 
-// ── Load ECL portfolio ─────────────────────────────────────────
+
 async function loadEclPortfolio() {
   $('ecl-portfolio-table').innerHTML = '<div class="loading-row">Loading portfolio from database…</div>';
   $('ecl-kpis').innerHTML = '';
@@ -1425,7 +1412,7 @@ function renderEclPortfolioTable() {
   </table></div>`;
 }
 
-// ── Dirty tracking & save ──────────────────────────────────────
+
 const eclDirty = {};
 function eclFieldChanged(idx, field, value) {
   if(!eclDirty[idx]) eclDirty[idx] = {};
@@ -1455,7 +1442,6 @@ async function saveEclRow(idx) {
   } catch(e) { toast('Save failed: '+e.message,'err'); if(btn){btn.textContent='Save';btn.style.opacity='1';} }
 }
 
-// ── Debtor ECL modal — now includes SICR indicators ───────────
 async function openDebtorEclModal(debtorId, debtorName) {
   openModal(`ECL Defaults & SICR — ${debtorName}`, `
     <div class="merr" id="decl-err"></div>
@@ -1501,7 +1487,7 @@ async function openDebtorEclModal(debtorId, debtorName) {
     false, false
   );
 
-  // Pre-fill
+
   try {
     const rows = eclPortfolioRows.filter(r => r._debtorId === debtorId);
     if(rows.length) {
@@ -1525,7 +1511,7 @@ async function saveDebtorEcl(debtorId, debtorName) {
   const err = $('decl-err'); err.classList.remove('on');
   $('decl-save-txt').textContent = 'Saving…';
   try {
-    // Save ECL parameter defaults
+ 
     await api('/ecl/debtor/' + debtorId, { method:'PUT', body:JSON.stringify({
       ecl_loanClassification: $('decl-cls').value,
       ecl_collateralType:     $('decl-colt').value,
@@ -1533,7 +1519,7 @@ async function saveDebtorEcl(debtorId, debtorName) {
       ecl_eir:                parseFloat($('decl-eir').value) || null,
       ecl_stage:              parseInt($('decl-stg').value) || null,
     })});
-    // Save SICR indicators and credit-impaired flag
+   
     await api('/ecl/debtor/' + debtorId + '/sicr', { method:'PUT', body:JSON.stringify({
       creditImpaired: $('sicr-impaired').checked,
       sicrIndicators: {
@@ -1549,7 +1535,7 @@ async function saveDebtorEcl(debtorId, debtorName) {
   } catch(e) { err.textContent = e.message; err.classList.add('on'); $('decl-save-txt').textContent = 'Save'; }
 }
 
-// ── Write-off ──────────────────────────────────────────────────
+
 async function writeOffInvoice(invoiceId, invoiceNumber) {
   const reason = prompt(`Write off invoice ${invoiceNumber}?\n\nEnter reason (e.g. "No reasonable expectation of recovery after 180+ days"):`);
   if(reason === null) return; // cancelled
@@ -1591,7 +1577,7 @@ async function restoreInvoice(id, no) {
   catch(e) { toast(e.message, 'err'); }
 }
 
-// ── Fetch macro ────────────────────────────────────────────────
+
 async function fetchEclMacro() {
   const btn = $('ecl-macro-btn');
   btn.disabled = true; btn.textContent = 'Fetching…';
@@ -1614,7 +1600,7 @@ async function fetchEclMacro() {
   }
 }
 
-// ── Compute ECL — three scenarios, probability-weighted ────────
+
 function computeECL() {
   if(!eclPortfolioRows.length) { toast('Load portfolio first.','err'); return; }
   const settings  = eclReadSettings();
@@ -1626,12 +1612,11 @@ function computeECL() {
     return;
   }
 
-  // Compute ECL for each scenario
+ 
   const baseRows   = eclPortfolioRows.map(r => eclComputeRow(r, settings, settings.inflationRate, settings.gdpGrowthRate));
   const upsideRows = eclPortfolioRows.map(r => eclComputeRow(r, settings, settings.inflationRate + scenarios.upsideInflAdj, settings.gdpGrowthRate + scenarios.upsideGdpAdj));
   const downRows   = eclPortfolioRows.map(r => eclComputeRow(r, settings, settings.inflationRate + scenarios.downInflAdj, settings.gdpGrowthRate + scenarios.downGdpAdj));
 
-  // Probability-weighted ECL per row
   eclResults = baseRows.map((br, i) => {
     const ur = upsideRows[i], dr = downRows[i];
     const wBase = scenarios.baseWeight / 100, wUp = scenarios.upsideWeight / 100, wDn = scenarios.downWeight / 100;
@@ -1639,7 +1624,7 @@ function computeECL() {
     return { ...br, eclBase:br.ecl, eclUpside:ur.ecl, eclDownside:dr.ecl, ecl:weightedEcl, weightedEcl };
   });
 
-  // ── KPIs ────────────────────────────────────────────────
+
   const totalEAD  = eclResults.reduce((s,r)=>s+r.ead,0);
   const totalECL  = eclResults.reduce((s,r)=>s+r.ecl,0);
   const baseECL   = eclResults.reduce((s,r)=>s+r.eclBase,0);
@@ -1658,7 +1643,7 @@ function computeECL() {
     { l:'Stage 3 Exposure',     v:'₦'+fN(s3.reduce((s,r)=>s+r.ead,0)), c:'rd', cl:'rd' },
   ].map(k=>`<div class="kpi${k.ac?' ac':k.cl?' '+k.cl:''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div></div>`).join('');
 
-  // ── Weighted ECL banner ──────────────────────────────────
+
   const banner = $('ecl-weighted-banner');
   banner.style.display = 'flex';
   banner.className = 'ecl-weighted-result';
@@ -1669,7 +1654,7 @@ function computeECL() {
     <div><div class="wlbl">Downside ECL (${scenarios.downWeight}%)</div><div class="wval" style="color:var(--rd)">₦${fN(dnECL)}</div></div>
     <div><div class="wlbl">Coverage Ratio</div><div class="wval" style="color:var(--am)">${(coverage*100).toFixed(2)}%</div></div>`;
 
-  // ── Stage breakdown ──────────────────────────────────────
+  
   const stageBar = $('ecl-stages');
   stageBar.style.display = 'grid';
   stageBar.innerHTML = [
@@ -1686,7 +1671,7 @@ function computeECL() {
     </div>`;
   }).join('');
 
-  // ── Results table ────────────────────────────────────────
+
   $('ecl-results-section').style.display = 'block';
   const fPct = v => (v*100).toFixed(2)+'%';
   const stageClass = s => s===1?'pg':s===2?'pa':'pr';
@@ -1736,7 +1721,7 @@ function computeECL() {
   toast(`ECL computed — Weighted ECL: ₦${fN(totalECL)} across ${eclResults.length} invoices.`);
 }
 
-// ── Save snapshot ──────────────────────────────────────────────
+
 async function saveEclSnapshot() {
   if(!eclResults.length) { toast('Compute ECL first.','err'); return; }
   const settings  = eclReadSettings();
@@ -1784,7 +1769,7 @@ async function deleteEclSnapshot(id) {
   catch(e) { toast(e.message,'err'); }
 }
 
-// ── Export ─────────────────────────────────────────────────────
+
 function exportEclXLSX() {
   if(!eclResults.length) { toast('Compute ECL before exporting.','err'); return; }
   const wb = XLSX.utils.book_new();
@@ -1817,7 +1802,7 @@ function exportEclXLSX() {
   ws['!cols'] = [24,14,18,8,8,20,14,10,8,14,14,14,14,10,12,14,14,8,12].map(w=>({wch:w}));
   XLSX.utils.book_append_sheet(wb, ws, 'ECL Results');
 
-  // Stage summary
+
   const stageSummary = [1,2,3].map(s=>{
     const rows = eclResults.filter(r=>r.stage===s);
     return { Stage:'Stage '+s, Count:rows.length,
@@ -1829,7 +1814,7 @@ function exportEclXLSX() {
   });
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(stageSummary), 'Stage Summary');
 
-  // Model parameters
+  
   const metaRows = [
     { Parameter:'Computed At', Value:new Date().toLocaleString('en-GB') },
     { Parameter:'Base Inflation Rate (%)', Value:settings.inflationRate },
@@ -1855,10 +1840,7 @@ function exportEclXLSX() {
   toast('ECL Excel exported.');
 }
 
-// ─────────────────────────────────────────────────────────────────
-// HISTORICAL CALIBRATION
-// Derives implied loss rates from entity's own write-off history
-// ─────────────────────────────────────────────────────────────────
+
 let calibrationData = null;
 
 const BUCKET_LABELS_FULL = {
@@ -1962,7 +1944,7 @@ async function applyCalibrationToMatrix() {
   const btn = $('calib-apply-btn');
   btn.disabled = true; btn.textContent = 'Applying…';
   try {
-    // Fetch current matrix to only replace buckets that have data
+   
     const settings = await api('/ecl/model-settings');
     const pm = settings.provisionMatrix || {};
     const pmMap = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '180_plus':'days180plus' };
@@ -1986,10 +1968,7 @@ async function applyCalibrationToMatrix() {
   finally { btn.disabled = false; btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Apply Calibrated Rates to Provision Matrix'; }
 }
 
-// ─────────────────────────────────────────────────────────────────
-// ASSUMPTION LOG & SENSITIVITY ANALYSIS
-// IFRS 7 §35G — model documentation + sensitivity disclosure
-// ─────────────────────────────────────────────────────────────────
+
 let lastAssumptionLog = null;
 
 async function generateAssumptionLog() {
@@ -2012,8 +1991,7 @@ async function generateAssumptionLog() {
   const coverage = totalEAD>0 ? totalECL/totalEAD : 0;
   const s1=eclResults.filter(r=>r.stage===1), s2=eclResults.filter(r=>r.stage===2), s3=eclResults.filter(r=>r.stage===3);
 
-  // ── Sensitivity Analysis ────────────────────────────────────
-  // Shift all provision matrix rates by ±1%, ±2%, ±5% and recompute ECL
+
   const shiftECL = (shiftPct) => {
     const shiftedSettings = { ...settings };
     const shiftedMatrix = {};
@@ -2050,7 +2028,7 @@ async function generateAssumptionLog() {
 
   lastAssumptionLog = { settings, scenarios, pm, sensData, totalEAD, totalECL, coverage, s1:s1.length, s2:s2.length, s3:s3.length, userName, computedAt:new Date() };
 
-  // ── Render ──────────────────────────────────────────────────
+
   const sensCards = sensData.map(sd => {
     const delta = sd.ecl - baseECL;
     const deltaPct = baseECL>0 ? (delta/baseECL*100).toFixed(1) : '0.0';
@@ -2194,7 +2172,7 @@ async function downloadAssumptionPDF() {
   const N = n => Number(n||0).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
   const baseECL = sensData.find(s=>s.shift===0)?.ecl || totalECL;
 
-  // ── Header ──────────────────────────────────────────────────
+  
   doc.setFillColor(10,22,40); doc.rect(0,0,W,60,'F');
   doc.setFillColor(0,201,167); doc.rect(0,0,6,60,'F');
   doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(232,237,245);
@@ -2286,7 +2264,7 @@ async function downloadAssumptionPDF() {
 
   y = doc.lastAutoTable.finalY + 20;
 
-  // ── Signature block ────────────────────────────────────────
+  
   if(y > 700) { doc.addPage(); y = 30; }
   doc.setFillColor(10,22,40); doc.rect(20,y,W-40,90,'F');
   doc.setFillColor(0,201,167); doc.rect(20,y,3,90,'F');
@@ -2301,7 +2279,7 @@ async function downloadAssumptionPDF() {
   doc.text('Designation: _________________________', W/2, y+58);
   doc.text('Signature: _________________________', W/2, y+70);
 
-  // ── Footer ─────────────────────────────────────────────────
+ 
   const pageCount = doc.internal.getNumberOfPages();
   for(let i=1; i<=pageCount; i++) {
     doc.setPage(i);
@@ -2314,7 +2292,7 @@ async function downloadAssumptionPDF() {
   toast('Assumption log PDF downloaded.');
 }
 
-// ── SETTINGS ───────────────────────────────────────────────────
+
 async function loadSettings() {
   $('settings-form').innerHTML = '<div class="loading-row">Loading settings…</div>';
   try {
@@ -2387,7 +2365,7 @@ async function saveSettings() {
   const err=$('set-err'), ok=$('set-ok');
   err.classList.remove('on'); ok.classList.remove('on');
   $('set-save-txt').textContent = 'Saving…';
-  // Core fields — always present for all users
+  
   const payload = {
     companyName:         $('s-cname').value.trim(),
     companyEmail:        $('s-cemail').value.trim(),
@@ -2401,7 +2379,7 @@ async function saveSettings() {
     'templates.finalNotice.subject':    $('s-tpl-finalNotice-subj').value.trim(),
     'templates.finalNotice.intro':      $('s-tpl-finalNotice-intro').value.trim(),
   };
-  // Admin-only fields — only included when inputs exist in DOM
+
   if ($('s-buser')) payload.brevoSmtpUser = $('s-buser').value.trim();
   if ($('s-bkey'))  payload.brevoSmtpKey  = $('s-bkey').value.trim();
   if ($('s-from'))  payload.fromEmail     = $('s-from').value.trim();
@@ -2421,7 +2399,7 @@ async function sendTestEmail() {
   catch(e) { toast(e.message,'err'); }
 }
 
-// ── EXCEL / PDF EXPORT ─────────────────────────────────────────
+
 async function exportAgeingXLSX() {
   if (!ageingCache) { await loadAgeing(); }
   const wb = XLSX.utils.book_new();
@@ -2462,7 +2440,7 @@ async function exportAgeingPDF() {
   doc.save(`FM-Ageing-${ts()}.pdf`); toast('PDF export downloaded.');
 }
 
-// ── INIT ───────────────────────────────────────────────────────
+
 window.addEventListener('load', () => {
   document.getElementById('logout-btn').addEventListener('click', function() {
     if (!confirm('Sign out?')) return;
