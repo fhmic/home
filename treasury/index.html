@@ -1,907 +1,679 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>FSCF Treasury Intelligence Platform</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#07101f;font-family:'Syne','IBM Plex Mono',sans-serif;color:#e2eaf5}
-  ::-webkit-scrollbar{width:4px;height:4px}
-  ::-webkit-scrollbar-track{background:transparent}
-  ::-webkit-scrollbar-thumb{background:#1a2e4a;border-radius:2px}
-  input[type=range]{height:4px;border-radius:2px;cursor:pointer}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  .fade-in{animation:fadeIn 0.3s ease forwards}
-  .nav-btn:hover{background:rgba(0,201,167,0.08)!important;color:#00c9a7!important}
-  .row-hover:hover{background:#112240!important}
-  .upload-zone:hover{border-color:#00c9a7!important}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#07101f;color:#e2eaf5;font-family:'Syne',sans-serif;font-size:14px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:#1a2e4a;border-radius:2px}
+:root{--navy:#07101f;--card:#0d1b2e;--border:#1a2e4a;--teal:#00c9a7;--gold:#f5a623;--red:#ff4560;--green:#06d6a0;--blue:#4cc9f0;--purple:#9b5de5;--t1:#e2eaf5;--t2:#7a90b0;--t3:#4a607a}
+.mono{font-family:'IBM Plex Mono',monospace}
+/* NAV */
+#topnav{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border);height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;min-width:190px}
+.brand-icon{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0}
+.brand-name{font-size:11px;font-weight:800;letter-spacing:-.01em;line-height:1.3}
+.brand-sub{font-size:9px;color:var(--t3);font-family:'IBM Plex Mono',monospace;letter-spacing:.05em}
+.navtabs{display:flex;gap:2px}
+.navtab{background:transparent;border:1px solid transparent;border-radius:6px;padding:5px 11px;font-size:11px;color:var(--t2);cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .15s;white-space:nowrap}
+.navtab:hover{background:rgba(0,201,167,.08);color:var(--teal)}
+.navtab.active{background:rgba(0,201,167,.12);color:var(--teal);border-color:rgba(0,201,167,.3)}
+.nav-right{display:flex;align-items:center;gap:8px;min-width:190px;justify-content:flex-end}
+.upload-btn{background:var(--teal);color:#000;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;display:none}
+.time-badge{background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:9px;color:var(--t3);font-family:'IBM Plex Mono',monospace}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#9b5de5,#4cc9f0);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer}
+/* MAIN */
+#main{padding:24px;max-width:1400px;margin:0 auto;padding-bottom:52px}
+.panel{display:none}.panel.active{display:block}
+/* STATUS BAR */
+#statusbar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100}
+.sb-items{display:flex;gap:20px}
+.sb-item{display:flex;gap:5px;align-items:center}
+.sb-label{font-size:9px;color:var(--t3);font-family:'IBM Plex Mono',monospace;text-transform:uppercase}
+.sb-val{font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600}
+.sb-right{display:flex;align-items:center;gap:6px}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* SECTION HEADER */
+.sec-head{margin-bottom:20px}
+.sec-title{font-size:16px;font-weight:700;letter-spacing:-.01em;color:var(--t1)}
+.sec-sub{font-size:11px;color:var(--t2);margin-top:4px;font-family:'IBM Plex Mono',monospace}
+/* KPI GRID */
+.kpi-grid{display:grid;gap:12px;margin-bottom:20px}
+.kpi-grid-3{grid-template-columns:repeat(3,1fr)}
+.kpi-grid-4{grid-template-columns:repeat(4,1fr)}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;position:relative;overflow:hidden}
+.kpi-bar{position:absolute;top:0;left:0;width:3px;height:100%;border-radius:10px 0 0 10px}
+.kpi-label{font-size:10px;color:var(--t2);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.kpi-value{font-size:21px;font-weight:700;font-family:'IBM Plex Mono',monospace;letter-spacing:-.02em;color:var(--t1)}
+.kpi-sub{font-size:11px;color:var(--t3);margin-top:4px}
+.kpi-delta{font-size:10px;margin-top:4px;font-family:'IBM Plex Mono',monospace}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px}
+.card-label{font-size:10px;color:var(--t2);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.chart-wrap{position:relative}
+/* GRID LAYOUTS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-2-3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.grid-3-2{display:grid;grid-template-columns:3fr 2fr;gap:16px;margin-bottom:16px}
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+tbody tr{border-bottom:1px solid rgba(26,46,74,.3);transition:background .12s}
+tbody tr:hover{background:#112240}
+tbody td{padding:9px 12px;white-space:nowrap;font-size:12px}
+.tr{text-align:right}
+/* BADGES */
+.badge{padding:2px 8px;border-radius:4px;font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:600;display:inline-block}
+.badge-s1{color:#06d6a0;background:#0d2b23;border:1px solid rgba(6,214,160,.25)}
+.badge-s2{color:#f5a623;background:#2b200a;border:1px solid rgba(245,166,35,.25)}
+.badge-s3{color:#ff4560;background:#2b0d12;border:1px solid rgba(255,69,96,.25)}
+/* FILTERS */
+.filter-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.filter-btns{display:flex;gap:6px}
+.fbtn{background:transparent;border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;color:var(--t2);cursor:pointer;font-family:'IBM Plex Mono',monospace;font-weight:600}
+.fbtn.active{background:var(--teal);color:#000;border-color:var(--teal)}
+.search-input{background:var(--navy);border:1px solid var(--border);border-radius:6px;color:var(--t1);padding:6px 12px;font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none;width:220px}
+/* TABLE FOOTER */
+.tbl-footer{margin-top:10px;color:var(--t3);font-size:10px;font-family:'IBM Plex Mono',monospace}
+.tbl-total{margin-top:10px;padding:10px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+/* STAGE BARS */
+.stage-item{margin-bottom:14px}
+.stage-row{display:flex;justify-content:space-between;margin-bottom:4px}
+.stage-track{background:var(--navy);border-radius:4px;height:8px;overflow:hidden}
+.stage-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.stage-pct{color:var(--t3);font-size:10px;margin-top:3px;font-family:'IBM Plex Mono',monospace}
+/* STRESS */
+.stress-section{margin-top:16px;border-top:1px solid var(--border);padding-top:14px}
+.stress-label{color:var(--t2);font-size:11px;margin-bottom:8px}
+.stress-row{display:flex;align-items:center;gap:12px}
+.stress-row input[type=range]{flex:1;accent-color:var(--teal)}
+.stress-val{font-family:'IBM Plex Mono',monospace;font-size:12px;min-width:55px}
+.stress-result{color:var(--t3);font-size:10px;margin-top:6px;font-family:'IBM Plex Mono',monospace}
+/* LIQUIDITY SOURCES */
+.liq-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(26,46,74,.3)}
+.liq-item-left{display:flex;align-items:center;gap:8px}
+.liq-bar-left{width:3px;height:16px;border-radius:2px}
+.liq-item-label{color:var(--t2);font-size:12px}
+.liq-item-val{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600}
+/* UPLOAD MODAL */
+#upload-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center}
+#upload-modal.show{display:flex}
+.modal-box{background:var(--card);border:1px solid #243a5e;border-radius:14px;padding:28px;width:460px;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+.modal-title{font-size:15px;font-weight:700;color:var(--t1)}
+.modal-sub{font-size:11px;color:var(--t3);font-family:'IBM Plex Mono',monospace;margin-top:2px}
+.modal-close{background:none;border:none;color:var(--t2);cursor:pointer;font-size:20px;line-height:1}
+.drop-zone{border:2px dashed var(--border);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:border-color .2s}
+.drop-zone:hover,.drop-zone.over{border-color:var(--teal)}
+.drop-icon{font-size:36px;margin-bottom:10px}
+.drop-title{color:var(--t1);font-size:13px;margin-bottom:4px}
+.drop-sub{color:var(--t3);font-size:11px}
+.upload-log{background:var(--navy);border-radius:8px;padding:14px;margin-bottom:14px;max-height:160px;overflow-y:auto;font-size:11px}
+.log-row{display:flex;gap:10px;padding:4px 0;border-bottom:1px solid rgba(26,46,74,.2)}
+.log-ok{color:var(--green);font-family:'IBM Plex Mono',monospace}
+.log-warn{color:var(--gold);font-family:'IBM Plex Mono',monospace}
+.log-row-num{color:var(--t3);font-family:'IBM Plex Mono',monospace}
+.confirm-btn{width:100%;background:var(--teal);color:#000;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace}
+/* COLORS for JS */
+.c-teal{color:var(--teal)}.c-gold{color:var(--gold)}.c-red{color:var(--red)}.c-green{color:var(--green)}.c-blue{color:var(--blue)}.c-purple{color:var(--purple)}.c-t2{color:var(--t2)}.c-t3{color:var(--t3)}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel" data-presets="react">
-const { useState, useMemo, useCallback, useEffect } = React;
-const {
-  LineChart, Line, BarChart, Bar, AreaChart, Area,
-  PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid,
-  Tooltip, Legend, ResponsiveContainer, ReferenceLine, ComposedChart
-} = Recharts;
 
-// ── TOKENS ─────────────────────────────────────────────────────────────────
-const C = {
-  navy:   "#07101f", card:   "#0d1b2e", cardHover: "#112240",
-  border: "#1a2e4a", borderL:"#243a5e",
-  teal:   "#00c9a7", tealD:  "#007a66",
-  gold:   "#f5a623", red:    "#ff4560", green: "#06d6a0",
-  blue:   "#4cc9f0", purple: "#9b5de5",
-  t1:     "#e2eaf5", t2:     "#7a90b0", t3:    "#4a607a",
-};
+<!-- NAV -->
+<nav id="topnav">
+  <div class="brand">
+    <div class="brand-icon">&#11042;</div>
+    <div><div class="brand-name">FSCF Treasury Intelligence</div><div class="brand-sub">FACTORING &amp; SUPPLY CHAIN FINANCE LTD</div></div>
+  </div>
+  <div class="navtabs" id="navtabs">
+    <button class="navtab active" data-tab="dashboard">&#9635; Dashboard</button>
+    <button class="navtab" data-tab="loans">&#127968; Loans</button>
+    <button class="navtab" data-tab="ecl">&#9889; ECL Model</button>
+    <button class="navtab" data-tab="borrowings">&#8597; Borrowings</button>
+    <button class="navtab" data-tab="investments">&#128200; Investments</button>
+    <button class="navtab" data-tab="cash">&#128181; Cash</button>
+    <button class="navtab" data-tab="liquidity">&#128167; Liquidity</button>
+  </div>
+  <div class="nav-right">
+    <button class="upload-btn" id="upload-btn">&#8593; Upload</button>
+    <div class="time-badge mono" id="time-badge">01 Jun 2024</div>
+    <div class="avatar">F</div>
+  </div>
+</nav>
 
-// ── DATA ───────────────────────────────────────────────────────────────────
-const LOANS = [
-  {id:"LN-001",customer:"Dangote Industries Ltd",    product:"Invoice Discounting",  principal:450,rate:22,dpd:0,  stage:1,rating:"A",  start:"2024-01-15",maturity:"2024-07-15",outstanding:420},
-  {id:"LN-002",customer:"Flour Mills Nigeria Plc",   product:"Supply Chain Finance", principal:320,rate:20,dpd:18, stage:1,rating:"A-", start:"2024-02-01",maturity:"2024-08-01",outstanding:310},
-  {id:"LN-003",customer:"MTN Nigeria Comms",          product:"Factoring",            principal:280,rate:21,dpd:0,  stage:1,rating:"AA", start:"2024-03-10",maturity:"2024-09-10",outstanding:280},
-  {id:"LN-004",customer:"Zenith Bank Plc",            product:"Reverse Factoring",    principal:500,rate:19,dpd:45, stage:2,rating:"BBB+",start:"2023-11-01",maturity:"2024-05-01",outstanding:480},
-  {id:"LN-005",customer:"BUA Foods Plc",              product:"Invoice Discounting",  principal:190,rate:23,dpd:0,  stage:1,rating:"A",  start:"2024-04-05",maturity:"2024-10-05",outstanding:190},
-  {id:"LN-006",customer:"Unilever Nigeria Plc",       product:"Supply Chain Finance", principal:150,rate:21,dpd:62, stage:2,rating:"BB+",start:"2023-10-15",maturity:"2024-04-15",outstanding:145},
-  {id:"LN-007",customer:"Nigerian Breweries Plc",     product:"Factoring",            principal:220,rate:22,dpd:5,  stage:1,rating:"A-", start:"2024-03-20",maturity:"2024-09-20",outstanding:215},
-  {id:"LN-008",customer:"Cadbury Nigeria Plc",        product:"Invoice Discounting",  principal:85, rate:24,dpd:120,stage:3,rating:"CCC",start:"2023-08-01",maturity:"2024-02-01",outstanding:82},
-  {id:"LN-009",customer:"PZ Cussons Nigeria",         product:"Factoring",            principal:110,rate:22,dpd:95, stage:3,rating:"B-", start:"2023-09-10",maturity:"2024-03-10",outstanding:108},
-  {id:"LN-010",customer:"Nestle Nigeria Plc",         product:"Supply Chain Finance", principal:340,rate:20,dpd:0,  stage:1,rating:"AA-",start:"2024-04-01",maturity:"2024-10-01",outstanding:340},
-  {id:"LN-011",customer:"NNPC Gas & Power Ltd",       product:"Reverse Factoring",    principal:600,rate:18,dpd:30, stage:1,rating:"A+", start:"2024-01-20",maturity:"2024-07-20",outstanding:580},
-  {id:"LN-012",customer:"Access Bank Plc",            product:"Invoice Discounting",  principal:250,rate:20,dpd:0,  stage:1,rating:"AA", start:"2024-02-15",maturity:"2024-08-15",outstanding:250},
-  {id:"LN-013",customer:"Total Energies Nigeria",     product:"Supply Chain Finance", principal:180,rate:21,dpd:75, stage:2,rating:"BB", start:"2023-12-01",maturity:"2024-06-01",outstanding:172},
-  {id:"LN-014",customer:"Lafarge Africa Plc",         product:"Factoring",            principal:130,rate:23,dpd:0,  stage:1,rating:"A-", start:"2024-03-01",maturity:"2024-09-01",outstanding:130},
-  {id:"LN-015",customer:"Julius Berger Nigeria",      product:"Invoice Discounting",  principal:200,rate:22,dpd:155,stage:3,rating:"D",  start:"2023-06-15",maturity:"2023-12-15",outstanding:195},
-];
-const BORROWINGS = [
-  {id:"BW-001",lender:"FCMB Ltd",            type:"Term Loan",           principal:500, rate:19.5,tenor:24,outstanding:420, maturity:"2025-06-30",repayment:"Monthly"},
-  {id:"BW-002",lender:"Stanbic IBTC Bank",   type:"Overdraft Facility",  principal:200, rate:23,  tenor:12,outstanding:150, maturity:"2024-12-31",repayment:"Revolving"},
-  {id:"BW-003",lender:"DBN Nigeria",          type:"On-lending Facility", principal:800, rate:14,  tenor:36,outstanding:720, maturity:"2026-09-30",repayment:"Quarterly"},
-  {id:"BW-004",lender:"Bank of Industry",    type:"SME Fund",            principal:300, rate:12,  tenor:48,outstanding:280, maturity:"2027-03-31",repayment:"Monthly"},
-  {id:"BW-005",lender:"LAPO MfB",            type:"Wholesale Borrowing", principal:150, rate:21,  tenor:12,outstanding:100, maturity:"2024-10-31",repayment:"Monthly"},
-  {id:"BW-006",lender:"Pan-African Holdings",type:"Intercompany Loan",   principal:1000,rate:16,  tenor:60,outstanding:1000,maturity:"2028-01-31",repayment:"Bullet"},
-];
-const INVESTMENTS = [
-  {id:"INV-001",counterparty:"Access Bank Plc",    type:"Fixed Deposit",       principal:300,rate:22,  dateInvested:"2024-03-01",days:180,maturity:"2024-08-28"},
-  {id:"INV-002",counterparty:"GTBank Ltd",          type:"Fixed Deposit",       principal:200,rate:21.5,dateInvested:"2024-02-15",days:91, maturity:"2024-05-17"},
-  {id:"INV-003",counterparty:"FGN Bond (10yr)",     type:"Government Security", principal:500,rate:17.5,dateInvested:"2023-10-01",days:365,maturity:"2033-10-01"},
-  {id:"INV-004",counterparty:"NTB (91-day)",        type:"Treasury Bills",      principal:250,rate:20.5,dateInvested:"2024-04-01",days:91, maturity:"2024-07-01"},
-  {id:"INV-005",counterparty:"Zenith Bank Plc",     type:"Fixed Deposit",       principal:150,rate:22,  dateInvested:"2024-04-10",days:60, maturity:"2024-06-09"},
-  {id:"INV-006",counterparty:"NTB (182-day)",       type:"Treasury Bills",      principal:400,rate:21,  dateInvested:"2024-01-15",days:182,maturity:"2024-07-15"},
-];
-const CASH = [
-  {id:"CA-001",bank:"Access Bank Plc",  account:"001-234567-001",type:"Current", balance:124.5,restricted:false,currency:"NGN"},
-  {id:"CA-002",bank:"GTBank Ltd",        account:"0123456789",    type:"Current", balance:87.3, restricted:false,currency:"NGN"},
-  {id:"CA-003",bank:"First Bank Nigeria",account:"2012345678",    type:"Current", balance:43.8, restricted:true, currency:"NGN"},
-  {id:"CA-004",bank:"Zenith Bank Plc",   account:"1012345678",    type:"Savings", balance:210.0,restricted:false,currency:"NGN"},
-  {id:"CA-005",bank:"UBA Plc",           account:"2012398765",    type:"Current", balance:32.1, restricted:false,currency:"NGN"},
-  {id:"CA-006",bank:"Access Bank Plc",   account:"001-234567-002",type:"Dom (USD)",balance:18.4,restricted:false,currency:"USD"},
-];
-const CASH_TREND = [
-  {m:"Nov",v:410},{m:"Dec",v:380},{m:"Jan",v:445},{m:"Feb",v:398},{m:"Mar",v:462},{m:"Apr",v:490},{m:"May",v:517},{m:"Jun",v:498}
-];
-const ECL_TREND = [
-  {m:"Jan",prov:45.2,cov:3.1},{m:"Feb",prov:48.1,cov:3.3},{m:"Mar",prov:52.4,cov:3.6},
-  {m:"Apr",prov:55.8,cov:3.8},{m:"May",prov:61.2,cov:4.1},{m:"Jun",prov:67.4,cov:4.4}
-];
-const LIQ_FORECAST = [
-  {p:"Now",net:498,cum:498},{p:"30d",net:312,cum:810},{p:"60d",net:185,cum:995},
-  {p:"90d",net:-240,cum:755},{p:"120d",net:420,cum:1175},{p:"150d",net:380,cum:1555},{p:"180d",net:290,cum:1845}
-];
-const GAP_DATA = [
-  {p:"0-7d",in:245,out:180},{p:"8-30d",in:380,out:420},{p:"31-60d",in:510,out:290},
-  {p:"61-90d",in:180,out:480},{p:"91-180d",in:620,out:210},{p:"181-365d",in:850,out:320}
-];
+<!-- MAIN CONTENT -->
+<div id="main">
+  <div class="panel active" id="panel-dashboard"></div>
+  <div class="panel" id="panel-loans"></div>
+  <div class="panel" id="panel-ecl"></div>
+  <div class="panel" id="panel-borrowings"></div>
+  <div class="panel" id="panel-investments"></div>
+  <div class="panel" id="panel-cash"></div>
+  <div class="panel" id="panel-liquidity"></div>
+</div>
 
-// ── UTILS ──────────────────────────────────────────────────────────────────
-const sum  = (arr,k) => arr.reduce((a,b)=>a+(b[k]||0),0);
-const fmt  = (n,d=1) => n>=1000 ? `₦${(n/1000).toFixed(d)}B` : `₦${(+n).toFixed(d)}M`;
-const pct  = n => `${(+n).toFixed(2)}%`;
-const TP   = {background:C.card,border:`1px solid ${C.border}`,borderRadius:8,color:C.t1,fontSize:12};
+<!-- STATUS BAR -->
+<div id="statusbar">
+  <div class="sb-items" id="sb-items"></div>
+  <div class="sb-right"><div class="pulse"></div><span class="mono" style="font-size:9px;color:var(--t3)">LIVE DATA &middot; CBN-licensed &middot; IFRS 9 compliant</span></div>
+</div>
 
-// ── ECL ENGINE ─────────────────────────────────────────────────────────────
-const PD = {1:{pd12:.02,pdL:.05,lgd:.45},2:{pd12:.15,pdL:.35,lgd:.55},3:{pd12:.75,pdL:.90,lgd:.65}};
-function calcECL(loans, pdMult=1) {
-  return loans.map(l => {
-    const p  = PD[l.stage];
-    const pd = (l.stage===1 ? p.pd12 : p.pdL) * pdMult;
-    const ecl = pd * p.lgd * l.outstanding;
-    return {...l, pd:+pd.toFixed(4), lgd:p.lgd, ead:l.outstanding, ecl:+ecl.toFixed(2), eclRate:+(ecl/l.outstanding*100).toFixed(2)};
+<!-- UPLOAD MODAL -->
+<div id="upload-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><div class="modal-title" id="modal-title">Upload Data</div><div class="modal-sub">CSV / Excel (.xlsx) supported</div></div>
+      <button class="modal-close" onclick="closeUpload()">&#10005;</button>
+    </div>
+    <div id="modal-body">
+      <label class="drop-zone" id="drop-zone">
+        <div class="drop-icon">&#128194;</div>
+        <div class="drop-title">Drop file or click to browse</div>
+        <div class="drop-sub">Max 5MB &middot; CSV or XLSX</div>
+        <input type="file" accept=".csv,.xlsx" style="display:none" onchange="handleFile(this)"/>
+      </label>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const LOANS=[
+  {id:"LN-001",customer:"Dangote Industries Ltd",    product:"Invoice Discounting",  principal:450,outstanding:420,rate:22,dpd:0,  stage:1,rating:"A",  start:"2024-01-15",maturity:"2024-07-15"},
+  {id:"LN-002",customer:"Flour Mills Nigeria Plc",   product:"Supply Chain Finance", principal:320,outstanding:310,rate:20,dpd:18, stage:1,rating:"A-", start:"2024-02-01",maturity:"2024-08-01"},
+  {id:"LN-003",customer:"MTN Nigeria Comms",          product:"Factoring",            principal:280,outstanding:280,rate:21,dpd:0,  stage:1,rating:"AA", start:"2024-03-10",maturity:"2024-09-10"},
+  {id:"LN-004",customer:"Zenith Bank Plc",            product:"Reverse Factoring",    principal:500,outstanding:480,rate:19,dpd:45, stage:2,rating:"BBB+",start:"2023-11-01",maturity:"2024-05-01"},
+  {id:"LN-005",customer:"BUA Foods Plc",              product:"Invoice Discounting",  principal:190,outstanding:190,rate:23,dpd:0,  stage:1,rating:"A",  start:"2024-04-05",maturity:"2024-10-05"},
+  {id:"LN-006",customer:"Unilever Nigeria Plc",       product:"Supply Chain Finance", principal:150,outstanding:145,rate:21,dpd:62, stage:2,rating:"BB+",start:"2023-10-15",maturity:"2024-04-15"},
+  {id:"LN-007",customer:"Nigerian Breweries Plc",     product:"Factoring",            principal:220,outstanding:215,rate:22,dpd:5,  stage:1,rating:"A-", start:"2024-03-20",maturity:"2024-09-20"},
+  {id:"LN-008",customer:"Cadbury Nigeria Plc",        product:"Invoice Discounting",  principal:85, outstanding:82, rate:24,dpd:120,stage:3,rating:"CCC",start:"2023-08-01",maturity:"2024-02-01"},
+  {id:"LN-009",customer:"PZ Cussons Nigeria",         product:"Factoring",            principal:110,outstanding:108,rate:22,dpd:95, stage:3,rating:"B-", start:"2023-09-10",maturity:"2024-03-10"},
+  {id:"LN-010",customer:"Nestle Nigeria Plc",         product:"Supply Chain Finance", principal:340,outstanding:340,rate:20,dpd:0,  stage:1,rating:"AA-",start:"2024-04-01",maturity:"2024-10-01"},
+  {id:"LN-011",customer:"NNPC Gas & Power Ltd",       product:"Reverse Factoring",    principal:600,outstanding:580,rate:18,dpd:30, stage:1,rating:"A+", start:"2024-01-20",maturity:"2024-07-20"},
+  {id:"LN-012",customer:"Access Bank Plc",            product:"Invoice Discounting",  principal:250,outstanding:250,rate:20,dpd:0,  stage:1,rating:"AA", start:"2024-02-15",maturity:"2024-08-15"},
+  {id:"LN-013",customer:"Total Energies Nigeria",     product:"Supply Chain Finance", principal:180,outstanding:172,rate:21,dpd:75, stage:2,rating:"BB", start:"2023-12-01",maturity:"2024-06-01"},
+  {id:"LN-014",customer:"Lafarge Africa Plc",         product:"Factoring",            principal:130,outstanding:130,rate:23,dpd:0,  stage:1,rating:"A-", start:"2024-03-01",maturity:"2024-09-01"},
+  {id:"LN-015",customer:"Julius Berger Nigeria",      product:"Invoice Discounting",  principal:200,outstanding:195,rate:22,dpd:155,stage:3,rating:"D",  start:"2023-06-15",maturity:"2023-12-15"},
+];
+const BORROWINGS=[
+  {id:"BW-001",lender:"FCMB Ltd",            type:"Term Loan",           principal:500, outstanding:420, rate:19.5,tenor:24,repayment:"Monthly",  maturity:"2025-06-30"},
+  {id:"BW-002",lender:"Stanbic IBTC Bank",   type:"Overdraft Facility",  principal:200, outstanding:150, rate:23,  tenor:12,repayment:"Revolving",maturity:"2024-12-31"},
+  {id:"BW-003",lender:"DBN Nigeria",          type:"On-lending Facility", principal:800, outstanding:720, rate:14,  tenor:36,repayment:"Quarterly",maturity:"2026-09-30"},
+  {id:"BW-004",lender:"Bank of Industry",    type:"SME Fund",            principal:300, outstanding:280, rate:12,  tenor:48,repayment:"Monthly",  maturity:"2027-03-31"},
+  {id:"BW-005",lender:"LAPO MfB",            type:"Wholesale Borrowing", principal:150, outstanding:100, rate:21,  tenor:12,repayment:"Monthly",  maturity:"2024-10-31"},
+  {id:"BW-006",lender:"Pan-African Holdings",type:"Intercompany Loan",   principal:1000,outstanding:1000,rate:16,  tenor:60,repayment:"Bullet",   maturity:"2028-01-31"},
+];
+const INVESTMENTS=[
+  {id:"INV-001",cp:"Access Bank Plc",  type:"Fixed Deposit",       principal:300,rate:22,  invested:"2024-03-01",days:180,maturity:"2024-08-28"},
+  {id:"INV-002",cp:"GTBank Ltd",        type:"Fixed Deposit",       principal:200,rate:21.5,invested:"2024-02-15",days:91, maturity:"2024-05-17"},
+  {id:"INV-003",cp:"FGN Bond (10yr)",   type:"Government Security", principal:500,rate:17.5,invested:"2023-10-01",days:365,maturity:"2033-10-01"},
+  {id:"INV-004",cp:"NTB (91-day)",      type:"Treasury Bills",      principal:250,rate:20.5,invested:"2024-04-01",days:91, maturity:"2024-07-01"},
+  {id:"INV-005",cp:"Zenith Bank Plc",   type:"Fixed Deposit",       principal:150,rate:22,  invested:"2024-04-10",days:60, maturity:"2024-06-09"},
+  {id:"INV-006",cp:"NTB (182-day)",     type:"Treasury Bills",      principal:400,rate:21,  invested:"2024-01-15",days:182,maturity:"2024-07-15"},
+];
+const CASH=[
+  {id:"CA-001",bank:"Access Bank Plc",   acct:"001-234567-001",type:"Current", ccy:"NGN",balance:124.5,restricted:false},
+  {id:"CA-002",bank:"GTBank Ltd",         acct:"0123456789",   type:"Current", ccy:"NGN",balance:87.3, restricted:false},
+  {id:"CA-003",bank:"First Bank Nigeria", acct:"2012345678",   type:"Current", ccy:"NGN",balance:43.8, restricted:true},
+  {id:"CA-004",bank:"Zenith Bank Plc",    acct:"1012345678",   type:"Savings", ccy:"NGN",balance:210.0,restricted:false},
+  {id:"CA-005",bank:"UBA Plc",            acct:"2012398765",   type:"Current", ccy:"NGN",balance:32.1, restricted:false},
+  {id:"CA-006",bank:"Access Bank Plc",    acct:"001-234567-002",type:"Dom (USD)",ccy:"USD",balance:18.4,restricted:false},
+];
+const CASH_TREND=[410,380,445,398,462,490,517,498];
+const CASH_MONTHS=["Nov","Dec","Jan","Feb","Mar","Apr","May","Jun"];
+const ECL_TREND_P=[45.2,48.1,52.4,55.8,61.2,67.4];
+const ECL_TREND_M=["Jan","Feb","Mar","Apr","May","Jun"];
+const LIQ_NET=[498,312,185,-240,420,380,290];
+const LIQ_CUM=[498,810,995,755,1175,1555,1845];
+const LIQ_P=["Now","30d","60d","90d","120d","150d","180d"];
+const GAP_IN=[245,380,510,180,620,850];
+const GAP_OUT=[180,420,290,480,210,320];
+const GAP_P=["0-7d","8-30d","31-60d","61-90d","91-180d","181-365d"];
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+const sum=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);
+const fmt=(n)=>n>=1000?"₦"+(n/1000).toFixed(1)+"B":"₦"+n.toFixed(1)+"M";
+const pct=(n)=>n.toFixed(2)+"%";
+const C={teal:"#00c9a7",gold:"#f5a623",red:"#ff4560",green:"#06d6a0",blue:"#4cc9f0",purple:"#9b5de5",border:"#1a2e4a",card:"#0d1b2e",navy:"#07101f",t2:"#7a90b0",t3:"#4a607a"};
+const PALETTE=[C.teal,C.blue,C.purple,C.gold,C.green,C.red];
+
+// ── ECL ENGINE ─────────────────────────────────────────────────────────────────
+const ECL_P={1:{pd12:.02,pdL:.05,lgd:.45},2:{pd12:.15,pdL:.35,lgd:.55},3:{pd12:.75,pdL:.90,lgd:.65}};
+function calcECL(loans,mult=1){
+  let total=0;
+  const rows=loans.map(l=>{
+    const p=ECL_P[l.stage];
+    const pd=(l.stage===1?p.pd12:p.pdL)*mult;
+    const ecl=pd*p.lgd*l.outstanding;
+    total+=ecl;
+    return{...l,pd,lgd:p.lgd,ead:l.outstanding,ecl:+ecl.toFixed(2),eclRate:+(ecl/l.outstanding*100).toFixed(2)};
   });
+  return{rows,total:+total.toFixed(2),ead:+sum(loans,"outstanding").toFixed(2),coverage:+(total/sum(loans,"outstanding")*100).toFixed(2)};
 }
 
-// ── SHARED COMPONENTS ──────────────────────────────────────────────────────
-function StageBadge({stage}) {
-  const cfg = {1:[C.green,"#0d2b23"],2:[C.gold,"#2b200a"],3:[C.red,"#2b0d12"]};
-  const [col,bg] = cfg[stage]||[C.t2,C.card];
-  return <span style={{color:col,background:bg,border:`1px solid ${col}40`,padding:"2px 8px",borderRadius:4,fontSize:11,fontFamily:"IBM Plex Mono,monospace",fontWeight:600}}>Stage {stage}</span>;
+// ── CHART.JS DEFAULTS ─────────────────────────────────────────────────────────
+Chart.defaults.color=C.t2;
+Chart.defaults.borderColor=C.border;
+Chart.defaults.font.family="'IBM Plex Mono',monospace";
+Chart.defaults.font.size=10;
+const chartInstances={};
+function makeChart(id,config){
+  if(chartInstances[id]){chartInstances[id].destroy();}
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  chartInstances[id]=new Chart(ctx,config);
 }
 
-function KpiCard({label,value,sub,color=C.teal,delta}) {
-  return (
-    <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:10,padding:"18px 20px",position:"relative",overflow:"hidden"}}>
-      <div style={{position:"absolute",top:0,left:0,width:3,height:"100%",background:color,borderRadius:"10px 0 0 10px"}}/>
-      <div style={{color:C.t2,fontSize:10,fontFamily:"IBM Plex Mono,monospace",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>{label}</div>
-      <div style={{color:C.t1,fontSize:22,fontWeight:700,fontFamily:"IBM Plex Mono,monospace",letterSpacing:"-0.02em"}}>{value}</div>
-      {sub && <div style={{color:C.t3,fontSize:11,marginTop:4}}>{sub}</div>}
-      {delta!==undefined && <div style={{color:delta>=0?C.green:C.red,fontSize:10,marginTop:4,fontFamily:"IBM Plex Mono,monospace"}}>{delta>=0?"▲":"▼"} {Math.abs(delta).toFixed(1)}% MoM</div>}
-    </div>
-  );
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function kpi(label,value,sub,color,delta){
+  const deltaHtml=delta!==undefined?'<div class="kpi-delta" style="color:'+(delta>=0?C.green:C.red)+'">'+(delta>=0?"▲":"▼")+Math.abs(delta).toFixed(1)+"% MoM</div>":'';
+  return '<div class="kpi-card"><div class="kpi-bar" style="background:'+color+'"></div><div class="kpi-label">'+label+'</div><div class="kpi-value">'+value+'</div>'+(sub?'<div class="kpi-sub">'+sub+'</div>':'')+deltaHtml+'</div>';
+}
+function stageBadge(s){return'<span class="badge badge-s'+s+'">Stage '+s+'</span>';}
+function colorDPD(d){return d>=90?C.red:d>=30?C.gold:C.green;}
+function colorRating(r){return(r||"").startsWith("A")?C.green:(r||"").startsWith("B")?C.gold:C.red;}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+const UPLOAD_TABS={loans:true,borrowings:true,investments:true,cash:true};
+let currentTab="dashboard";
+function switchTab(tab){
+  document.querySelectorAll(".navtab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="panel-"+tab));
+  document.getElementById("upload-btn").style.display=UPLOAD_TABS[tab]?"inline-block":"none";
+  currentTab=tab;
+  renderTab(tab);
+}
+document.getElementById("navtabs").addEventListener("click",e=>{
+  if(e.target.dataset.tab)switchTab(e.target.dataset.tab);
+});
+document.getElementById("upload-btn").addEventListener("click",()=>openUpload(currentTab));
+
+// ── STATUS BAR ────────────────────────────────────────────────────────────────
+function renderStatusBar(){
+  const ecl=calcECL(LOANS);
+  const items=[
+    ["LOANS",sum(LOANS,"outstanding"),C.teal],
+    ["ECL",ecl.total,C.gold],
+    ["DEBT",sum(BORROWINGS,"outstanding"),C.purple],
+    ["CASH",sum(CASH.filter(a=>a.ccy==="NGN"),"balance"),C.green],
+  ];
+  document.getElementById("sb-items").innerHTML=items.map(([l,v,col])=>
+    '<div class="sb-item"><span class="sb-label">'+l+':</span><span class="sb-val" style="color:'+col+'">'+fmt(v)+'</span></div>'
+  ).join("");
 }
 
-function SectionHead({title,sub}) {
-  return (
-    <div style={{marginBottom:20}} className="fade-in">
-      <h2 style={{color:C.t1,fontSize:16,fontWeight:700,letterSpacing:"-0.01em"}}>{title}</h2>
-      {sub && <p style={{color:C.t2,fontSize:11,marginTop:4,fontFamily:"IBM Plex Mono,monospace"}}>{sub}</p>}
-    </div>
-  );
+// ── RENDER ROUTING ─────────────────────────────────────────────────────────────
+const rendered={};
+function renderTab(tab){
+  if(rendered[tab])return;
+  rendered[tab]=true;
+  ({dashboard:renderDashboard,loans:renderLoans,ecl:renderECL,borrowings:renderBorrowings,investments:renderInvestments,cash:renderCash,liquidity:renderLiquidity})[tab]?.();
 }
 
-function Card({children,style={}}) {
-  return <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:10,padding:20,...style}}>{children}</div>;
-}
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function renderDashboard(){
+  const ecl=calcECL(LOANS);
+  const totalCash=sum(CASH.filter(a=>a.ccy==="NGN"),"balance");
+  const totalLoans=sum(LOANS,"outstanding");
+  const totalDebt=sum(BORROWINGS,"outstanding");
+  const totalInv=sum(INVESTMENTS,"principal");
+  const netLiq=totalCash+totalInv-totalDebt*0.1;
+  const s1=LOANS.filter(l=>l.stage===1),s2=LOANS.filter(l=>l.stage===2),s3=LOANS.filter(l=>l.stage===3);
+  const prodMap={};LOANS.forEach(l=>{prodMap[l.product]=(prodMap[l.product]||0)+l.outstanding;});
+  const prodLabels=Object.keys(prodMap),prodVals=Object.values(prodMap);
+  const buckets={"0-30d":0,"31-60d":0,"61-90d":0,"91-180d":0,">180d":0};
+  const now=new Date("2024-06-01");
+  LOANS.forEach(l=>{const d=Math.max(0,(new Date(l.maturity)-now)/86400000);if(d<=30)buckets["0-30d"]+=l.outstanding;else if(d<=60)buckets["31-60d"]+=l.outstanding;else if(d<=90)buckets["61-90d"]+=l.outstanding;else if(d<=180)buckets["91-180d"]+=l.outstanding;else buckets[">180d"]+=l.outstanding;});
 
-function CardLabel({children}) {
-  return <div style={{color:C.t2,fontSize:10,fontFamily:"IBM Plex Mono,monospace",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:14}}>{children}</div>;
-}
-
-function DataTable({cols,rows,compact=false}) {
-  const fs = compact?11:12, py = compact?7:10, px = compact?10:12;
-  return (
-    <div style={{overflowX:"auto"}}>
-      <table style={{width:"100%",borderCollapse:"collapse",fontSize:fs}}>
-        <thead>
-          <tr>{cols.map(c=>(
-            <th key={c.key} style={{textAlign:c.align||"left",padding:`8px ${px}px`,borderBottom:`1px solid ${C.border}`,color:C.t2,fontFamily:"IBM Plex Mono,monospace",fontWeight:600,fontSize:10,textTransform:"uppercase",letterSpacing:"0.06em",whiteSpace:"nowrap"}}>{c.label}</th>
-          ))}</tr>
-        </thead>
-        <tbody>{rows.map((r,i)=>(
-          <tr key={i} className="row-hover" style={{borderBottom:`1px solid ${C.border}20`}}>
-            {cols.map(c=>(
-              <td key={c.key} style={{padding:`${py}px ${px}px`,textAlign:c.align||"left",color:c.color?c.color(r):C.t1,fontFamily:c.mono?"IBM Plex Mono,monospace":"inherit",whiteSpace:"nowrap"}}>
-                {c.render?c.render(r):r[c.key]}
-              </td>
-            ))}
-          </tr>
-        ))}</tbody>
-      </table>
-    </div>
-  );
-}
-
-const PALETTE = [C.teal,C.blue,C.purple,C.gold,C.green,C.red];
-
-// ── MODULE: DASHBOARD ──────────────────────────────────────────────────────
-function Dashboard() {
-  const eclLoans   = useMemo(()=>calcECL(LOANS),[]);
-  const totalCash  = sum(CASH.filter(a=>a.currency==="NGN"),"balance");
-  const totalLoans = sum(LOANS,"outstanding");
-  const totalECL   = sum(eclLoans,"ecl");
-  const totalDebt  = sum(BORROWINGS,"outstanding");
-  const totalInv   = sum(INVESTMENTS,"principal");
-  const netLiq     = totalCash+totalInv-totalDebt*0.1;
-
-  const stageData = useMemo(()=>[1,2,3].map(s=>{
-    const sl = eclLoans.filter(l=>l.stage===s);
-    return {name:`Stage ${s}`,value:sum(sl,"outstanding"),ecl:sum(sl,"ecl"),count:sl.length,fill:[C.green,C.gold,C.red][s-1]};
-  }),[eclLoans]);
-
-  const prodData = useMemo(()=>{
-    const m={};
-    LOANS.forEach(l=>{m[l.product]=(m[l.product]||0)+l.outstanding});
-    return Object.entries(m).map(([name,value])=>({name,value}));
-  },[]);
-
-  const matData = useMemo(()=>{
-    const now=new Date("2024-06-01"),b={"0-30d":0,"31-60d":0,"61-90d":0,"91-180d":0,">180d":0};
-    LOANS.forEach(l=>{
-      const d=Math.max(0,(new Date(l.maturity)-now)/86400000);
-      if(d<=30)b["0-30d"]+=l.outstanding;
-      else if(d<=60)b["31-60d"]+=l.outstanding;
-      else if(d<=90)b["61-90d"]+=l.outstanding;
-      else if(d<=180)b["91-180d"]+=l.outstanding;
-      else b[">180d"]+=l.outstanding;
-    });
-    return Object.entries(b).map(([period,loans])=>({period,loans}));
-  },[]);
-
-  return (
-    <div className="fade-in">
-      <SectionHead title="Executive Dashboard" sub="Consolidated treasury & credit position — 01 June 2024" />
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginBottom:24}}>
-        <KpiCard label="Total Cash"         value={fmt(totalCash)}  sub="Across 6 accounts"               color={C.teal}   delta={2.4}/>
-        <KpiCard label="Net Liquidity"      value={fmt(netLiq)}     sub="Cash + Investments − Obligations" color={C.blue}   delta={1.8}/>
-        <KpiCard label="Loan Book"          value={fmt(totalLoans)} sub="15 active facilities"             color={C.green}  delta={4.2}/>
-        <KpiCard label="ECL Provision"      value={fmt(totalECL)}   sub={`Coverage: ${pct(totalECL/totalLoans*100)}`} color={C.gold} delta={8.6}/>
-        <KpiCard label="Total Borrowings"   value={fmt(totalDebt)}  sub="6 facilities"                    color={C.purple} delta={-1.2}/>
-        <KpiCard label="Investment Portfolio" value={fmt(totalInv)} sub="Avg yield: 20.9%"                color={C.teal}   delta={3.1}/>
+  document.getElementById("panel-dashboard").innerHTML=`
+  <div class="sec-head"><div class="sec-title">Executive Dashboard</div><div class="sec-sub">Consolidated treasury &amp; credit position — 01 June 2024</div></div>
+  <div class="kpi-grid kpi-grid-3">
+    ${kpi("Total Cash",fmt(totalCash),"Across 6 accounts",C.teal,2.4)}
+    ${kpi("Net Liquidity",fmt(netLiq),"Cash + Investments − Obligations",C.blue,1.8)}
+    ${kpi("Loan Book",fmt(totalLoans),"15 active facilities",C.green,4.2)}
+    ${kpi("ECL Provision",fmt(ecl.total),"Coverage: "+pct(ecl.coverage),C.gold,8.6)}
+    ${kpi("Total Borrowings",fmt(totalDebt),"6 facilities",C.purple,-1.2)}
+    ${kpi("Investment Portfolio",fmt(totalInv),"Avg yield: 20.9%",C.teal,3.1)}
+  </div>
+  <div class="grid-2">
+    <div class="card" style="margin:0"><div class="card-label">Cash Position Trend (₦M)</div><div class="chart-wrap"><canvas id="ch-cashtrend" height="160"></canvas></div></div>
+    <div class="card" style="margin:0"><div class="card-label">Loan Stage Distribution</div><div style="display:flex;align-items:center;gap:16px">
+      <div style="width:170px;flex-shrink:0"><canvas id="ch-stagedist" height="170"></canvas></div>
+      <div style="flex:1">
+        ${[[sum(s1,"outstanding"),sum(calcECL(s1).rows,"ecl"),s1.length,C.green,"Stage 1"],[sum(s2,"outstanding"),sum(calcECL(s2).rows,"ecl"),s2.length,C.gold,"Stage 2"],[sum(s3,"outstanding"),sum(calcECL(s3).rows,"ecl"),s3.length,C.red,"Stage 3"]].map(([v,e,n,col,lbl])=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(26,46,74,.3)">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:2px;background:${col}"></div><span style="color:var(--t2);font-size:11px">${lbl}</span></div>
+          <div style="text-align:right"><div class="mono" style="font-size:12px">${fmt(v)}</div><div style="color:var(--t3);font-size:10px">ECL: ${fmt(e)}</div></div>
+        </div>`).join("")}
       </div>
+    </div></div>
+  </div>
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card" style="margin:0"><div class="card-label">Portfolio by Product (₦M)</div><div class="chart-wrap"><canvas id="ch-product" height="160"></canvas></div></div>
+    <div class="card" style="margin:0"><div class="card-label">Loan Maturity Ladder (₦M)</div><div class="chart-wrap"><canvas id="ch-maturity" height="160"></canvas></div></div>
+  </div>`;
 
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-        <Card>
-          <CardLabel>Cash Position Trend (₦M)</CardLabel>
-          <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={CASH_TREND}>
-              <defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.teal} stopOpacity={0.3}/><stop offset="95%" stopColor={C.teal} stopOpacity={0}/></linearGradient></defs>
-              <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-              <XAxis dataKey="m" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <YAxis tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <Tooltip contentStyle={TP}/>
-              <Area type="monotone" dataKey="v" name="Cash" stroke={C.teal} strokeWidth={2} fill="url(#cg1)" dot={{fill:C.teal,r:3}}/>
-            </AreaChart>
-          </ResponsiveContainer>
-        </Card>
-        <Card>
-          <CardLabel>Loan Stage Distribution (₦M)</CardLabel>
-          <div style={{display:"flex",alignItems:"center",gap:16}}>
-            <ResponsiveContainer width="50%" height={180}>
-              <PieChart>
-                <Pie data={stageData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3} dataKey="value">
-                  {stageData.map((s,i)=><Cell key={i} fill={s.fill}/>)}
-                </Pie>
-                <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-              </PieChart>
-            </ResponsiveContainer>
-            <div style={{flex:1}}>
-              {stageData.map((s,i)=>(
-                <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:`1px solid ${C.border}30`}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <div style={{width:8,height:8,borderRadius:2,background:s.fill}}/>
-                    <span style={{color:C.t2,fontSize:11}}>{s.name}</span>
-                  </div>
-                  <div style={{textAlign:"right"}}>
-                    <div style={{color:C.t1,fontFamily:"IBM Plex Mono,monospace",fontSize:12}}>{fmt(s.value)}</div>
-                    <div style={{color:C.t3,fontSize:10}}>ECL: {fmt(s.ecl)}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-        <Card>
-          <CardLabel>Portfolio by Product (₦M)</CardLabel>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={prodData} layout="vertical">
-              <CartesianGrid stroke={C.border} strokeDasharray="3 3" horizontal={false}/>
-              <XAxis type="number" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <YAxis type="category" dataKey="name" tick={{fill:C.t2,fontSize:10}} axisLine={false} tickLine={false} width={130}/>
-              <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-              <Bar dataKey="value" radius={[0,4,4,0]}>
-                {prodData.map((_,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Card>
-        <Card>
-          <CardLabel>Loan Maturity Ladder (₦M)</CardLabel>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={matData}>
-              <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-              <XAxis dataKey="period" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <YAxis tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-              <Bar dataKey="loans" radius={[4,4,0,0]}>
-                {matData.map((_,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Card>
-      </div>
-    </div>
-  );
+  setTimeout(()=>{
+    makeChart("ch-cashtrend",{type:"line",data:{labels:CASH_MONTHS,datasets:[{label:"Cash (₦M)",data:CASH_TREND,borderColor:C.teal,backgroundColor:"rgba(0,201,167,.15)",fill:true,tension:.4,pointBackgroundColor:C.teal,pointRadius:3}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}}}}});
+    makeChart("ch-stagedist",{type:"doughnut",data:{labels:["Stage 1","Stage 2","Stage 3"],datasets:[{data:[sum(s1,"outstanding"),sum(s2,"outstanding"),sum(s3,"outstanding")],backgroundColor:[C.green,C.gold,C.red],borderColor:C.card,borderWidth:3}]},options:{cutout:"65%",plugins:{legend:{display:false}}}});
+    makeChart("ch-product",{type:"bar",data:{labels:prodLabels,datasets:[{data:prodVals,backgroundColor:PALETTE,borderRadius:4}]},options:{indexAxis:"y",plugins:{legend:{display:false}},scales:{x:{grid:{color:C.border}},y:{grid:{display:false}}}}});
+    makeChart("ch-maturity",{type:"bar",data:{labels:Object.keys(buckets),datasets:[{data:Object.values(buckets),backgroundColor:PALETTE,borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}}}}});
+  },50);
 }
 
-// ── MODULE: LOANS ──────────────────────────────────────────────────────────
-function Loans() {
-  const [filter,setFilter]=useState("all");
-  const [search,setSearch]=useState("");
-  const filtered=useMemo(()=>{
-    let l=LOANS;
-    if(filter!=="all") l=l.filter(x=>x.stage===+filter);
-    if(search) l=l.filter(x=>x.customer.toLowerCase().includes(search.toLowerCase())||x.id.toLowerCase().includes(search.toLowerCase()));
-    return l;
-  },[filter,search]);
-
+// ── LOANS ─────────────────────────────────────────────────────────────────────
+let loanFilter="all",loanSearch="";
+function renderLoans(){
   const total=sum(LOANS,"outstanding");
   const npl=LOANS.filter(l=>l.dpd>=90);
   const aging=[
     {b:"Current",v:sum(LOANS.filter(l=>l.dpd===0),"outstanding")},
-    {b:"1-30d",  v:sum(LOANS.filter(l=>l.dpd>0&&l.dpd<=30),"outstanding")},
-    {b:"31-60d", v:sum(LOANS.filter(l=>l.dpd>30&&l.dpd<=60),"outstanding")},
-    {b:"61-90d", v:sum(LOANS.filter(l=>l.dpd>60&&l.dpd<=90),"outstanding")},
+    {b:"1-30d",v:sum(LOANS.filter(l=>l.dpd>0&&l.dpd<=30),"outstanding")},
+    {b:"31-60d",v:sum(LOANS.filter(l=>l.dpd>30&&l.dpd<=60),"outstanding")},
+    {b:"61-90d",v:sum(LOANS.filter(l=>l.dpd>60&&l.dpd<=90),"outstanding")},
     {b:"91-180d",v:sum(LOANS.filter(l=>l.dpd>90&&l.dpd<=180),"outstanding")},
-    {b:">180d",  v:sum(LOANS.filter(l=>l.dpd>180),"outstanding")},
+    {b:">180d",v:sum(LOANS.filter(l=>l.dpd>180),"outstanding")},
   ];
-  const bstyle=(active)=>({background:active?C.teal:"transparent",color:active?"#000":C.t2,border:`1px solid ${active?C.teal:C.border}`,borderRadius:6,padding:"6px 14px",fontSize:11,cursor:"pointer",fontFamily:"IBM Plex Mono,monospace",fontWeight:600});
-  const cols=[
-    {key:"id",label:"Loan ID",mono:true,color:()=>C.teal},
-    {key:"customer",label:"Customer"},
-    {key:"product",label:"Product",color:()=>C.t2},
-    {key:"outstanding",label:"Outstanding (₦M)",align:"right",mono:true,render:r=>fmt(r.outstanding)},
-    {key:"rate",label:"Rate",align:"right",mono:true,render:r=>`${r.rate}%`},
-    {key:"dpd",label:"DPD",align:"right",mono:true,color:r=>r.dpd>=90?C.red:r.dpd>=30?C.gold:C.green},
-    {key:"stage",label:"Stage",render:r=><StageBadge stage={r.stage}/>},
-    {key:"rating",label:"Rating",mono:true,color:r=>r.rating?.startsWith("A")?C.green:r.rating?.startsWith("B")?C.gold:C.red},
-    {key:"maturity",label:"Maturity",mono:true,color:()=>C.t2},
-  ];
-
-  return (
-    <div className="fade-in">
-      <SectionHead title="Loan Portfolio Management" sub={`${LOANS.length} facilities · Total outstanding: ${fmt(total)}`}/>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-        <KpiCard label="Total Exposure"    value={fmt(total)}                              color={C.teal}/>
-        <KpiCard label="Performing (<90d)" value={fmt(sum(LOANS.filter(l=>l.dpd<90),"outstanding"))} sub={`${LOANS.filter(l=>l.dpd<90).length} loans`} color={C.green}/>
-        <KpiCard label="Non-Performing"    value={fmt(sum(npl,"outstanding"))}             sub={`${npl.length} loans`}     color={C.red}/>
-        <KpiCard label="NPL Ratio"         value={pct(sum(npl,"outstanding")/total*100)}  sub="IFRS 9 Stage 3"            color={C.gold}/>
+  document.getElementById("panel-loans").innerHTML=`
+  <div class="sec-head"><div class="sec-title">Loan Portfolio Management</div><div class="sec-sub">${LOANS.length} facilities &middot; Total outstanding: ${fmt(total)}</div></div>
+  <div class="kpi-grid kpi-grid-4">
+    ${kpi("Total Exposure",fmt(total),"",C.teal)}
+    ${kpi("Performing (<90d)",fmt(sum(LOANS.filter(l=>l.dpd<90),"outstanding")),LOANS.filter(l=>l.dpd<90).length+" loans",C.green)}
+    ${kpi("Non-Performing",fmt(sum(npl,"outstanding")),npl.length+" loans",C.red)}
+    ${kpi("NPL Ratio",pct(sum(npl,"outstanding")/total*100),"IFRS 9 Stage 3",C.gold)}
+  </div>
+  <div class="card"><div class="card-label">Loan Aging Distribution (₦M)</div><canvas id="ch-aging" height="130"></canvas></div>
+  <div class="card">
+    <div class="filter-row">
+      <div class="filter-btns">
+        <button class="fbtn active" data-f="all" onclick="setLoanFilter(this,'all')">All</button>
+        <button class="fbtn" data-f="1" onclick="setLoanFilter(this,'1')">Stage 1</button>
+        <button class="fbtn" data-f="2" onclick="setLoanFilter(this,'2')">Stage 2</button>
+        <button class="fbtn" data-f="3" onclick="setLoanFilter(this,'3')">Stage 3</button>
       </div>
-      <Card style={{marginBottom:16}}>
-        <CardLabel>Loan Aging Distribution (₦M)</CardLabel>
-        <ResponsiveContainer width="100%" height={160}>
-          <BarChart data={aging}>
-            <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-            <XAxis dataKey="b" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-            <YAxis tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-            <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-            <Bar dataKey="v" name="Outstanding" radius={[4,4,0,0]}>
-              {aging.map((_,i)=><Cell key={i} fill={[C.green,C.teal,C.blue,C.gold,C.red,C.red][i]}/>)}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </Card>
-      <Card>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,gap:12,flexWrap:"wrap"}}>
-          <div style={{display:"flex",gap:6}}>
-            {[["all","All"],["1","Stage 1"],["2","Stage 2"],["3","Stage 3"]].map(([v,l])=>(
-              <button key={v} style={bstyle(filter===v)} onClick={()=>setFilter(v)}>{l}</button>
-            ))}
-          </div>
-          <input style={{background:C.navy,border:`1px solid ${C.border}`,borderRadius:6,color:C.t1,padding:"7px 12px",fontSize:12,fontFamily:"IBM Plex Mono,monospace",outline:"none",width:220}} placeholder="Search customer / ID…" value={search} onChange={e=>setSearch(e.target.value)}/>
-        </div>
-        <DataTable cols={cols} rows={filtered} compact/>
-        <div style={{marginTop:12,color:C.t3,fontSize:10,fontFamily:"IBM Plex Mono,monospace"}}>Showing {filtered.length} of {LOANS.length} · Total: {fmt(sum(filtered,"outstanding"))}</div>
-      </Card>
+      <input class="search-input" placeholder="Search customer / ID..." oninput="loanSearch=this.value;renderLoanTable()" />
     </div>
-  );
+    <div id="loan-table"></div>
+  </div>`;
+  setTimeout(()=>{
+    makeChart("ch-aging",{type:"bar",data:{labels:aging.map(a=>a.b),datasets:[{data:aging.map(a=>a.v),backgroundColor:[C.green,C.teal,C.blue,C.gold,C.red,C.red],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}}}}});
+    renderLoanTable();
+  },50);
+}
+function setLoanFilter(btn,f){document.querySelectorAll(".fbtn[data-f]").forEach(b=>b.classList.remove("active"));btn.classList.add("active");loanFilter=f;renderLoanTable();}
+function renderLoanTable(){
+  let rows=LOANS;
+  if(loanFilter!=="all")rows=rows.filter(l=>l.stage===+loanFilter);
+  if(loanSearch)rows=rows.filter(l=>l.customer.toLowerCase().includes(loanSearch.toLowerCase())||l.id.toLowerCase().includes(loanSearch.toLowerCase()));
+  document.getElementById("loan-table").innerHTML=`<div class="tbl-wrap"><table>
+  <thead><tr><th>Loan ID</th><th>Customer</th><th>Product</th><th class="tr">Outstanding</th><th class="tr">Rate</th><th class="tr">DPD</th><th>Stage</th><th>Rating</th><th>Maturity</th></tr></thead>
+  <tbody>${rows.map(l=>`<tr>
+    <td class="mono" style="color:${C.teal}">${l.id}</td>
+    <td>${l.customer}</td>
+    <td style="color:var(--t2)">${l.product}</td>
+    <td class="tr mono">${fmt(l.outstanding)}</td>
+    <td class="tr mono">${l.rate}%</td>
+    <td class="tr mono" style="color:${colorDPD(l.dpd)}">${l.dpd}</td>
+    <td>${stageBadge(l.stage)}</td>
+    <td class="mono" style="color:${colorRating(l.rating)}">${l.rating}</td>
+    <td class="mono" style="color:var(--t2)">${l.maturity}</td>
+  </tr>`).join("")}</tbody>
+  </table></div>
+  <div class="tbl-footer">Showing ${rows.length} of ${LOANS.length} &middot; Total: ${fmt(sum(rows,"outstanding"))}</div>`;
 }
 
-// ── MODULE: ECL ────────────────────────────────────────────────────────────
-function ECLModule() {
-  const [pdAdj,setPdAdj]=useState(0);
-  const eclLoans=useMemo(()=>calcECL(LOANS,1+pdAdj/100),[pdAdj]);
-  const totalECL=sum(eclLoans,"ecl");
-  const totalEAD=sum(eclLoans,"ead");
-  const coverage=totalECL/totalEAD*100;
-  const stageStats=[1,2,3].map(s=>{const sl=eclLoans.filter(l=>l.stage===s);return{stage:s,count:sl.length,ead:sum(sl,"ead"),ecl:sum(sl,"ecl")};});
-
-  const cols=[
-    {key:"id",label:"Loan ID",mono:true,color:()=>C.teal},
-    {key:"customer",label:"Customer"},
-    {key:"stage",label:"Stage",render:r=><StageBadge stage={r.stage}/>},
-    {key:"ead",label:"EAD (₦M)",align:"right",mono:true,render:r=>fmt(r.ead)},
-    {key:"pd",label:"PD",align:"right",mono:true,render:r=>pct(r.pd*100),color:r=>r.pd>.5?C.red:r.pd>.1?C.gold:C.green},
-    {key:"lgd",label:"LGD",align:"right",mono:true,render:r=>pct(r.lgd*100)},
-    {key:"ecl",label:"ECL (₦M)",align:"right",mono:true,render:r=>fmt(r.ecl),color:r=>r.ecl>50?C.red:r.ecl>20?C.gold:C.green},
-    {key:"eclRate",label:"ECL Rate",align:"right",mono:true,render:r=>`${r.eclRate}%`,color:r=>r.eclRate>50?C.red:r.eclRate>15?C.gold:C.teal},
-  ];
-
-  return (
-    <div className="fade-in">
-      <SectionHead title="Expected Credit Loss (ECL) Model" sub="IFRS 9 compliant · Stage 1: 12-month ECL · Stage 2 & 3: Lifetime ECL"/>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-        <KpiCard label="Total ECL Provision" value={fmt(totalECL)}              color={C.gold}/>
-        <KpiCard label="Coverage Ratio"      value={pct(coverage)}             sub="ECL / EAD" color={C.teal}/>
-        <KpiCard label="Stage 2 Exposure"    value={fmt(stageStats[1].ead)}    sub={`${stageStats[1].count} loans`} color={C.gold}/>
-        <KpiCard label="Stage 3 Exposure"    value={fmt(stageStats[2].ead)}    sub={`${stageStats[2].count} loans`} color={C.red}/>
+// ── ECL ───────────────────────────────────────────────────────────────────────
+function renderECL(){
+  const ecl=calcECL(LOANS);
+  const s=[1,2,3].map(s=>{const sl=LOANS.filter(l=>l.stage===s);const r=calcECL(sl);return{stage:s,count:sl.length,ead:sum(sl,"outstanding"),ecl:r.total};});
+  document.getElementById("panel-ecl").innerHTML=`
+  <div class="sec-head"><div class="sec-title">Expected Credit Loss (ECL) Model</div><div class="sec-sub">IFRS 9 compliant &middot; Stage 1: 12-month ECL &middot; Stage 2 &amp; 3: Lifetime ECL</div></div>
+  <div class="kpi-grid kpi-grid-4">
+    ${kpi("Total ECL Provision",fmt(ecl.total),"",C.gold)}
+    ${kpi("Coverage Ratio",pct(ecl.coverage),"ECL / EAD",C.teal)}
+    ${kpi("Stage 2 Exposure",fmt(s[1].ead),s[1].count+" loans",C.gold)}
+    ${kpi("Stage 3 Exposure",fmt(s[2].ead),s[2].count+" loans",C.red)}
+  </div>
+  <div class="grid-2">
+    <div class="card" style="margin:0"><div class="card-label">ECL Provision Trend (₦M)</div><canvas id="ch-ecl-trend" height="160"></canvas></div>
+    <div class="card" style="margin:0"><div class="card-label">Stage Distribution</div>
+      <div id="stage-bars">${s.map((st,i)=>{const col=[C.green,C.gold,C.red][i];const p=(st.ead/ecl.ead*100);return`
+        <div class="stage-item">
+          <div class="stage-row"><span style="color:var(--t2);font-size:11px">Stage ${st.stage} (${st.count} loans)</span><span class="mono" style="font-size:11px;color:${col}">${fmt(st.ead)} &middot; ECL: ${fmt(st.ecl)}</span></div>
+          <div class="stage-track"><div class="stage-fill" style="width:${p.toFixed(1)}%;background:${col}"></div></div>
+          <div class="stage-pct">${p.toFixed(1)}% of portfolio</div>
+        </div>`}).join("")}
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-        <Card>
-          <CardLabel>ECL Provision Trend (₦M)</CardLabel>
-          <ResponsiveContainer width="100%" height={160}>
-            <LineChart data={ECL_TREND}>
-              <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-              <XAxis dataKey="m" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <YAxis yAxisId="l" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <YAxis yAxisId="r" orientation="right" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <Tooltip contentStyle={TP}/>
-              <Legend wrapperStyle={{fontSize:10,color:C.t2}}/>
-              <Line yAxisId="l" type="monotone" dataKey="prov" stroke={C.gold}  strokeWidth={2} dot={{fill:C.gold,r:3}}  name="Provision (₦M)"/>
-              <Line yAxisId="r" type="monotone" dataKey="cov"  stroke={C.teal}  strokeWidth={2} dot={{fill:C.teal,r:3}}  name="Coverage %" strokeDasharray="5 5"/>
-            </LineChart>
-          </ResponsiveContainer>
-        </Card>
-        <Card>
-          <CardLabel>Stage Distribution</CardLabel>
-          {stageStats.map((s,i)=>{
-            const p=s.ead/totalEAD*100,cols=[C.green,C.gold,C.red];
-            return (
-              <div key={i} style={{marginBottom:14}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                  <span style={{color:C.t2,fontSize:11}}>Stage {s.stage} ({s.count} loans)</span>
-                  <span style={{color:cols[i],fontFamily:"IBM Plex Mono,monospace",fontSize:11}}>{fmt(s.ead)} · ECL: {fmt(s.ecl)}</span>
-                </div>
-                <div style={{background:C.navy,borderRadius:4,height:8,overflow:"hidden"}}>
-                  <div style={{width:`${p}%`,height:"100%",background:cols[i],borderRadius:4,transition:"width 0.6s ease"}}/>
-                </div>
-                <div style={{color:C.t3,fontSize:10,marginTop:2,fontFamily:"IBM Plex Mono,monospace"}}>{p.toFixed(1)}% of portfolio</div>
-              </div>
-            );
-          })}
-          <div style={{marginTop:16,borderTop:`1px solid ${C.border}`,paddingTop:14}}>
-            <div style={{color:C.t2,fontSize:11,marginBottom:8}}>PD Stress Test — Scenario Analysis</div>
-            <div style={{display:"flex",alignItems:"center",gap:12}}>
-              <input type="range" min={-50} max={100} value={pdAdj} onChange={e=>setPdAdj(+e.target.value)} style={{flex:1,accentColor:C.teal}}/>
-              <span style={{color:pdAdj>0?C.red:C.green,fontFamily:"IBM Plex Mono,monospace",fontSize:12,minWidth:55}}>{pdAdj>0?"+":""}{pdAdj}%</span>
-            </div>
-            <div style={{color:C.t3,fontSize:10,marginTop:6}}>
-              Stressed ECL: <span style={{color:C.gold,fontFamily:"IBM Plex Mono,monospace"}}>{fmt(totalECL)}</span> · Coverage: <span style={{color:C.teal,fontFamily:"IBM Plex Mono,monospace"}}>{pct(coverage)}</span>
-            </div>
-          </div>
-        </Card>
+      <div class="stress-section">
+        <div class="stress-label">PD Stress Test — Scenario Analysis</div>
+        <div class="stress-row"><input type="range" min="-50" max="100" value="0" id="pd-slider" oninput="updateStress(this.value)"/><span class="stress-val c-green" id="pd-val">0%</span></div>
+        <div class="stress-result" id="stress-result">Stressed ECL: <span class="mono c-gold">${fmt(ecl.total)}</span> &middot; Coverage: <span class="mono" style="color:${C.teal}">${pct(ecl.coverage)}</span></div>
       </div>
-      <Card style={{marginBottom:16}}>
-        <CardLabel>Credit Risk Heatmap — EAD vs ECL per Facility (₦M)</CardLabel>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={eclLoans.map(l=>({name:l.customer.split(" ")[0],ead:l.ead,ecl:l.ecl}))}>
-            <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-            <XAxis dataKey="name" tick={{fill:C.t3,fontSize:9}} axisLine={false} tickLine={false}/>
-            <YAxis tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-            <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-            <Legend wrapperStyle={{fontSize:10,color:C.t2}}/>
-            <Bar dataKey="ead" name="EAD" fill={C.blue}  opacity={0.5} radius={[2,2,0,0]}/>
-            <Bar dataKey="ecl" name="ECL" fill={C.gold}  radius={[2,2,0,0]}/>
-          </BarChart>
-        </ResponsiveContainer>
-      </Card>
-      <Card>
-        <CardLabel>Loan-level ECL Schedule</CardLabel>
-        <DataTable cols={cols} rows={eclLoans} compact/>
-        <div style={{marginTop:12,padding:"10px 0",borderTop:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between"}}>
-          <span style={{color:C.t2,fontSize:11,fontFamily:"IBM Plex Mono,monospace"}}>TOTAL ECL PROVISION</span>
-          <span style={{color:C.gold,fontSize:14,fontFamily:"IBM Plex Mono,monospace",fontWeight:700}}>{fmt(totalECL)}</span>
-        </div>
-      </Card>
     </div>
-  );
+  </div>
+  <div class="card" style="margin-top:16px"><div class="card-label">Credit Risk Heatmap — EAD vs ECL per Facility (₦M)</div><canvas id="ch-ecl-heat" height="180"></canvas></div>
+  <div class="card"><div class="card-label">Loan-level ECL Schedule</div>
+    <div class="tbl-wrap"><table>
+    <thead><tr><th>Loan ID</th><th>Customer</th><th>Stage</th><th class="tr">EAD (₦M)</th><th class="tr">PD</th><th class="tr">LGD</th><th class="tr">ECL (₦M)</th><th class="tr">ECL Rate</th></tr></thead>
+    <tbody>${ecl.rows.map(l=>`<tr>
+      <td class="mono" style="color:${C.teal}">${l.id}</td>
+      <td>${l.customer}</td>
+      <td>${stageBadge(l.stage)}</td>
+      <td class="tr mono">${fmt(l.ead)}</td>
+      <td class="tr mono" style="color:${l.pd>.5?C.red:l.pd>.1?C.gold:C.green}">${pct(l.pd*100)}</td>
+      <td class="tr mono">${pct(l.lgd*100)}</td>
+      <td class="tr mono" style="color:${l.ecl>50?C.red:l.ecl>20?C.gold:C.green}">${fmt(l.ecl)}</td>
+      <td class="tr mono" style="color:${l.eclRate>50?C.red:l.eclRate>15?C.gold:C.teal}">${l.eclRate.toFixed(2)}%</td>
+    </tr>`).join("")}</tbody>
+    </table></div>
+    <div class="tbl-total"><span class="mono" style="color:var(--t2);font-size:11px">TOTAL ECL PROVISION</span><span class="mono c-gold" style="font-size:14px;font-weight:700">${fmt(ecl.total)}</span></div>
+  </div>`;
+  setTimeout(()=>{
+    makeChart("ch-ecl-trend",{type:"line",data:{labels:ECL_TREND_M,datasets:[{label:"Provision (₦M)",data:ECL_TREND_P,borderColor:C.gold,backgroundColor:"rgba(245,166,35,.1)",fill:true,tension:.4,yAxisID:"y"},{label:"Coverage %",data:[3.1,3.3,3.6,3.8,4.1,4.4],borderColor:C.teal,fill:false,tension:.4,borderDash:[5,5],yAxisID:"y2"}]},options:{plugins:{legend:{labels:{color:C.t2}}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}},y2:{position:"right",grid:{display:false}}}}});
+    makeChart("ch-ecl-heat",{type:"bar",data:{labels:ecl.rows.map(l=>l.customer.split(" ")[0]),datasets:[{label:"EAD",data:ecl.rows.map(l=>l.ead),backgroundColor:"rgba(76,201,240,.5)",borderRadius:2},{label:"ECL",data:ecl.rows.map(l=>l.ecl),backgroundColor:C.gold,borderRadius:2}]},options:{plugins:{legend:{labels:{color:C.t2}}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}}}}});
+  },50);
+}
+function updateStress(v){
+  const mult=1+v/100;
+  const ecl=calcECL(LOANS,mult);
+  const el=document.getElementById("pd-val");
+  if(el){el.textContent=(v>0?"+":"")+v+"%";el.style.color=v>0?C.red:C.green;}
+  const rs=document.getElementById("stress-result");
+  if(rs)rs.innerHTML='Stressed ECL: <span class="mono c-gold">'+fmt(ecl.total)+'</span> &middot; Coverage: <span class="mono" style="color:'+C.teal+'">'+pct(ecl.coverage)+'</span>';
 }
 
-// ── MODULE: BORROWINGS ─────────────────────────────────────────────────────
-function Borrowings() {
+// ── BORROWINGS ────────────────────────────────────────────────────────────────
+function renderBorrowings(){
   const total=sum(BORROWINGS,"outstanding");
   const wacd=BORROWINGS.reduce((a,b)=>a+(b.outstanding/total)*b.rate,0);
-  const matData=useMemo(()=>{
-    const now=new Date("2024-06-01");
-    return BORROWINGS.map(b=>({lender:b.lender.split(" ")[0],outstanding:b.outstanding,days:Math.max(0,Math.round((new Date(b.maturity)-now)/86400000))})).sort((a,b)=>a.days-b.days);
-  },[]);
-  const typeData=useMemo(()=>{const m={};BORROWINGS.forEach(b=>{m[b.type]=(m[b.type]||0)+b.outstanding});return Object.entries(m).map(([name,value])=>({name,value}));},[]);
-  const cols=[
-    {key:"id",label:"ID",mono:true,color:()=>C.teal},
-    {key:"lender",label:"Lender"},
-    {key:"type",label:"Type",color:()=>C.t2},
-    {key:"outstanding",label:"Outstanding (₦M)",align:"right",mono:true,render:r=>fmt(r.outstanding)},
-    {key:"rate",label:"Rate",align:"right",mono:true,render:r=>`${r.rate}%`,color:r=>r.rate>20?C.red:r.rate>16?C.gold:C.green},
-    {key:"tenor",label:"Tenor",align:"right",mono:true,render:r=>`${r.tenor}mo`},
-    {key:"repayment",label:"Repayment",color:()=>C.t2},
-    {key:"maturity",label:"Maturity",mono:true,color:()=>C.t2},
-  ];
-  return (
-    <div className="fade-in">
-      <SectionHead title="Borrowings Management" sub="Debt facilities · Cost of funds analysis"/>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-        <KpiCard label="Total Debt"      value={fmt(total)}               color={C.purple}/>
-        <KpiCard label="WACD"            value={pct(wacd)}                sub="Weighted avg. cost of debt" color={C.gold}/>
-        <KpiCard label="Facilities"      value={BORROWINGS.length}        sub="Active borrowings"          color={C.teal}/>
-        <KpiCard label="Interco. Debt"   value={fmt(BORROWINGS.find(b=>b.type==="Intercompany Loan")?.outstanding||0)} sub="Pan-African Holdings" color={C.blue}/>
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-        <Card>
-          <CardLabel>Debt Maturity Profile (₦M) — colour by time to maturity</CardLabel>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={matData}>
-              <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-              <XAxis dataKey="lender" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <YAxis tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-              <Bar dataKey="outstanding" name="Outstanding" radius={[4,4,0,0]}>
-                {matData.map((d,i)=><Cell key={i} fill={d.days<180?C.red:d.days<360?C.gold:C.teal}/>)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-          <div style={{display:"flex",gap:14,marginTop:10}}>
-            {[["< 180d",C.red],["180-360d",C.gold],["> 360d",C.teal]].map(([l,col])=>(
-              <div key={l} style={{display:"flex",alignItems:"center",gap:5}}><div style={{width:8,height:8,borderRadius:2,background:col}}/><span style={{color:C.t3,fontSize:10}}>{l}</span></div>
-            ))}
-          </div>
-        </Card>
-        <Card>
-          <CardLabel>Debt by Facility Type</CardLabel>
-          <ResponsiveContainer width="100%" height={180}>
-            <PieChart>
-              <Pie data={typeData} cx="50%" cy="50%" outerRadius={75} paddingAngle={3} dataKey="value">
-                {typeData.map((_,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
-              </Pie>
-              <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-              <Legend wrapperStyle={{fontSize:10,color:C.t2}}/>
-            </PieChart>
-          </ResponsiveContainer>
-        </Card>
-      </div>
-      <Card>
-        <CardLabel>Borrowings Schedule</CardLabel>
-        <DataTable cols={cols} rows={BORROWINGS}/>
-      </Card>
-    </div>
-  );
+  const now=new Date("2024-06-01");
+  const typeMap={};BORROWINGS.forEach(b=>{typeMap[b.type]=(typeMap[b.type]||0)+b.outstanding;});
+  document.getElementById("panel-borrowings").innerHTML=`
+  <div class="sec-head"><div class="sec-title">Borrowings Management</div><div class="sec-sub">Debt facilities &middot; Cost of funds analysis</div></div>
+  <div class="kpi-grid kpi-grid-4">
+    ${kpi("Total Debt",fmt(total),"",C.purple)}
+    ${kpi("WACD",pct(wacd),"Weighted avg. cost of debt",C.gold)}
+    ${kpi("Facilities",BORROWINGS.length,"Active borrowings",C.teal)}
+    ${kpi("Interco. Debt",fmt(BORROWINGS.find(b=>b.type==="Intercompany Loan")?.outstanding||0),"Pan-African Holdings",C.blue)}
+  </div>
+  <div class="grid-2">
+    <div class="card" style="margin:0"><div class="card-label">Debt Maturity Profile (₦M)</div><canvas id="ch-debt-mat" height="180"></canvas></div>
+    <div class="card" style="margin:0"><div class="card-label">Debt by Facility Type</div><canvas id="ch-debt-type" height="180"></canvas></div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="card-label">Borrowings Schedule</div>
+  <div class="tbl-wrap"><table>
+  <thead><tr><th>ID</th><th>Lender</th><th>Type</th><th class="tr">Outstanding (₦M)</th><th class="tr">Rate</th><th class="tr">Tenor</th><th>Repayment</th><th>Maturity</th></tr></thead>
+  <tbody>${BORROWINGS.map(b=>`<tr>
+    <td class="mono" style="color:${C.teal}">${b.id}</td>
+    <td>${b.lender}</td>
+    <td style="color:var(--t2)">${b.type}</td>
+    <td class="tr mono">${fmt(b.outstanding)}</td>
+    <td class="tr mono" style="color:${b.rate>20?C.red:b.rate>16?C.gold:C.green}">${b.rate}%</td>
+    <td class="tr mono">${b.tenor}mo</td>
+    <td style="color:var(--t2)">${b.repayment}</td>
+    <td class="mono" style="color:var(--t2)">${b.maturity}</td>
+  </tr>`).join("")}</tbody>
+  </table></div></div>`;
+  setTimeout(()=>{
+    const matD=BORROWINGS.map(b=>({l:b.lender.split(" ")[0],v:b.outstanding,days:Math.max(0,(new Date(b.maturity)-now)/86400000)})).sort((a,b)=>a.days-b.days);
+    makeChart("ch-debt-mat",{type:"bar",data:{labels:matD.map(d=>d.l),datasets:[{data:matD.map(d=>d.v),backgroundColor:matD.map(d=>d.days<180?C.red:d.days<360?C.gold:C.teal),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}}}}});
+    makeChart("ch-debt-type",{type:"doughnut",data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PALETTE,borderColor:C.card,borderWidth:3}]},options:{plugins:{legend:{labels:{color:C.t2}}}}});
+  },50);
 }
 
-// ── MODULE: INVESTMENTS ────────────────────────────────────────────────────
-function Investments() {
+// ── INVESTMENTS ───────────────────────────────────────────────────────────────
+function renderInvestments(){
   const total=sum(INVESTMENTS,"principal");
-  const interest=useMemo(()=>INVESTMENTS.reduce((a,inv)=>a+inv.principal*(inv.rate/100)*(inv.days/365),0),[]);
-  const avgYield=INVESTMENTS.reduce((a,inv)=>a+(inv.principal/total)*inv.rate,0);
-  const typeData=useMemo(()=>{const m={};INVESTMENTS.forEach(i=>{m[i.type]=(m[i.type]||0)+i.principal});return Object.entries(m).map(([name,value])=>({name,value}));},[]);
-  const matData=INVESTMENTS.map(i=>({cp:i.counterparty.split(" ")[0],principal:i.principal,interest:+(i.principal*(i.rate/100)*(i.days/365)).toFixed(2)}));
-  const cols=[
-    {key:"id",label:"ID",mono:true,color:()=>C.teal},
-    {key:"counterparty",label:"Counterparty"},
-    {key:"type",label:"Type",color:()=>C.t2},
-    {key:"principal",label:"Principal (₦M)",align:"right",mono:true,render:r=>fmt(r.principal)},
-    {key:"rate",label:"Rate",align:"right",mono:true,render:r=>`${r.rate}%`,color:()=>C.green},
-    {key:"days",label:"Tenor",align:"right",mono:true,render:r=>`${r.days}d`},
-    {key:"dateInvested",label:"Date",mono:true,color:()=>C.t2},
-    {key:"maturity",label:"Maturity",mono:true,color:()=>C.t2},
-    {key:"int",label:"Interest (₦M)",align:"right",mono:true,render:r=>fmt(r.principal*(r.rate/100)*(r.days/365)),color:()=>C.gold},
-  ];
-  return (
-    <div className="fade-in">
-      <SectionHead title="Investment Portfolio" sub="Treasury placements · Yield analysis"/>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-        <KpiCard label="Portfolio Value"  value={fmt(total)}         color={C.teal}/>
-        <KpiCard label="Projected Interest" value={fmt(interest)}   sub="Full tenor"       color={C.gold}/>
-        <KpiCard label="Avg. Yield"       value={pct(avgYield)}     sub="Weighted avg."    color={C.green}/>
-        <KpiCard label="Instruments"      value={INVESTMENTS.length} sub="Active placements" color={C.blue}/>
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:16,marginBottom:16}}>
-        <Card>
-          <CardLabel>Investment Maturity Ladder — Principal + Interest (₦M)</CardLabel>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={matData}>
-              <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-              <XAxis dataKey="cp" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <YAxis tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-              <Legend wrapperStyle={{fontSize:10,color:C.t2}}/>
-              <Bar dataKey="principal" name="Principal" fill={C.teal}  stackId="a"/>
-              <Bar dataKey="interest"  name="Interest"  fill={C.gold}  stackId="a" radius={[4,4,0,0]}/>
-            </BarChart>
-          </ResponsiveContainer>
-        </Card>
-        <Card>
-          <CardLabel>Portfolio Mix</CardLabel>
-          <ResponsiveContainer width="100%" height={180}>
-            <PieChart>
-              <Pie data={typeData} cx="50%" cy="50%" outerRadius={75} paddingAngle={3} dataKey="value">
-                {typeData.map((_,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
-              </Pie>
-              <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-              <Legend wrapperStyle={{fontSize:10,color:C.t2}}/>
-            </PieChart>
-          </ResponsiveContainer>
-        </Card>
-      </div>
-      <Card>
-        <CardLabel>Investment Schedule</CardLabel>
-        <DataTable cols={cols} rows={INVESTMENTS}/>
-      </Card>
-    </div>
-  );
+  const interest=INVESTMENTS.reduce((a,i)=>a+i.principal*(i.rate/100)*(i.days/365),0);
+  const avgY=INVESTMENTS.reduce((a,i)=>a+(i.principal/total)*i.rate,0);
+  const typeMap={};INVESTMENTS.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
+  document.getElementById("panel-investments").innerHTML=`
+  <div class="sec-head"><div class="sec-title">Investment Portfolio</div><div class="sec-sub">Treasury placements &middot; Yield analysis</div></div>
+  <div class="kpi-grid kpi-grid-4">
+    ${kpi("Portfolio Value",fmt(total),"",C.teal)}
+    ${kpi("Projected Interest",fmt(interest),"Full tenor",C.gold)}
+    ${kpi("Avg. Yield",pct(avgY),"Weighted average",C.green)}
+    ${kpi("Instruments",INVESTMENTS.length,"Active placements",C.blue)}
+  </div>
+  <div class="grid-3-2">
+    <div class="card" style="margin:0"><div class="card-label">Maturity Ladder — Principal + Interest (₦M)</div><canvas id="ch-inv-ladder" height="180"></canvas></div>
+    <div class="card" style="margin:0"><div class="card-label">Portfolio Mix</div><canvas id="ch-inv-mix" height="180"></canvas></div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="card-label">Investment Schedule</div>
+  <div class="tbl-wrap"><table>
+  <thead><tr><th>ID</th><th>Counterparty</th><th>Type</th><th class="tr">Principal (₦M)</th><th class="tr">Rate</th><th class="tr">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="tr">Interest (₦M)</th></tr></thead>
+  <tbody>${INVESTMENTS.map(i=>`<tr>
+    <td class="mono" style="color:${C.teal}">${i.id}</td>
+    <td>${i.cp}</td>
+    <td style="color:var(--t2)">${i.type}</td>
+    <td class="tr mono">${fmt(i.principal)}</td>
+    <td class="tr mono" style="color:${C.green}">${i.rate}%</td>
+    <td class="tr mono">${i.days}d</td>
+    <td class="mono" style="color:var(--t2)">${i.invested}</td>
+    <td class="mono" style="color:var(--t2)">${i.maturity}</td>
+    <td class="tr mono" style="color:${C.gold}">${fmt(i.principal*(i.rate/100)*(i.days/365))}</td>
+  </tr>`).join("")}</tbody>
+  </table></div></div>`;
+  setTimeout(()=>{
+    makeChart("ch-inv-ladder",{type:"bar",data:{labels:INVESTMENTS.map(i=>i.cp.split(" ")[0]),datasets:[{label:"Principal",data:INVESTMENTS.map(i=>i.principal),backgroundColor:C.teal,stack:"a"},{label:"Interest",data:INVESTMENTS.map(i=>+(i.principal*(i.rate/100)*(i.days/365)).toFixed(2)),backgroundColor:C.gold,borderRadius:4,stack:"a"}]},options:{plugins:{legend:{labels:{color:C.t2}}},scales:{x:{grid:{color:C.border},stacked:true},y:{grid:{color:C.border},stacked:true}}}});
+    makeChart("ch-inv-mix",{type:"doughnut",data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PALETTE,borderColor:C.card,borderWidth:3}]},options:{plugins:{legend:{labels:{color:C.t2}}}}});
+  },50);
 }
 
-// ── MODULE: CASH ───────────────────────────────────────────────────────────
-function CashPosition() {
-  const ngn=CASH.filter(a=>a.currency==="NGN");
-  const usd=CASH.filter(a=>a.currency==="USD");
-  const totalNGN=sum(ngn,"balance");
-  const unres=sum(ngn.filter(a=>!a.restricted),"balance");
-  const res=sum(ngn.filter(a=>a.restricted),"balance");
-  const totalUSD=sum(usd,"balance");
-  const bankData=ngn.map(a=>({bank:a.bank.split(" ")[0],balance:a.balance,restricted:a.restricted}));
-  const cols=[
-    {key:"id",label:"Account ID",mono:true,color:()=>C.teal},
-    {key:"bank",label:"Bank"},
-    {key:"account",label:"Account No.",mono:true,color:()=>C.t2},
-    {key:"type",label:"Type",color:()=>C.t2},
-    {key:"currency",label:"CCY",mono:true,color:r=>r.currency==="USD"?C.gold:C.t1},
-    {key:"balance",label:"Balance",align:"right",mono:true,render:r=>r.currency==="USD"?`$${r.balance.toFixed(2)}M`:fmt(r.balance)},
-    {key:"status",label:"Status",render:r=><span style={{color:r.restricted?C.red:C.green,fontFamily:"IBM Plex Mono,monospace",fontSize:11}}>{r.restricted?"🔒 Restricted":"✓ Available"}</span>},
-  ];
-  return (
-    <div className="fade-in">
-      <SectionHead title="Cash Position" sub="Real-time treasury balances across all accounts"/>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-        <KpiCard label="Total NGN Cash"     value={fmt(totalNGN)} color={C.teal}   delta={1.5}/>
-        <KpiCard label="Unrestricted Cash"  value={fmt(unres)}    sub="Available for use" color={C.green}/>
-        <KpiCard label="Restricted Cash"    value={fmt(res)}      sub="Encumbered"        color={C.red}/>
-        <KpiCard label="FX Holdings (USD)"  value={`$${totalUSD.toFixed(1)}M`} sub={`≈ ₦${(totalUSD*1580).toFixed(0)}M`} color={C.gold}/>
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-        <Card>
-          <CardLabel>Cash Trend (₦M)</CardLabel>
-          <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={CASH_TREND}>
-              <defs><linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.teal} stopOpacity={0.25}/><stop offset="95%" stopColor={C.teal} stopOpacity={0}/></linearGradient></defs>
-              <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-              <XAxis dataKey="m" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <YAxis tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <Tooltip contentStyle={TP}/>
-              <Area type="monotone" dataKey="v" name="Cash" stroke={C.teal} strokeWidth={2} fill="url(#cg2)" dot={{fill:C.teal,r:3}}/>
-            </AreaChart>
-          </ResponsiveContainer>
-        </Card>
-        <Card>
-          <CardLabel>Cash by Bank (₦M)</CardLabel>
-          <ResponsiveContainer width="100%" height={180}>
-            <BarChart data={bankData}>
-              <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-              <XAxis dataKey="bank" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <YAxis tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-              <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-              <Bar dataKey="balance" name="Balance" radius={[4,4,0,0]}>
-                {bankData.map((d,i)=><Cell key={i} fill={d.restricted?C.red:PALETTE[i%PALETTE.length]}/>)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Card>
-      </div>
-      <Card>
-        <CardLabel>Bank Account Balances</CardLabel>
-        <DataTable cols={cols} rows={CASH}/>
-      </Card>
-    </div>
-  );
+// ── CASH ──────────────────────────────────────────────────────────────────────
+function renderCash(){
+  const ngn=CASH.filter(a=>a.ccy==="NGN");
+  const usd=CASH.filter(a=>a.ccy==="USD");
+  const totalNGN=sum(ngn,"balance"),unres=sum(ngn.filter(a=>!a.restricted),"balance"),res=sum(ngn.filter(a=>a.restricted),"balance"),totalUSD=sum(usd,"balance");
+  document.getElementById("panel-cash").innerHTML=`
+  <div class="sec-head"><div class="sec-title">Cash Position</div><div class="sec-sub">Real-time treasury balances across all accounts</div></div>
+  <div class="kpi-grid kpi-grid-4">
+    ${kpi("Total NGN Cash",fmt(totalNGN),"Across 5 NGN accounts",C.teal,1.5)}
+    ${kpi("Unrestricted Cash",fmt(unres),"Available for use",C.green)}
+    ${kpi("Restricted Cash",fmt(res),"Encumbered",C.red)}
+    ${kpi("FX Holdings (USD)","$"+totalUSD.toFixed(1)+"M","≈ ₦"+(totalUSD*1580).toFixed(0)+"M",C.gold)}
+  </div>
+  <div class="grid-2">
+    <div class="card" style="margin:0"><div class="card-label">Cash Trend (₦M)</div><canvas id="ch-cash-trend2" height="180"></canvas></div>
+    <div class="card" style="margin:0"><div class="card-label">Cash by Bank (₦M)</div><canvas id="ch-cash-bank" height="180"></canvas></div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="card-label">Bank Account Balances</div>
+  <div class="tbl-wrap"><table>
+  <thead><tr><th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="tr">Balance</th><th>Status</th></tr></thead>
+  <tbody>${CASH.map(a=>`<tr>
+    <td class="mono" style="color:${C.teal}">${a.id}</td>
+    <td>${a.bank}</td>
+    <td class="mono" style="color:var(--t2)">${a.acct}</td>
+    <td style="color:var(--t2)">${a.type}</td>
+    <td class="mono" style="color:${a.ccy==="USD"?C.gold:"inherit"}">${a.ccy}</td>
+    <td class="tr mono">${a.ccy==="USD"?"$"+a.balance.toFixed(2)+"M":fmt(a.balance)}</td>
+    <td class="mono" style="color:${a.restricted?C.red:C.green};font-size:11px">${a.restricted?"🔒 Restricted":"✓ Available"}</td>
+  </tr>`).join("")}</tbody>
+  </table></div></div>`;
+  setTimeout(()=>{
+    makeChart("ch-cash-trend2",{type:"line",data:{labels:CASH_MONTHS,datasets:[{label:"Cash (₦M)",data:CASH_TREND,borderColor:C.teal,backgroundColor:"rgba(0,201,167,.15)",fill:true,tension:.4,pointBackgroundColor:C.teal,pointRadius:3}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}}}}});
+    const bankD=ngn.map(a=>({bank:a.bank.split(" ")[0],balance:a.balance,restricted:a.restricted}));
+    makeChart("ch-cash-bank",{type:"bar",data:{labels:bankD.map(d=>d.bank),datasets:[{data:bankD.map(d=>d.balance),backgroundColor:bankD.map((d,i)=>d.restricted?C.red:PALETTE[i%PALETTE.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}}}}});
+  },50);
 }
 
-// ── MODULE: LIQUIDITY ──────────────────────────────────────────────────────
-function Liquidity() {
-  const totalCash=sum(CASH.filter(a=>a.currency==="NGN"),"balance");
+// ── LIQUIDITY ──────────────────────────────────────────────────────────────────
+function renderLiquidity(){
+  const totalCash=sum(CASH.filter(a=>a.ccy==="NGN"),"balance");
   const totalInv=sum(INVESTMENTS,"principal");
   const totalDebt=sum(BORROWINGS,"outstanding");
   const totalLoans=sum(LOANS,"outstanding");
   const netLiq=totalCash+totalInv-totalDebt*0.1;
   const liqRatio=(totalCash+totalInv)/(totalDebt*0.2+totalLoans*0.1)*100;
-
-  return (
-    <div className="fade-in">
-      <SectionHead title="Liquidity Management" sub="Net liquidity position · Cash flow forecast · Gap analysis"/>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
-        <KpiCard label="Net Liquidity"    value={fmt(netLiq)}                     color={C.teal}  delta={2.1}/>
-        <KpiCard label="Liquidity Ratio"  value={pct(liqRatio)}                  sub="Liquid assets / obligations" color={C.green}/>
-        <KpiCard label="30d Forecast"     value={fmt(LIQ_FORECAST[1].cum)}       sub="Projected balance"  color={C.blue}/>
-        <KpiCard label="90d Gap"          value={fmt(LIQ_FORECAST[3].net)}       sub={LIQ_FORECAST[3].net<0?"Deficit":"Surplus"} color={LIQ_FORECAST[3].net<0?C.red:C.green}/>
-      </div>
-      <Card style={{marginBottom:16}}>
-        <CardLabel>180-Day Liquidity Forecast — Net Flow & Cumulative Position (₦M)</CardLabel>
-        <ResponsiveContainer width="100%" height={220}>
-          <ComposedChart data={LIQ_FORECAST}>
-            <defs><linearGradient id="liqG" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.blue} stopOpacity={0.3}/><stop offset="95%" stopColor={C.blue} stopOpacity={0}/></linearGradient></defs>
-            <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-            <XAxis dataKey="p" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-            <YAxis tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-            <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-            <Legend wrapperStyle={{fontSize:10,color:C.t2}}/>
-            <ReferenceLine y={0} stroke={C.border} strokeDasharray="4 4"/>
-            <Bar dataKey="net" name="Net Flow" fill={C.teal} radius={[2,2,0,0]} opacity={0.7}/>
-            <Area type="monotone" dataKey="cum" name="Cumulative" stroke={C.blue} strokeWidth={2} fill="url(#liqG)" dot={{fill:C.blue,r:3}}/>
-          </ComposedChart>
-        </ResponsiveContainer>
-      </Card>
-      <Card style={{marginBottom:16}}>
-        <CardLabel>Liquidity Gap Analysis — Inflows vs. Outflows by Period (₦M)</CardLabel>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={GAP_DATA}>
-            <CartesianGrid stroke={C.border} strokeDasharray="3 3"/>
-            <XAxis dataKey="p" tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-            <YAxis tick={{fill:C.t3,fontSize:10}} axisLine={false} tickLine={false}/>
-            <Tooltip contentStyle={TP} formatter={v=>fmt(v)}/>
-            <Legend wrapperStyle={{fontSize:10,color:C.t2}}/>
-            <Bar dataKey="in"  name="Inflows"  fill={C.green} radius={[4,4,0,0]}/>
-            <Bar dataKey="out" name="Outflows" fill={C.red}   radius={[4,4,0,0]}/>
-          </BarChart>
-        </ResponsiveContainer>
-      </Card>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-        <Card>
-          <CardLabel>Liquidity Sources</CardLabel>
-          {[
-            {label:"Unrestricted Cash",value:sum(CASH.filter(a=>!a.restricted&&a.currency==="NGN"),"balance"),color:C.teal},
-            {label:"Investment Maturities (<90d)",value:sum(INVESTMENTS.filter(i=>i.days<=90),"principal"),color:C.blue},
-            {label:"Loan Collections (est.)",value:totalLoans*0.12,color:C.green},
-          ].map((item,i)=>(
-            <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:`1px solid ${C.border}30`}}>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <div style={{width:3,height:16,background:item.color,borderRadius:2}}/>
-                <span style={{color:C.t2,fontSize:12}}>{item.label}</span>
-              </div>
-              <span style={{color:item.color,fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:600}}>{fmt(item.value)}</span>
-            </div>
-          ))}
-        </Card>
-        <Card>
-          <CardLabel>Liquidity Obligations</CardLabel>
-          {[
-            {label:"Debt Due (<90d)",value:sum(BORROWINGS.filter(b=>b.type!=="Intercompany Loan"),"outstanding")*0.15,color:C.red},
-            {label:"Operational Expenses",value:45,color:C.gold},
-            {label:"Funding Commitments",value:120,color:C.purple},
-          ].map((item,i)=>(
-            <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"10px 0",borderBottom:`1px solid ${C.border}30`}}>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <div style={{width:3,height:16,background:item.color,borderRadius:2}}/>
-                <span style={{color:C.t2,fontSize:12}}>{item.label}</span>
-              </div>
-              <span style={{color:item.color,fontFamily:"IBM Plex Mono,monospace",fontSize:13,fontWeight:600}}>{fmt(item.value)}</span>
-            </div>
-          ))}
-        </Card>
-      </div>
+  const shortInv=sum(INVESTMENTS.filter(i=>i.days<=90),"principal");
+  const shortDebt=sum(BORROWINGS.filter(b=>b.type!=="Intercompany Loan"),"outstanding")*0.15;
+  document.getElementById("panel-liquidity").innerHTML=`
+  <div class="sec-head"><div class="sec-title">Liquidity Management</div><div class="sec-sub">Net liquidity position &middot; Cash flow forecast &middot; Gap analysis</div></div>
+  <div class="kpi-grid kpi-grid-4">
+    ${kpi("Net Liquidity",fmt(netLiq),"",C.teal,2.1)}
+    ${kpi("Liquidity Ratio",pct(liqRatio),"Liquid assets / obligations",C.green)}
+    ${kpi("30d Cash Forecast",fmt(LIQ_CUM[1]),"Projected balance",C.blue)}
+    ${kpi("90d Gap",fmt(LIQ_NET[3]),LIQ_NET[3]<0?"Deficit":"Surplus",LIQ_NET[3]<0?C.red:C.green)}
+  </div>
+  <div class="card"><div class="card-label">180-Day Liquidity Forecast — Net Flow &amp; Cumulative (₦M)</div><canvas id="ch-liq-fcast" height="190"></canvas></div>
+  <div class="card"><div class="card-label">Liquidity Gap — Inflows vs. Outflows by Period (₦M)</div><canvas id="ch-liq-gap" height="190"></canvas></div>
+  <div class="grid-2">
+    <div class="card" style="margin:0"><div class="card-label">Liquidity Sources</div>
+      ${[[fmt(sum(CASH.filter(a=>!a.restricted&&a.ccy==="NGN"),"balance")),"Unrestricted Cash",C.teal],[fmt(shortInv),"Investment Maturities (<90d)",C.blue],[fmt(totalLoans*.12),"Loan Collections (est.)",C.green]].map(([v,l,col])=>`
+      <div class="liq-item"><div class="liq-item-left"><div class="liq-bar-left" style="background:${col}"></div><span class="liq-item-label">${l}</span></div><span class="liq-item-val" style="color:${col}">${v}</span></div>`).join("")}
     </div>
-  );
+    <div class="card" style="margin:0"><div class="card-label">Liquidity Obligations</div>
+      ${[[fmt(shortDebt),"Debt Due (<90d)",C.red],[fmt(45),"Operational Expenses",C.gold],[fmt(120),"Funding Commitments",C.purple]].map(([v,l,col])=>`
+      <div class="liq-item"><div class="liq-item-left"><div class="liq-bar-left" style="background:${col}"></div><span class="liq-item-label">${l}</span></div><span class="liq-item-val" style="color:${col}">${v}</span></div>`).join("")}
+    </div>
+  </div>`;
+  setTimeout(()=>{
+    makeChart("ch-liq-fcast",{type:"line",data:{labels:LIQ_P,datasets:[{label:"Cumulative (₦M)",data:LIQ_CUM,borderColor:C.blue,backgroundColor:"rgba(76,201,240,.12)",fill:true,tension:.4,pointBackgroundColor:C.blue,pointRadius:3},{label:"Net Flow (₦M)",data:LIQ_NET,borderColor:C.teal,fill:false,tension:.3,borderDash:[5,5],pointBackgroundColor:C.teal,pointRadius:3}]},options:{plugins:{legend:{labels:{color:C.t2}}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}}}}});
+    makeChart("ch-liq-gap",{type:"bar",data:{labels:GAP_P,datasets:[{label:"Inflows",data:GAP_IN,backgroundColor:C.green,borderRadius:4},{label:"Outflows",data:GAP_OUT,backgroundColor:C.red,borderRadius:4}]},options:{plugins:{legend:{labels:{color:C.t2}}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}}}}});
+  },50);
 }
 
-// ── UPLOAD MODAL ───────────────────────────────────────────────────────────
-function UploadModal({onClose,module}) {
-  const [step,setStep]=useState("idle");
-  const [rows,setRows]=useState([]);
-  const handleFile=useCallback(e=>{
-    if(!e.target.files[0]) return;
-    setStep("validating");
-    setTimeout(()=>{
-      setRows([
-        {s:"✓",r:1,d:"Row validated successfully"},
-        {s:"✓",r:2,d:"Row validated successfully"},
-        {s:"⚠",r:3,d:"Warning: Rate field missing — defaulted to 0%"},
-      ]);
-      setStep("preview");
-    },1100);
-  },[]);
-  return (
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center"}}>
-      <div style={{background:C.card,border:`1px solid ${C.borderL}`,borderRadius:14,padding:28,width:460,boxShadow:"0 24px 64px rgba(0,0,0,0.5)"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-          <div>
-            <div style={{color:C.t1,fontWeight:700,fontSize:15}}>Upload {module}</div>
-            <div style={{color:C.t3,fontSize:11,fontFamily:"IBM Plex Mono,monospace",marginTop:2}}>CSV / Excel (.xlsx) supported</div>
-          </div>
-          <button onClick={onClose} style={{background:"transparent",border:"none",color:C.t2,cursor:"pointer",fontSize:20,lineHeight:1}}>✕</button>
-        </div>
-        {step==="idle" && (
-          <label className="upload-zone" style={{display:"block",border:`2px dashed ${C.border}`,borderRadius:10,padding:32,textAlign:"center",cursor:"pointer",transition:"border-color 0.2s"}}>
-            <div style={{fontSize:36,marginBottom:10}}>📂</div>
-            <div style={{color:C.t1,fontSize:13,marginBottom:4}}>Drop file or click to browse</div>
-            <div style={{color:C.t3,fontSize:11}}>Max 5MB · CSV or XLSX</div>
-            <input type="file" accept=".csv,.xlsx" onChange={handleFile} style={{display:"none"}}/>
-          </label>
-        )}
-        {step==="validating" && (
-          <div style={{textAlign:"center",padding:36}}>
-            <div style={{color:C.teal,fontSize:28,marginBottom:10}}>⟳</div>
-            <div style={{color:C.t2,fontSize:13}}>Validating and parsing data…</div>
-          </div>
-        )}
-        {step==="preview" && (
-          <div>
-            <div style={{background:C.navy,borderRadius:8,padding:16,marginBottom:16,maxHeight:160,overflowY:"auto"}}>
-              {rows.map((r,i)=>(
-                <div key={i} style={{display:"flex",gap:12,padding:"5px 0",borderBottom:`1px solid ${C.border}20`,fontSize:11}}>
-                  <span style={{color:r.s==="✓"?C.green:C.gold,fontFamily:"IBM Plex Mono,monospace"}}>{r.s}</span>
-                  <span style={{color:C.t3,fontFamily:"IBM Plex Mono,monospace"}}>Row {r.r}</span>
-                  <span style={{color:C.t2}}>{r.d}</span>
-                </div>
-              ))}
-            </div>
-            <button onClick={()=>{setStep("done");setTimeout(onClose,1500);}} style={{width:"100%",background:C.teal,color:"#000",border:"none",borderRadius:8,padding:"10px 0",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"IBM Plex Mono,monospace"}}>Confirm Import</button>
-          </div>
-        )}
-        {step==="done" && (
-          <div style={{textAlign:"center",padding:28}}>
-            <div style={{fontSize:36,marginBottom:10}}>✅</div>
-            <div style={{color:C.green,fontSize:13}}>Data imported successfully</div>
-          </div>
-        )}
-      </div>
+// ── UPLOAD MODAL ───────────────────────────────────────────────────────────────
+function openUpload(tab){
+  const labels={loans:"Loan Portfolio",borrowings:"Borrowings",investments:"Investment Portfolio",cash:"Cash Balances"};
+  document.getElementById("modal-title").textContent="Upload "+labels[tab];
+  document.getElementById("modal-body").innerHTML=`<label class="drop-zone" id="drop-zone">
+    <div class="drop-icon">&#128194;</div><div class="drop-title">Drop file or click to browse</div><div class="drop-sub">Max 5MB &middot; CSV or XLSX</div>
+    <input type="file" accept=".csv,.xlsx" style="display:none" onchange="handleFile(this)"/>
+  </label>`;
+  document.getElementById("upload-modal").classList.add("show");
+}
+function closeUpload(){document.getElementById("upload-modal").classList.remove("show");}
+function handleFile(inp){
+  const file=inp.files[0]; if(!file)return;
+  document.getElementById("modal-body").innerHTML='<div style="text-align:center;padding:32px"><div style="font-size:28px;color:var(--teal)">&#8635;</div><div style="color:var(--t2);margin-top:10px;font-size:13px">Validating data...</div></div>';
+  setTimeout(()=>{
+    document.getElementById("modal-body").innerHTML=`
+    <div class="upload-log">
+      <div class="log-row"><span class="log-ok">&#10003;</span><span class="log-row-num">Row 1</span><span style="color:var(--t2)">Validated successfully</span></div>
+      <div class="log-row"><span class="log-ok">&#10003;</span><span class="log-row-num">Row 2</span><span style="color:var(--t2)">Validated successfully</span></div>
+      <div class="log-row"><span class="log-warn">&#9888;</span><span class="log-row-num">Row 3</span><span style="color:var(--t2)">Warning: Rate field missing — defaulted to 0%</span></div>
     </div>
-  );
+    <button class="confirm-btn" onclick="confirmUpload()">Confirm Import</button>`;
+  },1100);
+}
+function confirmUpload(){
+  document.getElementById("modal-body").innerHTML='<div style="text-align:center;padding:28px"><div style="font-size:36px">&#9989;</div><div style="color:var(--green);font-size:13px;margin-top:10px">Data imported successfully</div></div>';
+  setTimeout(closeUpload,1500);
 }
 
-// ── ROOT APP ───────────────────────────────────────────────────────────────
-const TABS = [
-  {id:"dashboard", label:"Dashboard",   icon:"▣"},
-  {id:"loans",     label:"Loans",       icon:"🏦"},
-  {id:"ecl",       label:"ECL Model",   icon:"⚡"},
-  {id:"borrowings",label:"Borrowings",  icon:"↕"},
-  {id:"investments",label:"Investments",icon:"📈"},
-  {id:"cash",      label:"Cash",        icon:"💵"},
-  {id:"liquidity", label:"Liquidity",   icon:"💧"},
-];
-const UPLOAD_MAP={loans:"Loan Portfolio",borrowings:"Borrowings",investments:"Investment Portfolio",cash:"Cash Balances"};
-const eclSummary=calcECL(LOANS);
-
-function App() {
-  const [tab,setTab]=useState("dashboard");
-  const [upload,setUpload]=useState(null);
-
-  return (
-    <div style={{minHeight:"100vh",background:C.navy,fontFamily:"'Syne','IBM Plex Mono',sans-serif",color:C.t1,paddingBottom:52}}>
-      {/* NAV */}
-      <div style={{borderBottom:`1px solid ${C.border}`,background:C.card,padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:56,position:"sticky",top:0,zIndex:100}}>
-        <div style={{display:"flex",alignItems:"center",gap:10,minWidth:200}}>
-          <div style={{width:30,height:30,borderRadius:8,background:`linear-gradient(135deg,${C.teal},${C.blue})`,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15}}>⬡</div>
-          <div>
-            <div style={{color:C.t1,fontWeight:800,fontSize:12,letterSpacing:"-0.01em"}}>FSCF Treasury Intelligence</div>
-            <div style={{color:C.t3,fontSize:9,fontFamily:"IBM Plex Mono,monospace",letterSpacing:"0.05em"}}>FACTORING & SUPPLY CHAIN FINANCE LTD</div>
-          </div>
-        </div>
-        <div style={{display:"flex",gap:2,flexWrap:"wrap",justifyContent:"center"}}>
-          {TABS.map(t=>(
-            <button key={t.id} className="nav-btn" onClick={()=>setTab(t.id)} style={{background:tab===t.id?`${C.teal}18`:"transparent",color:tab===t.id?C.teal:C.t2,border:`1px solid ${tab===t.id?C.teal+"44":"transparent"}`,borderRadius:6,padding:"5px 11px",fontSize:11,cursor:"pointer",fontFamily:"IBM Plex Mono,monospace",fontWeight:tab===t.id?600:400,transition:"all 0.15s",whiteSpace:"nowrap"}}>
-              {t.icon} {t.label}
-            </button>
-          ))}
-        </div>
-        <div style={{display:"flex",gap:8,alignItems:"center",minWidth:200,justifyContent:"flex-end"}}>
-          {UPLOAD_MAP[tab] && (
-            <button onClick={()=>setUpload(UPLOAD_MAP[tab])} style={{background:C.teal,color:"#000",border:"none",borderRadius:6,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"IBM Plex Mono,monospace"}}>↑ Upload</button>
-          )}
-          <div style={{background:C.navy,borderRadius:6,padding:"4px 8px",fontSize:9,fontFamily:"IBM Plex Mono,monospace",color:C.t3,border:`1px solid ${C.border}`}}>01 Jun 2024 · WAT</div>
-          <div style={{width:28,height:28,borderRadius:"50%",background:`linear-gradient(135deg,${C.purple},${C.blue})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,cursor:"pointer"}}>F</div>
-        </div>
-      </div>
-
-      {/* CONTENT */}
-      <div style={{padding:24,maxWidth:1400,margin:"0 auto"}}>
-        {tab==="dashboard"   && <Dashboard/>}
-        {tab==="loans"       && <Loans/>}
-        {tab==="ecl"         && <ECLModule/>}
-        {tab==="borrowings"  && <Borrowings/>}
-        {tab==="investments" && <Investments/>}
-        {tab==="cash"        && <CashPosition/>}
-        {tab==="liquidity"   && <Liquidity/>}
-      </div>
-
-      {/* STATUS BAR */}
-      <div style={{position:"fixed",bottom:0,left:0,right:0,background:C.card,borderTop:`1px solid ${C.border}`,padding:"5px 24px",display:"flex",justifyContent:"space-between",alignItems:"center",height:36,zIndex:100}}>
-        <div style={{display:"flex",gap:20}}>
-          {[["LOANS",sum(LOANS,"outstanding"),C.teal],["ECL",sum(eclSummary,"ecl"),C.gold],["DEBT",sum(BORROWINGS,"outstanding"),C.purple],["CASH",sum(CASH.filter(a=>a.currency==="NGN"),"balance"),C.green]].map(([l,v,col])=>(
-            <div key={l} style={{display:"flex",gap:5,alignItems:"center"}}>
-              <span style={{color:C.t3,fontSize:9,fontFamily:"IBM Plex Mono,monospace"}}>{l}:</span>
-              <span style={{color:col,fontSize:10,fontFamily:"IBM Plex Mono,monospace",fontWeight:600}}>{fmt(v)}</span>
-            </div>
-          ))}
-        </div>
-        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          <div style={{width:6,height:6,borderRadius:"50%",background:C.green,animation:"pulse 2s infinite"}}/>
-          <span style={{color:C.t3,fontSize:9,fontFamily:"IBM Plex Mono,monospace"}}>LIVE DATA · CBN-licensed · IFRS 9 compliant</span>
-        </div>
-      </div>
-
-      {upload && <UploadModal onClose={()=>setUpload(null)} module={upload}/>}
-    </div>
-  );
-}
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(React.createElement(App));
+// ── INIT ───────────────────────────────────────────────────────────────────────
+renderStatusBar();
+renderDashboard();
+rendered["dashboard"]=true;
 </script>
 </body>
 </html>
