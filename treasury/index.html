@@ -6,8 +6,6 @@
 <title>FSCF Treasury Intelligence Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#07101f;color:#e2eaf5;font-family:'Syne',sans-serif;font-size:14px}
@@ -125,126 +123,10 @@ tbody td{padding:9px 12px;white-space:nowrap;font-size:12px}
 .confirm-btn{width:100%;background:var(--teal);color:#000;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace}
 /* COLORS for JS */
 .c-teal{color:var(--teal)}.c-gold{color:var(--gold)}.c-red{color:var(--red)}.c-green{color:var(--green)}.c-blue{color:var(--blue)}.c-purple{color:var(--purple)}.c-t2{color:var(--t2)}.c-t3{color:var(--t3)}
-
-/* AUTH OVERLAY */
-#auth-overlay{position:fixed;inset:0;background:#07101f;z-index:999;display:flex;align-items:center;justify-content:center}
-#auth-overlay.hidden{display:none}
-.auth-box{background:#0d1b2e;border:1px solid #243a5e;border-radius:14px;padding:40px;width:400px;box-shadow:0 24px 64px rgba(0,0,0,.6)}
-.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
-.auth-logo-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#00c9a7,#4cc9f0);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800}
-.auth-logo-name{font-size:14px;font-weight:800;letter-spacing:-.01em}
-.auth-logo-sub{font-size:9px;color:#4a607a;font-family:'IBM Plex Mono',monospace;letter-spacing:.05em}
-.auth-title{font-size:20px;font-weight:700;margin-bottom:6px}
-.auth-sub{color:#7a90b0;font-size:12px;margin-bottom:24px}
-.auth-field{margin-bottom:16px}
-.auth-field label{display:block;font-size:11px;color:#7a90b0;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-.auth-field input{width:100%;background:#07101f;border:1px solid #1a2e4a;border-radius:8px;color:#e2eaf5;padding:10px 14px;font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none;transition:border-color .2s}
-.auth-field input:focus{border-color:#00c9a7}
-.auth-error{color:#ff4560;font-size:11px;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;display:none}
-.auth-btn{width:100%;background:#00c9a7;color:#000;border:none;border-radius:8px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:opacity .2s}
-.auth-btn:hover{opacity:.85}
-.auth-hint{margin-top:14px;color:#4a607a;font-size:10px;font-family:'IBM Plex Mono',monospace;text-align:center}
-/* TEAM BADGE */
-.team-badge{background:#07101f;border:1px solid #1a2e4a;border-radius:6px;padding:4px 10px;font-size:10px;font-family:'IBM Plex Mono',monospace;color:#7a90b0;cursor:pointer;display:flex;align-items:center;gap:5px;position:relative}
-.team-badge:hover{border-color:#00c9a7;color:#00c9a7}
-.team-dot{width:6px;height:6px;border-radius:50%;background:#00c9a7}
-.team-name-text{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* TEAM SWITCHER DROPDOWN */
-.team-dropdown{position:absolute;top:calc(100% + 6px);right:0;background:#0d1b2e;border:1px solid #243a5e;border-radius:10px;padding:8px;min-width:200px;z-index:200;box-shadow:0 12px 32px rgba(0,0,0,.4);display:none}
-.team-dropdown.open{display:block}
-.team-dropdown-label{font-size:9px;color:#4a607a;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.06em;padding:4px 8px;margin-bottom:4px}
-.team-opt{padding:8px 10px;border-radius:6px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:8px;transition:background .15s}
-.team-opt:hover{background:#112240}
-.team-opt.active{background:rgba(0,201,167,.1);color:#00c9a7}
-.team-opt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.team-opt-info{flex:1}
-.team-opt-name{font-weight:600;font-size:12px}
-.team-opt-role{font-size:10px;color:#4a607a;font-family:'IBM Plex Mono',monospace}
-/* EXPORT BUTTON */
-.export-btn{background:transparent;border:1px solid #1a2e4a;border-radius:6px;padding:5px 11px;font-size:11px;color:#7a90b0;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .15s}
-.export-btn:hover{border-color:#f5a623;color:#f5a623}
-/* EXPORT MODAL */
-#export-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;display:none;align-items:center;justify-content:center}
-#export-modal.show{display:flex}
-.export-box{background:#0d1b2e;border:1px solid #243a5e;border-radius:14px;padding:28px;width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.5)}
-.export-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
-.export-title{font-size:15px;font-weight:700;color:#e2eaf5}
-.export-sub{font-size:11px;color:#4a607a;font-family:'IBM Plex Mono',monospace;margin-top:2px}
-.exp-section{margin-bottom:20px}
-.exp-section-label{font-size:10px;color:#7a90b0;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
-.exp-modules{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.exp-mod{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#07101f;border:1px solid #1a2e4a;border-radius:8px;cursor:pointer;transition:all .15s}
-.exp-mod:hover{border-color:#00c9a7}
-.exp-mod.selected{border-color:#00c9a7;background:rgba(0,201,167,.08)}
-.exp-mod input[type=checkbox]{accent-color:#00c9a7;width:14px;height:14px;cursor:pointer}
-.exp-mod-label{font-size:12px;font-weight:600}
-.exp-mod-sub{font-size:10px;color:#4a607a;font-family:'IBM Plex Mono',monospace}
-.exp-format{display:flex;gap:10px}
-.fmt-btn{flex:1;padding:12px;border-radius:8px;border:1px solid #1a2e4a;background:transparent;color:#7a90b0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;transition:all .15s;text-align:center}
-.fmt-btn:hover{border-color:#00c9a7;color:#00c9a7}
-.fmt-btn.active{border-color:#00c9a7;background:rgba(0,201,167,.1);color:#00c9a7}
-.exp-actions{display:flex;gap:10px;margin-top:20px}
-.exp-cancel{flex:1;background:transparent;border:1px solid #1a2e4a;border-radius:8px;padding:10px;font-size:12px;color:#7a90b0;cursor:pointer;font-family:'IBM Plex Mono',monospace}
-.exp-go{flex:2;background:#f5a623;color:#000;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:opacity .2s}
-.exp-go:hover{opacity:.85}
-.exp-go:disabled{opacity:.4;cursor:not-allowed}
-.exp-progress{margin-top:14px;display:none}
-.exp-prog-bar{background:#07101f;border-radius:4px;height:6px;overflow:hidden;margin-bottom:6px}
-.exp-prog-fill{height:100%;background:#f5a623;border-radius:4px;transition:width .4s ease}
-.exp-prog-text{font-size:10px;color:#7a90b0;font-family:'IBM Plex Mono',monospace}
-/* TEAM MGMT TAB */
-.team-mgmt-grid{display:grid;grid-template-columns:1fr 2fr;gap:16px}
-.team-list-item{padding:12px 14px;border-radius:8px;border:1px solid #1a2e4a;cursor:pointer;margin-bottom:8px;transition:all .15s}
-.team-list-item:hover,.team-list-item.active{border-color:#00c9a7;background:rgba(0,201,167,.07)}
-.team-list-name{font-size:13px;font-weight:600}
-.team-list-meta{font-size:10px;color:#4a607a;font-family:'IBM Plex Mono',monospace;margin-top:2px}
-.member-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(26,46,74,.3)}
-.member-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
-.member-info{flex:1;margin-left:10px}
-.member-name{font-size:12px;font-weight:600}
-.member-email{font-size:10px;color:#4a607a;font-family:'IBM Plex Mono',monospace}
-.member-role{font-size:10px;font-family:'IBM Plex Mono',monospace;padding:2px 8px;border-radius:4px}
-.role-owner{color:#f5a623;background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.3)}
-.role-member{color:#00c9a7;background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2)}
-.role-viewer{color:#7a90b0;background:rgba(122,144,176,.1);border:1px solid rgba(122,144,176,.2)}
-.add-member-form{background:#07101f;border:1px solid #1a2e4a;border-radius:8px;padding:14px;margin-top:12px}
-.form-row{display:flex;gap:8px;margin-top:10px}
-.form-input{flex:1;background:#0d1b2e;border:1px solid #1a2e4a;border-radius:6px;color:#e2eaf5;padding:8px 12px;font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none}
-.form-input:focus{border-color:#00c9a7}
-.form-select{background:#0d1b2e;border:1px solid #1a2e4a;border-radius:6px;color:#e2eaf5;padding:8px 12px;font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none}
-.form-submit{background:#00c9a7;color:#000;border:none;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;white-space:nowrap}
-.access-pill{font-size:10px;font-family:'IBM Plex Mono',monospace;padding:2px 8px;border-radius:4px;border:1px solid rgba(76,201,240,.3);color:#4cc9f0;background:rgba(76,201,240,.08)}
-/* USER INFO */
-.user-menu{position:relative}
-.user-info-dropdown{position:absolute;top:calc(100%+6px);right:0;background:#0d1b2e;border:1px solid #243a5e;border-radius:10px;padding:12px;min-width:200px;z-index:200;display:none;box-shadow:0 12px 32px rgba(0,0,0,.4)}
-.user-info-dropdown.open{display:block}
-.uid-name{font-size:13px;font-weight:600;margin-bottom:2px}
-.uid-email{font-size:10px;color:#4a607a;font-family:'IBM Plex Mono',monospace;margin-bottom:10px}
-.uid-divider{border:none;border-top:1px solid #1a2e4a;margin:8px 0}
-.uid-action{display:flex;align-items:center;gap:8px;padding:7px 4px;border-radius:6px;cursor:pointer;font-size:12px;color:#7a90b0;transition:all .15s}
-.uid-action:hover{color:#e2eaf5;background:#112240;padding-left:8px}
-
 </style>
 </head>
 <body>
 
-
-<!-- AUTH OVERLAY -->
-<div id="auth-overlay">
-  <div class="auth-box">
-    <div class="auth-logo">
-      <div class="auth-logo-icon">&#11042;</div>
-      <div><div class="auth-logo-name">FSCF Treasury Intelligence</div><div class="auth-logo-sub">FACTORING &amp; SUPPLY CHAIN FINANCE LTD</div></div>
-    </div>
-    <div class="auth-title">Sign in to continue</div>
-    <div class="auth-sub">Use your FSCF portal credentials to access the dashboard.</div>
-    <div class="auth-field"><label>Email address</label><input type="email" id="auth-email" placeholder="you@fscf.com.ng" /></div>
-    <div class="auth-field"><label>Password</label><input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" /></div>
-    <div class="auth-error" id="auth-error">Invalid email or password. Please try again.</div>
-    <button class="auth-btn" onclick="doLogin()">Sign In</button>
-    <div class="auth-hint">Demo: use any email &mdash; password: <strong>demo1234</strong></div>
-  </div>
-</div>
 <!-- NAV -->
 <nav id="topnav">
   <div class="brand">
@@ -259,17 +141,11 @@ tbody td{padding:9px 12px;white-space:nowrap;font-size:12px}
     <button class="navtab" data-tab="investments">&#128200; Investments</button>
     <button class="navtab" data-tab="cash">&#128181; Cash</button>
     <button class="navtab" data-tab="liquidity">&#128167; Liquidity</button>
-    <button class="navtab" data-tab="teams">&#128101; Teams</button>
   </div>
   <div class="nav-right">
     <button class="upload-btn" id="upload-btn">&#8593; Upload</button>
-    <button class="export-btn" onclick="openExport()">&#128229; Export</button>
-    <div id="team-badge-wrap"></div>
     <div class="time-badge mono" id="time-badge">01 Jun 2024</div>
-    <div class="user-menu">
-      <div class="avatar" id="user-avatar">F</div>
-      <div class="user-info-dropdown" id="user-dropdown"></div>
-    </div>
+    <div class="avatar">F</div>
   </div>
 </nav>
 
@@ -282,7 +158,6 @@ tbody td{padding:9px 12px;white-space:nowrap;font-size:12px}
   <div class="panel" id="panel-investments"></div>
   <div class="panel" id="panel-cash"></div>
   <div class="panel" id="panel-liquidity"></div>
-  <div class="panel" id="panel-teams"></div>
 </div>
 
 <!-- STATUS BAR -->
@@ -291,47 +166,6 @@ tbody td{padding:9px 12px;white-space:nowrap;font-size:12px}
   <div class="sb-right"><div class="pulse"></div><span class="mono" style="font-size:9px;color:var(--t3)">LIVE DATA &middot; CBN-licensed &middot; IFRS 9 compliant</span></div>
 </div>
 
-
-<!-- EXPORT MODAL -->
-<div id="export-modal">
-  <div class="export-box">
-    <div class="export-head">
-      <div><div class="export-title">&#128229; Export Report</div><div class="export-sub">Select modules and format to generate your report</div></div>
-      <button style="background:none;border:none;color:#7a90b0;cursor:pointer;font-size:20px;line-height:1" onclick="closeExport()">&#10005;</button>
-    </div>
-    <div class="exp-section">
-      <div class="exp-section-label">Modules to include</div>
-      <div class="exp-modules" id="exp-modules">
-        <label class="exp-mod selected"><input type="checkbox" checked value="dashboard" onchange="toggleModule(this)"><div><div class="exp-mod-label">&#9635; Dashboard</div><div class="exp-mod-sub">KPIs &amp; summary charts</div></div></label>
-        <label class="exp-mod selected"><input type="checkbox" checked value="loans" onchange="toggleModule(this)"><div><div class="exp-mod-label">&#127968; Loan Portfolio</div><div class="exp-mod-sub">All facilities + aging</div></div></label>
-        <label class="exp-mod selected"><input type="checkbox" checked value="ecl" onchange="toggleModule(this)"><div><div class="exp-mod-label">&#9889; ECL Model</div><div class="exp-mod-sub">Provision schedule</div></div></label>
-        <label class="exp-mod selected"><input type="checkbox" checked value="borrowings" onchange="toggleModule(this)"><div><div class="exp-mod-label">&#8597; Borrowings</div><div class="exp-mod-sub">Debt schedule</div></div></label>
-        <label class="exp-mod selected"><input type="checkbox" checked value="investments" onchange="toggleModule(this)"><div><div class="exp-mod-label">&#128200; Investments</div><div class="exp-mod-sub">Portfolio + yield</div></div></label>
-        <label class="exp-mod selected"><input type="checkbox" checked value="cash" onchange="toggleModule(this)"><div><div class="exp-mod-label">&#128181; Cash Position</div><div class="exp-mod-sub">Account balances</div></div></label>
-      </div>
-    </div>
-    <div class="exp-section">
-      <div class="exp-section-label">Report format</div>
-      <div class="exp-format">
-        <button class="fmt-btn active" data-fmt="excel" onclick="setFormat(this,'excel')">&#128202; Excel (.xlsx)<br><span style="font-size:9px;font-weight:400;opacity:.7">Multi-sheet workbook</span></button>
-        <button class="fmt-btn" data-fmt="pdf" onclick="setFormat(this,'pdf')">&#128196; PDF Report<br><span style="font-size:9px;font-weight:400;opacity:.7">Branded A4 layout</span></button>
-        <button class="fmt-btn" data-fmt="csv" onclick="setFormat(this,'csv')">&#128196; CSV Bundle<br><span style="font-size:9px;font-weight:400;opacity:.7">Raw data files</span></button>
-      </div>
-    </div>
-    <div class="exp-section">
-      <div class="exp-section-label">Report label</div>
-      <input class="form-input" id="exp-report-name" style="width:100%" placeholder="e.g. June 2024 Treasury Report" value="June 2024 Treasury Report" />
-    </div>
-    <div class="exp-progress" id="exp-progress">
-      <div class="exp-prog-bar"><div class="exp-prog-fill" id="exp-prog-fill" style="width:0%"></div></div>
-      <div class="exp-prog-text" id="exp-prog-text">Preparing report...</div>
-    </div>
-    <div class="exp-actions">
-      <button class="exp-cancel" onclick="closeExport()">Cancel</button>
-      <button class="exp-go" id="exp-go-btn" onclick="runExport()">&#128229; Generate Report</button>
-    </div>
-  </div>
-</div>
 <!-- UPLOAD MODAL -->
 <div id="upload-modal">
   <div class="modal-box">
@@ -352,7 +186,7 @@ tbody td{padding:9px 12px;white-space:nowrap;font-size:12px}
 
 <script>
 // ── DATA ─────────────────────────────────────────────────────────────────────
-const _ALL_LOANS=[
+const LOANS=[
   {id:"LN-001",customer:"Dangote Industries Ltd",    product:"Invoice Discounting",  principal:450,outstanding:420,rate:22,dpd:0,  stage:1,rating:"A",  start:"2024-01-15",maturity:"2024-07-15"},
   {id:"LN-002",customer:"Flour Mills Nigeria Plc",   product:"Supply Chain Finance", principal:320,outstanding:310,rate:20,dpd:18, stage:1,rating:"A-", start:"2024-02-01",maturity:"2024-08-01"},
   {id:"LN-003",customer:"MTN Nigeria Comms",          product:"Factoring",            principal:280,outstanding:280,rate:21,dpd:0,  stage:1,rating:"AA", start:"2024-03-10",maturity:"2024-09-10"},
@@ -369,7 +203,7 @@ const _ALL_LOANS=[
   {id:"LN-014",customer:"Lafarge Africa Plc",         product:"Factoring",            principal:130,outstanding:130,rate:23,dpd:0,  stage:1,rating:"A-", start:"2024-03-01",maturity:"2024-09-01"},
   {id:"LN-015",customer:"Julius Berger Nigeria",      product:"Invoice Discounting",  principal:200,outstanding:195,rate:22,dpd:155,stage:3,rating:"D",  start:"2023-06-15",maturity:"2023-12-15"},
 ];
-const _ALL_BORROWINGS=[
+const BORROWINGS=[
   {id:"BW-001",lender:"FCMB Ltd",            type:"Term Loan",           principal:500, outstanding:420, rate:19.5,tenor:24,repayment:"Monthly",  maturity:"2025-06-30"},
   {id:"BW-002",lender:"Stanbic IBTC Bank",   type:"Overdraft Facility",  principal:200, outstanding:150, rate:23,  tenor:12,repayment:"Revolving",maturity:"2024-12-31"},
   {id:"BW-003",lender:"DBN Nigeria",          type:"On-lending Facility", principal:800, outstanding:720, rate:14,  tenor:36,repayment:"Quarterly",maturity:"2026-09-30"},
@@ -377,7 +211,7 @@ const _ALL_BORROWINGS=[
   {id:"BW-005",lender:"LAPO MfB",            type:"Wholesale Borrowing", principal:150, outstanding:100, rate:21,  tenor:12,repayment:"Monthly",  maturity:"2024-10-31"},
   {id:"BW-006",lender:"Pan-African Holdings",type:"Intercompany Loan",   principal:1000,outstanding:1000,rate:16,  tenor:60,repayment:"Bullet",   maturity:"2028-01-31"},
 ];
-const _ALL_INVESTMENTS=[
+const INVESTMENTS=[
   {id:"INV-001",cp:"Access Bank Plc",  type:"Fixed Deposit",       principal:300,rate:22,  invested:"2024-03-01",days:180,maturity:"2024-08-28"},
   {id:"INV-002",cp:"GTBank Ltd",        type:"Fixed Deposit",       principal:200,rate:21.5,invested:"2024-02-15",days:91, maturity:"2024-05-17"},
   {id:"INV-003",cp:"FGN Bond (10yr)",   type:"Government Security", principal:500,rate:17.5,invested:"2023-10-01",days:365,maturity:"2033-10-01"},
@@ -385,7 +219,7 @@ const _ALL_INVESTMENTS=[
   {id:"INV-005",cp:"Zenith Bank Plc",   type:"Fixed Deposit",       principal:150,rate:22,  invested:"2024-04-10",days:60, maturity:"2024-06-09"},
   {id:"INV-006",cp:"NTB (182-day)",     type:"Treasury Bills",      principal:400,rate:21,  invested:"2024-01-15",days:182,maturity:"2024-07-15"},
 ];
-const _ALL_CASH=[
+const CASH=[
   {id:"CA-001",bank:"Access Bank Plc",   acct:"001-234567-001",type:"Current", ccy:"NGN",balance:124.5,restricted:false},
   {id:"CA-002",bank:"GTBank Ltd",         acct:"0123456789",   type:"Current", ccy:"NGN",balance:87.3, restricted:false},
   {id:"CA-003",bank:"First Bank Nigeria", acct:"2012345678",   type:"Current", ccy:"NGN",balance:43.8, restricted:true},
@@ -464,12 +298,12 @@ document.getElementById("upload-btn").addEventListener("click",()=>openUpload(cu
 
 // ── STATUS BAR ────────────────────────────────────────────────────────────────
 function renderStatusBar(){
-  const ecl=calcECL(LOANS());
+  const ecl=calcECL(LOANS);
   const items=[
-    ["LOANS",sum(LOANS(),"outstanding"),C.teal],
+    ["LOANS",sum(LOANS,"outstanding"),C.teal],
     ["ECL",ecl.total,C.gold],
-    ["DEBT",sum(BORROWINGS(),"outstanding"),C.purple],
-    ["CASH",sum(CASH().filter(a=>a.ccy==="NGN"),"balance"),C.green],
+    ["DEBT",sum(BORROWINGS,"outstanding"),C.purple],
+    ["CASH",sum(CASH.filter(a=>a.ccy==="NGN"),"balance"),C.green],
   ];
   document.getElementById("sb-items").innerHTML=items.map(([l,v,col])=>
     '<div class="sb-item"><span class="sb-label">'+l+':</span><span class="sb-val" style="color:'+col+'">'+fmt(v)+'</span></div>'
@@ -486,18 +320,18 @@ function renderTab(tab){
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
 function renderDashboard(){
-  const ecl=calcECL(LOANS());
-  const totalCash=sum(CASH().filter(a=>a.ccy==="NGN"),"balance");
-  const totalLoans=sum(LOANS(),"outstanding");
-  const totalDebt=sum(BORROWINGS(),"outstanding");
-  const totalInv=sum(INVESTMENTS(),"principal");
+  const ecl=calcECL(LOANS);
+  const totalCash=sum(CASH.filter(a=>a.ccy==="NGN"),"balance");
+  const totalLoans=sum(LOANS,"outstanding");
+  const totalDebt=sum(BORROWINGS,"outstanding");
+  const totalInv=sum(INVESTMENTS,"principal");
   const netLiq=totalCash+totalInv-totalDebt*0.1;
-  const s1=LOANS().filter(l=>l.stage===1),s2=LOANS().filter(l=>l.stage===2),s3=LOANS().filter(l=>l.stage===3);
-  const prodMap={};LOANS().forEach(l=>{prodMap[l.product]=(prodMap[l.product]||0)+l.outstanding;});
+  const s1=LOANS.filter(l=>l.stage===1),s2=LOANS.filter(l=>l.stage===2),s3=LOANS.filter(l=>l.stage===3);
+  const prodMap={};LOANS.forEach(l=>{prodMap[l.product]=(prodMap[l.product]||0)+l.outstanding;});
   const prodLabels=Object.keys(prodMap),prodVals=Object.values(prodMap);
   const buckets={"0-30d":0,"31-60d":0,"61-90d":0,"91-180d":0,">180d":0};
   const now=new Date("2024-06-01");
-  LOANS().forEach(l=>{const d=Math.max(0,(new Date(l.maturity)-now)/86400000);if(d<=30)buckets["0-30d"]+=l.outstanding;else if(d<=60)buckets["31-60d"]+=l.outstanding;else if(d<=90)buckets["61-90d"]+=l.outstanding;else if(d<=180)buckets["91-180d"]+=l.outstanding;else buckets[">180d"]+=l.outstanding;});
+  LOANS.forEach(l=>{const d=Math.max(0,(new Date(l.maturity)-now)/86400000);if(d<=30)buckets["0-30d"]+=l.outstanding;else if(d<=60)buckets["31-60d"]+=l.outstanding;else if(d<=90)buckets["61-90d"]+=l.outstanding;else if(d<=180)buckets["91-180d"]+=l.outstanding;else buckets[">180d"]+=l.outstanding;});
 
   document.getElementById("panel-dashboard").innerHTML=`
   <div class="sec-head"><div class="sec-title">Executive Dashboard</div><div class="sec-sub">Consolidated treasury &amp; credit position — 01 June 2024</div></div>
@@ -538,21 +372,21 @@ function renderDashboard(){
 // ── LOANS ─────────────────────────────────────────────────────────────────────
 let loanFilter="all",loanSearch="";
 function renderLoans(){
-  const total=sum(LOANS(),"outstanding");
-  const npl=LOANS().filter(l=>l.dpd>=90);
+  const total=sum(LOANS,"outstanding");
+  const npl=LOANS.filter(l=>l.dpd>=90);
   const aging=[
-    {b:"Current",v:sum(LOANS().filter(l=>l.dpd===0),"outstanding")},
-    {b:"1-30d",v:sum(LOANS().filter(l=>l.dpd>0&&l.dpd<=30),"outstanding")},
-    {b:"31-60d",v:sum(LOANS().filter(l=>l.dpd>30&&l.dpd<=60),"outstanding")},
-    {b:"61-90d",v:sum(LOANS().filter(l=>l.dpd>60&&l.dpd<=90),"outstanding")},
-    {b:"91-180d",v:sum(LOANS().filter(l=>l.dpd>90&&l.dpd<=180),"outstanding")},
-    {b:">180d",v:sum(LOANS().filter(l=>l.dpd>180),"outstanding")},
+    {b:"Current",v:sum(LOANS.filter(l=>l.dpd===0),"outstanding")},
+    {b:"1-30d",v:sum(LOANS.filter(l=>l.dpd>0&&l.dpd<=30),"outstanding")},
+    {b:"31-60d",v:sum(LOANS.filter(l=>l.dpd>30&&l.dpd<=60),"outstanding")},
+    {b:"61-90d",v:sum(LOANS.filter(l=>l.dpd>60&&l.dpd<=90),"outstanding")},
+    {b:"91-180d",v:sum(LOANS.filter(l=>l.dpd>90&&l.dpd<=180),"outstanding")},
+    {b:">180d",v:sum(LOANS.filter(l=>l.dpd>180),"outstanding")},
   ];
   document.getElementById("panel-loans").innerHTML=`
-  <div class="sec-head"><div class="sec-title">Loan Portfolio Management</div><div class="sec-sub">${LOANS().length} facilities &middot; Total outstanding: ${fmt(total)}</div></div>
+  <div class="sec-head"><div class="sec-title">Loan Portfolio Management</div><div class="sec-sub">${LOANS.length} facilities &middot; Total outstanding: ${fmt(total)}</div></div>
   <div class="kpi-grid kpi-grid-4">
     ${kpi("Total Exposure",fmt(total),"",C.teal)}
-    ${kpi("Performing (<90d)",fmt(sum(LOANS().filter(l=>l.dpd<90),"outstanding")),LOANS().filter(l=>l.dpd<90).length+" loans",C.green)}
+    ${kpi("Performing (<90d)",fmt(sum(LOANS.filter(l=>l.dpd<90),"outstanding")),LOANS.filter(l=>l.dpd<90).length+" loans",C.green)}
     ${kpi("Non-Performing",fmt(sum(npl,"outstanding")),npl.length+" loans",C.red)}
     ${kpi("NPL Ratio",pct(sum(npl,"outstanding")/total*100),"IFRS 9 Stage 3",C.gold)}
   </div>
@@ -576,7 +410,7 @@ function renderLoans(){
 }
 function setLoanFilter(btn,f){document.querySelectorAll(".fbtn[data-f]").forEach(b=>b.classList.remove("active"));btn.classList.add("active");loanFilter=f;renderLoanTable();}
 function renderLoanTable(){
-  let rows=LOANS();
+  let rows=LOANS;
   if(loanFilter!=="all")rows=rows.filter(l=>l.stage===+loanFilter);
   if(loanSearch)rows=rows.filter(l=>l.customer.toLowerCase().includes(loanSearch.toLowerCase())||l.id.toLowerCase().includes(loanSearch.toLowerCase()));
   document.getElementById("loan-table").innerHTML=`<div class="tbl-wrap"><table>
@@ -593,13 +427,13 @@ function renderLoanTable(){
     <td class="mono" style="color:var(--t2)">${l.maturity}</td>
   </tr>`).join("")}</tbody>
   </table></div>
-  <div class="tbl-footer">Showing ${rows.length} of ${LOANS().length} &middot; Total: ${fmt(sum(rows,"outstanding"))}</div>`;
+  <div class="tbl-footer">Showing ${rows.length} of ${LOANS.length} &middot; Total: ${fmt(sum(rows,"outstanding"))}</div>`;
 }
 
 // ── ECL ───────────────────────────────────────────────────────────────────────
 function renderECL(){
-  const ecl=calcECL(LOANS());
-  const s=[1,2,3].map(s=>{const sl=LOANS().filter(l=>l.stage===s);const r=calcECL(sl);return{stage:s,count:sl.length,ead:sum(sl,"outstanding"),ecl:r.total};});
+  const ecl=calcECL(LOANS);
+  const s=[1,2,3].map(s=>{const sl=LOANS.filter(l=>l.stage===s);const r=calcECL(sl);return{stage:s,count:sl.length,ead:sum(sl,"outstanding"),ecl:r.total};});
   document.getElementById("panel-ecl").innerHTML=`
   <div class="sec-head"><div class="sec-title">Expected Credit Loss (ECL) Model</div><div class="sec-sub">IFRS 9 compliant &middot; Stage 1: 12-month ECL &middot; Stage 2 &amp; 3: Lifetime ECL</div></div>
   <div class="kpi-grid kpi-grid-4">
@@ -649,7 +483,7 @@ function renderECL(){
 }
 function updateStress(v){
   const mult=1+v/100;
-  const ecl=calcECL(LOANS(),mult);
+  const ecl=calcECL(LOANS,mult);
   const el=document.getElementById("pd-val");
   if(el){el.textContent=(v>0?"+":"")+v+"%";el.style.color=v>0?C.red:C.green;}
   const rs=document.getElementById("stress-result");
@@ -658,17 +492,17 @@ function updateStress(v){
 
 // ── BORROWINGS ────────────────────────────────────────────────────────────────
 function renderBorrowings(){
-  const total=sum(BORROWINGS(),"outstanding");
-  const wacd=BORROWINGS().reduce((a,b)=>a+(b.outstanding/total)*b.rate,0);
+  const total=sum(BORROWINGS,"outstanding");
+  const wacd=BORROWINGS.reduce((a,b)=>a+(b.outstanding/total)*b.rate,0);
   const now=new Date("2024-06-01");
-  const typeMap={};BORROWINGS().forEach(b=>{typeMap[b.type]=(typeMap[b.type]||0)+b.outstanding;});
+  const typeMap={};BORROWINGS.forEach(b=>{typeMap[b.type]=(typeMap[b.type]||0)+b.outstanding;});
   document.getElementById("panel-borrowings").innerHTML=`
   <div class="sec-head"><div class="sec-title">Borrowings Management</div><div class="sec-sub">Debt facilities &middot; Cost of funds analysis</div></div>
   <div class="kpi-grid kpi-grid-4">
     ${kpi("Total Debt",fmt(total),"",C.purple)}
     ${kpi("WACD",pct(wacd),"Weighted avg. cost of debt",C.gold)}
-    ${kpi("Facilities",BORROWINGS().length,"Active borrowings",C.teal)}
-    ${kpi("Interco. Debt",fmt(BORROWINGS().find(b=>b.type==="Intercompany Loan")?.outstanding||0),"Pan-African Holdings",C.blue)}
+    ${kpi("Facilities",BORROWINGS.length,"Active borrowings",C.teal)}
+    ${kpi("Interco. Debt",fmt(BORROWINGS.find(b=>b.type==="Intercompany Loan")?.outstanding||0),"Pan-African Holdings",C.blue)}
   </div>
   <div class="grid-2">
     <div class="card" style="margin:0"><div class="card-label">Debt Maturity Profile (₦M)</div><canvas id="ch-debt-mat" height="180"></canvas></div>
@@ -677,7 +511,7 @@ function renderBorrowings(){
   <div class="card" style="margin-top:16px"><div class="card-label">Borrowings Schedule</div>
   <div class="tbl-wrap"><table>
   <thead><tr><th>ID</th><th>Lender</th><th>Type</th><th class="tr">Outstanding (₦M)</th><th class="tr">Rate</th><th class="tr">Tenor</th><th>Repayment</th><th>Maturity</th></tr></thead>
-  <tbody>${BORROWINGS().map(b=>`<tr>
+  <tbody>${BORROWINGS.map(b=>`<tr>
     <td class="mono" style="color:${C.teal}">${b.id}</td>
     <td>${b.lender}</td>
     <td style="color:var(--t2)">${b.type}</td>
@@ -689,7 +523,7 @@ function renderBorrowings(){
   </tr>`).join("")}</tbody>
   </table></div></div>`;
   setTimeout(()=>{
-    const matD=BORROWINGS().map(b=>({l:b.lender.split(" ")[0],v:b.outstanding,days:Math.max(0,(new Date(b.maturity)-now)/86400000)})).sort((a,b)=>a.days-b.days);
+    const matD=BORROWINGS.map(b=>({l:b.lender.split(" ")[0],v:b.outstanding,days:Math.max(0,(new Date(b.maturity)-now)/86400000)})).sort((a,b)=>a.days-b.days);
     makeChart("ch-debt-mat",{type:"bar",data:{labels:matD.map(d=>d.l),datasets:[{data:matD.map(d=>d.v),backgroundColor:matD.map(d=>d.days<180?C.red:d.days<360?C.gold:C.teal),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:C.border}},y:{grid:{color:C.border}}}}});
     makeChart("ch-debt-type",{type:"doughnut",data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PALETTE,borderColor:C.card,borderWidth:3}]},options:{plugins:{legend:{labels:{color:C.t2}}}}});
   },50);
@@ -697,17 +531,17 @@ function renderBorrowings(){
 
 // ── INVESTMENTS ───────────────────────────────────────────────────────────────
 function renderInvestments(){
-  const total=sum(INVESTMENTS(),"principal");
-  const interest=INVESTMENTS().reduce((a,i)=>a+i.principal*(i.rate/100)*(i.days/365),0);
-  const avgY=INVESTMENTS().reduce((a,i)=>a+(i.principal/total)*i.rate,0);
-  const typeMap={};INVESTMENTS().forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
+  const total=sum(INVESTMENTS,"principal");
+  const interest=INVESTMENTS.reduce((a,i)=>a+i.principal*(i.rate/100)*(i.days/365),0);
+  const avgY=INVESTMENTS.reduce((a,i)=>a+(i.principal/total)*i.rate,0);
+  const typeMap={};INVESTMENTS.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
   document.getElementById("panel-investments").innerHTML=`
   <div class="sec-head"><div class="sec-title">Investment Portfolio</div><div class="sec-sub">Treasury placements &middot; Yield analysis</div></div>
   <div class="kpi-grid kpi-grid-4">
     ${kpi("Portfolio Value",fmt(total),"",C.teal)}
     ${kpi("Projected Interest",fmt(interest),"Full tenor",C.gold)}
     ${kpi("Avg. Yield",pct(avgY),"Weighted average",C.green)}
-    ${kpi("Instruments",INVESTMENTS().length,"Active placements",C.blue)}
+    ${kpi("Instruments",INVESTMENTS.length,"Active placements",C.blue)}
   </div>
   <div class="grid-3-2">
     <div class="card" style="margin:0"><div class="card-label">Maturity Ladder — Principal + Interest (₦M)</div><canvas id="ch-inv-ladder" height="180"></canvas></div>
@@ -716,7 +550,7 @@ function renderInvestments(){
   <div class="card" style="margin-top:16px"><div class="card-label">Investment Schedule</div>
   <div class="tbl-wrap"><table>
   <thead><tr><th>ID</th><th>Counterparty</th><th>Type</th><th class="tr">Principal (₦M)</th><th class="tr">Rate</th><th class="tr">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="tr">Interest (₦M)</th></tr></thead>
-  <tbody>${INVESTMENTS().map(i=>`<tr>
+  <tbody>${INVESTMENTS.map(i=>`<tr>
     <td class="mono" style="color:${C.teal}">${i.id}</td>
     <td>${i.cp}</td>
     <td style="color:var(--t2)">${i.type}</td>
@@ -729,15 +563,15 @@ function renderInvestments(){
   </tr>`).join("")}</tbody>
   </table></div></div>`;
   setTimeout(()=>{
-    makeChart("ch-inv-ladder",{type:"bar",data:{labels:INVESTMENTS().map(i=>i.cp.split(" ")[0]),datasets:[{label:"Principal",data:INVESTMENTS().map(i=>i.principal),backgroundColor:C.teal,stack:"a"},{label:"Interest",data:INVESTMENTS().map(i=>+(i.principal*(i.rate/100)*(i.days/365)).toFixed(2)),backgroundColor:C.gold,borderRadius:4,stack:"a"}]},options:{plugins:{legend:{labels:{color:C.t2}}},scales:{x:{grid:{color:C.border},stacked:true},y:{grid:{color:C.border},stacked:true}}}});
+    makeChart("ch-inv-ladder",{type:"bar",data:{labels:INVESTMENTS.map(i=>i.cp.split(" ")[0]),datasets:[{label:"Principal",data:INVESTMENTS.map(i=>i.principal),backgroundColor:C.teal,stack:"a"},{label:"Interest",data:INVESTMENTS.map(i=>+(i.principal*(i.rate/100)*(i.days/365)).toFixed(2)),backgroundColor:C.gold,borderRadius:4,stack:"a"}]},options:{plugins:{legend:{labels:{color:C.t2}}},scales:{x:{grid:{color:C.border},stacked:true},y:{grid:{color:C.border},stacked:true}}}});
     makeChart("ch-inv-mix",{type:"doughnut",data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PALETTE,borderColor:C.card,borderWidth:3}]},options:{plugins:{legend:{labels:{color:C.t2}}}}});
   },50);
 }
 
 // ── CASH ──────────────────────────────────────────────────────────────────────
 function renderCash(){
-  const ngn=CASH().filter(a=>a.ccy==="NGN");
-  const usd=CASH().filter(a=>a.ccy==="USD");
+  const ngn=CASH.filter(a=>a.ccy==="NGN");
+  const usd=CASH.filter(a=>a.ccy==="USD");
   const totalNGN=sum(ngn,"balance"),unres=sum(ngn.filter(a=>!a.restricted),"balance"),res=sum(ngn.filter(a=>a.restricted),"balance"),totalUSD=sum(usd,"balance");
   document.getElementById("panel-cash").innerHTML=`
   <div class="sec-head"><div class="sec-title">Cash Position</div><div class="sec-sub">Real-time treasury balances across all accounts</div></div>
@@ -754,7 +588,7 @@ function renderCash(){
   <div class="card" style="margin-top:16px"><div class="card-label">Bank Account Balances</div>
   <div class="tbl-wrap"><table>
   <thead><tr><th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="tr">Balance</th><th>Status</th></tr></thead>
-  <tbody>${CASH().map(a=>`<tr>
+  <tbody>${CASH.map(a=>`<tr>
     <td class="mono" style="color:${C.teal}">${a.id}</td>
     <td>${a.bank}</td>
     <td class="mono" style="color:var(--t2)">${a.acct}</td>
@@ -773,14 +607,14 @@ function renderCash(){
 
 // ── LIQUIDITY ──────────────────────────────────────────────────────────────────
 function renderLiquidity(){
-  const totalCash=sum(CASH().filter(a=>a.ccy==="NGN"),"balance");
-  const totalInv=sum(INVESTMENTS(),"principal");
-  const totalDebt=sum(BORROWINGS(),"outstanding");
-  const totalLoans=sum(LOANS(),"outstanding");
+  const totalCash=sum(CASH.filter(a=>a.ccy==="NGN"),"balance");
+  const totalInv=sum(INVESTMENTS,"principal");
+  const totalDebt=sum(BORROWINGS,"outstanding");
+  const totalLoans=sum(LOANS,"outstanding");
   const netLiq=totalCash+totalInv-totalDebt*0.1;
   const liqRatio=(totalCash+totalInv)/(totalDebt*0.2+totalLoans*0.1)*100;
-  const shortInv=sum(INVESTMENTS().filter(i=>i.days<=90),"principal");
-  const shortDebt=sum(BORROWINGS().filter(b=>b.type!=="Intercompany Loan"),"outstanding")*0.15;
+  const shortInv=sum(INVESTMENTS.filter(i=>i.days<=90),"principal");
+  const shortDebt=sum(BORROWINGS.filter(b=>b.type!=="Intercompany Loan"),"outstanding")*0.15;
   document.getElementById("panel-liquidity").innerHTML=`
   <div class="sec-head"><div class="sec-title">Liquidity Management</div><div class="sec-sub">Net liquidity position &middot; Cash flow forecast &middot; Gap analysis</div></div>
   <div class="kpi-grid kpi-grid-4">
@@ -793,7 +627,7 @@ function renderLiquidity(){
   <div class="card"><div class="card-label">Liquidity Gap — Inflows vs. Outflows by Period (₦M)</div><canvas id="ch-liq-gap" height="190"></canvas></div>
   <div class="grid-2">
     <div class="card" style="margin:0"><div class="card-label">Liquidity Sources</div>
-      ${[[fmt(sum(CASH().filter(a=>!a.restricted&&a.ccy==="NGN"),"balance")),"Unrestricted Cash",C.teal],[fmt(shortInv),"Investment Maturities (<90d)",C.blue],[fmt(totalLoans*.12),"Loan Collections (est.)",C.green]].map(([v,l,col])=>`
+      ${[[fmt(sum(CASH.filter(a=>!a.restricted&&a.ccy==="NGN"),"balance")),"Unrestricted Cash",C.teal],[fmt(shortInv),"Investment Maturities (<90d)",C.blue],[fmt(totalLoans*.12),"Loan Collections (est.)",C.green]].map(([v,l,col])=>`
       <div class="liq-item"><div class="liq-item-left"><div class="liq-bar-left" style="background:${col}"></div><span class="liq-item-label">${l}</span></div><span class="liq-item-val" style="color:${col}">${v}</span></div>`).join("")}
     </div>
     <div class="card" style="margin:0"><div class="card-label">Liquidity Obligations</div>
@@ -837,473 +671,9 @@ function confirmUpload(){
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────────────
-
-// ── TEAMS DATA ────────────────────────────────────────────────────────────────
-const TEAMS = [
-  {id:"all", name:"All Teams", color:"#00c9a7", role:"system_admin"},
-  {id:"t1",  name:"Corporate Lending",   color:"#4cc9f0", role:"owner",  members:[
-    {name:"Felix Michael",   email:"felix@fscf.com.ng",   role:"owner",  avatar:"F", color:"#4cc9f0"},
-    {name:"Adesola Adeyemi", email:"adesola@fscf.com.ng", role:"member", avatar:"A", color:"#9b5de5"},
-    {name:"Chidi Okonkwo",   email:"chidi@fscf.com.ng",   role:"member", avatar:"C", color:"#f5a623"},
-    {name:"Board Viewer",    email:"board@fscf.com.ng",   role:"viewer", avatar:"B", color:"#7a90b0"},
-  ]},
-  {id:"t2",  name:"SME & Supply Chain",  color:"#9b5de5", role:"member", members:[
-    {name:"Ngozi Eze",       email:"ngozi@fscf.com.ng",   role:"owner",  avatar:"N", color:"#9b5de5"},
-    {name:"Emeka Obi",       email:"emeka@fscf.com.ng",   role:"member", avatar:"E", color:"#06d6a0"},
-    {name:"Fatima Aliyu",    email:"fatima@fscf.com.ng",  role:"viewer", avatar:"F", color:"#f5a623"},
-  ]},
-];
-// Tag loans by team (t1=Corp: Invoice Discounting + Reverse Factoring; t2=SME: SCF + Factoring)
-LOANS().forEach((l,i)=>{
-  l.teamId = ["Invoice Discounting","Reverse Factoring"].includes(l.product) ? "t1" : "t2";
-});
-BORROWINGS().forEach((b,i)=>{ b.teamId = i<3?"t1":"t2"; });
-INVESTMENTS().forEach((inv,i)=>{ inv.teamId = i<3?"t1":"t2"; });
-CASH().forEach((c,i)=>{ c.teamId = i<3?"t1":"t2"; });
-
-// ── SESSION STATE ─────────────────────────────────────────────────────────────
-let SESSION = { user:null, teamId:"all", teamName:"All Teams" };
-function LOANS()     { return SESSION.teamId==="all"?_ALL_LOANS    :_ALL_LOANS.filter(x=>x.teamId===SESSION.teamId); }
-function BORROWINGS(){ return SESSION.teamId==="all"?_ALL_BORROWINGS:_ALL_BORROWINGS.filter(x=>x.teamId===SESSION.teamId); }
-function INVESTMENTS(){ return SESSION.teamId==="all"?_ALL_INVESTMENTS:_ALL_INVESTMENTS.filter(x=>x.teamId===SESSION.teamId); }
-function CASH()      { return SESSION.teamId==="all"?_ALL_CASH    :_ALL_CASH.filter(x=>x.teamId===SESSION.teamId); }
-
-
-// ── AUTH ──────────────────────────────────────────────────────────────────────
-const DEMO_USERS = [
-  {name:"Felix Michael",   email:"felix@fscf.com.ng",   role:"system_admin", teamId:"all",  teamName:"All Teams"},
-  {name:"Adesola Adeyemi", email:"adesola@fscf.com.ng", role:"team_member",  teamId:"t1",   teamName:"Corporate Lending"},
-  {name:"Ngozi Eze",       email:"ngozi@fscf.com.ng",   role:"team_owner",   teamId:"t2",   teamName:"SME & Supply Chain"},
-];
-
-function checkAuth(){
-  // Check existing portal token first
-  try{
-    const token = localStorage.getItem('fscf_token') || sessionStorage.getItem('fscf_token');
-    if(token){
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if(payload.exp && payload.exp*1000 < Date.now()) throw new Error('expired');
-      initSession(payload);
-      return;
-    }
-  }catch(e){}
-  // Check local demo session
-  const demo = sessionStorage.getItem('fscf_demo_user');
-  if(demo){ initSession(JSON.parse(demo)); return; }
-  document.getElementById('auth-overlay').classList.remove('hidden');
-}
-
-function doLogin(){
-  const email = document.getElementById('auth-email').value.trim().toLowerCase();
-  const pass  = document.getElementById('auth-password').value;
-  const err   = document.getElementById('auth-error');
-  if(pass !== 'demo1234'){ err.style.display='block'; return; }
-  const user = DEMO_USERS.find(u=>u.email===email) || {name:email.split('@')[0],email,role:'team_viewer',teamId:'t1',teamName:'Corporate Lending'};
-  sessionStorage.setItem('fscf_demo_user', JSON.stringify(user));
-  err.style.display='none';
-  initSession(user);
-}
-
-function initSession(user){
-  SESSION.user = user;
-  SESSION.teamId   = user.teamId   || 'all';
-  SESSION.teamName = user.teamName || 'All Teams';
-  document.getElementById('auth-overlay').classList.add('hidden');
-  buildNavTeam();
-  buildUserMenu();
-  resetAndRender();
-}
-
-function signOut(){
-  sessionStorage.removeItem('fscf_demo_user');
-  localStorage.removeItem('fscf_token');
-  location.reload();
-}
-
-// ── NAV TEAM + USER ───────────────────────────────────────────────────────────
-function buildNavTeam(){
-  const team = TEAMS.find(t=>t.id===SESSION.teamId)||TEAMS[0];
-  const isAdmin = SESSION.user?.role==='system_admin';
-  const el = document.getElementById('team-badge-wrap');
-  if(!el) return;
-  el.innerHTML = `<div class="team-badge" onclick="toggleTeamDropdown()" id="team-badge">
-    <div class="team-dot" style="background:${team.color}"></div>
-    <span class="team-name-text">${SESSION.teamName}</span>
-    ${isAdmin?'&#9660;':''}
-    ${isAdmin?`<div class="team-dropdown" id="team-dropdown">
-      <div class="team-dropdown-label">Switch team context</div>
-      ${TEAMS.map(t=>`<div class="team-opt ${t.id===SESSION.teamId?'active':''}" onclick="switchTeam('${t.id}','${t.name}',event)">
-        <div class="team-opt-dot" style="background:${t.color}"></div>
-        <div class="team-opt-info"><div class="team-opt-name">${t.name}</div><div class="team-opt-role">${t.id==='all'?'All data':'Team data only'}</div></div>
-      </div>`).join('')}
-    </div>`:''}
-  </div>`;
-}
-
-function toggleTeamDropdown(){
-  const d=document.getElementById('team-dropdown');
-  if(d) d.classList.toggle('open');
-}
-
-function switchTeam(id,name,e){
-  if(e){e.stopPropagation();}
-  SESSION.teamId=id; SESSION.teamName=name;
-  document.getElementById('team-dropdown')?.classList.remove('open');
-  buildNavTeam();
-  // Force re-render all tabs
-  Object.keys(rendered).forEach(k=>delete rendered[k]);
-  document.querySelectorAll('.panel').forEach(p=>{ p.innerHTML=''; });
-  renderTab(currentTab);
-  renderStatusBar();
-}
-
-function buildUserMenu(){
-  const u=SESSION.user;
-  if(!u)return;
-  const el=document.getElementById('user-avatar');
-  if(!el)return;
-  el.textContent=u.name?.charAt(0).toUpperCase()||'U';
-  el.onclick=()=>document.getElementById('user-dropdown').classList.toggle('open');
-  document.getElementById('user-dropdown').innerHTML=`
-    <div class="uid-name">${u.name}</div>
-    <div class="uid-email">${u.email}</div>
-    <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;padding:2px 0"><span class="access-pill">${u.role?.replace('_',' ')}</span></div>
-    <hr class="uid-divider"/>
-    ${SESSION.user?.role==='system_admin'?'<div class="uid-action" onclick=\'switchTab(\"teams\")\'>&#128101; Team Management</div>':''}
-    <div class="uid-action" onclick="openExport()">&#128229; Export Report</div>
-    <hr class="uid-divider"/>
-    <div class="uid-action" onclick="signOut()" style="color:#ff4560">&#8594; Sign Out</div>
-  `;
-}
-
-function resetAndRender(){
-  Object.keys(rendered).forEach(k=>delete rendered[k]);
-  renderStatusBar();
-  renderTab(currentTab);
-}
-
-// Close dropdowns on outside click
-document.addEventListener('click',e=>{
-  if(!e.target.closest('#team-badge')) document.getElementById('team-dropdown')?.classList.remove('open');
-  if(!e.target.closest('.user-menu')) document.getElementById('user-dropdown')?.classList.remove('open');
-});
-
-// ── EXPORT ENGINE ─────────────────────────────────────────────────────────────
-let exportFormat='excel';
-function openExport(){ document.getElementById('export-modal').classList.add('show'); }
-function closeExport(){ document.getElementById('export-modal').classList.remove('show'); }
-function setFormat(btn,fmt){
-  document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); exportFormat=fmt;
-}
-function toggleModule(cb){ cb.closest('.exp-mod').classList.toggle('selected',cb.checked); }
-
-function runExport(){
-  const modules=[...document.querySelectorAll('#exp-modules input:checked')].map(i=>i.value);
-  if(!modules.length){alert('Select at least one module.');return;}
-  const label=document.getElementById('exp-report-name').value||'FSCF Treasury Report';
-  const btn=document.getElementById('exp-go-btn');
-  const prog=document.getElementById('exp-progress');
-  btn.disabled=true; prog.style.display='block';
-  setProgress(10,'Gathering data...');
-  setTimeout(()=>{
-    setProgress(40,'Building '+(exportFormat==='excel'?'workbook':exportFormat==='pdf'?'PDF':'CSV files')+'...');
-    setTimeout(()=>{
-      setProgress(80,'Finalising...');
-      setTimeout(()=>{
-        if(exportFormat==='excel') doExcelExport(modules,label);
-        else if(exportFormat==='pdf') doPDFExport(modules,label);
-        else doCSVExport(modules,label);
-        setProgress(100,'Complete!');
-        setTimeout(()=>{ btn.disabled=false; prog.style.display='none'; setProgress(0,''); closeExport(); },1200);
-      },600);
-    },700);
-  },400);
-}
-function setProgress(pct,text){
-  document.getElementById('exp-prog-fill').style.width=pct+'%';
-  document.getElementById('exp-prog-text').textContent=text;
-}
-
-// EXCEL EXPORT
-function doExcelExport(modules, label){
-  if(typeof XLSX==='undefined'){alert('SheetJS not loaded. Check your internet connection.');return;}
-  const wb = XLSX.utils.book_new();
-  const loans=LOANS(), borrows=BORROWINGS(), invs=INVESTMENTS(), cash=CASH();
-  const ecl=calcECL(loans);
-  const now=new Date().toLocaleDateString('en-GB');
-
-  // Cover sheet
-  const cover=[
-    ['FSCF Treasury Intelligence Platform'],
-    ['Report: '+label],
-    ['Team: '+SESSION.teamName],
-    ['Generated: '+now],
-    ['Generated by: '+(SESSION.user?.name||'')],
-    [],
-    ['Module','Records','Value (₦M)'],
-  ];
-  if(modules.includes('loans'))     cover.push(['Loan Portfolio',loans.length,sum(loans,'outstanding').toFixed(2)]);
-  if(modules.includes('borrowings'))cover.push(['Borrowings',borrows.length,sum(borrows,'outstanding').toFixed(2)]);
-  if(modules.includes('investments'))cover.push(['Investments',invs.length,sum(invs,'principal').toFixed(2)]);
-  if(modules.includes('cash'))      cover.push(['Cash Accounts',cash.length,sum(cash.filter(c=>c.ccy==='NGN'),'balance').toFixed(2)]);
-  if(modules.includes('ecl'))       cover.push(['ECL Provision','—',ecl.total.toFixed(2)]);
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cover), 'Cover');
-
-  if(modules.includes('loans')){
-    const rows=loans.map(l=>({'Loan ID':l.id,'Customer':l.customer,'Product':l.product,'Principal (₦M)':l.principal,'Outstanding (₦M)':l.outstanding,'Interest Rate (%)':l.rate,'Start Date':l.start,'Maturity Date':l.maturity,'Days Past Due':l.dpd,'Stage':l.stage,'Credit Rating':l.rating}));
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Loan Portfolio');
-  }
-  if(modules.includes('ecl')){
-    const rows=ecl.rows.map(l=>({'Loan ID':l.id,'Customer':l.customer,'Stage':l.stage,'EAD (₦M)':l.ead,'PD':l.pd,'LGD':l.lgd,'ECL (₦M)':l.ecl,'ECL Rate (%)':l.eclRate}));
-    const summary=[['Total EAD (₦M)',ecl.ead],['Total ECL (₦M)',ecl.total],['Coverage Ratio (%)',ecl.coverage]];
-    const ws=XLSX.utils.json_to_sheet(rows);
-    XLSX.utils.sheet_add_aoa(ws,[[],['SUMMARY'],['Metric','Value'],...summary],{origin:-1});
-    XLSX.utils.book_append_sheet(wb,ws,'ECL Schedule');
-  }
-  if(modules.includes('borrowings')){
-    const rows=borrows.map(b=>({'Borrowing ID':b.id,'Lender':b.lender,'Type':b.type,'Principal (₦M)':b.principal,'Outstanding (₦M)':b.outstanding,'Rate (%)':b.rate,'Tenor (months)':b.tenor,'Repayment':b.repayment,'Maturity Date':b.maturity}));
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Borrowings');
-  }
-  if(modules.includes('investments')){
-    const rows=invs.map(i=>({'Investment ID':i.id,'Counterparty':i.cp,'Type':i.type,'Principal (₦M)':i.principal,'Rate (%)':i.rate,'Date Invested':i.invested,'Tenor (days)':i.days,'Maturity Date':i.maturity,'Interest (₦M)':(i.principal*(i.rate/100)*(i.days/365)).toFixed(2)}));
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Investments');
-  }
-  if(modules.includes('cash')){
-    const rows=cash.map(c=>({'Account ID':c.id,'Bank':c.bank,'Account No.':c.acct,'Type':c.type,'Currency':c.ccy,'Balance':c.balance,'Restricted':c.restricted?'Yes':'No'}));
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Cash Accounts');
-  }
-  XLSX.writeFile(wb, label.replace(/[^a-z0-9]/gi,'_')+'_'+now.replace(///g,'')+'.xlsx');
-}
-
-// PDF EXPORT — structured text report using jsPDF
-function doPDFExport(modules, label){
-  if(typeof window.jspdf==='undefined'){alert('jsPDF not loaded. Check your internet connection.');return;}
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  const loans=LOANS(),borrows=BORROWINGS(),invs=INVESTMENTS(),cash=CASH();
-  const ecl=calcECL(loans);
-  const now=new Date().toLocaleDateString('en-GB');
-  const W=210,M=18;
-  let y=20;
-  const nl=(n=6)=>{y+=n;if(y>270){doc.addPage();y=20;}};
-  // Header
-  doc.setFillColor(13,27,46); doc.rect(0,0,W,36,'F');
-  doc.setTextColor(0,201,167); doc.setFontSize(16); doc.setFont('helvetica','bold');
-  doc.text('FSCF Treasury Intelligence',M,14);
-  doc.setTextColor(122,144,176); doc.setFontSize(8); doc.setFont('helvetica','normal');
-  doc.text('FACTORING & SUPPLY CHAIN FINANCE LIMITED',M,20);
-  doc.setTextColor(226,234,245); doc.setFontSize(11); doc.setFont('helvetica','bold');
-  doc.text(label,M,28);
-  doc.setTextColor(122,144,176); doc.setFontSize(8); doc.setFont('helvetica','normal');
-  doc.text('Team: '+SESSION.teamName+'   |   Generated: '+now+'   |   By: '+(SESSION.user?.name||''),M,33);
-  y=46;
-
-  function section(title){
-    doc.setFillColor(26,46,74); doc.rect(M-2,y-4,W-M*2+4,8,'F');
-    doc.setTextColor(0,201,167); doc.setFontSize(10); doc.setFont('helvetica','bold');
-    doc.text(title,M,y); nl(10);
-  }
-  function row(label,value,indent=0){
-    doc.setTextColor(122,144,176); doc.setFontSize(8); doc.setFont('helvetica','normal');
-    doc.text(label,M+indent,y);
-    doc.setTextColor(226,234,245); doc.setFont('helvetica','bold');
-    doc.text(String(value),W-M,y,{align:'right'});
-    nl(6);
-  }
-  function tableHeader(cols){
-    doc.setFillColor(7,16,31); doc.rect(M-2,y-3,W-M*2+4,6,'F');
-    doc.setTextColor(122,144,176); doc.setFontSize(7); doc.setFont('helvetica','bold');
-    const cw=(W-M*2)/(cols.length);
-    cols.forEach((c,i)=>doc.text(c,M+cw*i,y));
-    nl(7);
-  }
-  function tableRow(vals){
-    doc.setTextColor(226,234,245); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
-    const cw=(W-M*2)/(vals.length);
-    vals.forEach((v,i)=>doc.text(String(v).substring(0,22),M+cw*i,y));
-    nl(6); if(y>260){doc.addPage();y=20;}
-  }
-
-  if(modules.includes('dashboard')){
-    section('EXECUTIVE SUMMARY');
-    row('Total Cash (NGN)',fmt(sum(cash.filter(c=>c.ccy==='NGN'),'balance')));
-    row('Loan Book Size',fmt(sum(loans,'outstanding')));
-    row('ECL Provision',fmt(ecl.total));
-    row('Coverage Ratio',pct(ecl.coverage));
-    row('Total Borrowings',fmt(sum(borrows,'outstanding')));
-    row('Investment Portfolio',fmt(sum(invs,'principal')));
-    nl(4);
-  }
-  if(modules.includes('loans')){
-    section('LOAN PORTFOLIO');
-    row('Total Facilities',loans.length);
-    row('Total Outstanding',fmt(sum(loans,'outstanding')));
-    row('Non-Performing (Stage 3)',loans.filter(l=>l.stage===3).length+' loans');
-    nl(2);
-    tableHeader(['Loan ID','Customer','Product','Outstanding','DPD','Stage']);
-    loans.forEach(l=>tableRow([l.id,l.customer.split(' ')[0]+' '+l.customer.split(' ')[1],l.product.split(' ')[0],fmt(l.outstanding),l.dpd,'S'+l.stage]));
-    nl(4);
-  }
-  if(modules.includes('ecl')){
-    section('ECL SCHEDULE (IFRS 9)');
-    row('Total EAD',fmt(ecl.ead));
-    row('Total ECL Provision',fmt(ecl.total));
-    row('Coverage Ratio',pct(ecl.coverage));
-    nl(2);
-    tableHeader(['Loan ID','Customer','Stage','EAD (₦M)','PD','ECL (₦M)']);
-    ecl.rows.forEach(l=>tableRow([l.id,l.customer.split(' ')[0],l.stage,l.ead.toFixed(1),(l.pd*100).toFixed(1)+'%',l.ecl.toFixed(2)]));
-    nl(4);
-  }
-  if(modules.includes('borrowings')){
-    section('BORROWINGS SCHEDULE');
-    tableHeader(['ID','Lender','Type','Outstanding','Rate','Maturity']);
-    borrows.forEach(b=>tableRow([b.id,b.lender.split(' ')[0],b.type.split(' ')[0],fmt(b.outstanding),b.rate+'%',b.maturity]));
-    nl(4);
-  }
-  if(modules.includes('investments')){
-    section('INVESTMENT PORTFOLIO');
-    tableHeader(['ID','Counterparty','Type','Principal','Rate','Maturity']);
-    invs.forEach(i=>tableRow([i.id,i.cp.split(' ')[0],i.type.split(' ')[0],fmt(i.principal),i.rate+'%',i.maturity]));
-    nl(4);
-  }
-  if(modules.includes('cash')){
-    section('CASH ACCOUNT BALANCES');
-    tableHeader(['Account ID','Bank','Type','Currency','Balance','Status']);
-    cash.forEach(c=>tableRow([c.id,c.bank.split(' ')[0],c.type,c.ccy,c.ccy==='NGN'?fmt(c.balance):'
-</script>
-</body>
-</html>+c.balance+'M',c.restricted?'Restricted':'Available']));
-  }
-  // Footer on every page
-  const pages=doc.getNumberOfPages();
-  for(let i=1;i<=pages;i++){
-    doc.setPage(i);
-    doc.setTextColor(74,96,122); doc.setFontSize(7);
-    doc.text('FSCF Treasury Intelligence Platform  |  Confidential  |  Page '+i+' of '+pages,W/2,290,{align:'center'});
-  }
-  doc.save(label.replace(/[^a-z0-9]/gi,'_')+'.pdf');
-}
-
-// CSV EXPORT
-function doCSVExport(modules, label){
-  const loans=LOANS(),borrows=BORROWINGS(),invs=INVESTMENTS(),cash=CASH();
-  function toCSV(rows){ if(!rows.length)return''; const h=Object.keys(rows[0]); return[h.join(','),...rows.map(r=>h.map(k=>'"'+(r[k]??'').toString().replace(/"/g,'""')+'"').join(','))].join('\n'); }
-  const files={};
-  if(modules.includes('loans'))      files['loans']=toCSV(loans.map(l=>({'Loan ID':l.id,Customer:l.customer,Product:l.product,'Principal (₦M)':l.principal,'Outstanding (₦M)':l.outstanding,'Rate (%)':l.rate,DPD:l.dpd,Stage:l.stage,Rating:l.rating,Maturity:l.maturity})));
-  if(modules.includes('ecl'))        files['ecl']=toCSV(calcECL(loans).rows.map(l=>({'Loan ID':l.id,Customer:l.customer,Stage:l.stage,'EAD':l.ead,'PD':l.pd,'LGD':l.lgd,'ECL':l.ecl,'ECL Rate %':l.eclRate})));
-  if(modules.includes('borrowings')) files['borrowings']=toCSV(borrows.map(b=>({'ID':b.id,Lender:b.lender,Type:b.type,Outstanding:b.outstanding,Rate:b.rate,Tenor:b.tenor,Maturity:b.maturity})));
-  if(modules.includes('investments'))files['investments']=toCSV(invs.map(i=>({'ID':i.id,Counterparty:i.cp,Type:i.type,Principal:i.principal,Rate:i.rate,Days:i.days,Maturity:i.maturity})));
-  if(modules.includes('cash'))       files['cash']=toCSV(cash.map(c=>({'ID':c.id,Bank:c.bank,Account:c.acct,Type:c.type,Currency:c.ccy,Balance:c.balance,Restricted:c.restricted})));
-  Object.entries(files).forEach(([name,content])=>{
-    const a=document.createElement('a');
-    a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(content);
-    a.download=label.replace(/[^a-z0-9]/gi,'_')+'_'+name+'.csv';
-    a.click();
-  });
-}
-
-// ── TEAM MANAGEMENT MODULE ─────────────────────────────────────────────────────
-let activeTeamView='t1';
-function renderTeams(){
-  const isAdmin=SESSION.user?.role==='system_admin';
-  if(!isAdmin){
-    document.getElementById('panel-teams').innerHTML='<div style="padding:60px;text-align:center;color:var(--t3);font-family:IBM Plex Mono,monospace;font-size:12px">&#128274; Admin access required</div>';
-    return;
-  }
-  const userTeams=TEAMS.filter(t=>t.id!=='all');
-  renderTeamDetail(activeTeamView);
-  document.getElementById('panel-teams').innerHTML=`
-  <div class="sec-head"><div class="sec-title">&#128101; Team Management</div><div class="sec-sub">Create teams, assign members, and control data access</div></div>
-  <div class="team-mgmt-grid">
-    <div>
-      <div class="card" style="margin:0">
-        <div class="card-label">Teams (${userTeams.length})</div>
-        ${userTeams.map(t=>`<div class="team-list-item ${t.id===activeTeamView?'active':''}" onclick="activeTeamView='${t.id}';renderTeams()">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div style="width:10px;height:10px;border-radius:50%;background:${t.color};flex-shrink:0"></div>
-            <div class="team-list-name">${t.name}</div>
-          </div>
-          <div class="team-list-meta">${t.members.length} members &middot; ${t.id==='t1'?'Corporate':'SME'} data scope</div>
-        </div>`).join('')}
-        <button onclick="createTeamPrompt()" style="width:100%;background:transparent;border:1px dashed var(--border);border-radius:8px;padding:10px;font-size:12px;color:var(--t2);cursor:pointer;margin-top:8px;font-family:'IBM Plex Mono',monospace">+ New Team</button>
-      </div>
-    </div>
-    <div id="team-detail-panel"></div>
-  </div>`;
-  renderTeamDetail(activeTeamView);
-}
-
-function renderTeamDetail(teamId){
-  const team=TEAMS.find(t=>t.id===teamId);
-  if(!team)return;
-  const panel=document.getElementById('team-detail-panel');
-  if(!panel)return;
-  const avatarColors=['#4cc9f0','#9b5de5','#f5a623','#06d6a0','#ff4560'];
-  panel.innerHTML=`
-  <div class="card" style="margin:0">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
-      <div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-          <div style="width:12px;height:12px;border-radius:50%;background:${team.color}"></div>
-          <span style="font-size:14px;font-weight:700">${team.name}</span>
-        </div>
-        <span class="access-pill">Team ID: ${team.id}</span>
-      </div>
-      <div style="display:flex;gap:8px">
-        <span style="font-size:10px;color:var(--t2);font-family:'IBM Plex Mono',monospace;${team.id==='t1'?'color:#4cc9f0':'color:#9b5de5'}">${team.id==='t1'?'Invoice Discounting, Reverse Factoring':'Supply Chain Finance, Factoring'}</span>
-      </div>
-    </div>
-    <div class="card-label">Members (${team.members.length})</div>
-    ${team.members.map((m,i)=>`<div class="member-row">
-      <div class="member-avatar" style="background:${m.color||avatarColors[i%avatarColors.length]}20;color:${m.color||avatarColors[i%avatarColors.length]};border:1px solid ${m.color||avatarColors[i%avatarColors.length]}40">${m.avatar}</div>
-      <div class="member-info"><div class="member-name">${m.name}</div><div class="member-email">${m.email}</div></div>
-      <span class="member-role role-${m.role}">${m.role}</span>
-    </div>`).join('')}
-    <div class="add-member-form">
-      <div style="font-size:11px;color:var(--t2);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.06em">Add Member</div>
-      <div class="form-row">
-        <input class="form-input" id="new-member-email-${team.id}" placeholder="email@fscf.com.ng" />
-        <select class="form-select" id="new-member-role-${team.id}">
-          <option value="member">Member</option>
-          <option value="viewer">Viewer</option>
-          <option value="owner">Owner</option>
-        </select>
-        <button class="form-submit" onclick="addMember('${team.id}')">Add</button>
-      </div>
-    </div>
-  </div>`;
-}
-
-function addMember(teamId){
-  const emailEl=document.getElementById('new-member-email-'+teamId);
-  const roleEl=document.getElementById('new-member-role-'+teamId);
-  const email=emailEl?.value?.trim();
-  if(!email){return;}
-  const team=TEAMS.find(t=>t.id===teamId);
-  if(!team)return;
-  const name=email.split('@')[0].replace(/./g,' ').replace(/w/g,c=>c.toUpperCase());
-  team.members.push({name,email,role:roleEl.value,avatar:name.charAt(0).toUpperCase(),color:'#7a90b0'});
-  renderTeams();
-}
-
-function createTeamPrompt(){
-  const name=prompt('Team name:');
-  if(!name)return;
-  const id='t'+(TEAMS.length+1);
-  TEAMS.push({id,name,color:'#'+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0'),role:'member',members:[]});
-  activeTeamView=id;
-  renderTeams();
-}
-
-// Override renderTab to add teams
-const _origRenderTab=renderTab;
-function renderTab(tab){
-  if(tab==='teams'){if(!rendered['teams']){rendered['teams']=true;renderTeams();}return;}
-  _origRenderTab(tab);
-}
-
-checkAuth();
+renderStatusBar();
+renderDashboard();
+rendered["dashboard"]=true;
 </script>
 </body>
 </html>
