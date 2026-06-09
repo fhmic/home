@@ -308,9 +308,19 @@ footer{background:var(--n2);border-top:1px solid var(--b);padding:1.5rem 2rem;ma
       <div class="page-sub" id="last-updated">Last updated: —</div>
     </div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div style="display:flex;gap:6px;align-items:center;background:var(--n3);border:1px solid var(--b2);border-radius:8px;padding:5px 10px">
+        <span style="font-size:9px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em">APIs:</span>
+        <span id="api-status-stocks" style="font-size:10px;font-family:var(--mo);color:var(--tx3)">◌ Fetching…</span>
+        <span style="color:var(--tx4);font-size:9px">|</span>
+        <span id="api-status-forex" style="font-size:10px;font-family:var(--mo);color:var(--tx3)">◌ Fetching…</span>
+        <span style="color:var(--tx4);font-size:9px">|</span>
+        <span id="api-status-crypto" style="font-size:10px;font-family:var(--mo);color:var(--tx3)">◌ Fetching…</span>
+        <span style="color:var(--tx4);font-size:9px">|</span>
+        <span id="api-status-nigeria" style="font-size:10px;font-family:var(--mo);color:var(--tx3)">◌ NG Rates…</span>
+      </div>
       <div class="tag">
         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        Prices delayed ~15 min
+        Indices delayed ~15 min
       </div>
       <button class="refresh-btn" onclick="refreshAll(this)" id="refresh-btn">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>
@@ -391,7 +401,8 @@ footer{background:var(--n2);border-top:1px solid var(--b);padding:1.5rem 2rem;ma
     <div class="sec-ttl nigeria">Nigeria Official Rates & Indicators <span class="sec-badge official">Official Sources</span></div>
   </div>
   <div style="margin-bottom:1rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">
-    Sourced from CBN, DMO & NBS. Rates reflect latest published figures.
+    Scraped from CBN (cbn.gov.ng) and NBS (nigerianstat.gov.ng) on page load. Re-fetched every 4 hours. Values persist until CBN/NBS publishes new data — typically MPR changes 6×/year, inflation monthly.
+    <span id="api-status-nigeria-detail" style="color:var(--tx3)"></span>
   </div>
   <div class="card-grid g3" id="nigeria-rates"></div>
 
@@ -488,6 +499,9 @@ const fNK = n => {
   if(abs>=1e3)  return (n/1e3).toFixed(1)+'K';
   return n.toFixed(2);
 };
+
+// Chart instance refs (needed to destroy before redraw)
+let dominanceChartInstance = null;
 
 function chgClass(v){ return v>=0?'up':'dn'; }
 function chgSign(v){ return v>=0?'+':''; }
@@ -792,13 +806,14 @@ function buildCrypto(){
 
 // ── BUILD CRYPTO DOMINANCE CHART ─────────────────────────────────
 function buildDominanceChart(){
+  if(dominanceChartInstance){ dominanceChartInstance.destroy(); dominanceChartInstance=null; }
   const labels = CRYPTO.slice(0,5).map(c=>c.sym);
   const data   = CRYPTO.slice(0,5).map(c=>c.dom);
   const others = 100 - data.reduce((a,b)=>a+b,0);
   labels.push('Others'); data.push(others);
   const colors = ['#f7931a','#627eea','#f3ba2f','#00aae4','#9945ff','#4a6080'];
 
-  new Chart(document.getElementById('dominance-chart'),{
+  dominanceChartInstance = new Chart(document.getElementById('dominance-chart'),{
     type:'doughnut',
     data:{ labels, datasets:[{ data, backgroundColor:colors, borderWidth:2, borderColor:'#0a1628' }]},
     options:{
@@ -912,20 +927,478 @@ function updateTimestamp(){
   document.getElementById('last-updated').textContent = 'Last updated: '+new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+' WAT';
 }
 
-// ── REFRESH ALL ──────────────────────────────────────────────────
-function refreshAll(btn){
-  btn.classList.add('spinning');
-  setTimeout(()=>{
-    btn.classList.remove('spinning');
-    updateTimestamp();
+// ══════════════════════════════════════════════════════════════════
+// LIVE API FETCHES
+// Sources: CoinGecko (crypto), open.er-api.com (forex),
+//          Yahoo Finance v8 proxy (indices via allorigins CORS proxy)
+// All calls gracefully fall back to hardcoded data on failure.
+// ══════════════════════════════════════════════════════════════════
+
+// Flags shown in the API data-source bar
+function setApiStatus(id, state) {
+  // state: 'loading' | 'live' | 'fallback'
+  const el = document.getElementById('api-status-'+id);
+  if(!el) return;
+  el.textContent = state === 'live' ? '● Live' : state === 'loading' ? '◌ Fetching…' : '○ Cached';
+  el.style.color  = state === 'live' ? 'var(--gr)' : state === 'loading' ? 'var(--am)' : 'var(--tx3)';
+}
+
+// ── 1. CRYPTO via CoinGecko (free, no key needed) ─────────────────
+const CG_IDS = 'bitcoin,ethereum,binancecoin,ripple,solana,tether,cardano,avalanche-2,dogecoin,chainlink';
+const CG_MAP = {
+  bitcoin:'BTC', ethereum:'ETH', binancecoin:'BNB', ripple:'XRP',
+  solana:'SOL', tether:'USDT', 'cardano':'ADA', 'avalanche-2':'AVAX',
+  dogecoin:'DOGE', chainlink:'LINK'
+};
+
+async function fetchCrypto() {
+  setApiStatus('crypto','loading');
+  try {
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${CG_IDS}&vs_currencies=usd&include_24hr_change=true&include_market_cap=true`;
+    const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if(!r.ok) throw new Error('CoinGecko '+r.status);
+    const data = await r.json();
+
+    // Update CRYPTO array in place
+    Object.entries(CG_MAP).forEach(([cgId, sym]) => {
+      const d = data[cgId];
+      if(!d) return;
+      const item = CRYPTO.find(c=>c.sym===sym);
+      if(!item) return;
+      const prev = item.price;
+      item.price = d.usd;
+      item.chg   = +(d.usd - prev).toFixed(4);
+      item.pct   = +(d.usd_24h_change||0).toFixed(2);
+      const mc = d.usd_market_cap||0;
+      item.mcap  = fNK(mc);
+    });
+
+    // Fetch global data for dominance
+    const gr = await fetch('https://api.coingecko.com/api/v3/global', { signal: AbortSignal.timeout(8000) });
+    if(gr.ok){
+      const gd = await gr.json();
+      const pct = gd.data?.market_cap_percentage||{};
+      const keys = ['BTC','ETH','BNB','XRP','SOL','USDT','ADA','AVAX','DOGE'];
+      let used = 0;
+      keys.forEach(k=>{
+        const item = CRYPTO.find(c=>c.sym===k);
+        if(item){ item.dom = +(pct[k.toLowerCase()]||item.dom).toFixed(1); used+=item.dom; }
+      });
+      const others = CRYPTO.find(c=>c.sym==='LINK');
+      if(others) others.dom = Math.max(0, +(100-used).toFixed(1));
+    }
+
+    setApiStatus('crypto','live');
+    buildCrypto();
+    rebuildDominanceChart();
     buildTicker();
+    return true;
+  } catch(e) {
+    console.warn('CoinGecko fetch failed:', e.message);
+    setApiStatus('crypto','fallback');
+    return false;
+  }
+}
+
+// ── 2. FOREX via open.er-api.com (free, 1500 req/month) ───────────
+async function fetchForex() {
+  setApiStatus('forex','loading');
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/USD', { signal: AbortSignal.timeout(8000) });
+    if(!r.ok) throw new Error('ExchangeRate-API '+r.status);
+    const data = await r.json();
+    if(data.result !== 'success') throw new Error('ExchangeRate-API error');
+    const rates = data.rates;
+
+    // Update FOREX_PAIRS with live rates
+    FOREX_PAIRS.forEach(p => {
+      let liveRate = null;
+      if(p.from === 'USD') {
+        liveRate = rates[p.to];
+      } else if(p.to === 'USD') {
+        liveRate = 1 / rates[p.from];
+      } else if(rates[p.from] && rates[p.to]) {
+        liveRate = rates[p.to] / rates[p.from];
+      }
+      if(liveRate && isFinite(liveRate)) {
+        const prev = p.rate;
+        p.rate = +liveRate.toFixed(p.rate >= 100 ? 2 : 4);
+        p.chg  = +(p.rate - prev).toFixed(4);
+        p.pct  = prev > 0 ? +((p.rate - prev)/prev*100).toFixed(2) : 0;
+      }
+    });
+
+    // Update heatmap pct changes
+    FX_HEATMAP.forEach(item => {
+      const sym = item.sym;
+      if(sym === 'USD') { item.chg = 0; return; }
+      const r2 = rates[sym];
+      if(r2) {
+        // NGN-based: if USD/NGN increases, NGN weakened
+        // For all others: rate change vs previous stored
+        const prevPair = FOREX_PAIRS.find(p=>p.from==='USD'&&p.to===sym);
+        if(prevPair) { item.chg = prevPair.pct; }
+      }
+    });
+
+    // Update NGN rate in Nigeria section
+    if(rates['NGN']) {
+      const ngnRate = +rates['NGN'].toFixed(2);
+      const ngnItem = NIGERIA_RATES.find(r=>r.id==='fx');
+      if(ngnItem) {
+        ngnItem.rate = ngnRate;
+        ngnItem.meta = 'I&E Window — live via ExchangeRate-API';
+      }
+    }
+
+    setApiStatus('forex','live');
+    buildForex();
+    buildFXHeatmap();
+    buildNigeriaRates();
+    buildTicker();
+    return true;
+  } catch(e) {
+    console.warn('Forex fetch failed:', e.message);
+    setApiStatus('forex','fallback');
+    return false;
+  }
+}
+
+// ── 3. GLOBAL INDICES via Yahoo Finance (CORS proxy) ──────────────
+// Yahoo Finance v8 doesn't support CORS directly.
+// We use the allorigins.win proxy which is free and reliable.
+const YAHOO_SYMBOLS = {
+  dow:    '%5EDJI',
+  nasdaq: '%5EIXIC',
+  sp500:  '%5EGSPC',
+  ftse:   '%5EFTSE',
+  dax:    '%5EGDAXI',
+  nikkei: '%5EN225',
+  sse:    '000001.SS',
+  sensex: '%5EBSESN',
+  ngx:    '%5ENGSEINDX',
+  jse:    '%5EJ203.JO',
+  egx:    '%5EEGX30',
+};
+
+async function fetchOneIndex(id, yhSym) {
+  const encoded = `https://query1.finance.yahoo.com/v8/finance/chart/${yhSym}?interval=1d&range=5d`;
+  const proxy   = `https://api.allorigins.win/get?url=${encodeURIComponent(encoded)}`;
+  const r = await fetch(proxy, { signal: AbortSignal.timeout(10000) });
+  if(!r.ok) throw new Error('proxy '+r.status);
+  const outer = await r.json();
+  const data  = JSON.parse(outer.contents);
+  const result= data?.chart?.result?.[0];
+  if(!result) throw new Error('no result for '+id);
+  const meta  = result.meta;
+  const price = meta.regularMarketPrice || meta.previousClose;
+  const prev  = meta.previousClose || meta.regularMarketPreviousClose;
+  const chg   = +(price - prev).toFixed(2);
+  const pct   = prev > 0 ? +((chg/prev)*100).toFixed(2) : 0;
+  return { price: +price.toFixed(2), chg, pct };
+}
+
+async function fetchIndices() {
+  setApiStatus('stocks','loading');
+  let liveCount = 0;
+
+  // Fetch all indices in parallel, each fails independently
+  const results = await Promise.allSettled(
+    Object.entries(YAHOO_SYMBOLS).map(async ([id, sym]) => {
+      const d = await fetchOneIndex(id, sym);
+      return { id, ...d };
+    })
+  );
+
+  results.forEach(r => {
+    if(r.status !== 'fulfilled') return;
+    const { id, price, chg, pct } = r.value;
+    liveCount++;
+    // Update global indices
+    const gi = GLOBAL_INDICES.find(i=>i.id===id);
+    if(gi){ gi.val=price; gi.chg=chg; gi.pct=pct; }
+    // Update africa indices
+    const ai = AFRICA_INDICES.find(i=>i.id===id);
+    if(ai){ ai.val=price; ai.chg=chg; ai.pct=pct; }
+  });
+
+  if(liveCount > 0) {
+    setApiStatus('stocks', liveCount >= 4 ? 'live' : 'fallback');
     buildGlobalStocks();
     buildAfricaStocks();
-  },1800);
+    buildTicker();
+  } else {
+    setApiStatus('stocks','fallback');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// 4. NIGERIA OFFICIAL RATES
+// Strategy: scrape public CBN / NBS pages via allorigins CORS proxy,
+// parse known patterns, fall back to hardcoded constants if scraping
+// fails or page structure changes.
+// MPR/CRR — CBN decisions page (cbn.gov.ng/MonetaryPolicy/decisions.asp)
+// Inflation  — NBS homepage exposes the CPI series as comma-separated
+//              text in its <div> which we can regex-parse
+// T-Bills    — CBN open data API for treasury bill stop rates
+// ══════════════════════════════════════════════════════════════════
+
+// Cache: don't re-scrape more than once per 4 hours
+let _ngCache = { data:null, ts:0 };
+const NG_CACHE_TTL = 4 * 60 * 60 * 1000;
+
+async function fetchNigeriaRates() {
+  setApiStatus('nigeria','loading');
+
+  // Return cache if fresh
+  if(_ngCache.data && (Date.now() - _ngCache.ts) < NG_CACHE_TTL) {
+    applyNigeriaRates(_ngCache.data);
+    setApiStatus('nigeria','live');
+    return true;
+  }
+
+  const results = await Promise.allSettled([
+    scrapeCBNDecisions(),
+    scrapeNBSInflation(),
+    scrapeCBNTBills(),
+  ]);
+
+  const mpc   = results[0].status==='fulfilled' ? results[0].value : null;
+  const infl  = results[1].status==='fulfilled' ? results[1].value : null;
+  const tbill = results[2].status==='fulfilled' ? results[2].value : null;
+
+  const anyLive = mpc || infl || tbill;
+  if(!anyLive) {
+    console.warn('All Nigeria rate fetches failed — using hardcoded fallback');
+    setApiStatus('nigeria','fallback');
+    return false;
+  }
+
+  const parsed = { mpc, infl, tbill };
+  _ngCache = { data: parsed, ts: Date.now() };
+  applyNigeriaRates(parsed);
+  setApiStatus('nigeria', 'live');
+  return true;
+}
+
+// Parse CBN MPC decisions page for MPR, CRR, SLF, SDF, Liquidity Ratio
+async function scrapeCBNDecisions() {
+  const url     = 'https://www.cbn.gov.ng/MonetaryPolicy/decisions.asp';
+  const proxy   = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+  const r       = await fetch(proxy, { signal: AbortSignal.timeout(12000) });
+  if(!r.ok) throw new Error('CBN decisions proxy ' + r.status);
+  const outer   = await r.json();
+  const html    = outer.contents || '';
+
+  // Extract MPR — look for "X.X per cent" / "X per cent" after "Monetary Policy Rate"
+  let mpr = null, crr = null, liq = null, slf = null, sdf = null;
+
+  // MPR — first occurrence after "Monetary Policy Rate"
+  const mprMatch = html.match(/Monetary Policy Rate[^.]*?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i);
+  if(mprMatch) mpr = parseFloat(mprMatch[1]);
+
+  // CRR for DMBs
+  const crrMatch = html.match(/Cash Reserve Require?ment[^.]*?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i);
+  if(crrMatch) crr = parseFloat(crrMatch[1]);
+
+  // Liquidity Ratio
+  const liqMatch = html.match(/[Ll]iquidity\s*[Rr]atio[^.]*?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i);
+  if(liqMatch) liq = parseFloat(liqMatch[1]);
+
+  // Standing Lending Facility = MPR + 50bps corridor
+  if(mpr) slf = +(mpr + 0.5).toFixed(2);
+  // Standing Deposit Facility = MPR − 450bps
+  if(mpr) sdf = +(mpr - 4.5).toFixed(2);
+
+  if(!mpr) throw new Error('Could not parse MPR from CBN page');
+  return { mpr, crr, liq, slf, sdf };
+}
+
+// Parse NBS homepage — it embeds the CPI series as plain text
+// e.g. "Inflation Rate (Base Period 2024 = 100) (All-Items) 27.4,26.8,...,15.38"
+async function scrapeNBSInflation() {
+  const url   = 'https://www.nigerianstat.gov.ng/';
+  const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+  const r     = await fetch(proxy, { signal: AbortSignal.timeout(12000) });
+  if(!r.ok) throw new Error('NBS proxy ' + r.status);
+  const outer = await r.json();
+  const html  = outer.contents || '';
+
+  // The NBS homepage contains a line like:
+  // "Inflation Rate (Base Period 2024 = 100) (All-Items) 27.4,26.8,...,15.38"
+  // The last number is the most recent month's headline inflation
+  const seriesMatch = html.match(/Inflation Rate[^)]+\)\s*([\d.,\s]+)/i);
+  if(!seriesMatch) throw new Error('NBS series not found');
+
+  const series = seriesMatch[1].trim().split(',').map(v=>parseFloat(v.trim())).filter(v=>!isNaN(v));
+  if(!series.length) throw new Error('Empty NBS series');
+
+  const latest = series[series.length-1];
+  const prev   = series.length >= 2 ? series[series.length-2] : null;
+  return { headline: latest, prev };
+}
+
+// Fetch T-Bill stop rates from CBN open data endpoint
+// CBN publishes an open data JSON for treasury bill results
+async function scrapeCBNTBills() {
+  // CBN open data — Treasury Bills primary market results
+  // This endpoint returns recent NTB auction data
+  const url   = 'https://www.cbn.gov.ng/rates/tBillsrates.asp';
+  const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+  const r     = await fetch(proxy, { signal: AbortSignal.timeout(12000) });
+  if(!r.ok) throw new Error('CBN tbill proxy ' + r.status);
+  const outer = await r.json();
+  const html  = outer.contents || '';
+
+  // Parse table rows for 91, 182, 364 day stop rates
+  // CBN page typically has table with columns: Date | Tenor | Stop Rate
+  const rows = html.match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || [];
+  let t91=null, t182=null, t364=null;
+
+  for(const row of rows) {
+    const cells = (row.match(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)||[])
+      .map(c=>c.replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').trim());
+    const tenorCell = cells.find(c=>/91|182|364/.test(c));
+    const rateCell  = cells.find(c=>/^\d{1,2}\.\d+$/.test(c));
+    if(!tenorCell || !rateCell) continue;
+    const rate = parseFloat(rateCell);
+    if(/\b91\b/.test(tenorCell))  t91  = rate;
+    if(/\b182\b/.test(tenorCell)) t182 = rate;
+    if(/\b364\b/.test(tenorCell)) t364 = rate;
+  }
+
+  if(!t91 && !t182 && !t364) throw new Error('No T-bill rates parsed');
+  return { t91, t182, t364 };
+}
+
+// Apply parsed rates to NIGERIA_RATES and NG_DETAIL arrays
+function applyNigeriaRates(parsed) {
+  const { mpc, infl, tbill } = parsed;
+
+  if(mpc) {
+    // Update MPR card
+    const mprItem = NIGERIA_RATES.find(r=>r.id==='mpr');
+    if(mprItem && mpc.mpr) {
+      mprItem.rate = mpc.mpr;
+      mprItem.meta = 'MPC — latest decision from cbn.gov.ng';
+      mprItem.chg  = 'Live from CBN';
+    }
+    // Update CRR card
+    const crrItem = NIGERIA_RATES.find(r=>r.id==='crr');
+    if(crrItem && mpc.crr) {
+      crrItem.rate = mpc.crr;
+      crrItem.meta = 'CRR (DMBs) — latest from cbn.gov.ng';
+    }
+    // Update liquidity ratio card
+    const liqItem = NIGERIA_RATES.find(r=>r.id==='liq');
+    if(liqItem && mpc.liq) {
+      liqItem.rate = mpc.liq;
+    }
+    // Update NG_DETAIL table rows
+    if(mpc.mpr) {
+      const dRow = NG_DETAIL.find(r=>r.inst==='MPR');
+      if(dRow) dRow.rate = mpc.mpr.toFixed(2)+'%';
+    }
+    if(mpc.slf) {
+      const slfRow = NG_DETAIL.find(r=>r.inst==='Standing Lending Facility');
+      if(slfRow) slfRow.rate = mpc.slf.toFixed(2)+'%';
+    }
+    if(mpc.sdf) {
+      const sdfRow = NG_DETAIL.find(r=>r.inst==='Standing Deposit Facility');
+      if(sdfRow) sdfRow.rate = mpc.sdf.toFixed(2)+'%';
+    }
+  }
+
+  if(infl && infl.headline) {
+    const inflItem = NIGERIA_RATES.find(r=>r.id==='infl');
+    if(inflItem) {
+      const prev = infl.prev;
+      inflItem.rate = infl.headline;
+      inflItem.meta = 'NBS CPI — latest published figure';
+      inflItem.chg  = prev
+        ? (infl.headline >= prev ? '↑' : '↓') + ' from ' + prev.toFixed(2) + '% previous month'
+        : 'Live from NBS';
+    }
+    // Update NG_DETAIL
+    const inflRow = NG_DETAIL.find(r=>r.inst==='Headline Inflation');
+    if(inflRow) {
+      inflRow.rate = infl.headline.toFixed(2)+'%';
+      if(infl.prev) inflRow.prev = infl.prev.toFixed(2)+'%';
+    }
+  }
+
+  if(tbill) {
+    if(tbill.t91) {
+      const i91 = NIGERIA_RATES.find(r=>r.id==='tbill91');
+      if(i91){ i91.rate=tbill.t91; i91.meta='NTB stop rate — latest CBN auction'; }
+      const fi91 = FI_RATES.find(r=>r.inst==='NTB — 91 Day');
+      if(fi91) fi91.rate = tbill.t91.toFixed(2)+'%';
+    }
+    if(tbill.t182) {
+      const i182 = NIGERIA_RATES.find(r=>r.id==='tbill182');
+      if(i182){ i182.rate=tbill.t182; i182.meta='NTB stop rate — latest CBN auction'; }
+      const fi182 = FI_RATES.find(r=>r.inst==='NTB — 182 Day');
+      if(fi182) fi182.rate = tbill.t182.toFixed(2)+'%';
+    }
+    if(tbill.t364) {
+      const i364 = NIGERIA_RATES.find(r=>r.id==='tbill364');
+      if(i364){ i364.rate=tbill.t364; i364.meta='NTB stop rate — latest CBN auction'; }
+      const fi364 = FI_RATES.find(r=>r.inst==='NTB — 364 Day');
+      if(fi364) fi364.rate = tbill.t364.toFixed(2)+'%';
+    }
+  }
+
+  // Rebuild Nigeria section
+  buildNigeriaRates();
+  buildNGDetailTable();
+  buildFITable();
+  buildTicker();
+}
+
+// ── Helper: rebuild dominance chart without duplicating canvas ─────
+let dominanceChartInstance = null;
+function rebuildDominanceChart() {
+  if(dominanceChartInstance) { dominanceChartInstance.destroy(); dominanceChartInstance = null; }
+  const labels = CRYPTO.slice(0,5).map(c=>c.sym);
+  const data   = CRYPTO.slice(0,5).map(c=>c.dom);
+  const others = Math.max(0, +(100 - data.reduce((a,b)=>a+b,0)).toFixed(1));
+  labels.push('Others'); data.push(others);
+  const colors = ['#f7931a','#627eea','#f3ba2f','#00aae4','#9945ff','#4a6080'];
+  const cv = document.getElementById('dominance-chart');
+  if(!cv) return;
+  dominanceChartInstance = new Chart(cv, {
+    type:'doughnut',
+    data:{ labels, datasets:[{ data, backgroundColor:colors, borderWidth:2, borderColor:'#0a1628' }]},
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'72%',
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.label+': '+c.parsed.toFixed(1)+'%'}} }
+    }
+  });
+  const legend = document.getElementById('dominance-legend');
+  if(legend) legend.innerHTML = labels.map((l,i)=>`
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="width:10px;height:10px;border-radius:2px;background:${colors[i]};flex-shrink:0"></span>
+      <span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">${l}</span>
+      <span style="font-size:12px;font-weight:500;color:var(--tx);margin-left:auto">${data[i].toFixed(1)}%</span>
+    </div>`).join('');
+}
+
+// ── REFRESH ALL ──────────────────────────────────────────────────
+async function refreshAll(btn) {
+  btn.classList.add('spinning');
+  btn.disabled = true;
+  try {
+    await Promise.allSettled([fetchCrypto(), fetchForex(), fetchIndices(), fetchNigeriaRates()]);
+    updateTimestamp();
+    checkMarketStatus();
+  } finally {
+    btn.classList.remove('spinning');
+    btn.disabled = false;
+  }
 }
 
 // ── INIT ─────────────────────────────────────────────────────────
-function init(){
+async function init() {
+  // Render static/fallback data immediately so page is never blank
   buildTicker();
   buildGlobalStocks();
   buildAfricaStocks();
@@ -935,6 +1408,7 @@ function init(){
   buildCrypto();
   checkMarketStatus();
   updateTimestamp();
+
   // Charts need DOM to settle
   setTimeout(()=>{
     buildDominanceChart();
@@ -942,15 +1416,33 @@ function init(){
     buildNigeriaRates();
     buildNGDetailTable();
     buildFITable();
-  },200);
-  // Auto-update ticker every 30s (simulated)
-  setInterval(()=>{
-    buildTicker();
-    checkMarketStatus();
-  },30000);
+  }, 200);
+
+  // Fetch all live data in parallel after short delay
+  // Page shows fallback values immediately; live data overlays when ready
+  setTimeout(async () => {
+    await Promise.allSettled([
+      fetchCrypto(),
+      fetchForex(),
+      fetchIndices(),
+      fetchNigeriaRates(),   // CBN + NBS scrape
+    ]);
+    updateTimestamp();
+  }, 500);
+
+  // Auto-refresh schedule:
+  //  Crypto         — every 60 seconds
+  //  Forex          — every 5 minutes
+  //  Indices        — every 3 minutes
+  //  Nigeria rates  — every 4 hours (CBN/NBS only publish occasionally)
+  setInterval(fetchCrypto,          60 * 1000);
+  setInterval(fetchForex,        5 * 60 * 1000);
+  setInterval(fetchIndices,      3 * 60 * 1000);
+  setInterval(fetchNigeriaRates, 4 * 60 * 60 * 1000);
+  setInterval(checkMarketStatus,    60 * 1000);
 }
 
-window.addEventListener('load',init);
+window.addEventListener('load', init);
 </script>
 </body>
 </html>
