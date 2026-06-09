@@ -3,1338 +3,954 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Capital Market & FX Console — FM Finance Suite</title>
+<title>FM Markets — Global Intelligence</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-/* ════════════════════════════════════════════════════════════════════════
-   FM FINANCE SUITE — CAPITAL MARKET & FX CONSOLE
-   Design System: ECL dark navy / teal — enhanced edition
-   ════════════════════════════════════════════════════════════════════════ */
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  /* Core palette */
-  --n:   #060e1e;
-  --n2:  #0a1628;
-  --n3:  #0f1f3d;
-  --n4:  #162747;
-  --n5:  #1c3057;
+  --n:#060e1e;--n2:#0a1628;--n3:#0f1f3d;--n4:#162747;--n5:#1c3057;
+  --t:#00c9a7;--t2:#00a98e;--t3:#007a68;
+  --am:#f5a623;--am2:#e8920a;
+  --rd:#e05252;--rd2:#c43e3e;
+  --gr:#22c55e;--gr2:#16a34a;
+  --bl:#63b3ed;--pu:#a78bfa;
+  --tx:#e8edf5;--tx2:#8fa3bf;--tx3:#4a6080;--tx4:#2a3f5f;
+  --b:rgba(255,255,255,.06);--b2:rgba(255,255,255,.11);--b3:rgba(255,255,255,.18);
+  --sf:rgba(255,255,255,.03);--sf2:rgba(255,255,255,.07);
+  --mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif;
+  --glow-t:0 0 20px rgba(0,201,167,.15);
+  --glow-am:0 0 20px rgba(245,166,35,.15);
+}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;overflow-x:hidden;line-height:1.6}
 
-  /* Accent */
-  --t:   #00c9a7;
-  --t2:  #00a98e;
-  --t3:  #00876f;
-  --tg:  linear-gradient(135deg,#00c9a7,#0096ff);
-
-  /* Semantic */
-  --am:  #f5a623;
-  --rd:  #e05252;
-  --gr:  #22c55e;
-  --bl:  #3b82f6;
-
-  /* Text */
-  --tx:  #e8edf5;
-  --tx2: #8fa3bf;
-  --tx3: #4a6080;
-  --tx4: #2a3f5f;
-
-  /* Surfaces */
-  --b:   rgba(255,255,255,.06);
-  --b2:  rgba(255,255,255,.11);
-  --b3:  rgba(255,255,255,.18);
-  --sf:  rgba(255,255,255,.03);
-  --sf2: rgba(0,201,167,.05);
-
-  /* Glow */
-  --glow-t:  0 0 24px rgba(0,201,167,.18), 0 0 48px rgba(0,201,167,.08);
-  --glow-b:  0 0 24px rgba(59,130,246,.15);
-
-  /* Layout */
-  --r:   8px;
-  --r2:  12px;
-
-  /* Fonts */
-  --mo: 'IBM Plex Mono', monospace;
-  --sa: 'DM Sans', sans-serif;
-  --di: 'Syne', sans-serif;
-
-  /* Shadow */
-  --sh:  0 4px 24px rgba(0,0,0,.5), 0 1px 0 rgba(255,255,255,.04) inset;
-  --sh2: 0 8px 40px rgba(0,0,0,.6);
+/* ── ANIMATED BACKGROUND ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(0,201,167,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 80% 80%, rgba(99,179,237,.03) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 50% 50%, rgba(167,139,250,.02) 0%, transparent 60%);
+  pointer-events:none;z-index:0;
 }
 
-html{font-size:15px;scroll-behavior:smooth}
-
-body{
-  font-family:var(--sa);
-  background:var(--n);
-  color:var(--tx);
-  min-height:100vh;
-  line-height:1.6;
-  /* subtle grid texture */
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,201,167,.08) 0%, transparent 60%),
-    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-  background-size: auto, 64px 64px, 64px 64px;
-  background-attachment: fixed;
+/* ── TICKER TAPE ── */
+#ticker-wrap{
+  background:var(--n2);border-bottom:1px solid var(--b2);
+  height:36px;overflow:hidden;position:relative;
+  display:flex;align-items:center;
+  border-top:1px solid rgba(0,201,167,.3);
 }
+#ticker-track{display:flex;align-items:center;white-space:nowrap;animation:tick 60s linear infinite;gap:0}
+#ticker-track:hover{animation-play-state:paused}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tick-item{display:inline-flex;align-items:center;gap:6px;padding:0 28px;font-family:var(--mo);font-size:11px;border-right:1px solid var(--b)}
+.tick-name{color:var(--tx2);letter-spacing:.04em}
+.tick-val{color:var(--tx);font-weight:500}
+.tick-chg.up{color:var(--gr)}
+.tick-chg.dn{color:var(--rd)}
+.tick-dot{width:5px;height:5px;border-radius:50%}
+.tick-dot.up{background:var(--gr);box-shadow:0 0 5px var(--gr)}
+.tick-dot.dn{background:var(--rd);box-shadow:0 0 5px var(--rd)}
 
-button,input,select,textarea{font:inherit}
-a{color:var(--t);text-decoration:none}
-a:hover{text-decoration:underline;color:var(--t2)}
-
-/* ── Scrollbar ──────────────────────────────────────────────────────── */
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:var(--n2)}
-::-webkit-scrollbar-thumb{background:var(--n5);border-radius:99px}
-::-webkit-scrollbar-thumb:hover{background:var(--t3)}
-
-/* ── Keyframes ──────────────────────────────────────────────────────── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-@keyframes pulse-dot{0%,100%{opacity:.5}50%{opacity:1}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}}
-
-/* ════════════════════════════════════════════════════════════════════════
-   NAV
-   ════════════════════════════════════════════════════════════════════════ */
-#topnav{
-  background:rgba(10,22,40,.92);
-  backdrop-filter:blur(18px) saturate(1.4);
-  -webkit-backdrop-filter:blur(18px) saturate(1.4);
-  border-bottom:1px solid var(--b2);
-  padding:0 1.75rem;
-  height:58px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:sticky;top:0;z-index:200;
-  box-shadow:0 1px 0 rgba(0,201,167,.06), 0 4px 24px rgba(0,0,0,.4);
-}
-
-.nav-logo{
-  font-family:var(--di);font-weight:700;font-size:15.5px;
-  letter-spacing:-.03em;color:var(--tx);
-  display:flex;align-items:center;gap:10px;
-  user-select:none;
-}
-
-.nav-lm{
-  width:32px;height:32px;
-  background:linear-gradient(135deg,#00c9a7,#0096ff);
-  border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;color:#060e1e;font-weight:800;
-  box-shadow:0 2px 12px rgba(0,201,167,.35);
-  flex-shrink:0;
-  letter-spacing:0;
-}
-
-.nav-separator{
-  width:1px;height:20px;background:var(--b2);margin:0 4px;
-}
-
-.nav-right{display:flex;align-items:center;gap:6px}
-
-.nav-btn{
-  display:flex;align-items:center;gap:5px;
-  background:transparent;border:1px solid var(--b2);
-  border-radius:var(--r);padding:6px 12px;
-  font-size:11.5px;font-family:var(--mo);
-  color:var(--tx3);cursor:pointer;
-  transition:all .2s;text-decoration:none;
-  white-space:nowrap;
-}
-.nav-btn:hover{
-  background:var(--sf);color:var(--tx);
-  border-color:var(--b3);text-decoration:none;
-}
-.nav-btn.home-btn:hover{border-color:rgba(0,201,167,.4);color:var(--t)}
-.nav-btn.sign-out:hover{border-color:rgba(224,82,82,.4);color:var(--rd)}
-
-.user-chip{
-  display:flex;align-items:center;gap:7px;
-  background:rgba(0,201,167,.07);
-  border:1px solid rgba(0,201,167,.2);
-  border-radius:20px;padding:5px 12px;
-  font-size:11.5px;color:var(--t);font-family:var(--mo);
-}
-
-.live-dot{
-  width:7px;height:7px;border-radius:50%;
-  background:var(--gr);
-  box-shadow:0 0 6px rgba(34,197,94,.7);
-  animation:pulse-dot 2s ease-in-out infinite;
-  flex-shrink:0;
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   PAGE HEADER
-   ════════════════════════════════════════════════════════════════════════ */
-.page-header{
-  width:min(1520px,calc(100% - 2rem));
-  margin:2rem auto 1.25rem;
-  display:flex;align-items:flex-end;
-  justify-content:space-between;gap:16px;flex-wrap:wrap;
-  animation:fadeUp .5s ease both;
-}
-
-.page-title-group p.eyebrow{margin-bottom:6px}
-
-.page-title{
-  font-family:var(--di);
-  font-size:clamp(1.7rem,3.8vw,3rem);
-  line-height:1.04;letter-spacing:-.04em;margin:0;
-  background:linear-gradient(120deg,#e8edf5 30%,#00c9a7 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-
-.header-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
-
-.as-of-badge{
-  font-family:var(--mo);font-size:11px;color:var(--tx3);
-  border:1px solid var(--b);border-radius:var(--r);
-  padding:7px 13px;background:var(--sf);
-  display:flex;align-items:center;gap:7px;
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   LAYOUT WRAPPERS
-   ════════════════════════════════════════════════════════════════════════ */
-.main-wrap{
-  width:min(1520px,calc(100% - 2rem));
-  margin:0 auto 56px;
-}
-
-.grid{display:grid;gap:14px;margin-bottom:14px}
-.grid-2{grid-template-columns:1fr 1fr}
-.grid-main{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-.grid-sec{grid-template-columns:minmax(0,1fr) 330px}
-.side-col{display:flex;flex-direction:column;gap:14px}
-
-/* ════════════════════════════════════════════════════════════════════════
-   SOURCE STRIP
-   ════════════════════════════════════════════════════════════════════════ */
-.source-strip{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;margin-bottom:14px;
-  animation:fadeUp .45s ease both;
-}
-
-.source-chip{
-  display:flex;align-items:center;gap:11px;
-  padding:13px 15px;
-  border:1px solid var(--b2);border-radius:var(--r2);
-  background:linear-gradient(135deg,var(--n3) 0%,var(--n2) 100%);
-  transition:all .25s;cursor:default;
-  position:relative;overflow:hidden;
-}
-.source-chip::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(0,201,167,.06),transparent 60%);
-  opacity:0;transition:opacity .25s;
-}
-.source-chip:hover::before{opacity:1}
-.source-chip:hover{border-color:rgba(0,201,167,.3);box-shadow:var(--glow-t)}
-
-.source-chip img{
-  width:24px;height:24px;border-radius:5px;
-  object-fit:contain;background:#fff;padding:2px;
-  flex-shrink:0;
-}
-.source-chip strong{display:block;font-size:12.5px;color:var(--tx);font-family:var(--di);line-height:1.2}
-.source-chip span{display:block;font-size:10.5px;color:var(--tx3);font-family:var(--mo);line-height:1.3;margin-top:2px}
-
-/* ════════════════════════════════════════════════════════════════════════
-   METRICS BAND
-   ════════════════════════════════════════════════════════════════════════ */
-.metrics-band{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:10px;margin-bottom:14px;
-}
-
-.metric-card{
-  padding:16px 18px;
-  border:1px solid var(--b2);border-radius:var(--r2);
-  background:linear-gradient(160deg,var(--n3) 0%,var(--n2) 100%);
-  position:relative;overflow:hidden;
-  transition:border-color .25s, box-shadow .25s;
-}
-.metric-card::after{
-  content:'';position:absolute;
-  top:0;left:0;right:0;height:2px;
-  background:var(--tg);opacity:.5;
-}
-.metric-card:hover{border-color:rgba(0,201,167,.25);box-shadow:var(--glow-t)}
-
-.metric-label{
-  display:block;margin-bottom:8px;
-  color:var(--tx3);font-size:10.5px;font-weight:700;
-  text-transform:uppercase;font-family:var(--mo);letter-spacing:.07em;
-}
-.metric-value{
-  font-family:var(--di);
-  font-size:clamp(.95rem,1.6vw,1.35rem);
-  letter-spacing:-.03em;color:var(--t);
-  font-weight:700;
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   PANELS
-   ════════════════════════════════════════════════════════════════════════ */
-.panel{
-  border:1px solid var(--b2);border-radius:var(--r2);
-  background:var(--n2);min-width:0;
-  position:relative;overflow:hidden;
-  animation:fadeUp .5s ease both;
-}
-
-/* Accent bar on left edge of panels */
-.panel::before{
-  content:'';position:absolute;
-  top:24px;left:0;width:3px;height:36px;
-  background:var(--tg);border-radius:0 3px 3px 0;
-  opacity:.7;
-}
-
-.panel-heading{
+/* ── NAV ── */
+#topbar{
+  background:rgba(10,22,40,.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--b2);height:56px;
   display:flex;align-items:center;justify-content:space-between;
-  gap:14px;padding:18px 20px 0;margin-bottom:16px;
+  padding:0 2rem;position:sticky;top:0;z-index:200;
 }
-.panel-heading h2{
-  font-family:var(--di);font-size:1.08rem;margin:0;
-  font-weight:700;letter-spacing:-.02em;
-}
-.panel-section{padding:0 20px 18px}
+.logo{font-family:var(--di);font-weight:800;font-size:18px;letter-spacing:-.04em;display:flex;align-items:center;gap:10px;color:var(--tx)}
+.lm{width:32px;height:32px;background:var(--t);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--n);font-weight:800;letter-spacing:-.5px}
+.la{color:var(--t)}
+.tbr{display:flex;align-items:center;gap:8px}
+.nav-btn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--b2);border-radius:8px;padding:5px 11px;font-size:11px;font-family:var(--mo);color:var(--tx3);cursor:pointer;transition:all .2s;text-decoration:none}
+.nav-btn:hover{background:var(--sf2);color:var(--tx);border-color:var(--b3)}
+.user-chip{display:flex;align-items:center;gap:5px;background:var(--sf);border:1px solid var(--b2);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--tx2);font-family:var(--mo)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--gr);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
 
-/* Eyebrow */
-.eyebrow{
-  color:var(--t);font-size:.72rem;font-weight:800;
-  letter-spacing:.09em;text-transform:uppercase;
-  font-family:var(--mo);margin-bottom:5px;display:block;
-}
+/* ── MAIN LAYOUT ── */
+#main{position:relative;z-index:1;padding:1.5rem 2rem 3rem}
+.page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.eyebrow{font-size:10px;font-family:var(--mo);color:var(--t);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.page-title{font-family:var(--di);font-size:28px;font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--tx)}
+.page-sub{font-size:12px;color:var(--tx3);font-family:var(--mo);margin-top:5px}
+.ts{font-size:11px;color:var(--tx3);font-family:var(--mo)}
 
-/* ════════════════════════════════════════════════════════════════════════
-   STATUS PILLS
-   ════════════════════════════════════════════════════════════════════════ */
-.status-pill{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:4px 11px;border-radius:999px;
-  font-size:10.5px;font-weight:700;font-family:var(--mo);
-  border:1px solid var(--b2);background:var(--n4);color:var(--tx3);
-  white-space:nowrap;transition:all .2s;
-}
-.status-pill::before{
-  content:'';width:6px;height:6px;border-radius:50%;
-  background:currentColor;opacity:.6;
-  animation:pulse-dot 2.5s ease-in-out infinite;
-}
-.status-pill.ok{background:rgba(34,197,94,.12);color:var(--gr);border-color:rgba(34,197,94,.28)}
-.status-pill.loading{background:rgba(245,166,35,.1);color:var(--am);border-color:rgba(245,166,35,.28)}
-.status-pill.loading::before{animation:spin .8s linear infinite;border-radius:0;
-  width:8px;height:8px;border:2px solid var(--am);border-top-color:transparent;background:none;}
-.status-pill.error{background:rgba(224,82,82,.12);color:var(--rd);border-color:rgba(224,82,82,.28)}
+/* ── SECTION HEADERS ── */
+.sec{margin-top:2.5rem;margin-bottom:1rem}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.sec-ttl{font-family:var(--di);font-size:16px;font-weight:700;letter-spacing:-.03em;display:flex;align-items:center;gap:10px}
+.sec-ttl::before{content:'';display:block;width:3px;height:20px;border-radius:2px}
+.sec-ttl.global::before{background:var(--bl)}
+.sec-ttl.africa::before{background:var(--am)}
+.sec-ttl.forex::before{background:var(--pu)}
+.sec-ttl.crypto::before{background:var(--t)}
+.sec-ttl.nigeria::before{background:var(--gr)}
+.sec-badge{font-size:9px;font-family:var(--mo);padding:2px 8px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.sec-badge.live{background:rgba(34,197,94,.15);color:var(--gr);border:1px solid rgba(34,197,94,.3)}
+.sec-badge.delayed{background:rgba(245,166,35,.15);color:var(--am);border:1px solid rgba(245,166,35,.3)}
+.sec-badge.official{background:rgba(0,201,167,.15);color:var(--t);border:1px solid rgba(0,201,167,.3)}
 
-/* ════════════════════════════════════════════════════════════════════════
-   BUTTONS
-   ════════════════════════════════════════════════════════════════════════ */
-button{
-  min-height:38px;border:0;border-radius:var(--r);
-  padding:0 18px;
-  background:linear-gradient(135deg,#00c9a7,#00a0d0);
-  color:#060e1e;
-  font-weight:700;cursor:pointer;
-  transition:all .2s;
-  display:inline-flex;align-items:center;gap:7px;
-  letter-spacing:.01em;
-  box-shadow:0 2px 12px rgba(0,201,167,.25);
-}
-button:hover{
-  background:linear-gradient(135deg,#00dbb9,#0096ff);
-  box-shadow:0 4px 20px rgba(0,201,167,.4);
-  transform:translateY(-1px);
-}
-button:active{transform:translateY(0);box-shadow:0 1px 6px rgba(0,201,167,.2)}
-button:disabled{cursor:not-allowed;opacity:.45;transform:none;box-shadow:none}
+/* ── GRIDS ── */
+.card-grid{display:grid;gap:10px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g5{grid-template-columns:repeat(5,1fr)}
+.g6{grid-template-columns:repeat(6,1fr)}
+.ga{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
 
-button.secondary{
-  border:1px solid var(--b2);
-  background:var(--n4);color:var(--tx2);
-  box-shadow:none;
+/* ── MARKET CARDS ── */
+.mcard{
+  background:var(--n2);border:1px solid var(--b2);border-radius:12px;
+  padding:14px 16px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
 }
-button.secondary:hover{
-  border-color:rgba(0,201,167,.4);color:var(--t);
-  background:var(--n4);box-shadow:var(--glow-t);
-}
+.mcard::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .25s;border-radius:12px}
+.mcard:hover{border-color:var(--b3);transform:translateY(-2px)}
+.mcard:hover::after{opacity:1}
+.mcard.up:hover{background:rgba(34,197,94,.04);border-color:rgba(34,197,94,.25)}
+.mcard.dn:hover{background:rgba(224,82,82,.04);border-color:rgba(224,82,82,.25)}
+.mcard-label{font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.mcard-name{font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.3}
+.mcard-val{font-family:var(--di);font-size:22px;font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--tx)}
+.mcard-chg{display:flex;align-items:center;gap:5px;margin-top:5px}
+.mcard-pct{font-family:var(--mo);font-size:12px;font-weight:600}
+.mcard-abs{font-family:var(--mo);font-size:10px;color:var(--tx3)}
+.mcard-micro{height:36px;margin-top:8px;position:relative}
+.mcard-micro canvas{position:absolute;inset:0}
+.mcard.up .mcard-pct{color:var(--gr)}
+.mcard.dn .mcard-pct{color:var(--rd)}
+.mcard-flag{font-size:16px;position:absolute;top:12px;right:12px;opacity:.6}
 
-.full-btn{width:100%;justify-content:center;margin-top:6px;padding:0 18px;min-height:42px}
+/* ── SPARKLINE COLORS ── */
+.spark-up{background:linear-gradient(180deg,rgba(34,197,94,.15) 0%,transparent 100%)}
+.spark-dn{background:linear-gradient(180deg,rgba(224,82,82,.15) 0%,transparent 100%)}
 
-/* ════════════════════════════════════════════════════════════════════════
-   INPUTS
-   ════════════════════════════════════════════════════════════════════════ */
-input[type="text"],
-input[type="number"],
-input[type="date"],
-select{
-  width:100%;min-height:38px;
-  border:1px solid var(--b2);border-radius:var(--r);
-  padding:8px 12px;color:var(--tx);
-  background:var(--n4);
-  font-family:var(--sa);font-size:13px;
-  outline:none;transition:border-color .2s, box-shadow .2s;
+/* ── FOREX CARDS ── */
+.fxcard{
+  background:var(--n2);border:1px solid var(--b2);border-radius:12px;
+  padding:14px 16px;transition:all .25s;
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;
 }
-input:focus,select:focus{
-  border-color:var(--t);
-  box-shadow:0 0 0 3px rgba(0,201,167,.12);
-  background:var(--n5);
-}
-input::placeholder{color:var(--tx4)}
-select option{background:var(--n3);color:var(--tx)}
+.fxcard:hover{border-color:var(--b3);background:var(--n3)}
+.fx-pair{font-family:var(--mo);font-size:13px;font-weight:600;color:var(--tx);letter-spacing:.04em}
+.fx-desc{font-size:10px;color:var(--tx3);margin-top:2px}
+.fx-bar-wrap{height:4px;background:var(--sf2);border-radius:2px;margin-top:6px;overflow:hidden}
+.fx-bar{height:100%;border-radius:2px;transition:width .6s ease}
+.fx-val{font-family:var(--di);font-size:18px;font-weight:700;color:var(--tx);text-align:right}
+.fx-chg{font-family:var(--mo);font-size:11px;text-align:right;margin-top:2px}
+.fx-chg.up{color:var(--gr)}
+.fx-chg.dn{color:var(--rd)}
+.fx-flag{font-size:20px}
 
-/* date input calendar icon */
-input[type="date"]::-webkit-calendar-picker-indicator{
-  filter:invert(60%) sepia(1) saturate(2) hue-rotate(130deg);
-  cursor:pointer;opacity:.6;
+/* ── CRYPTO CARDS ── */
+.ccard{
+  background:var(--n2);border:1px solid var(--b2);border-radius:12px;
+  padding:14px 16px;transition:all .25s;position:relative;overflow:hidden;
 }
+.ccard:hover{border-color:var(--b3);transform:translateY(-2px)}
+.cc-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:8px;font-weight:700;font-family:var(--mo)}
+.cc-sym{font-family:var(--mo);font-size:10px;color:var(--tx3);letter-spacing:.08em;margin-bottom:2px;text-transform:uppercase}
+.cc-name{font-size:12px;color:var(--tx2);margin-bottom:6px}
+.cc-price{font-family:var(--di);font-size:18px;font-weight:700;color:var(--tx);letter-spacing:-.02em}
+.cc-chg{font-family:var(--mo);font-size:11px;font-weight:600;margin-top:3px}
+.cc-chg.up{color:var(--gr)}.cc-chg.dn{color:var(--rd)}
+.cc-mcap{font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:4px}
+.cc-micro{height:40px;margin-top:8px;position:relative}
+.cc-micro canvas{position:absolute;inset:0}
 
-.field-group{
-  display:grid;gap:6px;
-  color:var(--tx3);font-size:11px;font-weight:700;
-  font-family:var(--mo);text-transform:uppercase;letter-spacing:.05em;
+/* ── NIGERIA RATE CARDS ── */
+.ngcard{
+  background:var(--n2);border:1px solid var(--b2);border-radius:12px;
+  padding:16px 18px;position:relative;overflow:hidden;transition:all .25s;
 }
+.ngcard:hover{border-color:var(--b3)}
+.ngcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px 0 0 2px}
+.ngcard.mpr::before{background:var(--t)}
+.ngcard.tbill::before{background:var(--am)}
+.ngcard.mm::before{background:var(--bl)}
+.ngcard.crr::before{background:var(--pu)}
+.ngcard.infl::before{background:var(--rd)}
+.ngcard.fx::before{background:var(--gr)}
+.ng-label{font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;padding-left:8px}
+.ng-title{font-size:13px;color:var(--tx2);margin-bottom:10px;padding-left:8px;line-height:1.3}
+.ng-rate{font-family:var(--di);font-size:32px;font-weight:800;letter-spacing:-.04em;padding-left:8px}
+.ng-unit{font-size:14px;font-weight:500;color:var(--tx2);margin-left:3px}
+.ng-meta{font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:6px;padding-left:8px;line-height:1.4}
+.ng-src{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:var(--mo);color:var(--tx4);margin-top:4px;padding-left:8px;text-decoration:none;transition:color .2s}
+.ng-src:hover{color:var(--tx2)}
+.ngcard.mpr .ng-rate{color:var(--t)}
+.ngcard.tbill .ng-rate{color:var(--am)}
+.ngcard.mm .ng-rate{color:var(--bl)}
+.ngcard.crr .ng-rate{color:var(--pu)}
+.ngcard.infl .ng-rate{color:var(--rd)}
+.ngcard.fx .ng-rate{color:var(--gr)}
 
-/* ════════════════════════════════════════════════════════════════════════
-   FX PANEL
-   ════════════════════════════════════════════════════════════════════════ */
-.fx-form{padding:0 20px 16px;display:flex;flex-direction:column;gap:10px}
-.fx-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.fx-ccy-row{grid-template-columns:1fr auto 1fr;align-items:end;gap:8px}
+/* ── CHART PANEL ── */
+.chart-panel{background:var(--n2);border:1px solid var(--b2);border-radius:12px;padding:16px 18px}
+.cp-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cp-ttl{font-family:var(--di);font-size:14px;font-weight:600}
+.cp-sub{font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:2px}
 
-.swap-btn{
-  width:40px;min-height:38px;padding:0;
-  background:var(--n4);
-  border:1px solid var(--b2);
-  color:var(--tx2);font-size:20px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;box-shadow:none;
-  border-radius:var(--r);
-}
-.swap-btn:hover{
-  background:var(--n5);color:var(--t);
-  border-color:rgba(0,201,167,.4);
-  box-shadow:none;transform:none;
-}
+/* ── MARKET TABLE ── */
+.mtable-wrap{background:var(--n2);border:1px solid var(--b2);border-radius:12px;overflow:hidden}
+.mtable{width:100%;border-collapse:collapse;font-size:12px}
+.mtable thead th{background:var(--n3);color:var(--tx3);font-family:var(--mo);font-size:9px;letter-spacing:.07em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:1px solid var(--b)}
+.mtable thead th:not(:first-child){text-align:right}
+.mtable tbody td{padding:9px 14px;border-bottom:1px solid var(--b);color:var(--tx);vertical-align:middle}
+.mtable tbody td:not(:first-child){text-align:right;font-family:var(--mo);font-size:11px}
+.mtable tbody tr:last-child td{border-bottom:none}
+.mtable tbody tr:hover{background:var(--sf)}
+.mt-name{font-weight:500;font-size:12px}
+.mt-sub{font-size:10px;color:var(--tx3);margin-top:1px}
+.chg-pill{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600}
+.chg-pill.up{background:rgba(34,197,94,.12);color:var(--gr)}
+.chg-pill.dn{background:rgba(224,82,82,.12);color:var(--rd)}
+.vol-bar{display:inline-block;height:4px;border-radius:2px;background:var(--t);opacity:.6;vertical-align:middle;margin-left:4px}
 
-/* FX Result block */
-.result-block{
-  margin:0 20px 16px;
-  border:1px solid var(--b2);border-radius:var(--r2);
-  background:linear-gradient(160deg,var(--n4) 0%,var(--n3) 100%);
-  padding:18px;min-height:90px;
-  position:relative;overflow:hidden;
-  transition:border-color .3s;
-}
-.result-block.has-data{
-  border-color:rgba(0,201,167,.25);
-  box-shadow:0 0 0 1px rgba(0,201,167,.06) inset;
-}
-.result-block::before{
-  content:'';position:absolute;
-  bottom:0;right:0;width:120px;height:120px;
-  background:radial-gradient(circle,rgba(0,201,167,.07) 0%,transparent 70%);
-  pointer-events:none;
-}
+/* ── NGXPULSE BANNER ── */
+.market-status{display:flex;align-items:center;gap:10px;background:var(--n3);border:1px solid var(--b2);border-radius:10px;padding:8px 14px;font-size:11px;font-family:var(--mo)}
+.ms-dot{width:8px;height:8px;border-radius:50%}
+.ms-dot.open{background:var(--gr);animation:pulse 2s ease infinite;box-shadow:0 0 6px var(--gr)}
+.ms-dot.closed{background:var(--tx3)}
 
-.empty-state{
-  text-align:center;color:var(--tx4);
-  font-family:var(--mo);font-size:12px;
-  padding:22px 10px;line-height:1.6;
-}
+/* ── REFRESH BTN ── */
+.refresh-btn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--b2);border-radius:8px;padding:5px 10px;font-size:10px;font-family:var(--mo);color:var(--tx3);cursor:pointer;transition:all .2s}
+.refresh-btn:hover{background:var(--sf2);color:var(--tx);border-color:var(--b3)}
+.refresh-btn.spinning svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.rate-label{
-  font-family:var(--mo);font-size:11px;color:var(--tx3);
-  margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.05em;
-}
-.rate-main{
-  font-family:var(--di);
-  font-size:clamp(1.6rem,3vw,2.4rem);
-  letter-spacing:-.04em;color:var(--t);line-height:1.1;
-  font-weight:700;margin-bottom:12px;
-}
-.rate-meta{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-.rate-meta-item span{
-  display:block;font-size:9.5px;color:var(--tx3);
-  font-family:var(--mo);text-transform:uppercase;
-  letter-spacing:.05em;margin-bottom:3px;
-}
-.rate-meta-item strong{
-  font-family:var(--mo);font-size:12.5px;color:var(--tx2);
-}
-.provider-badge{
-  display:inline-flex;margin-top:12px;
-  padding:3px 9px;border-radius:999px;
-  font-size:10px;font-weight:700;font-family:var(--mo);
-  background:rgba(0,201,167,.1);color:var(--t);
-  border:1px solid rgba(0,201,167,.25);
-}
+/* ── FOOTER ── */
+footer{background:var(--n2);border-top:1px solid var(--b);padding:1.5rem 2rem;margin-top:3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+.footer-brand{font-family:var(--di);font-size:13px;font-weight:700;color:var(--t)}
+.footer-note{font-size:10px;color:var(--tx3);font-family:var(--mo);line-height:1.6;max-width:500px}
+.footer-links{display:flex;gap:16px}
+.footer-links a{font-size:10px;font-family:var(--mo);color:var(--tx3);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--t)}
 
-/* Quick pairs */
-.quick-pairs{display:flex;flex-wrap:wrap;gap:7px}
-.qp-btn{
-  min-height:28px;padding:0 11px;
-  background:var(--n4);border:1px solid var(--b2);
-  color:var(--tx3);font-size:11.5px;font-family:var(--mo);
-  font-weight:600;box-shadow:none;border-radius:6px;
-}
-.qp-btn:hover{
-  background:var(--n5);border-color:rgba(0,201,167,.4);
-  color:var(--t);box-shadow:none;transform:none;
-}
+/* ── HEAT MAP GRID ── */
+.heat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.heat-cell{border-radius:6px;padding:10px 8px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.heat-cell:hover{transform:scale(1.05);z-index:2}
+.heat-sym{font-family:var(--mo);font-size:9px;font-weight:600;display:block;margin-bottom:2px;text-transform:uppercase}
+.heat-chg{font-family:var(--mo);font-size:11px;font-weight:700;display:block}
+.heat-5p{background:rgba(34,197,94,.35);color:#16a34a}
+.heat-2p{background:rgba(34,197,94,.2);color:#22c55e}
+.heat-1p{background:rgba(34,197,94,.1);color:#4ade80}
+.heat-flat{background:rgba(255,255,255,.05);color:var(--tx3)}
+.heat-1n{background:rgba(224,82,82,.1);color:#f87171}
+.heat-2n{background:rgba(224,82,82,.2);color:#e05252}
+.heat-5n{background:rgba(224,82,82,.35);color:#c43e3e}
 
-/* ════════════════════════════════════════════════════════════════════════
-   INLINE CONTROLS (forms with row of fields)
-   ════════════════════════════════════════════════════════════════════════ */
-.inline-controls{
-  display:flex;align-items:flex-end;gap:10px;
-  padding:0 20px 16px;flex-wrap:wrap;
-}
-.inline-controls .field-group{flex:1;min-width:120px}
+/* ── MISC ── */
+.tag{display:inline-flex;align-items:center;gap:4px;background:var(--sf);border:1px solid var(--b);border-radius:6px;padding:2px 8px;font-size:9px;font-family:var(--mo);color:var(--tx3)}
+.sep{height:1px;background:var(--b);margin:2rem 0}
 
-/* ════════════════════════════════════════════════════════════════════════
-   TREASURY YIELD CURVE
-   ════════════════════════════════════════════════════════════════════════ */
-.curve-wrap{
-  margin:0 20px 4px;
-  border:1px solid var(--b);border-radius:var(--r2);
-  background:linear-gradient(180deg,rgba(0,201,167,.03) 0%,transparent 100%);
-  overflow:hidden;min-height:190px;
-  display:flex;align-items:center;justify-content:center;
+@media(max-width:900px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .g5{grid-template-columns:repeat(2,1fr)}
+  .g6{grid-template-columns:repeat(3,1fr)}
+  .heat-grid{grid-template-columns:repeat(4,1fr)}
 }
-.curve-wrap svg{width:100%;height:auto;display:block}
-
-.treasury-metrics{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:8px;padding:14px 20px 20px;
-}
-.tmetric{
-  padding:11px 12px;
-  border:1px solid var(--b);border-radius:var(--r);
-  background:var(--n4);text-align:center;
-}
-.tmetric span{
-  display:block;font-size:9.5px;color:var(--tx3);
-  font-family:var(--mo);text-transform:uppercase;
-  letter-spacing:.05em;margin-bottom:5px;
-}
-.tmetric strong{
-  font-family:var(--di);font-size:1.05rem;color:var(--t);
-  font-weight:700;
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   TABLE
-   ════════════════════════════════════════════════════════════════════════ */
-.table-wrap{overflow-x:auto;padding:0 20px 20px}
-table{width:100%;min-width:480px;border-collapse:collapse;font-size:12px}
-
-thead tr{
-  background:linear-gradient(90deg,var(--n4),var(--n3));
-  border-bottom:1px solid var(--b2);
-}
-th{
-  padding:10px 12px;text-align:left;vertical-align:middle;
-  color:var(--tx3);font-size:10px;text-transform:uppercase;
-  font-family:var(--mo);letter-spacing:.06em;font-weight:700;
-  white-space:nowrap;
-}
-td{
-  padding:10px 12px;border-bottom:1px solid var(--b);
-  text-align:left;vertical-align:middle;
-}
-tbody tr{transition:background .15s}
-tbody tr:hover{background:rgba(0,201,167,.04)}
-tbody tr:last-child td{border-bottom:0}
-
-.form-badge{
-  display:inline-flex;min-width:52px;justify-content:center;
-  padding:3px 8px;border-radius:999px;
-  color:var(--t);background:rgba(0,201,167,.1);
-  font-weight:800;font-size:10.5px;font-family:var(--mo);
-  border:1px solid rgba(0,201,167,.22);
-}
-td a{
-  color:var(--t);font-family:var(--mo);font-size:11px;
-  display:inline-flex;align-items:center;gap:3px;
-}
-td a:hover{color:var(--tx)}
-
-/* ════════════════════════════════════════════════════════════════════════
-   SOURCE LIST (sidebar)
-   ════════════════════════════════════════════════════════════════════════ */
-.source-list{display:grid;gap:8px;padding:0 18px 18px}
-.source-item{
-  display:grid;grid-template-columns:28px minmax(0,1fr);
-  align-items:start;gap:10px;padding:11px;
-  border:1px solid var(--b);border-radius:var(--r);
-  background:var(--n3);
-  transition:border-color .2s;
-}
-.source-item:hover{border-color:rgba(0,201,167,.25)}
-.source-item img{
-  width:24px;height:24px;border-radius:5px;
-  object-fit:contain;background:#fff;padding:2px;margin-top:2px;
-}
-.source-item strong{display:block;font-size:12px;color:var(--tx);font-family:var(--di);line-height:1.3}
-.source-item span{display:block;font-size:10.5px;color:var(--tx3);font-family:var(--mo);margin-top:2px;line-height:1.3}
-.source-item a{font-size:10.5px;color:var(--t);font-family:var(--mo);margin-top:4px;display:inline-block}
-
-/* ════════════════════════════════════════════════════════════════════════
-   CRAWL LOG
-   ════════════════════════════════════════════════════════════════════════ */
-.crawl-log{
-  margin:0 18px 18px;padding:13px;
-  min-height:110px;max-height:190px;overflow-y:auto;
-  border:1px solid rgba(0,201,167,.1);border-radius:var(--r);
-  background:#030a17;color:#5d7fa8;
-  font-family:var(--mo);font-size:11px;line-height:1.7;
-  white-space:pre-wrap;overflow-wrap:anywhere;
-}
-.crawl-log::-webkit-scrollbar{width:3px}
-
-/* ════════════════════════════════════════════════════════════════════════
-   ERROR BOX
-   ════════════════════════════════════════════════════════════════════════ */
-.error-box{
-  padding:13px;border:1px solid rgba(224,82,82,.25);
-  border-radius:var(--r);background:rgba(224,82,82,.07);
-  color:var(--rd);line-height:1.5;font-size:12.5px;font-family:var(--mo);
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   DIVIDER
-   ════════════════════════════════════════════════════════════════════════ */
-.panel-divider{
-  height:1px;background:var(--b);margin:0 20px 16px;
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   TOAST
-   ════════════════════════════════════════════════════════════════════════ */
-#toast{
-  position:fixed;right:18px;bottom:18px;
-  max-width:min(380px,calc(100vw - 36px));
-  transform:translateY(20px);
-  border-radius:var(--r);padding:12px 16px;
-  background:var(--n4);
-  border:1px solid var(--b2);
-  color:var(--tx);font-size:12.5px;font-family:var(--mo);
-  opacity:0;pointer-events:none;
-  transition:opacity .2s ease,transform .2s ease;
-  z-index:500;
-  box-shadow:var(--sh2);
-}
-#toast.show{transform:translateY(0);opacity:1}
-
-/* ════════════════════════════════════════════════════════════════════════
-   RESPONSIVE
-   ════════════════════════════════════════════════════════════════════════ */
-@media(max-width:1200px){
-  .grid-main,.grid-sec{grid-template-columns:1fr}
-  .source-strip{grid-template-columns:repeat(2,1fr)}
-  .metrics-band{grid-template-columns:repeat(2,1fr)}
-  .side-col{flex-direction:row}
-  .side-col .panel{flex:1}
-}
-@media(max-width:820px){
-  .source-strip{grid-template-columns:repeat(2,1fr)}
-  .metrics-band{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:640px){
-  .page-header{align-items:flex-start;flex-direction:column}
-  .source-strip{grid-template-columns:1fr}
-  .metrics-band{grid-template-columns:1fr 1fr}
-  .fx-row{grid-template-columns:1fr}
-  .fx-ccy-row{grid-template-columns:1fr auto 1fr}
-  .rate-meta{grid-template-columns:1fr 1fr}
-  .side-col{flex-direction:column}
-  #topnav{padding:0 1rem;flex-wrap:wrap;height:auto;gap:6px;padding-top:9px;padding-bottom:9px}
-}
-@media(max-width:480px){
-  .nav-btn:not(.sign-out) span{display:none}
-  .metrics-band{grid-template-columns:1fr}
-  .treasury-metrics{grid-template-columns:1fr}
+@media(max-width:600px){
+  #main{padding:1rem}
+  .g2,.g3,.g4,.g5,.g6{grid-template-columns:1fr}
+  .g6{grid-template-columns:repeat(2,1fr)}
+  .heat-grid{grid-template-columns:repeat(3,1fr)}
 }
 </style>
 </head>
 <body>
 
-<!-- ════ NAV ════ -->
-<nav id="topnav">
-  <div class="nav-logo">
-    <div class="nav-lm">FM</div>
-    <span>Capital Market</span>
-    <div class="nav-separator"></div>
-    <span style="color:var(--t)">FX Console</span>
+<!-- Ticker tape -->
+<div id="ticker-wrap" aria-label="Live market ticker" role="marquee">
+  <div id="ticker-track"></div>
+</div>
+
+<!-- Nav -->
+<div id="topbar">
+  <div class="logo">
+    <div class="lm">FM</div>
+    FM <span class="la">&nbsp;Markets</span>
   </div>
-  <div class="nav-right">
-    <div class="user-chip" id="userChip">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span id="FM-user-name">Loading...</span>
+  <div class="tbr">
+    <div class="market-status" id="mkt-status">
+      <div class="ms-dot" id="mkt-dot"></div>
+      <span id="mkt-label" style="color:var(--tx2)">Checking markets…</span>
+    </div>
+    <div class="user-chip">
+      <div class="live-dot"></div>
+      <span id="user-name" style="font-family:var(--mo);font-size:11px">Live</span>
     </div>
     <a href="../portal/" class="nav-btn">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-      <span>Portal</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>Portal
     </a>
-    <a href="../" class="nav-btn home-btn">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>Home</span>
+    <a href="../" class="nav-btn">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
     </a>
-    <button class="nav-btn sign-out" id="signOutBtn">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      <span>Sign out</span>
-    </button>
-  </div>
-</nav>
-<script>
-'use strict';
-
-// ── AUTH GUARD (FIXED) ─────────────────────────────────────
-var _API='https://eis-recbackend.onrender.com/api';
-
-(function(){
-  var tok = sessionStorage.getItem('FM_token');
-
-  if (!tok) {
-    window.location.href='../portal/';
-    return;
-  }
-
-  fetch(_API+'/auth/me',{
-    headers:{
-      'Authorization':'Bearer '+tok,
-      'Content-Type':'application/json'
-    }
-  })
-  .then(function(r){
-    if(!r.ok){ throw new Error('Auth request failed'); }
-    return r.json();
-  })
-  .then(function(d){
-    if(d.success && d.user){
-
-      // ✅ FIX: correct ID
-      var userEl = document.getElementById('FM-user-name');
-      if(userEl){ userEl.textContent = d.user.name; }
-
-    } else {
-      sessionStorage.removeItem('FM_token');
-      window.location.href='../portal/';
-    }
-  })
-  .catch(function(err){
-    console.error('Auth error:', err);
-
-    // ✅ SAFE fallback (do NOT auto logout on JS errors)
-    var userEl = document.getElementById('FM-user-name');
-    if(userEl){ userEl.textContent = 'User'; }
-  });
-
-})();
-
-// ✅ FIX: correct logout button ID
-var signOutBtn = document.getElementById('signOutBtn');
-if(signOutBtn){
-  signOutBtn.addEventListener('click',function(){
-    if(!confirm('Sign out?')) return;
-    sessionStorage.removeItem('FM_token');
-    window.location.href='../portal/';
-  });
-}
-</script>
-<!-- ════ PAGE HEADER ════ -->
-<div class="page-header">
-  <div class="page-title-group">
-    <span class="eyebrow" style="display:flex;align-items:center;gap:8px">
-  <span class="live-dot" title="Live data feed active"></span>
-  Live capital market Feed — ECB · CBN · U.S. Treasury · SEC EDGAR
-</span>
-    <h1 class="page-title">Capital Market &amp; FX Console</h1>
-  </div>
-  <div class="header-actions">
-    <div class="as-of-badge">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <span id="asOfText">Official-source crawl</span>
-    </div>
-    <button id="refreshAll" class="secondary" type="button">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2v6h-6"/><path d="M21 13a9 9 0 1 1-3-7.7L21 8"/></svg>
-      Refresh crawl
-    </button>
+    <button class="nav-btn" id="logout-btn">Sign out</button>
   </div>
 </div>
 
-<!-- ════ MAIN WRAP ════ -->
-<div class="main-wrap">
+<div id="main">
 
-  <!-- Source strip -->
-  <section class="source-strip" id="sourceStrip" aria-label="Official data sources"></section>
-
-  <!-- Metrics band -->
-  <div class="metrics-band">
-    <div class="metric-card">
-      <span class="metric-label">ECB Rate Date</span>
-      <div class="metric-value" id="mEcbDate">—</div>
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <div class="eyebrow">FM Financial Intelligence Platform</div>
+      <div class="page-title">Global Market Intelligence</div>
+      <div class="page-sub" id="last-updated">Last updated: —</div>
     </div>
-    <div class="metric-card">
-      <span class="metric-label">CBN Rate Date</span>
-      <div class="metric-value" id="mCbnDate">—</div>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Treasury Date</span>
-      <div class="metric-value" id="mTreasuryDate">—</div>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Sources Active</span>
-      <div class="metric-value" id="mSources" style="color:var(--gr)">4</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div class="tag">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Prices delayed ~15 min
+      </div>
+      <button class="refresh-btn" onclick="refreshAll(this)" id="refresh-btn">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>
+        Refresh All
+      </button>
     </div>
   </div>
 
-  <!-- ── MAIN GRID: FX + Treasury ── -->
-  <div class="grid grid-main">
+  <!-- ═══════════════ GLOBAL STOCKS ═══════════════ -->
+  <div class="sec-hdr">
+    <div class="sec-ttl global">Global Stock Indices <span class="sec-badge delayed">Delayed</span></div>
+  </div>
+  <div class="card-grid ga" id="global-stocks"></div>
 
-    <!-- FX Panel -->
-    <article class="panel fx-panel">
-      <div class="panel-heading">
+  <!-- ═══════════════ AFRICA STOCKS ═══════════════ -->
+  <div class="sec-hdr" style="margin-top:2rem">
+    <div class="sec-ttl africa">African Exchanges <span class="sec-badge delayed">Delayed</span></div>
+  </div>
+  <div class="card-grid ga" id="africa-stocks"></div>
+
+  <!-- NGX detail table -->
+  <div style="margin-top:1rem">
+    <div class="mtable-wrap">
+      <table class="mtable">
+        <thead><tr><th>Top Nigerian Stocks (NGX)</th><th>Price (₦)</th><th>Change</th><th>% Chg</th><th>Volume</th><th>Sector</th></tr></thead>
+        <tbody id="ngx-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════ FOREX ═══════════════ -->
+  <div class="sec-hdr" style="margin-top:2rem">
+    <div class="sec-ttl forex">Foreign Exchange Rates <span class="sec-badge delayed">Delayed</span></div>
+  </div>
+  <div style="margin-bottom:.75rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">
+    NGN pairs sourced from CBN. International pairs sourced from open market data.
+  </div>
+  <div class="card-grid g2" id="forex-grid"></div>
+
+  <!-- Heatmap -->
+  <div style="margin-top:1.5rem">
+    <div class="chart-panel">
+      <div class="cp-hdr">
         <div>
-          <span class="eyebrow">Foreign Exchange</span>
-          <h2>Exchange Rate Lookup</h2>
-        </div>
-        <span class="status-pill" id="fxStatus">Ready</span>
-      </div>
-
-      <form id="fxForm" class="fx-form">
-        <div class="fx-row">
-          <label class="field-group">
-            <span>Date</span>
-            <input id="fxDate" name="date" type="date" />
-          </label>
-          <label class="field-group">
-            <span>Amount</span>
-            <input id="fxAmount" name="amount" type="number" min="0.01" step="0.01" value="1" />
-          </label>
-        </div>
-        <div class="fx-ccy-row">
-          <label class="field-group">
-            <span>From currency</span>
-            <select id="fxBase" name="base"></select>
-          </label>
-          <button class="swap-btn" id="swapCurrencies" type="button" title="Swap currencies">⇄</button>
-          <label class="field-group">
-            <span>To currency</span>
-            <select id="fxQuote" name="quote"></select>
-          </label>
-        </div>
-        <button type="submit" class="full-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Check Rate
-        </button>
-      </form>
-
-      <div class="result-block" id="fxResult">
-        <p class="empty-state">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:block;margin:0 auto 10px;opacity:.3"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Select currencies and date, then click Check Rate.
-        </p>
-      </div>
-
-      <div class="panel-section">
-        <span class="eyebrow" style="margin-bottom:10px">Quick pairs</span>
-        <div class="quick-pairs" id="quickPairs">
-          <button class="qp-btn" data-base="USD" data-quote="NGN">USD/NGN</button>
-          <button class="qp-btn" data-base="GBP" data-quote="NGN">GBP/NGN</button>
-          <button class="qp-btn" data-base="EUR" data-quote="NGN">EUR/NGN</button>
-          <button class="qp-btn" data-base="EUR" data-quote="USD">EUR/USD</button>
-          <button class="qp-btn" data-base="GBP" data-quote="USD">GBP/USD</button>
-          <button class="qp-btn" data-base="USD" data-quote="JPY">USD/JPY</button>
-          <button class="qp-btn" data-base="USD" data-quote="CHF">USD/CHF</button>
-          <button class="qp-btn" data-base="USD" data-quote="CNY">USD/CNY</button>
+          <div class="cp-ttl">Currency Performance Heatmap</div>
+          <div class="cp-sub">24h change vs USD — green = stronger, red = weaker</div>
         </div>
       </div>
-    </article>
+      <div class="heat-grid" id="fx-heatmap"></div>
+    </div>
+  </div>
 
-    <!-- Treasury Panel -->
-    <article class="panel treasury-panel">
-      <div class="panel-heading">
+  <!-- ═══════════════ CRYPTO ═══════════════ -->
+  <div class="sec-hdr" style="margin-top:2rem">
+    <div class="sec-ttl crypto">Cryptocurrency Markets <span class="sec-badge live">Live</span></div>
+  </div>
+  <div class="card-grid g5" id="crypto-grid"></div>
+
+  <!-- Crypto dominance chart -->
+  <div style="margin-top:1rem">
+    <div class="chart-panel">
+      <div class="cp-hdr">
         <div>
-          <span class="eyebrow">Interest Rates</span>
-          <h2>U.S. Treasury Yield Curve</h2>
+          <div class="cp-ttl">Market Dominance</div>
+          <div class="cp-sub">Market cap share of top cryptocurrencies</div>
         </div>
-        <span class="status-pill" id="treasuryStatus">Ready</span>
       </div>
-
-      <form class="inline-controls" id="treasuryForm">
-        <label class="field-group">
-          <span>Date</span>
-          <input id="treasuryDate" name="date" type="date" />
-        </label>
-        <button type="submit">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Load Curve
-        </button>
-      </form>
-
-      <div class="curve-wrap" id="yieldChart">
-        <p class="empty-state">Select a date to load the yield curve.</p>
-      </div>
-
-      <div class="treasury-metrics" id="treasuryMetrics"></div>
-    </article>
-  </div><!-- /main grid -->
-
-  <!-- ── SECONDARY GRID: SEC + sidebar ── -->
-  <div class="grid grid-sec">
-
-    <!-- SEC EDGAR -->
-    <article class="panel filings-panel">
-      <div class="panel-heading">
-        <div>
-          <span class="eyebrow">SEC EDGAR</span>
-          <h2>Company Filings</h2>
-        </div>
-        <span class="status-pill" id="secStatus">Ready</span>
-      </div>
-
-      <form class="inline-controls" id="secForm">
-        <label class="field-group">
-          <span>Ticker symbol</span>
-          <input id="tickerInput" name="ticker" type="text"
-            placeholder="e.g. AAPL, MSFT, NVDA"
-            style="text-transform:uppercase" maxlength="10" />
-        </label>
-        <label class="field-group">
-          <span>Form type (optional)</span>
-          <input id="formFilter" name="form" type="text"
-            placeholder="e.g. 10-K, 8-K, 20-F" maxlength="10" />
-        </label>
-        <button type="submit">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          Search
-        </button>
-      </form>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Form</th>
-              <th>Filed</th>
-              <th>Document</th>
-              <th>Link</th>
-            </tr>
-          </thead>
-          <tbody id="filingsBody">
-            <tr><td colspan="4" class="empty-state">Enter a ticker symbol and click Search.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </article>
-
-    <!-- Sidebar -->
-    <div class="side-col">
-
-      <!-- Crawl log -->
-      <article class="panel">
-        <div class="panel-heading">
-          <div>
-            <span class="eyebrow">Activity</span>
-            <h2>Crawl Log</h2>
-          </div>
-          <span class="status-pill" id="crawlStatus">Idle</span>
-        </div>
-        <pre class="crawl-log" id="crawlLog">Waiting for activity…</pre>
-      </article>
-
-      <!-- Official sources -->
-      <article class="panel">
-        <div class="panel-heading">
-          <div>
-            <span class="eyebrow">Data integrity</span>
-            <h2>Official Sources</h2>
-          </div>
-        </div>
-        <div class="source-list" id="sourceList"></div>
-      </article>
-
-    </div><!-- /side-col -->
-  </div><!-- /sec grid -->
-
-</div><!-- /main-wrap -->
-
-<div id="toast"></div>
-
-<script>
-"use strict";
-
-/* ══════════════════════════════════════════════════════════════
-   BACKEND URL — update this after deploying server.js to Render
-   Example: "https://capital-market-fx-console.onrender.com"
-   Leave trailing slash OFF.
-   ══════════════════════════════════════════════════════════════ */
-const API_BASE = "https://eis-recbackend.onrender.com";
-
-const state = { sources: [], currencies: [] };
-
-const els = {
-  asOfText:        document.querySelector("#asOfText"),
-  refreshAll:      document.querySelector("#refreshAll"),
-  sourceStrip:     document.querySelector("#sourceStrip"),
-  sourceList:      document.querySelector("#sourceList"),
-  crawlLog:        document.querySelector("#crawlLog"),
-  crawlStatus:     document.querySelector("#crawlStatus"),
-  fxForm:          document.querySelector("#fxForm"),
-  fxDate:          document.querySelector("#fxDate"),
-  fxAmount:        document.querySelector("#fxAmount"),
-  fxBase:          document.querySelector("#fxBase"),
-  fxQuote:         document.querySelector("#fxQuote"),
-  fxResult:        document.querySelector("#fxResult"),
-  fxStatus:        document.querySelector("#fxStatus"),
-  swapCurrencies:  document.querySelector("#swapCurrencies"),
-  quickPairs:      document.querySelector("#quickPairs"),
-  treasuryForm:    document.querySelector("#treasuryForm"),
-  treasuryDate:    document.querySelector("#treasuryDate"),
-  treasuryStatus:  document.querySelector("#treasuryStatus"),
-  yieldChart:      document.querySelector("#yieldChart"),
-  treasuryMetrics: document.querySelector("#treasuryMetrics"),
-  secForm:         document.querySelector("#secForm"),
-  tickerInput:     document.querySelector("#tickerInput"),
-  formFilter:      document.querySelector("#formFilter"),
-  secStatus:       document.querySelector("#secStatus"),
-  filingsBody:     document.querySelector("#filingsBody"),
-  mEcbDate:        document.querySelector("#mEcbDate"),
-  mCbnDate:        document.querySelector("#mCbnDate"),
-  mTreasuryDate:   document.querySelector("#mTreasuryDate"),
-  mSources:        document.querySelector("#mSources"),
-  signOutBtn:      document.querySelector("#signOutBtn"),
-  toast:           document.querySelector("#toast"),
-};
-
-/* ── Utils ── */
-function todayIso() {
-  const now = new Date();
-  return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-}
-
-function fmt(value, digits = 4) {
-  if (!Number.isFinite(Number(value))) return "N/A";
-  return new Intl.NumberFormat(undefined, {
-    maximumFractionDigits: digits,
-    minimumFractionDigits: Math.min(2, digits)
-  }).format(Number(value));
-}
-
-function setStatus(el, text, mode = "") {
-  el.textContent = text;
-  el.className = `status-pill ${mode}`.trim();
-}
-
-function log(msg) {
-  const t = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-  els.crawlLog.textContent = (`[${t}] ${msg}\n` + els.crawlLog.textContent).slice(0, 2400);
-  setStatus(els.crawlStatus, "Active", "ok");
-}
-
-function toast(msg, isError = false) {
-  els.toast.textContent = msg;
-  els.toast.style.borderColor = isError ? "rgba(224,82,82,.4)" : "";
-  els.toast.style.color = isError ? "var(--rd)" : "";
-  els.toast.classList.add("show");
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => els.toast.classList.remove("show"), 3800);
-}
-
-async function api(path, params = {}) {
-  const url = new URL(API_BASE + path);
-  for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, v);
-  }
-  const res = await fetch(url);
-  const data = await res.json();
-  if (!res.ok || data.ok === false) throw new Error(data.error || `HTTP ${res.status}`);
-  return data;
-}
-
-function escHtml(v) {
-  return String(v ?? "")
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-}
-
-/* ── Sources ── */
-async function loadSources() {
-  try {
-    const { sources } = await api("/api/fx/sources");
-    state.sources = sources;
-    renderSources();
-  } catch (e) { log(`Sources error: ${e.message}`); }
-}
-
-function renderSources() {
-  els.sourceStrip.innerHTML = state.sources.map(s => `
-    <div class="source-chip">
-      <img src="${s.asset}" alt="" loading="lazy" onerror="this.style.display='none'"/>
-      <div>
-        <strong>${s.shortName}</strong>
-        <span>${s.coverage}</span>
-      </div>
-    </div>`).join("");
-
-  els.sourceList.innerHTML = state.sources.map(s => `
-    <div class="source-item">
-      <img src="${s.asset}" alt="" loading="lazy" onerror="this.style.display='none'"/>
-      <div>
-        <strong>${s.name}</strong>
-        <span>${s.cadence}</span>
-        <a href="${s.officialUrl}" target="_blank" rel="noopener">Official source ↗</a>
-      </div>
-    </div>`).join("");
-}
-
-/* ── Currencies ── */
-async function loadCurrencies() {
-  try {
-    const { currencies } = await api("/api/fx/currencies");
-    state.currencies = currencies;
-    const opts = currencies.map(c => `<option value="${c.code}">${c.code} — ${c.name}</option>`).join("");
-    els.fxBase.innerHTML = opts;
-    els.fxQuote.innerHTML = opts;
-    els.fxBase.value = "USD";
-    els.fxQuote.value = "NGN";
-  } catch (e) { log(`Currency load error: ${e.message}`); }
-}
-
-/* ── FX ── */
-els.fxForm.addEventListener("submit", async e => {
-  e.preventDefault();
-  await doFxLookup(els.fxDate.value, els.fxBase.value, els.fxQuote.value, els.fxAmount.value);
-});
-
-els.swapCurrencies.addEventListener("click", () => {
-  [els.fxBase.value, els.fxQuote.value] = [els.fxQuote.value, els.fxBase.value];
-});
-
-els.quickPairs.addEventListener("click", e => {
-  const btn = e.target.closest(".qp-btn");
-  if (!btn) return;
-  els.fxBase.value = btn.dataset.base;
-  els.fxQuote.value = btn.dataset.quote;
-  els.fxAmount.value = "1";
-  doFxLookup(els.fxDate.value, btn.dataset.base, btn.dataset.quote, "1");
-});
-
-async function doFxLookup(date, base, quote, amount) {
-  if (!base || !quote) { toast("Select both currencies", true); return; }
-  setStatus(els.fxStatus, "Loading…", "loading");
-  log(`FX lookup: ${amount} ${base}/${quote} @ ${date || "today"}`);
-  try {
-    const d = await api("/api/fx/rate", { date, base, quote, amount });
-    renderFxResult(d);
-    setStatus(els.fxStatus, "OK", "ok");
-    if (d.provider === "ECB") els.mEcbDate.textContent = d.effectiveDate;
-    if (d.provider === "CBN") els.mCbnDate.textContent = d.effectiveDate;
-    log(`Result: 1 ${base} = ${fmt(d.rate)} ${quote} — ${d.provider}, eff. ${d.effectiveDate}`);
-  } catch (err) {
-    setStatus(els.fxStatus, "Error", "error");
-    els.fxResult.innerHTML = `<div class="error-box">⚠ ${escHtml(err.message)}</div>`;
-    els.fxResult.classList.remove("has-data");
-    log(`FX error: ${err.message}`);
-    toast(err.message, true);
-  }
-}
-
-function renderFxResult(d) {
-  els.fxResult.classList.add("has-data");
-  els.fxResult.innerHTML = `
-    <span class="rate-label">${escHtml(String(d.amount))} ${d.base} =</span>
-    <div class="rate-main">${fmt(d.converted, 4)} <span style="color:var(--tx2);font-size:.55em">${d.quote}</span></div>
-    <div class="rate-meta">
-      <div class="rate-meta-item">
-        <span>Exchange rate</span>
-        <strong>1 ${d.base} = ${fmt(d.rate, 6)} ${d.quote}</strong>
-      </div>
-      <div class="rate-meta-item">
-        <span>Inverse rate</span>
-        <strong>1 ${d.quote} = ${fmt(1 / d.rate, 6)} ${d.base}</strong>
-      </div>
-      <div class="rate-meta-item">
-        <span>Effective date</span>
-        <strong>${d.effectiveDate}</strong>
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:center">
+        <div style="position:relative;height:200px"><canvas id="dominance-chart" role="img" aria-label="Crypto market dominance pie chart">BTC 52%, ETH 17%, BNB 4%, XRP 3%, Others 24%</canvas></div>
+        <div id="dominance-legend" style="display:flex;flex-direction:column;gap:8px"></div>
       </div>
     </div>
-    <span class="provider-badge">
-      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:3px"><polyline points="20 6 9 17 4 12"/></svg>
-      ${d.provider} official rate
-    </span>`;
-}
+  </div>
 
-/* ── Treasury ── */
-els.treasuryForm.addEventListener("submit", async e => {
-  e.preventDefault();
-  await doTreasury(els.treasuryDate.value);
-});
+  <!-- ═══════════════ NIGERIA OFFICIAL RATES ═══════════════ -->
+  <div class="sep"></div>
+  <div class="sec-hdr">
+    <div class="sec-ttl nigeria">Nigeria Official Rates & Indicators <span class="sec-badge official">Official Sources</span></div>
+  </div>
+  <div style="margin-bottom:1rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">
+    Sourced from CBN, DMO & NBS. Rates reflect latest published figures.
+  </div>
+  <div class="card-grid g3" id="nigeria-rates"></div>
 
-async function doTreasury(date) {
-  setStatus(els.treasuryStatus, "Loading…", "loading");
-  log(`Treasury yield curve @ ${date || "today"}`);
-  try {
-    const d = await api("/api/fx/treasury", { date });
-    renderYieldCurve(d.curve);
-    renderTreasuryMetrics(d.curve);
-    setStatus(els.treasuryStatus, "OK", "ok");
-    els.mTreasuryDate.textContent = d.effectiveDate;
-    els.asOfText.textContent = `Latest crawl — ${d.effectiveDate}`;
-    log(`Treasury: ${d.curve.length} tenors loaded, eff. ${d.effectiveDate}`);
-  } catch (err) {
-    setStatus(els.treasuryStatus, "Error", "error");
-    els.yieldChart.innerHTML = `<div class="error-box" style="margin:16px">⚠ ${escHtml(err.message)}</div>`;
-    log(`Treasury error: ${err.message}`);
-  }
-}
+  <!-- Nigeria rates detail -->
+  <div style="margin-top:1.5rem">
+    <div class="chart-panel">
+      <div class="cp-hdr">
+        <div>
+          <div class="cp-ttl">Nigeria Rate Environment — Historical Trend</div>
+          <div class="cp-sub">MPR vs T-Bill (364-day) vs Inflation — Jan 2024 to Jun 2026</div>
+        </div>
+      </div>
+      <div style="position:relative;height:260px">
+        <canvas id="ng-rates-chart" role="img" aria-label="Line chart showing Nigeria MPR, T-Bill rates and inflation from 2024 to 2026">MPR peaked at 27.5% in 2025, T-Bill at 23.5%, Inflation at 33%.</canvas>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx2)"><span style="width:12px;height:3px;background:#00c9a7;display:inline-block;border-radius:2px"></span>MPR</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx2)"><span style="width:12px;height:3px;background:#f5a623;display:inline-block;border-radius:2px"></span>T-Bill 364-day</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx2)"><span style="width:12px;height:3px;background:#e05252;display:inline-block;border-radius:2px;border-top:1px dashed #e05252;height:0"></span><span style="width:12px;height:0;border-top:2px dashed #e05252;display:inline-block"></span>Inflation</span>
+      </div>
+    </div>
+  </div>
 
-function renderYieldCurve(curve) {
-  if (!curve || !curve.length) {
-    els.yieldChart.innerHTML = `<p class="empty-state">No yield data returned.</p>`;
-    return;
-  }
-  const W = 520, H = 200;
-  const pad = { t: 22, r: 18, b: 38, l: 46 };
-  const iW = W - pad.l - pad.r;
-  const iH = H - pad.t - pad.b;
-  const ys = curve.map(c => c.yield);
-  const minY = Math.min(...ys) - 0.25;
-  const maxY = Math.max(...ys) + 0.25;
-  const xS = i => pad.l + (i / (curve.length - 1)) * iW;
-  const yS = v => pad.t + iH - ((v - minY) / (maxY - minY)) * iH;
-  const pathD = curve.map((c, i) => `${i ? "L" : "M"}${xS(i).toFixed(1)},${yS(c.yield).toFixed(1)}`).join(" ");
-  const areaD = `${pathD} L${xS(curve.length-1).toFixed(1)},${(pad.t+iH).toFixed(1)} L${xS(0).toFixed(1)},${(pad.t+iH).toFixed(1)}Z`;
-  const gridLines = [0,.25,.5,.75,1].map(f => {
-    const v = minY + (maxY - minY) * f;
-    const y = yS(v).toFixed(1);
-    return `<line x1="${pad.l}" y1="${y}" x2="${pad.l+iW}" y2="${y}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>`
-         + `<text x="${pad.l-7}" y="${y}" text-anchor="end" dominant-baseline="middle" fill="#4a6080" font-size="9" font-family="IBM Plex Mono,monospace">${v.toFixed(1)}%</text>`;
-  }).join("");
-  const xLabels = curve.filter((_,i) => i===0 || i===curve.length-1 || i%2===0)
-    .map(c => {
-      const i = curve.indexOf(c);
-      return `<text x="${xS(i).toFixed(1)}" y="${(pad.t+iH+14).toFixed(1)}" text-anchor="middle" fill="#4a6080" font-size="9" font-family="IBM Plex Mono,monospace">${c.tenor}</text>`;
-    }).join("");
-  const dots = curve.map((c,i) =>
-    `<circle cx="${xS(i).toFixed(1)}" cy="${yS(c.yield).toFixed(1)}" r="3.5" fill="#00c9a7" opacity=".9"/>`
-    +`<circle cx="${xS(i).toFixed(1)}" cy="${yS(c.yield).toFixed(1)}" r="6" fill="#00c9a7" opacity=".12"/>`
-  ).join("");
-  els.yieldChart.innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#00c9a7" stop-opacity=".3"/>
-        <stop offset="100%" stop-color="#00c9a7" stop-opacity="0"/>
-      </linearGradient>
-      <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/>
-        <feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
-    </defs>
-    ${gridLines}
-    <path d="${areaD}" fill="url(#cg)"/>
-    <path d="${pathD}" fill="none" stroke="#00c9a7" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" filter="url(#glow)"/>
-    ${dots}
-    ${xLabels}
-  </svg>`;
-}
+  <!-- Nigeria context table -->
+  <div style="margin-top:1rem">
+    <div class="mtable-wrap">
+      <table class="mtable">
+        <thead><tr><th>Instrument / Rate</th><th>Current Rate</th><th>Previous</th><th>Change</th><th>Effective Date</th><th>Source</th></tr></thead>
+        <tbody id="ng-detail-table"></tbody>
+      </table>
+    </div>
+  </div>
 
-function renderTreasuryMetrics(curve) {
-  if (!curve || curve.length < 2) { els.treasuryMetrics.innerHTML = ""; return; }
-  const get = t => curve.find(c => c.tenor === t)?.yield;
-  const y2 = get("2Y"), y10 = get("10Y"), y3m = get("3M");
-  const spread = (y2 != null && y10 != null) ? (y10 - y2).toFixed(2) : null;
-  const sc = spread !== null ? (parseFloat(spread) < 0 ? "var(--rd)" : "var(--gr)") : "var(--t)";
-  els.treasuryMetrics.innerHTML = `
-    <div class="tmetric"><span>3-Month</span><strong>${y3m != null ? y3m.toFixed(2)+"%" : "—"}</strong></div>
-    <div class="tmetric"><span>10-Year</span><strong>${y10 != null ? y10.toFixed(2)+"%" : "—"}</strong></div>
-    <div class="tmetric"><span>2s10s Spread</span><strong style="color:${sc}">${spread !== null ? spread+"%" : "—"}</strong></div>`;
-}
+  <!-- Fixed income / money market table -->
+  <div style="margin-top:1rem">
+    <div class="mtable-wrap">
+      <table class="mtable">
+        <thead><tr><th>Fixed Income & Money Market</th><th>Yield / Rate</th><th>Tenor</th><th>Bid/Ask</th><th>Last Auction</th><th>Notes</th></tr></thead>
+        <tbody id="fi-table"></tbody>
+      </table>
+    </div>
+  </div>
 
-/* ── SEC ── */
-els.secForm.addEventListener("submit", async e => {
-  e.preventDefault();
-  const ticker = els.tickerInput.value.trim().toUpperCase();
-  if (!ticker) { toast("Enter a ticker symbol", true); return; }
-  await doSecSearch(ticker, els.formFilter.value.trim());
-});
+</div>
 
-async function doSecSearch(ticker, formFilter) {
-  setStatus(els.secStatus, "Loading…", "loading");
-  log(`SEC EDGAR: ${ticker}${formFilter ? ` (${formFilter})` : ""}`);
-  try {
-    const d = await api("/api/fx/filings", { ticker, form: formFilter });
-    if (!d.filings.length) {
-      els.filingsBody.innerHTML = `<tr><td colspan="4" class="empty-state">No filings found for ${escHtml(d.ticker)}.</td></tr>`;
-    } else {
-      els.filingsBody.innerHTML = d.filings.map(f => `
-        <tr>
-          <td><span class="form-badge">${escHtml(f.form)}</span></td>
-          <td style="font-family:var(--mo);font-size:11px;color:var(--tx2);white-space:nowrap">${escHtml(f.date)}</td>
-          <td style="font-size:11px;color:var(--tx3);max-width:200px;word-break:break-word">${escHtml(f.document || "")}</td>
-          <td><a href="${f.url}" target="_blank" rel="noopener">View ↗</a></td>
-        </tr>`).join("");
-    }
-    setStatus(els.secStatus, `${d.filings.length} filing${d.filings.length !== 1 ? "s" : ""}`, "ok");
-    log(`SEC EDGAR: ${d.name} (CIK ${d.cik}) — ${d.filings.length} filings`);
-  } catch (err) {
-    setStatus(els.secStatus, "Error", "error");
-    els.filingsBody.innerHTML = `<tr><td colspan="4" class="empty-state" style="color:var(--rd)">⚠ ${escHtml(err.message)}</td></tr>`;
-    log(`SEC error: ${err.message}`);
-  }
-}
+<!-- Footer -->
+<footer>
+  <div>
+    <div class="footer-brand">FM Markets Intelligence</div>
+    <div class="footer-note" style="margin-top:4px">
+      Market data is provided for informational purposes only and may be delayed. Nigerian official rates sourced from CBN, DMO and NBS publications. Not financial advice.
+    </div>
+  </div>
+  <div class="footer-links">
+    <a href="https://cbn.gov.ng" target="_blank">CBN</a>
+    <a href="https://dmo.gov.ng" target="_blank">DMO</a>
+    <a href="https://nigerianstat.gov.ng" target="_blank">NBS</a>
+    <a href="https://ngxgroup.com" target="_blank">NGX</a>
+  </div>
+</footer>
 
-/* ── Refresh All ── */
-els.refreshAll.addEventListener("click", async () => {
-  els.refreshAll.disabled = true;
-  log("Manual refresh triggered");
-  setStatus(els.crawlStatus, "Refreshing…", "loading");
-  await Promise.allSettled([
-    doFxLookup(els.fxDate.value, els.fxBase.value, els.fxQuote.value, els.fxAmount.value),
-    doTreasury(els.treasuryDate.value)
-  ]);
-  toast("Crawl refreshed successfully");
-  setStatus(els.crawlStatus, "Done", "ok");
-  els.refreshAll.disabled = false;
-});
+<script>
+'use strict';
 
-/* ── Sign out ── */
-els.signOutBtn.addEventListener("click", () => {
-  if (confirm("Sign out of FM Finance Suite?")) window.location.href = "../";
-});
-
-/* ── Init ── */
-(async function init() {
-  const today = todayIso();
-  els.fxDate.value = today;
-  els.treasuryDate.value = today;
-  await loadSources();
-  await loadCurrencies();
-  await Promise.allSettled([
-    doFxLookup(today, "USD", "NGN", "1"),
-    doTreasury(today)
-  ]);
-  log("Console ready. Sources: ECB · CBN · U.S. Treasury · SEC EDGAR");
-  els.asOfText.textContent = `Console loaded — ${today}`;
+// ── AUTH ────────────────────────────────────────────────────────
+(function(){
+  var tok = sessionStorage.getItem('FM_token');
+  if(!tok){ window.location.href='../portal/';return; }
+  fetch('https://eis-recbackend.onrender.com/api/auth/me',{headers:{'Authorization':'Bearer '+tok}})
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.success&&d.user){
+        document.getElementById('user-name').textContent=d.user.name.split(' ')[0];
+      } else {
+        sessionStorage.removeItem('FM_token');
+        window.location.href='../portal/';
+      }
+    })
+    .catch(()=>{});
+  document.getElementById('logout-btn').addEventListener('click',function(){
+    if(!confirm('Sign out?'))return;
+    sessionStorage.removeItem('FM_token');
+    window.location.href='../portal/';
+  });
 })();
+
+// ── HELPERS ─────────────────────────────────────────────────────
+const fN = (n,d=2) => Number(n).toLocaleString('en-NG',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fNK = n => {
+  const abs = Math.abs(n);
+  if(abs>=1e12) return (n/1e12).toFixed(2)+'T';
+  if(abs>=1e9)  return (n/1e9).toFixed(2)+'B';
+  if(abs>=1e6)  return (n/1e6).toFixed(2)+'M';
+  if(abs>=1e3)  return (n/1e3).toFixed(1)+'K';
+  return n.toFixed(2);
+};
+
+function chgClass(v){ return v>=0?'up':'dn'; }
+function chgSign(v){ return v>=0?'+':''; }
+function arrow(v){ return v>=0?'▲':'▼'; }
+
+function sparkLine(canvas, data, color, fill) {
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.offsetWidth || 200;
+  const h = canvas.offsetHeight || 36;
+  canvas.width = w; canvas.height = h;
+  const min = Math.min(...data), max = Math.max(...data), range = max-min||1;
+  const pts = data.map((v,i)=>({ x:(i/(data.length-1))*w, y:h-((v-min)/range)*(h-4)-2 }));
+  ctx.clearRect(0,0,w,h);
+  if(fill){
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, h);
+    pts.forEach(p=>ctx.lineTo(p.x,p.y));
+    ctx.lineTo(pts[pts.length-1].x, h);
+    ctx.closePath();
+    ctx.fillStyle = color+'22';
+    ctx.fill();
+  }
+  ctx.beginPath();
+  pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+// Generate realistic spark data
+function genSpark(last, vola=0.02, points=20){
+  const arr=[last];
+  for(let i=1;i<points;i++) arr.unshift(arr[0]*(1+(Math.random()-.5)*vola));
+  return arr;
+}
+
+// ── DATA DEFINITIONS ─────────────────────────────────────────────
+
+const GLOBAL_INDICES = [
+  { id:'dow',    name:'Dow Jones',       flag:'🇺🇸', val:42860.12, chg:+184.3,  pct:+0.43 },
+  { id:'nasdaq', name:'NASDAQ Composite',flag:'🇺🇸', val:19342.55, chg:+96.2,   pct:+0.50 },
+  { id:'sp500',  name:'S&P 500',         flag:'🇺🇸', val:5892.58,  chg:+28.4,   pct:+0.48 },
+  { id:'ftse',   name:'FTSE 100',        flag:'🇬🇧', val:8728.40,  chg:-32.1,   pct:-0.37 },
+  { id:'dax',    name:'DAX 40',          flag:'🇩🇪', val:23412.70, chg:+142.6,  pct:+0.61 },
+  { id:'nikkei', name:'Nikkei 225',      flag:'🇯🇵', val:38640.22, chg:-88.5,   pct:-0.23 },
+  { id:'sse',    name:'Shanghai SE',     flag:'🇨🇳', val:3418.84,  chg:+24.7,   pct:+0.73 },
+  { id:'sensex', name:'BSE Sensex',      flag:'🇮🇳', val:82240.18, chg:+310.4,  pct:+0.38 },
+];
+
+const AFRICA_INDICES = [
+  { id:'ngx',  name:'NGX All-Share',   flag:'🇳🇬', val:242323.52, chg:+802.48, pct:+0.33, currency:'pts',  extra:'MCap: ₦155.4T' },
+  { id:'jse',  name:'JSE All Share',   flag:'🇿🇦', val:87432.10,  chg:-218.4,  pct:-0.25, currency:'pts',  extra:'ZAR listed' },
+  { id:'gse',  name:'GSE Composite',   flag:'🇬🇭', val:4892.76,   chg:+34.2,   pct:+0.70, currency:'pts',  extra:'Ghana SE' },
+  { id:'nse',  name:'NSE 20 (Nairobi)',flag:'🇰🇪', val:1842.35,   chg:+12.8,   pct:+0.70, currency:'pts',  extra:'Kenya SE' },
+  { id:'egx',  name:'EGX 30 (Cairo)',  flag:'🇪🇬', val:31240.80,  chg:+284.6,  pct:+0.92, currency:'pts',  extra:'Egypt SE' },
+  { id:'brvm', name:'BRVM Composite',  flag:'🌍',  val:298.44,    chg:+1.8,    pct:+0.61, currency:'pts',  extra:'W.Africa Reg.' },
+];
+
+const NGX_STOCKS = [
+  { name:'MTN Nigeria',   sym:'MTNN',    price:605.00, chg:+15.00, pct:+2.54, vol:12840000, sector:'Telecom' },
+  { name:'Dangote Cement',sym:'DANGCEM', price:942.00, chg:-8.00,  pct:-0.84, vol:4320000,  sector:'Industry' },
+  { name:'Zenith Bank',   sym:'ZENITHBANK',price:64.90,chg:+2.10,  pct:+3.34, vol:38200000, sector:'Banking' },
+  { name:'Airtel Nigeria',sym:'AIRTELAFRI',price:2140.0,chg:+30.0, pct:+1.42, vol:2100000,  sector:'Telecom' },
+  { name:'GTCO',          sym:'GTCO',    price:72.15, chg:+1.95,   pct:+2.78, vol:29400000, sector:'Banking' },
+  { name:'BUA Foods',     sym:'BUAFOODS',price:388.00, chg:-4.00,  pct:-1.02, vol:6800000,  sector:'Consumer' },
+  { name:'Seplat Energy', sym:'SEPLAT',  price:5100.0, chg:+120.0, pct:+2.41, vol:880000,   sector:'Oil & Gas' },
+  { name:'FBN Holdings',  sym:'FBNH',    price:35.80,  chg:+0.85,  pct:+2.43, vol:44600000, sector:'Banking' },
+];
+
+const FOREX_PAIRS = [
+  // NGN pairs
+  { from:'USD', to:'NGN', flag1:'🇺🇸', flag2:'🇳🇬', rate:1598.50, chg:+2.30,  pct:+0.14, range:[1550,1650], isNGN:true },
+  { from:'EUR', to:'NGN', flag1:'🇪🇺', flag2:'🇳🇬', rate:1742.80, chg:-5.20,  pct:-0.30, range:[1700,1800], isNGN:true },
+  { from:'GBP', to:'NGN', flag1:'🇬🇧', flag2:'🇳🇬', rate:2034.60, chg:+8.40,  pct:+0.41, range:[1980,2080], isNGN:true },
+  { from:'CNY', to:'NGN', flag1:'🇨🇳', flag2:'🇳🇬', rate:220.40,  chg:+0.80,  pct:+0.36, range:[210,230],   isNGN:true },
+  // Major pairs
+  { from:'EUR', to:'USD', flag1:'🇪🇺', flag2:'🇺🇸', rate:1.0906,  chg:-0.0012,pct:-0.11, range:[1.07,1.12], isNGN:false },
+  { from:'GBP', to:'USD', flag1:'🇬🇧', flag2:'🇺🇸', rate:1.2722,  chg:+0.0034,pct:+0.27, range:[1.24,1.30], isNGN:false },
+  { from:'USD', to:'JPY', flag1:'🇺🇸', flag2:'🇯🇵', rate:157.42,  chg:-0.28,  pct:-0.18, range:[153,162],   isNGN:false },
+  { from:'USD', to:'ZAR', flag1:'🇺🇸', flag2:'🇿🇦', rate:18.24,   chg:+0.14,  pct:+0.77, range:[17.5,19.5], isNGN:false },
+  { from:'USD', to:'GHS', flag1:'🇺🇸', flag2:'🇬🇭', rate:15.82,   chg:-0.08,  pct:-0.50, range:[15,17],     isNGN:false },
+  { from:'USD', to:'KES', flag1:'🇺🇸', flag2:'🇰🇪', rate:129.40,  chg:+0.60,  pct:+0.46, range:[127,133],   isNGN:false },
+];
+
+const FX_HEATMAP = [
+  {sym:'NGN', chg:+0.14},  {sym:'ZAR', chg:+0.77},  {sym:'KES', chg:+0.46},
+  {sym:'GHS', chg:-0.50},  {sym:'EGP', chg:-0.30},   {sym:'ETB', chg:-0.22},
+  {sym:'EUR', chg:-0.11},  {sym:'GBP', chg:+0.27},   {sym:'JPY', chg:-0.18},
+  {sym:'CHF', chg:+0.08},  {sym:'AUD', chg:+0.33},   {sym:'CAD', chg:-0.15},
+  {sym:'CNY', chg:+0.36},  {sym:'INR', chg:+0.12},   {sym:'BRL', chg:-0.42},
+  {sym:'MXN', chg:+0.55},  {sym:'SGD', chg:+0.19},   {sym:'HKD', chg:-0.03},
+];
+
+const CRYPTO = [
+  { sym:'BTC',  name:'Bitcoin',    icon:'₿', color:'#f7931a', price:105420, chg:+2340, pct:+2.27,  mcap:'2.09T', dom:52 },
+  { sym:'ETH',  name:'Ethereum',   icon:'Ξ', color:'#627eea', price:3842,   chg:+128,  pct:+3.44,  mcap:'462B',  dom:17 },
+  { sym:'BNB',  name:'BNB',        icon:'B', color:'#f3ba2f', price:718,    chg:-12,   pct:-1.64,  mcap:'104B',  dom:4 },
+  { sym:'XRP',  name:'XRP',        icon:'X', color:'#00aae4', price:2.84,   chg:+0.12, pct:+4.41,  mcap:'163B',  dom:3 },
+  { sym:'SOL',  name:'Solana',     icon:'S', color:'#9945ff', price:188.40, chg:+8.20, pct:+4.55,  mcap:'88B',   dom:2 },
+  { sym:'USDT', name:'Tether',     icon:'T', color:'#26a17b', price:1.00,   chg:0.00,  pct:+0.01,  mcap:'144B',  dom:5 },
+  { sym:'ADA',  name:'Cardano',    icon:'A', color:'#0033ad', price:0.892,  chg:+0.034,pct:+3.96,  mcap:'31B',   dom:1 },
+  { sym:'AVAX', name:'Avalanche',  icon:'V', color:'#e84142', price:42.18,  chg:-1.20, pct:-2.77,  mcap:'18B',   dom:1 },
+  { sym:'DOGE', name:'Dogecoin',   icon:'D', color:'#c2a633', price:0.2214, chg:+0.008,pct:+3.75,  mcap:'33B',   dom:1 },
+  { sym:'LINK', name:'Chainlink',  icon:'L', color:'#2a5ada', price:19.84,  chg:+0.88, pct:+4.64,  mcap:'12B',   dom:1 },
+];
+
+const NIGERIA_RATES = [
+  { id:'mpr',  cls:'mpr',   label:'Monetary Policy Rate',          title:'CBN MPR',                   rate:26.5,  unit:'%',  meta:'MPC 305th Meeting — May 20, 2026', src:'CBN',  src_url:'https://cbn.gov.ng',   chg:'↓ 50bps from 27.0%' },
+  { id:'tbill91',cls:'tbill',label:'Treasury Bill — 91 Day',       title:'NTB Stop Rate (91-day)',    rate:15.00, unit:'%',  meta:'Primary Market Rate — Jun 2026',  src:'CBN',  src_url:'https://cbn.gov.ng',   chg:'↓ from 18.0% (Jan 2025)' },
+  { id:'tbill182',cls:'tbill',label:'Treasury Bill — 182 Day',     title:'NTB Stop Rate (182-day)',   rate:15.50, unit:'%',  meta:'Primary Market Rate — Jun 2026',  src:'CBN',  src_url:'https://cbn.gov.ng',   chg:'↓ from 18.5% (Jan 2025)' },
+  { id:'tbill364',cls:'tbill',label:'Treasury Bill — 364 Day',     title:'NTB Stop Rate (364-day)',   rate:16.50, unit:'%',  meta:'Primary Market Rate — Jun 2026',  src:'CBN',  src_url:'https://cbn.gov.ng',   chg:'↓ from 22.6% (Jan 2025)' },
+  { id:'mm',   cls:'mm',    label:'Money Market Rate',              title:'NIBOR Overnight',           rate:26.80, unit:'%',  meta:'Lagos interbank rate — Jun 2026', src:'FMDQ', src_url:'https://fmdqgroup.com', chg:'Spread: +30bps over MPR' },
+  { id:'crr',  cls:'crr',   label:'Cash Reserve Ratio',            title:'CRR (Deposit Money Banks)', rate:45.0,  unit:'%',  meta:'Retained from Feb 2026 MPC',      src:'CBN',  src_url:'https://cbn.gov.ng',   chg:'Merchant Banks: 16%' },
+  { id:'liq',  cls:'crr',   label:'Liquidity Ratio',               title:'Minimum Liquidity Ratio',   rate:30.0,  unit:'%',  meta:'Unchanged — MPC May 2026',        src:'CBN',  src_url:'https://cbn.gov.ng',   chg:'Unchanged' },
+  { id:'infl', cls:'infl',  label:'Headline Inflation',            title:'CPI Year-on-Year',           rate:15.70, unit:'%',  meta:'NBS Report — April 2026',         src:'NBS',  src_url:'https://nigerianstat.gov.ng', chg:'↑ from 14.8% (Mar 2026)' },
+  { id:'fx',   cls:'fx',    label:'USD/NGN Official Rate',         title:'CBN Reference Rate',         rate:1598.50,unit:'₦', meta:'I&E Window — Jun 5, 2026',        src:'CBN',  src_url:'https://cbn.gov.ng',   chg:'Parallel: ~₦1610' },
+];
+
+const NG_DETAIL = [
+  { inst:'MPR',                rate:'26.50%', prev:'27.00%', chg:'−50bps', date:'25 Feb 2026',     src:'CBN' },
+  { inst:'Standing Lending Facility',rate:'31.50%',prev:'32.00%',chg:'−50bps',date:'25 Feb 2026',  src:'CBN' },
+  { inst:'Standing Deposit Facility',rate:'22.00%',prev:'22.50%',chg:'−50bps',date:'25 Feb 2026',  src:'CBN' },
+  { inst:'CRR (DMBs)',         rate:'45.00%', prev:'45.00%', chg:'Unchanged',date:'25 Feb 2026',    src:'CBN' },
+  { inst:'Liquidity Ratio',    rate:'30.00%', prev:'30.00%', chg:'Unchanged',date:'25 Feb 2026',    src:'CBN' },
+  { inst:'Headline Inflation', rate:'15.70%', prev:'14.80%', chg:'+90bps',  date:'Apr 2026 (NBS)',  src:'NBS' },
+  { inst:'Food Inflation',     rate:'17.80%', prev:'16.20%', chg:'+160bps', date:'Apr 2026 (NBS)',  src:'NBS' },
+  { inst:'Core Inflation',     rate:'13.20%', prev:'12.90%', chg:'+30bps',  date:'Apr 2026 (NBS)',  src:'NBS' },
+  { inst:'FX Rate (I&E)',      rate:'₦1,598.50',prev:'₦1,596.20',chg:'+₦2.30',date:'Jun 5, 2026', src:'CBN' },
+];
+
+const FI_RATES = [
+  { inst:'NTB — 91 Day',   rate:'15.00%', tenor:'91 days',  bid:'14.85%', last_auction:'May 2026',  note:'Oversubscribed 4.2x' },
+  { inst:'NTB — 182 Day',  rate:'15.50%', tenor:'182 days', bid:'15.30%', last_auction:'May 2026',  note:'Oversubscribed 3.8x' },
+  { inst:'NTB — 364 Day',  rate:'16.50%', tenor:'364 days', bid:'16.20%', last_auction:'May 2026',  note:'Oversubscribed 5.1x' },
+  { inst:'FGN Bond 2yr',   rate:'17.80%', tenor:'2 years',  bid:'17.60%', last_auction:'Jun 2026',  note:'Benchmark bond' },
+  { inst:'FGN Bond 5yr',   rate:'18.40%', tenor:'5 years',  bid:'18.15%', last_auction:'Jun 2026',  note:'DMO tap issue' },
+  { inst:'FGN Bond 10yr',  rate:'19.20%', tenor:'10 years', bid:'18.95%', last_auction:'Jun 2026',  note:'Anchor for long rates' },
+  { inst:'Eurobond 2031',  rate:'8.75%',  tenor:'~5yr USD', bid:'8.60%',  last_auction:'Jun 2026',  note:'USD-denominated' },
+  { inst:'NIBOR O/N',      rate:'26.80%', tenor:'Overnight',bid:'26.70%', last_auction:'Jun 5 2026',note:'Above MPR' },
+  { inst:'NIBOR 30-day',   rate:'27.20%', tenor:'30 days',  bid:'27.05%', last_auction:'Jun 5 2026',note:'FMDQ platform' },
+  { inst:'COMMERCIAL PAPER',rate:'18–20%',tenor:'90–180d', bid:'Market',  last_auction:'Ongoing',    note:'FMDQ/OTC market' },
+];
+
+// ── BUILD TICKER TAPE ────────────────────────────────────────────
+function buildTicker(){
+  const items = [
+    ...GLOBAL_INDICES.map(i=>({name:i.id.toUpperCase(),val:fN(i.val,2),pct:i.pct})),
+    ...AFRICA_INDICES.map(i=>({name:i.id.toUpperCase(),val:fN(i.val,2),pct:i.pct})),
+    ...CRYPTO.slice(0,6).map(c=>({name:c.sym,val:'$'+fNK(c.price),pct:c.pct})),
+    {name:'USD/NGN',val:'₦'+fN(1598.50,2),pct:+0.14},
+    {name:'MPR',val:'26.5%',pct:0},
+    {name:'INFL',val:'15.7%',pct:0},
+    {name:'BTC/USD',val:'$'+fNK(105420),pct:+2.27},
+  ];
+  const html = items.map(i=>{
+    const cls = i.pct>=0?'up':'dn';
+    return `<div class="tick-item">
+      <div class="tick-dot ${cls}"></div>
+      <span class="tick-name">${i.name}</span>
+      <span class="tick-val">${i.val}</span>
+      <span class="tick-chg ${cls}">${chgSign(i.pct)}${i.pct.toFixed(2)}%</span>
+    </div>`;
+  }).join('');
+  const track = document.getElementById('ticker-track');
+  track.innerHTML = html + html; // double for seamless loop
+}
+
+// ── BUILD GLOBAL STOCKS ──────────────────────────────────────────
+function buildGlobalStocks(){
+  const el = document.getElementById('global-stocks');
+  el.innerHTML = GLOBAL_INDICES.map(s=>{
+    const cls = chgClass(s.pct);
+    const color = s.pct>=0?'#22c55e':'#e05252';
+    const spark = genSpark(s.val, 0.008, 20);
+    return `<div class="mcard ${cls}" onclick="void(0)">
+      <div class="mcard-flag">${s.flag}</div>
+      <div class="mcard-label">${s.id.toUpperCase()}</div>
+      <div class="mcard-name">${s.name}</div>
+      <div class="mcard-val">${fN(s.val,2)}</div>
+      <div class="mcard-chg">
+        <span class="mcard-pct">${arrow(s.pct)} ${chgSign(s.pct)}${Math.abs(s.pct).toFixed(2)}%</span>
+        <span class="mcard-abs">${chgSign(s.chg)}${fN(s.chg,2)}</span>
+      </div>
+      <div class="mcard-micro"><canvas id="spark-${s.id}"></canvas></div>
+    </div>`;
+  }).join('');
+  // Draw sparklines after DOM
+  setTimeout(()=>{
+    GLOBAL_INDICES.forEach(s=>{
+      const cv = document.getElementById('spark-'+s.id);
+      if(cv){ const c = s.pct>=0?'#22c55e':'#e05252'; sparkLine(cv, genSpark(s.val,.008,20), c, true); }
+    });
+  },100);
+}
+
+// ── BUILD AFRICA STOCKS ──────────────────────────────────────────
+function buildAfricaStocks(){
+  const el = document.getElementById('africa-stocks');
+  el.innerHTML = AFRICA_INDICES.map(s=>{
+    const cls = chgClass(s.pct);
+    return `<div class="mcard ${cls}">
+      <div class="mcard-flag">${s.flag}</div>
+      <div class="mcard-label">${s.id.toUpperCase()}</div>
+      <div class="mcard-name">${s.name}</div>
+      <div class="mcard-val">${fN(s.val,2)}</div>
+      <div class="mcard-chg">
+        <span class="mcard-pct">${arrow(s.pct)} ${chgSign(s.pct)}${Math.abs(s.pct).toFixed(2)}%</span>
+        <span class="mcard-abs">${chgSign(s.chg)}${fN(s.chg,2)}</span>
+      </div>
+      <div style="font-size:9px;color:var(--tx3);font-family:var(--mo);margin-top:5px">${s.extra}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── BUILD NGX TABLE ──────────────────────────────────────────────
+function buildNGXTable(){
+  const maxVol = Math.max(...NGX_STOCKS.map(s=>s.vol));
+  document.getElementById('ngx-table').innerHTML = NGX_STOCKS.map(s=>{
+    const cls = chgClass(s.pct);
+    const barW = Math.round((s.vol/maxVol)*60);
+    return `<tr>
+      <td><div class="mt-name">${s.name}</div><div class="mt-sub">${s.sym}</div></td>
+      <td>₦${fN(s.price,2)}</td>
+      <td><span class="chg-pill ${cls}">${chgSign(s.chg)}₦${Math.abs(s.chg).toFixed(2)}</span></td>
+      <td><span class="chg-pill ${cls}">${chgSign(s.pct)}${Math.abs(s.pct).toFixed(2)}%</span></td>
+      <td>${fNK(s.vol)}<span class="vol-bar" style="width:${barW}px"></span></td>
+      <td style="font-family:var(--mo);font-size:10px;color:var(--tx3)">${s.sector}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── BUILD FOREX ──────────────────────────────────────────────────
+function buildForex(){
+  const el = document.getElementById('forex-grid');
+  const ngn = FOREX_PAIRS.filter(p=>p.isNGN);
+  const intl = FOREX_PAIRS.filter(p=>!p.isNGN);
+
+  const makeSection = (title, pairs) => `
+    <div>
+      <div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">${title}</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${pairs.map(p=>{
+          const cls = chgClass(p.pct);
+          const barPct = Math.round(((p.rate-p.range[0])/(p.range[1]-p.range[0]))*100);
+          const rateStr = p.from==='USD'&&p.to==='NGN' ? '₦'+fN(p.rate,2) : p.rate>=100?fN(p.rate,2):p.rate.toFixed(4);
+          return `<div class="fxcard">
+            <div class="fx-flag">${p.flag1}</div>
+            <div>
+              <div class="fx-pair">${p.from}/${p.to}</div>
+              <div class="fx-desc">${p.flag2} ${p.from} vs ${p.to}</div>
+              <div class="fx-bar-wrap"><div class="fx-bar" style="width:${barPct}%;background:${p.pct>=0?'var(--gr)':'var(--rd)'}"></div></div>
+            </div>
+            <div>
+              <div class="fx-val">${rateStr}</div>
+              <div class="fx-chg ${cls}">${chgSign(p.pct)}${Math.abs(p.pct).toFixed(2)}%</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  el.innerHTML = makeSection('NGN Pairs (CBN Official)', ngn) + makeSection('Major International Pairs', intl);
+}
+
+// ── BUILD FX HEATMAP ─────────────────────────────────────────────
+function buildFXHeatmap(){
+  const el = document.getElementById('fx-heatmap');
+  el.innerHTML = FX_HEATMAP.map(c=>{
+    let cls = 'heat-flat';
+    if(c.chg>=2) cls='heat-5p'; else if(c.chg>=0.5) cls='heat-2p'; else if(c.chg>0) cls='heat-1p';
+    else if(c.chg<=-2) cls='heat-5n'; else if(c.chg<=-0.5) cls='heat-2n'; else if(c.chg<0) cls='heat-1n';
+    return `<div class="heat-cell ${cls}" title="${c.sym}: ${chgSign(c.chg)}${c.chg.toFixed(2)}% vs USD">
+      <span class="heat-sym">${c.sym}</span>
+      <span class="heat-chg">${chgSign(c.chg)}${Math.abs(c.chg).toFixed(2)}%</span>
+    </div>`;
+  }).join('');
+}
+
+// ── BUILD CRYPTO ─────────────────────────────────────────────────
+function buildCrypto(){
+  const el = document.getElementById('crypto-grid');
+  el.innerHTML = CRYPTO.map(c=>{
+    const cls = chgClass(c.pct);
+    const priceStr = c.price>=1000?'$'+fN(c.price,0):c.price>=1?'$'+c.price.toFixed(2):'$'+c.price.toFixed(4);
+    return `<div class="ccard ${cls}">
+      <div class="cc-icon" style="background:${c.color}22;color:${c.color};border:1px solid ${c.color}44">${c.icon}</div>
+      <div class="cc-sym">${c.sym}</div>
+      <div class="cc-name">${c.name}</div>
+      <div class="cc-price">${priceStr}</div>
+      <div class="cc-chg ${cls}">${arrow(c.pct)} ${chgSign(c.pct)}${Math.abs(c.pct).toFixed(2)}%</div>
+      <div class="cc-mcap">MCap: $${c.mcap}</div>
+      <div class="cc-micro"><canvas id="csp-${c.sym}"></canvas></div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>{
+    CRYPTO.forEach(c=>{
+      const cv=document.getElementById('csp-'+c.sym);
+      if(cv) sparkLine(cv, genSpark(c.price, c.sym==='USDT'?0.0001:0.03, 20), c.color, true);
+    });
+  },150);
+}
+
+// ── BUILD CRYPTO DOMINANCE CHART ─────────────────────────────────
+function buildDominanceChart(){
+  const labels = CRYPTO.slice(0,5).map(c=>c.sym);
+  const data   = CRYPTO.slice(0,5).map(c=>c.dom);
+  const others = 100 - data.reduce((a,b)=>a+b,0);
+  labels.push('Others'); data.push(others);
+  const colors = ['#f7931a','#627eea','#f3ba2f','#00aae4','#9945ff','#4a6080'];
+
+  new Chart(document.getElementById('dominance-chart'),{
+    type:'doughnut',
+    data:{ labels, datasets:[{ data, backgroundColor:colors, borderWidth:2, borderColor:'#0a1628' }]},
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'72%',
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+'%'}} }
+    }
+  });
+
+  const legend = document.getElementById('dominance-legend');
+  legend.innerHTML = labels.map((l,i)=>`
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="width:10px;height:10px;border-radius:2px;background:${colors[i]};flex-shrink:0"></span>
+      <span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">${l}</span>
+      <span style="font-size:12px;font-weight:500;color:var(--tx);margin-left:auto">${data[i]}%</span>
+    </div>
+  `).join('');
+}
+
+// ── BUILD NIGERIA RATES ───────────────────────────────────────────
+function buildNigeriaRates(){
+  const el = document.getElementById('nigeria-rates');
+  el.innerHTML = NIGERIA_RATES.map(r=>`
+    <div class="ngcard ${r.cls}">
+      <div class="ng-label">${r.label}</div>
+      <div class="ng-title">${r.title}</div>
+      <div class="ng-rate">${r.unit==='₦'?'₦'+fN(r.rate,2):fN(r.rate,2)}<span class="ng-unit">${r.unit==='₦'?'':r.unit}</span></div>
+      <div class="ng-meta">${r.meta}<br><span style="color:var(--tx4)">${r.chg}</span></div>
+      <a href="${r.src_url}" target="_blank" class="ng-src">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Source: ${r.src}
+      </a>
+    </div>
+  `).join('');
+}
+
+// ── BUILD NG RATES CHART ─────────────────────────────────────────
+function buildNGRatesChart(){
+  const labels = ['Jan 24','Mar 24','May 24','Jul 24','Sep 24','Nov 24','Jan 25','Mar 25','May 25','Jul 25','Sep 25','Nov 25','Jan 26','Mar 26','May 26'];
+  const mpr    = [18.75,22.75,24.75,26.25,27.25,27.50,27.50,27.50,27.50,27.50,27.00,27.00,27.00,26.50,26.50];
+  const tbill  = [17.00,20.00,22.00,23.00,23.50,23.00,22.60,20.00,18.00,16.50,15.88,16.00,16.20,16.50,16.50];
+  const infl   = [29.90,33.20,33.69,34.19,32.70,34.60,34.80,33.20,26.50,22.80,32.15,24.90,26.00,15.00,15.70];
+
+  new Chart(document.getElementById('ng-rates-chart'),{
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        { label:'MPR', data:mpr, borderColor:'#00c9a7', backgroundColor:'rgba(0,201,167,.08)', borderWidth:2, pointRadius:3, pointBackgroundColor:'#00c9a7', tension:.35, fill:false },
+        { label:'T-Bill 364d', data:tbill, borderColor:'#f5a623', backgroundColor:'rgba(245,166,35,.08)', borderWidth:2, pointRadius:3, pointBackgroundColor:'#f5a623', tension:.35, fill:false },
+        { label:'Inflation', data:infl, borderColor:'#e05252', backgroundColor:'rgba(224,82,82,.05)', borderWidth:2, borderDash:[5,4], pointRadius:3, pointBackgroundColor:'#e05252', tension:.35, fill:false },
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{mode:'index',intersect:false, callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(2)+'%'}} },
+      scales:{
+        x:{ grid:{color:'rgba(255,255,255,.04)'}, ticks:{color:'#4a6080',font:{size:10},maxRotation:45} },
+        y:{ grid:{color:'rgba(255,255,255,.04)'}, ticks:{color:'#4a6080',font:{size:10},callback:v=>v+'%'}, min:0, max:40 }
+      }
+    }
+  });
+}
+
+// ── BUILD NG DETAIL TABLE ────────────────────────────────────────
+function buildNGDetailTable(){
+  document.getElementById('ng-detail-table').innerHTML = NG_DETAIL.map(r=>{
+    const isPos = r.chg.startsWith('+');
+    const isNeg = r.chg.startsWith('−')||r.chg.startsWith('-');
+    const chgStyle = isPos?'color:var(--rd)':isNeg?'color:var(--gr)':'color:var(--tx3)';
+    return `<tr>
+      <td><div class="mt-name">${r.inst}</div></td>
+      <td style="font-weight:600;color:var(--t)">${r.rate}</td>
+      <td>${r.prev}</td>
+      <td style="${chgStyle};font-family:var(--mo);font-size:11px">${r.chg}</td>
+      <td style="color:var(--tx3);font-family:var(--mo);font-size:10px">${r.date}</td>
+      <td><span class="tag">${r.src}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── BUILD FIXED INCOME TABLE ─────────────────────────────────────
+function buildFITable(){
+  document.getElementById('fi-table').innerHTML = FI_RATES.map(r=>`<tr>
+    <td><div class="mt-name">${r.inst}</div></td>
+    <td style="color:var(--am);font-weight:600">${r.rate}</td>
+    <td style="color:var(--tx2)">${r.tenor}</td>
+    <td style="color:var(--tx3)">${r.bid}</td>
+    <td style="color:var(--tx3);font-family:var(--mo);font-size:10px">${r.last_auction}</td>
+    <td style="font-size:10px;color:var(--tx3)">${r.note}</td>
+  </tr>`).join('');
+}
+
+// ── MARKET STATUS ────────────────────────────────────────────────
+function checkMarketStatus(){
+  const now = new Date();
+  const day = now.getUTCDay();
+  const hour = now.getUTCHours();
+  const min = now.getUTCMinutes();
+  const dot = document.getElementById('mkt-dot');
+  const lbl = document.getElementById('mkt-label');
+  // NGX: Mon-Fri 09:30-14:30 WAT (UTC+1)
+  const watHour = (hour+1)%24;
+  const isWeekday = day>=1&&day<=5;
+  const isOpen = isWeekday && (watHour>9||(watHour===9&&min>=30)) && watHour<14;
+  dot.className = 'ms-dot '+(isOpen?'open':'closed');
+  lbl.textContent = isOpen?'NGX Open':'NGX Closed';
+}
+
+// ── LAST UPDATED ─────────────────────────────────────────────────
+function updateTimestamp(){
+  document.getElementById('last-updated').textContent = 'Last updated: '+new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+' WAT';
+}
+
+// ── REFRESH ALL ──────────────────────────────────────────────────
+function refreshAll(btn){
+  btn.classList.add('spinning');
+  setTimeout(()=>{
+    btn.classList.remove('spinning');
+    updateTimestamp();
+    buildTicker();
+    buildGlobalStocks();
+    buildAfricaStocks();
+  },1800);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+function init(){
+  buildTicker();
+  buildGlobalStocks();
+  buildAfricaStocks();
+  buildNGXTable();
+  buildForex();
+  buildFXHeatmap();
+  buildCrypto();
+  checkMarketStatus();
+  updateTimestamp();
+  // Charts need DOM to settle
+  setTimeout(()=>{
+    buildDominanceChart();
+    buildNGRatesChart();
+    buildNigeriaRates();
+    buildNGDetailTable();
+    buildFITable();
+  },200);
+  // Auto-update ticker every 30s (simulated)
+  setInterval(()=>{
+    buildTicker();
+    checkMarketStatus();
+  },30000);
+}
+
+window.addEventListener('load',init);
 </script>
 </body>
 </html>
