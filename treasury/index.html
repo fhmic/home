@@ -982,7 +982,7 @@ async function loadTeam(){
   $('team-table').innerHTML='<div class="loading-row">Loading team members...</div>';
   try{
     const d=await api('/org/team');
-    if(!d.members?.length){$('team-table').innerHTML=empty('No team members yet. Add members to share treasury access with your team.');return;}
+if(!d.members?.length){$('team-table').innerHTML=empty('No team members yet. Add members to share treasury access with your team.');return;}}
     $('team-table').innerHTML='<div class="tw"><table>'+
       '<thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th></th></tr></thead>'+
       '<tbody>'+d.members.map(m=>'<tr>'+
