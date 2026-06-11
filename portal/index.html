@@ -3,1069 +3,984 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Treasury Intelligence — FM Finance Suite</title>
+<title>FM Resources Portal</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --n:#0a1628;--n2:#0f1f3d;--n3:#162747;--n4:#1c3057;
-  --t:#00c9a7;--t2:#00a98e;--td:rgba(0,201,167,.13);--tg:rgba(0,201,167,.06);
-  --am:#f5a623;--rd:#e05252;--gr:#22c55e;--bl:#63b3ed;--pu:#a78bfa;
+  --n:#050d1a;--n2:#0a1628;--n3:#0f1f3d;--n4:#162747;
+  --t:#00c9a7;--t2:#00a98e;--am:#f5a623;--rd:#e05252;--gr:#22c55e;
   --tx:#e8edf5;--tx2:#8fa3bf;--tx3:#4a6080;
   --b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
   --sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.08);
-  --r:10px;--rl:16px;
-  --mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif;
-  --sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --r:10px;--mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif;
+  --sh:0 4px 24px rgba(0,0,0,.5),0 12px 48px rgba(0,0,0,.3);
 }
 html{font-size:15px}
 body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6}
-#app{display:flex;min-height:100vh;flex-direction:column}
-#topbar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
-.logo{font-family:var(--di);font-weight:700;font-size:17px;letter-spacing:-.03em;color:var(--tx);display:flex;align-items:center;gap:9px}
-.lm{width:30px;height:30px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--n);font-weight:700}
-.la{color:var(--t)}
-.org-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2);border-radius:20px;padding:2px 10px;font-size:10px;font-family:var(--mo);color:var(--t);margin-left:8px}
-.tbr{display:flex;align-items:center;gap:8px}
-.nav-btn-link{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--b2);border-radius:10px;padding:6px 12px;font-size:11.5px;font-family:var(--mo);color:var(--tx3);cursor:pointer;transition:all .2s;text-decoration:none}
-.nav-btn-link:hover{background:var(--sf2);color:var(--tx)}
-.user-chip-top{display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--b2);border-radius:20px;padding:4px 11px;font-size:11.5px;color:var(--tx2);font-family:var(--mo)}
-#layout{display:flex;flex:1;overflow:hidden}
-#sidebar{width:220px;flex-shrink:0;background:var(--n2);border-right:1px solid var(--b);overflow-y:auto;padding:1rem 0}
-.nav-section{font-size:10px;font-family:var(--mo);color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;padding:8px 18px 4px;margin-top:8px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13px;color:var(--tx2);cursor:pointer;transition:all .2s;border-left:3px solid transparent;user-select:none}
-.nav-item:hover{background:var(--sf2);color:var(--tx)}
-.nav-item.active{background:var(--td);color:var(--t);border-left-color:var(--t)}
-.nav-item svg{flex-shrink:0;opacity:.7}
-.nav-item.active svg{opacity:1}
-#content{flex:1;overflow-y:auto;padding:1.75rem}
-.view{display:none}.view.on{display:block}
-@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.view.on{animation:fu .3s ease both}
-.vhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem}
-.vttl{font-family:var(--di);font-size:22px;font-weight:700;letter-spacing:-.03em}
-.vsub{font-size:12px;color:var(--tx3);font-family:var(--mo);margin-top:3px}
-.vacts{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-.card{background:var(--n2);border:1px solid var(--b);border-radius:var(--rl);padding:1.5rem;box-shadow:var(--sh)}
-.card-label{font-size:10px;font-family:var(--mo);color:var(--tx2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:1.5rem}
-.kpi{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
-.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:var(--r) 0 0 var(--r)}
-.kpi.tl::before,.kpi.ac::before{background:var(--t)}.kpi.rd::before{background:var(--rd)}.kpi.am::before{background:var(--am)}.kpi.gr::before{background:var(--gr)}.kpi.bl::before{background:var(--bl)}.kpi.pu::before{background:var(--pu)}
-.kpi.ac{border-color:rgba(0,201,167,.3);background:var(--td)}
-.kl{font-size:10px;font-family:var(--mo);color:var(--tx3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
-.kv{font-family:var(--di);font-size:22px;font-weight:700;letter-spacing:-.03em;line-height:1}
-.ks{font-size:10px;font-family:var(--mo);color:var(--tx2);margin-top:4px}
-.kv.tl{color:var(--t)}.kv.rd{color:var(--rd)}.kv.am{color:var(--am)}.kv.gr{color:var(--gr)}.kv.bl{color:var(--bl)}.kv.pu{color:var(--pu)}
-.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--b)}
-table{width:100%;border-collapse:collapse;font-size:12px}
-thead th{background:var(--n3);color:var(--tx3);font-family:var(--mo);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;text-align:left;border-bottom:1px solid var(--b);white-space:nowrap}
-tbody td{padding:8px 12px;border-bottom:1px solid var(--b);vertical-align:middle;color:var(--tx)}
-tbody tr:last-child td{border-bottom:none}
-tbody tr:hover{background:var(--sf)}
-.trt td{background:var(--n3);font-weight:700;font-family:var(--mo);font-size:11px;border-top:1px solid var(--b2)!important;color:var(--t)}
-.nm{font-family:var(--mo);text-align:right}
-.pl{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:600;white-space:nowrap}
-.ps1{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
-.ps2{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2)}
-.ps3{background:rgba(224,82,82,.1);color:var(--rd);border:1px solid rgba(224,82,82,.2)}
-.pt{background:var(--td);color:var(--t);border:1px solid rgba(0,201,167,.2)}
-.pg{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
-.pa{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2)}
-.pr{background:rgba(224,82,82,.1);color:var(--rd);border:1px solid rgba(224,82,82,.2)}
-.pb{background:rgba(99,179,237,.1);color:var(--bl);border:1px solid rgba(99,179,237,.2)}
-.pp{background:rgba(167,139,250,.1);color:var(--pu);border:1px solid rgba(167,139,250,.2)}
-button{font-family:var(--sa);font-size:13px;font-weight:500;border-radius:var(--r);padding:8px 18px;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--tx2);transition:all .2s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
-button:hover:not(:disabled){background:var(--sf2);color:var(--tx)}
-button:disabled{opacity:.35;cursor:not-allowed}
-.bp{background:var(--t);border-color:var(--t);color:var(--n);font-weight:600}
-.bp:hover:not(:disabled){background:var(--t2);color:var(--n)}
-.bd{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
-.bd:hover:not(:disabled){background:rgba(224,82,82,.2)}
-.bsm{padding:5px 12px;font-size:12px}
-.fg{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.fld{margin-bottom:1rem}
-.fld label{display:block;font-size:11px;font-family:var(--mo);color:var(--tx2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
-.finput{width:100%;padding:9px 13px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;transition:border-color .2s;outline:none}
-.finput:focus{border-color:var(--t);box-shadow:0 0 0 2px rgba(0,201,167,.1)}
-.finput::placeholder{color:var(--tx3)}
-select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238fa3bf' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px;cursor:pointer}
-#modal-bg{display:none;position:fixed;inset:0;background:rgba(5,12,24,.75);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
-#modal-bg.on{display:flex}
-.modal{background:var(--n2);border:1px solid var(--b2);border-radius:var(--rl);width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.5)}
-.modal.wide{max-width:820px}
-.mhdr{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--b);flex-shrink:0}
-.mttl{font-family:var(--di);font-size:16px;font-weight:600}
-.mclose{width:30px;height:30px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
-.mclose:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
-.mbody{padding:1.5rem;overflow-y:auto;flex:1}
-.mfoot{padding:1rem 1.5rem;border-top:1px solid var(--b);display:flex;justify-content:flex-end;gap:.5rem;flex-shrink:0}
-.merr{display:none;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--rd);margin-bottom:1rem;font-family:var(--mo)}
-.merr.on{display:block}
-.mok{display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--gr);margin-bottom:1rem;font-family:var(--mo)}
-.mok.on{display:block}
-.chart-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
-.chart-box{background:var(--n2);border:1px solid var(--b);border-radius:var(--r);padding:1.25rem}
-.ep{text-align:center;padding:3rem 1rem;color:var(--tx3);font-family:var(--mo);font-size:12px}
-.ei{font-size:2rem;margin-bottom:10px}
-.nt{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--tx2);margin-bottom:1rem;line-height:1.5}
-.nt-info{background:rgba(0,201,167,.07);border:1px solid rgba(0,201,167,.2);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--tx2);margin-bottom:1rem;line-height:1.5}
-.loading-row{text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px}
-#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);padding:10px 18px;font-size:12px;font-family:var(--mo);color:var(--tx);z-index:500;box-shadow:var(--sh);display:none;align-items:center;gap:8px;white-space:nowrap;max-width:90vw}
-#toast.on{display:flex}
-#toast.ok{border-color:rgba(34,197,94,.4);color:var(--gr)}
-#toast.err{border-color:rgba(224,82,82,.4);color:var(--rd)}
-.sep{height:1px;background:var(--b);margin:1rem 0}
-.section-ttl{font-family:var(--di);font-size:15px;font-weight:600;margin-bottom:1rem}
-.drop-zone{border:2px dashed var(--b2);border-radius:var(--r);padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s;display:block}
-.drop-zone:hover{border-color:var(--t)}
-.ulog{background:var(--n);border-radius:8px;padding:12px;max-height:150px;overflow-y:auto;font-size:11px}
-.ulog-row{display:flex;gap:10px;padding:3px 0;border-bottom:1px solid rgba(26,46,74,.2)}
-.stress-row{display:flex;align-items:center;gap:12px}
-.stress-row input[type=range]{flex:1;accent-color:var(--t)}
-.team-role-badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:600}
-.team-role-admin{background:rgba(0,201,167,.12);color:var(--t);border:1px solid rgba(0,201,167,.25)}
-.team-role-member{background:var(--sf2);color:var(--tx3);border:1px solid var(--b2)}
+.spin{width:14px;height:14px;border:2px solid rgba(10,22,40,.3);border-top-color:var(--n);border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.ani{animation:fadeUp .4s ease both}
 
+/* ══ LOGIN ══════════════════════════════════════════════════ */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;position:relative;overflow:hidden}
+#login-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(0,201,167,.07) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 80% 80%,rgba(0,201,167,.04) 0%,transparent 60%);pointer-events:none}
+#login-screen::after{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.018) 39px,rgba(255,255,255,.018) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.018) 39px,rgba(255,255,255,.018) 40px);pointer-events:none}
+/* home link top-left */
+.home-link{position:fixed;top:18px;left:22px;z-index:200;display:flex;align-items:center;gap:7px;background:rgba(10,22,40,.8);border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:7px 14px;font-size:12px;font-family:var(--mo);color:var(--tx3);text-decoration:none;backdrop-filter:blur(8px);transition:all .2s}
+.home-link:hover{color:var(--t);border-color:rgba(0,201,167,.3)}
+.login-wrap{position:relative;z-index:1;width:100%;max-width:880px;display:grid;grid-template-columns:1fr 1fr;border-radius:22px;overflow:hidden;border:1px solid var(--b2);box-shadow:var(--sh)}
+@media(max-width:700px){.login-wrap{grid-template-columns:1fr}.login-hero{display:none}}
+.login-hero{background:linear-gradient(135deg,#0a1628 0%,#0f2a4a 50%,#0a1e38 100%);padding:2.75rem 2.25rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.login-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(0,201,167,.07)}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2);border-radius:20px;padding:5px 13px;font-family:var(--mo);font-size:10px;color:var(--t);margin-bottom:1.75rem}
+.hero-dot{width:5px;height:5px;border-radius:50%;background:var(--t)}
+.hero-name{font-family:var(--di);font-size:clamp(1.5rem,3vw,2rem);font-weight:800;letter-spacing:-.05em;line-height:1.08;margin-bottom:.65rem;color:var(--tx)}
+.hero-name span{color:var(--t)}
+.hero-title{font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:2rem}
+.hero-creds{display:flex;flex-wrap:wrap;gap:6px}
+.cred{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:3px 9px;font-size:10px;font-family:var(--mo);color:var(--tx3)}
+.hero-footer{font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:1.75rem}
+.login-form-side{background:var(--n2);padding:2.75rem 2.25rem;display:flex;flex-direction:column;justify-content:center}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2.25rem}
+.brand-mark{width:38px;height:38px;background:var(--t);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--di);font-size:10px;font-weight:700;color:var(--n)}
+.brand-name{font-family:var(--di);font-size:16px;font-weight:700;letter-spacing:-.03em}
+.brand-name span{color:var(--t)}
+.form-h{font-family:var(--di);font-size:20px;font-weight:700;letter-spacing:-.03em;margin-bottom:5px}
+.form-sub{font-size:12.5px;color:var(--tx2);margin-bottom:1.5rem}
+.login-err{display:none;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:9px 13px;font-size:12px;color:var(--rd);margin-bottom:1rem;font-family:var(--mo)}
+.login-err.show{display:block}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:10px;font-family:var(--mo);color:var(--tx2);margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase}
+.field-wrap{position:relative}
+.inp{width:100%;padding:11px 15px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13.5px;transition:border-color .2s,box-shadow .2s;outline:none}
+.inp:focus{border-color:var(--t);box-shadow:0 0 0 3px rgba(0,201,167,.11)}
+.inp::placeholder{color:var(--tx3)}
+.eye-btn{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--tx3);cursor:pointer;padding:4px;display:flex;align-items:center;border-radius:4px;transition:color .2s}
+.eye-btn:hover{color:var(--tx2)}
+.btn-primary{width:100%;padding:12px;background:var(--t);border:none;border-radius:var(--r);color:var(--n);font-family:var(--di);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:.4rem;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary:hover{background:var(--t2);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.form-links{display:flex;justify-content:space-between;align-items:center;margin-top:1.1rem;font-size:11.5px;font-family:var(--mo);color:var(--tx3)}
+.flink{color:var(--am);cursor:pointer;text-decoration:underline;background:none;border:none;font-family:var(--mo);font-size:11.5px;padding:0}
+.flink.teal{color:var(--t)}
+.form-foot{margin-top:1.75rem;padding-top:1.1rem;border-top:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--tx3);font-family:var(--mo)}
+.sec-dot{width:5px;height:5px;border-radius:50%;background:var(--gr)}
+
+/* ══ AUTH CARDS (modals) ════════════════════════════════════ */
+.auth-card{display:none;position:fixed;inset:0;z-index:300;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
+.auth-card.open{display:flex}
+.auth-inner{background:var(--n2);border:1px solid var(--b2);border-radius:18px;width:100%;max-width:430px;padding:2.1rem 1.9rem 1.9rem;box-shadow:var(--sh);position:relative}
+.ac-close{position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--b2);color:var(--tx3);padding:5px 10px;border-radius:var(--r);cursor:pointer;font-size:11px;font-family:var(--mo);transition:all .2s}
+.ac-close:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
+.ac-brand{display:flex;align-items:center;gap:10px;margin-bottom:1.35rem}
+.ac-mark{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--di);font-size:10px;font-weight:700;color:var(--n);flex-shrink:0}
+.ac-title{font-family:var(--di);font-size:17px;font-weight:700;letter-spacing:-.02em}
+.ac-sub{font-size:12.5px;color:var(--tx2);margin-bottom:1.35rem;line-height:1.55}
+.ac-err{display:none;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:9px 13px;font-size:12px;color:var(--rd);margin-bottom:.9rem;font-family:var(--mo)}
+.ac-ok{display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:var(--r);padding:9px 13px;font-size:12px;color:var(--gr);margin-bottom:.9rem;font-family:var(--mo);line-height:1.6}
+.ac-field{margin-bottom:.9rem}
+.ac-field label{display:block;font-size:10px;font-family:var(--mo);color:var(--tx2);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase}
+.ac-inp{width:100%;padding:10px 13px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;outline:none;transition:border-color .2s}
+.ac-inp:focus{border-color:var(--t);box-shadow:0 0 0 3px rgba(0,201,167,.09)}
+.ac-inp::placeholder{color:var(--tx3)}
+.ac-ta{width:100%;padding:10px 13px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;outline:none;resize:vertical;min-height:85px;transition:border-color .2s}
+.ac-ta:focus{border-color:var(--t);box-shadow:0 0 0 3px rgba(0,201,167,.09)}
+.ac-btn{width:100%;padding:11px;border:none;border-radius:var(--r);color:var(--n);font-family:var(--di);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:.4rem}
+.ac-btn.teal{background:var(--t)}.ac-btn.teal:hover{background:var(--t2)}
+.ac-btn.amber{background:var(--am)}.ac-btn.amber:hover{background:#e09416}
+.ac-btn:disabled{opacity:.6;cursor:not-allowed}
+.ac-back{text-align:center;margin-top:.9rem;font-size:12px;color:var(--tx3);font-family:var(--mo)}
+.ac-back span{color:var(--t);cursor:pointer;text-decoration:underline}
+
+/* ══ PORTAL DASHBOARD ═══════════════════════════════════════ */
+#portal-screen{display:none}
+#portal-bar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.plogo{font-family:var(--di);font-weight:700;font-size:17px;letter-spacing:-.03em;color:var(--tx);display:flex;align-items:center;gap:9px}
+.plm{width:30px;height:30px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--n);font-weight:700}
+.pbar-right{display:flex;align-items:center;gap:10px}
+.user-chip{display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--b2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--tx2);font-family:var(--mo);cursor:pointer;transition:all .2s;position:relative}
+.user-chip:hover{border-color:var(--t);color:var(--t)}
+.pbar-btn{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--b2);border-radius:var(--r);padding:6px 13px;font-size:11.5px;font-family:var(--mo);color:var(--tx3);cursor:pointer;transition:all .2s;text-decoration:none}
+.pbar-btn:hover{background:var(--sf2);color:var(--tx)}
+.pbar-btn.danger:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
+.admin-btn{display:none;align-items:center;gap:6px;background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.25);border-radius:var(--r);padding:6px 13px;font-size:11.5px;font-family:var(--mo);color:var(--t);cursor:pointer;transition:all .2s}
+.admin-btn:hover{background:rgba(0,201,167,.15)}
+.admin-btn.show{display:flex}
+
+/* user dropdown */
+.chip-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--n2);border:1px solid var(--b2);border-radius:var(--r);min-width:200px;box-shadow:var(--sh);z-index:50;overflow:hidden}
+.chip-dropdown.open{display:block}
+.chip-dd-item{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:12.5px;cursor:pointer;color:var(--tx2);transition:all .15s;border:none;background:transparent;width:100%;text-align:left;font-family:var(--sa)}
+.chip-dd-item:hover{background:var(--sf2);color:var(--tx)}
+.chip-dd-sep{height:1px;background:var(--b)}
+
+/* password change modal */
+#chpwd-modal{display:none;position:fixed;inset:0;z-index:400;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
+#chpwd-modal.open{display:flex}
+
+/* portal main */
+#portal-main{max-width:1060px;margin:0 auto;padding:2.75rem 1.5rem 4rem}
+.p-welcome{margin-bottom:2.75rem}
+.p-welcome h1{font-family:var(--di);font-size:26px;font-weight:700;letter-spacing:-.04em;margin-bottom:5px}
+.p-welcome h1 span{color:var(--t)}
+.p-welcome p{font-size:13px;color:var(--tx2)}
+.p-section-title{font-family:var(--mo);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:1.1rem;display:flex;align-items:center;gap:10px}
+.p-section-title::after{content:'';flex:1;height:1px;background:var(--b)}
+.resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.1rem;margin-bottom:2.75rem}
+.rc{background:var(--n2);border:1px solid var(--b);border-radius:14px;padding:1.6rem;cursor:pointer;transition:all .25s;text-decoration:none;display:block;position:relative;overflow:hidden}
+.rc::before{content:'';position:absolute;inset:0;background:rgba(0,201,167,.04);opacity:0;transition:opacity .25s}
+.rc:hover{border-color:var(--t);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.rc:hover::before{opacity:1}
+.rc.soon{cursor:default;opacity:.55}
+.rc.soon:hover{transform:none;border-color:var(--b);box-shadow:none}
+.rc.soon:hover::before{opacity:0}
+.rc-icon{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:1.1rem;position:relative;z-index:1}
+.rc-title{font-family:var(--di);font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:5px;position:relative;z-index:1}
+.rc-desc{font-size:12.5px;color:var(--tx2);line-height:1.55;margin-bottom:1.1rem;position:relative;z-index:1}
+.rc-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:500;position:relative;z-index:1}
+.rc-tag.live{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
+.rc-tag.soon{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2)}
+.rc-arr{position:absolute;right:1.35rem;bottom:1.35rem;color:var(--t);opacity:0;transition:all .25s;font-size:16px}
+.rc:hover .rc-arr{opacity:1;transform:translateX(4px)}
+.p-footer{text-align:center;padding-top:1.75rem;border-top:1px solid var(--b);font-family:var(--mo);font-size:11px;color:var(--tx3)}
+.p-footer span{color:var(--t)}
+.expiry-notice{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:var(--r);padding:9px 14px;font-size:12px;color:var(--am);font-family:var(--mo);margin-bottom:1.75rem;display:none}
+
+/* ══ ADMIN PANEL ════════════════════════════════════════════ */
+#admin-panel{display:none;position:fixed;inset:0;z-index:200;background:rgba(5,13,26,.95);backdrop-filter:blur(8px);overflow-y:auto}
+#admin-bar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+#admin-main{max-width:980px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+.admin-section-title{font-family:var(--di);font-size:20px;font-weight:700;letter-spacing:-.03em;margin-bottom:1.5rem}
+.admin-section-title span{color:var(--t)}
+.users-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.users-table th{background:var(--n3);color:var(--tx3);font-family:var(--mo);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;text-align:left;border-bottom:1px solid var(--b)}
+.users-table td{padding:10px 12px;border-bottom:1px solid var(--b);vertical-align:middle}
+.users-table tr:last-child td{border-bottom:none}
+.users-table tr:hover td{background:var(--sf)}
+.role-badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:500}
+.role-badge.admin{background:rgba(0,201,167,.12);color:var(--t);border:1px solid rgba(0,201,167,.25)}
+.role-badge.user{background:var(--sf2);color:var(--tx3);border:1px solid var(--b2)}
+.sdot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.sdot.active{background:var(--gr)}.sdot.inactive{background:var(--rd)}
+.admin-msg{padding:9px 13px;border-radius:var(--r);font-size:12px;font-family:var(--mo);margin-bottom:1rem;display:none}
+.admin-msg.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--gr);display:block}
+.admin-msg.err{background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);color:var(--rd);display:block}
+.admin-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem}
+.add-btn{background:var(--t);border:none;border-radius:var(--r);color:var(--n);font-family:var(--di);font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.add-btn:hover{background:var(--t2)}
+.act-btn{background:transparent;border:1px solid var(--b2);color:var(--tx3);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-family:var(--mo);transition:all .2s}
+.act-btn:hover{background:var(--sf2);color:var(--tx)}
+.act-btn.danger:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
+
+/* user form modal */
+#user-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
+#user-modal.open{display:flex}
+.um-card{background:var(--n2);border:1px solid var(--b2);border-radius:16px;width:100%;max-width:420px;padding:2rem;box-shadow:var(--sh)}
+.um-title{font-family:var(--di);font-size:17px;font-weight:700;margin-bottom:1.35rem;letter-spacing:-.02em}
+.um-field{margin-bottom:.9rem}
+.um-field label{display:block;font-size:10px;font-family:var(--mo);color:var(--tx2);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase}
+.um-inp{width:100%;padding:10px 13px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;outline:none;transition:border-color .2s}
+.um-inp:focus{border-color:var(--t);box-shadow:0 0 0 3px rgba(0,201,167,.09)}
+.um-select{width:100%;padding:9px 34px 9px 13px;background:var(--sf);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;cursor:pointer;appearance:none;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238fa3bf' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+.um-select:focus{border-color:var(--t)}
+.um-err{font-size:12px;color:var(--rd);font-family:var(--mo);margin-top:.65rem;display:none}
+.um-err.show{display:block}
+.um-row{display:flex;gap:.65rem;justify-content:flex-end;margin-top:1.35rem}
+.um-cancel{background:transparent;border:1px solid var(--b2);color:var(--tx2);padding:8px 16px;border-radius:var(--r);cursor:pointer;font-size:13px;transition:all .2s}
+.um-cancel:hover{background:var(--sf2)}
+.um-submit{background:var(--t);border:none;color:var(--n);padding:8px 18px;border-radius:var(--r);cursor:pointer;font-family:var(--di);font-size:13px;font-weight:600;transition:all .2s}
+.um-submit:hover{background:var(--t2)}
+.um-submit:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
 
-<div id="app">
-  <div id="topbar">
-    <div class="logo">
-      <div class="lm">FM</div>FM <span class="la">&nbsp;Treasury</span>
-      <span class="org-badge" id="org-badge" style="display:none">
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-        <span id="org-name-badge"></span>
-      </span>
+<!-- Home link visible on login screen -->
+<a href="../" class="home-link" id="home-link">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  Home
+</a>
+
+<!-- ══ LOGIN SCREEN ═══════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-wrap ani">
+    <div class="login-hero">
+      <div>
+        <div class="hero-badge"><span class="hero-dot"></span>Resources Portal</div>
+        <div class="hero-name">Felix <span>Michael</span></div>
+        <div class="hero-title">ACA · ACTI · FMVA® · BIDA™ · FPMWP · CMSA <br>Strategic Financial Professional</div>
+        <div class="hero-creds">
+          <span class="cred">ACA</span><span class="cred">ACTI</span><span class="cred">FMVA</span>
+          <span class="cred">BIDA</span><span class="cred">CBCA</span><span class="cred">CMSA</span>
+          <span class="cred">FPMWP</span><span class="cred">YDF - CIoD</span><span class="cred">CFO-FRC</span>
+        </div>
+      </div>
+      <div class="hero-footer">FM Financial Tools · Lagos, Nigeria</div>
     </div>
-    <div class="tbr">
-      <div class="user-chip-top">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span id="user-name">Loading...</span>
+    <div class="login-form-side">
+      <div class="brand">
+        <div class="brand-mark">FM</div>
+        <div class="brand-name">Resources <span>Portal</span></div>
       </div>
-      <a href="../portal/" class="nav-btn-link">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Portal
-      </a>
-      <a href="../" class="nav-btn-link">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
-      </a>
-      <button class="nav-btn-link" id="logout-btn">Sign out</button>
+      <div class="form-h">Welcome back</div>
+      <div class="form-sub">Sign in to access tools and resources</div>
+      <div class="login-err" id="login-err"></div>
+      <div class="field"><label>Username or Email</label><input class="inp" type="text" id="usr" placeholder="Enter your username or email" autocomplete="username"></div>
+      <div class="field"><label>Password</label>
+        <div class="field-wrap">
+          <input class="inp" type="password" id="pwd" placeholder="Enter your password" autocomplete="current-password">
+          <button class="eye-btn" type="button" id="eye-btn">
+            <svg id="eye-show" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="eye-hide" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="btn-primary" id="login-btn">
+        <span id="lbt">Sign in →</span>
+        <span id="lbl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Signing in...</span>
+      </button>
+      <div class="form-links">
+        <button class="flink" id="open-forgot">Forgot password?</button>
+        <button class="flink" id="open-contact">Contact Admin</button>
+      </div>
+      <div style="text-align:center;margin-top:.7rem;font-size:12px;color:var(--tx3);font-family:var(--mo)">
+        New here? <button class="flink teal" id="open-signup">Request access</button>
+      </div>
+      <div class="form-foot">
+        <div style="display:flex;align-items:center;gap:6px"><span class="sec-dot"></span>Secured · FM Financial Tools</div>
+        <span>v5.0</span>
+      </div>
     </div>
-  </div>
-  <div id="layout">
-    <nav id="sidebar">
-      <div class="nav-item active" data-view="dashboard">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
-      </div>
-      <div class="nav-section">Credit</div>
-      <div class="nav-item" data-view="loans">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Loan Portfolio
-      </div>
-      <div class="nav-item" data-view="ecl">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>IFRS 9 ECL Model
-      </div>
-      <div class="nav-section">Treasury</div>
-      <div class="nav-item" data-view="borrowings">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Borrowings
-      </div>
-      <div class="nav-item" data-view="investments">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Investments
-      </div>
-      <div class="nav-item" data-view="cash">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>Cash Position
-      </div>
-      <div class="nav-item" data-view="liquidity">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>Liquidity
-      </div>
-      <div class="nav-section">Organisation</div>
-      <div class="nav-item" id="nav-team" style="display:none" data-view="team">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Team Management
-      </div>
-      <div class="nav-item" data-view="settings">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings
-      </div>
-    </nav>
-    <main id="content">
-      <div class="view on" id="view-dashboard">
-        <div class="vhdr">
-          <div><div class="vttl">Executive Dashboard</div><div class="vsub" id="dash-ts">—</div></div>
-          <button class="bp" onclick="loadDashboard()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
-        </div>
-        <div class="kpi-grid" id="dash-kpis"></div>
-        <div class="chart-2" id="dash-charts"></div>
-        <div class="chart-2" id="dash-charts2"></div>
-      </div>
-      <div class="view" id="view-loans">
-        <div class="vhdr">
-          <div><div class="vttl">Loan Portfolio</div><div class="vsub">Manage and track all loan facilities</div></div>
-          <div class="vacts">
-            <button onclick="openUploadModal('loans')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload CSV/Excel</button>
-            <button class="bp" onclick="openLoanModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Loan</button>
-          </div>
-        </div>
-        <div class="kpi-grid" id="loans-kpis"></div>
-        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">Loan Aging Distribution (₦M)</div><canvas id="ch-loan-aging" height="130"></canvas></div>
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-            <div style="display:flex;gap:6px" id="loan-filters">
-              <button class="bsm" id="f-all" data-stage="all" onclick="setLoanFilter(this,'all')">All</button>
-              <button class="bsm" data-stage="1" onclick="setLoanFilter(this,'1')">Stage 1</button>
-              <button class="bsm" data-stage="2" onclick="setLoanFilter(this,'2')">Stage 2</button>
-              <button class="bsm" data-stage="3" onclick="setLoanFilter(this,'3')">Stage 3</button>
-            </div>
-            <input class="finput" id="loan-search" placeholder="Search customer / loan ID..." style="width:230px;padding:6px 12px" oninput="renderLoanTable()">
-          </div>
-          <div id="loans-table"></div>
-        </div>
-      </div>
-      <div class="view" id="view-ecl">
-        <div class="vhdr">
-          <div><div class="vttl">IFRS 9 ECL Model</div><div class="vsub">Expected Credit Loss · Stage 1: 12-month · Stage 2 &amp; 3: Lifetime</div></div>
-          <div class="vacts">
-            <button onclick="loadLoans()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Reload Portfolio</button>
-            <button class="bp" onclick="computeECL()" id="ecl-compute-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Compute ECL</button>
-            <button onclick="exportECLExcel()" id="ecl-export-btn" disabled><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Export Excel</button>
-          </div>
-        </div>
-        <div class="kpi-grid" id="ecl-kpis"></div>
-        <div id="ecl-banner" style="display:none;margin-bottom:1.25rem"></div>
-        <div class="chart-2" id="ecl-charts"></div>
-        <div class="card" style="margin-bottom:1.25rem">
-          <div class="card-label">PD Stress Test — Scenario Analysis</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
-            <span style="font-size:12px;color:var(--tx2)">Shift all PD assumptions uniformly</span>
-            <span id="pd-val" style="font-family:var(--mo);font-size:12px;color:var(--gr)">0%</span>
-          </div>
-          <div class="stress-row"><input type="range" min="-50" max="100" value="0" id="pd-slider" oninput="updateStress(this.value)"></div>
-          <div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)" id="stress-result">Run Compute ECL first to enable stress testing</div>
-        </div>
-        <div class="card"><div class="card-label">Loan-level ECL Schedule</div><div id="ecl-table"><div class="ep"><div class="ei">⚡</div>Click Compute ECL to generate the schedule</div></div></div>
-      </div>
-      <div class="view" id="view-borrowings">
-        <div class="vhdr">
-          <div><div class="vttl">Borrowings</div><div class="vsub">Debt facilities and cost of funds analysis</div></div>
-          <div class="vacts">
-            <button onclick="openUploadModal('borrowings')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
-            <button class="bp" onclick="openBorrowingModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Facility</button>
-          </div>
-        </div>
-        <div class="kpi-grid" id="borrowings-kpis"></div>
-        <div class="chart-2" id="borrowings-charts"></div>
-        <div class="card" id="borrowings-table-wrap"></div>
-      </div>
-      <div class="view" id="view-investments">
-        <div class="vhdr">
-          <div><div class="vttl">Investments</div><div class="vsub">Treasury placements and yield analysis</div></div>
-          <div class="vacts">
-            <button onclick="openUploadModal('investments')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
-            <button class="bp" onclick="openInvestmentModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Investment</button>
-          </div>
-        </div>
-        <div class="kpi-grid" id="investments-kpis"></div>
-        <div class="chart-2" id="investments-charts"></div>
-        <div class="card" id="investments-table-wrap"></div>
-      </div>
-      <div class="view" id="view-cash">
-        <div class="vhdr">
-          <div><div class="vttl">Cash Position</div><div class="vsub">Bank account balances and cash monitoring</div></div>
-          <div class="vacts">
-            <button onclick="openUploadModal('cash')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
-            <button class="bp" onclick="openCashModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Account</button>
-          </div>
-        </div>
-        <div class="kpi-grid" id="cash-kpis"></div>
-        <div class="chart-2" id="cash-charts"></div>
-        <div class="card" id="cash-table-wrap"></div>
-      </div>
-      <div class="view" id="view-liquidity">
-        <div class="vhdr">
-          <div><div class="vttl">Liquidity Management</div><div class="vsub">Net liquidity · Cash flow forecast · Gap analysis</div></div>
-          <button class="bp" onclick="loadLiquidity()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
-        </div>
-        <div class="kpi-grid" id="liq-kpis"></div>
-        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">180-Day Liquidity Forecast (₦M)</div><canvas id="ch-liq-forecast" height="200"></canvas></div>
-        <div class="chart-2" id="liq-charts2"></div>
-      </div>
-      <div class="view" id="view-team">
-        <div class="vhdr">
-          <div><div class="vttl">Team Management</div><div class="vsub" id="team-vsub">Manage your organisation's treasury users</div></div>
-          <button class="bp" onclick="openTeamMemberModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Team Member</button>
-        </div>
-        <div class="nt-info" id="team-info">Team members share access to all organisation treasury data.</div>
-        <div id="team-table"></div>
-      </div>
-      <div class="view" id="view-settings">
-        <div class="vhdr"><div><div class="vttl">Settings</div><div class="vsub">Organisation profile and account preferences</div></div></div>
-        <div id="settings-form"></div>
-      </div>
-    </main>
   </div>
 </div>
-<div id="modal-bg">
-  <div class="modal" id="modal-box">
-    <div class="mhdr">
-      <div class="mttl" id="modal-title">—</div>
-      <button class="mclose" onclick="closeModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="mbody" id="modal-body"></div>
-    <div class="mfoot" id="modal-foot"></div>
+
+<!-- ══ SIGNUP ════════════════════════════════════════════ -->
+<div class="auth-card" id="signup-card">
+  <div class="auth-inner ani">
+    <button class="ac-close" id="signup-close">✕</button>
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--t)">FM</div><div class="ac-title">Request Access</div></div>
+    <div class="ac-sub">Fill in your details. A confirmation email will be sent to complete setup.</div>
+    <div class="ac-err" id="su-err"></div><div class="ac-ok" id="su-ok"></div>
+    <div class="ac-field"><label>Surname</label><input class="ac-inp" type="text" id="su-surname" placeholder="e.g. Michael"></div>
+    <div class="ac-field"><label>Other Names</label><input class="ac-inp" type="text" id="su-other" placeholder="e.g. Felix Happy"></div>
+    <div class="ac-field"><label>Email Address</label><input class="ac-inp" type="email" id="su-email" placeholder="e.g. felix@company.com"></div>
+    <div class="ac-field"><label>Phone Number</label><input class="ac-inp" type="tel" id="su-phone" placeholder="e.g. 08012345678"></div>
+    <button class="ac-btn teal" id="su-btn"><span class="bt">Sign up →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Sending...</span></button>
+    <div class="ac-back">Already have access? <span id="su-to-login">Sign in</span></div>
   </div>
 </div>
-<div id="toast"></div>
+
+<!-- ══ SET PASSWORD ══════════════════════════════════════ -->
+<div class="auth-card" id="setpwd-card">
+  <div class="auth-inner ani">
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--t)">FM</div><div class="ac-title">Set Your Password</div></div>
+    <div class="ac-sub" id="setpwd-greeting">Welcome! Create your password to complete setup.</div>
+    <div class="ac-err" id="sp-err"></div><div class="ac-ok" id="sp-ok"></div>
+    <div class="ac-field"><label>New Password</label><input class="ac-inp" type="password" id="sp-pwd" placeholder="Minimum 8 characters"></div>
+    <div class="ac-field"><label>Confirm Password</label><input class="ac-inp" type="password" id="sp-cpwd" placeholder="Re-enter your password"></div>
+    <button class="ac-btn teal" id="sp-btn"><span class="bt">Set Password & Continue →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Saving...</span></button>
+  </div>
+</div>
+
+<!-- ══ FORGOT PASSWORD ═══════════════════════════════════ -->
+<div class="auth-card" id="forgot-card">
+  <div class="auth-inner ani">
+    <button class="ac-close" id="forgot-close">✕</button>
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--am)">FM</div><div class="ac-title">Forgot Password?</div></div>
+    <div class="ac-sub">Enter your registered email and we'll send a reset link.</div>
+    <div class="ac-err" id="fp-err"></div><div class="ac-ok" id="fp-ok"></div>
+    <div class="ac-field"><label>Email Address</label><input class="ac-inp" type="email" id="fp-email" placeholder="Your registered email"></div>
+    <button class="ac-btn amber" id="fp-btn"><span class="bt">Send Reset Link →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Sending...</span></button>
+    <div class="ac-back">Remembered it? <span id="fp-to-login">Sign in</span></div>
+  </div>
+</div>
+
+<!-- ══ RESET PASSWORD ════════════════════════════════════ -->
+<div class="auth-card" id="resetpwd-card">
+  <div class="auth-inner ani">
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--am)">FM</div><div class="ac-title">Reset Password</div></div>
+    <div class="ac-sub" id="rp-greeting">Enter your new password.</div>
+    <div class="ac-err" id="rp-err"></div><div class="ac-ok" id="rp-ok"></div>
+    <div class="ac-field"><label>New Password</label><input class="ac-inp" type="password" id="rp-pwd" placeholder="Minimum 8 characters"></div>
+    <div class="ac-field"><label>Confirm New Password</label><input class="ac-inp" type="password" id="rp-cpwd" placeholder="Re-enter password"></div>
+    <button class="ac-btn amber" id="rp-btn"><span class="bt">Reset Password →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Saving...</span></button>
+  </div>
+</div>
+
+<!-- ══ CONTACT ADMIN ═════════════════════════════════════ -->
+<div class="auth-card" id="contact-card">
+  <div class="auth-inner ani">
+    <button class="ac-close" id="contact-close">✕</button>
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--am)">FM</div><div class="ac-title">Contact <span style="color:var(--am)">Admin</span></div></div>
+    <div class="ac-sub">Send a message to the administrator. You'll receive a reply at your email address.</div>
+    <div class="ac-err" id="ca-err"></div><div class="ac-ok" id="ca-ok"></div>
+    <div class="ac-field"><label>Username</label><input class="ac-inp" type="text" id="ca-username" placeholder="Your username"></div>
+    <div class="ac-field"><label>Email Address</label><input class="ac-inp" type="email" id="ca-email" placeholder="Your email address"></div>
+    <div class="ac-field"><label>Message / Request</label><textarea class="ac-ta" id="ca-msg" placeholder="Describe your request..."></textarea></div>
+    <button class="ac-btn amber" id="ca-btn"><span class="bt">Send Message →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Sending...</span></button>
+    <p style="text-align:center;font-size:10.5px;color:var(--tx3);font-family:var(--mo);margin-top:.7rem">Your Username is usually surname.othername</p>
+  </div>
+</div>
+
+<!-- ══ CHANGE PASSWORD MODAL ═════════════════════════════ -->
+<div id="chpwd-modal">
+  <div class="auth-inner ani">
+    <button class="ac-close" id="chpwd-close">✕</button>
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--t)">FM</div><div class="ac-title">Change Password</div></div>
+    <div class="ac-sub">Enter your current password and choose a new one.</div>
+    <div class="ac-err" id="chpwd-err"></div><div class="ac-ok" id="chpwd-ok"></div>
+    <div class="ac-field"><label>Current Password</label><input class="ac-inp" type="password" id="ch-current" placeholder="Your current password"></div>
+    <div class="ac-field"><label>New Password</label><input class="ac-inp" type="password" id="ch-new" placeholder="Minimum 8 characters"></div>
+    <div class="ac-field"><label>Confirm New Password</label><input class="ac-inp" type="password" id="ch-confirm" placeholder="Re-enter new password"></div>
+    <button class="ac-btn teal" id="chpwd-btn"><span class="bt">Change Password →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Saving...</span></button>
+  </div>
+</div>
+
+<!-- ══ PORTAL DASHBOARD ══════════════════════════════════ -->
+<div id="portal-screen">
+  <div id="portal-bar">
+    <div class="plogo"><div class="plm">FM</div>Resources <span style="color:var(--t);margin-left:5px">Portal</span></div>
+    <div class="pbar-right">
+      <button class="admin-btn" id="admin-panel-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/><circle cx="20" cy="20" r="2"/><path d="M20 18v-1M20 22v-1M18 20h-1M22 20h-1"/></svg>
+        Admin Panel
+      </button>
+      <a href="../" class="pbar-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </a>
+      <div class="user-chip" id="user-chip" tabindex="0">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="portal-user-name">User</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        <div class="chip-dropdown" id="chip-dropdown">
+          <button class="chip-dd-item" id="dd-chpwd">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Change Password
+          </button>
+          <div class="chip-dd-sep"></div>
+          <button class="chip-dd-item" id="dd-logout" style="color:var(--rd)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign out
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="portal-main">
+    <div id="expiry-notice" class="expiry-notice"></div>
+    <div class="p-welcome ani">
+      <h1>Welcome back, <span id="portal-welcome-name">there</span> 👋</h1>
+      <p>Select a tool or resource below to get started.</p>
+    </div>
+    <div class="p-section-title">Available Tools</div>
+    <div class="resources-grid">
+      <a href="../job/" class="rc ani">
+        <div class="rc-icon" style="background:rgba(0,201,167,.12)">💼</div>
+        <div class="rc-title">Job Portal</div>
+        <div class="rc-desc">FM 360 Live Job Update: Find every opportunity, every day.</div>
+        <span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span>
+        <div class="rc-arr">→</div>
+      </a>
+<!--
+     <a href="../gmi/" class="rc ani">
+       <div class="rc-icon" style="background:rgba(0,201,167,.12)">🏦</div>
+        <div class="rc-title">Global Market Intelligence</div>
+        <div class="rc-desc">FM 360 Live Capital Market &amp; FX rate Update: Get up to date Capital Market &amp; FX rate 24/7.</div>
+        <span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span>
+        <div class="rc-arr">→</div>
+      </a>
+-->
+   
+<!--
+       <div class="rc soon ani" style="animation-delay:.24s">
+        <div class="rc-icon" style="background:rgba(167,139,250,.1)">📋</div>
+        <div class="rc-title">Capital Market &amp; FX Rate Indicator</div>
+        <div class="rc-desc">FM 360 Live Capital Market &amp; FX rate Update: Get up to date Capital Market &amp; FX rate 24/7.</div>
+        <span class="rc-tag soon">Coming soon</span>
+      </div>
+      
+-->
+        <a href="../recon/" class="rc ani">
+        <div class="rc-icon" style="background:rgba(0,201,167,.12)">🏦</div>
+        <div class="rc-title">Bank Reconciliation</div>
+        <div class="rc-desc">Automated bank-to-GL reconciliation engine with fuzzy matching, multi-pass logic and full audit trail.</div>
+        <span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span>
+        <div class="rc-arr">→</div>
+      </a>
+      <a href="../receivables/" class="rc ani" style="animation-delay:.16s">
+        <div class="rc-icon" style="background:rgba(245,166,35,.12)">🧾</div>
+        <div class="rc-title">Receivables Tracker</div>
+        <div class="rc-desc">Track debtors, manage outstanding invoices, ageing analysis and automated payment reminders.</div>
+        <span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span>
+        <div class="rc-arr">→</div>
+      </a>
+
+       <a href="../treasury/" class="rc ani">
+       <div class="rc-icon" style="background:rgba(0,201,167,.12)">🏦</div>
+        <div class="rc-title">Treasury Dashboard</div>
+        <div class="rc-desc">Cash position monitoring, liquidity management and investment portfolio tracking.</div>
+        <span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span>
+        <div class="rc-arr">→</div>
+      </a>
+ 
+      <div class="rc soon ani" style="animation-delay:.24s">
+        <div class="rc-icon" style="background:rgba(167,139,250,.1)">📋</div>
+        <div class="rc-title">Financial Models</div>
+        <div class="rc-desc">Dynamic budgeting, forecasting and ALM models for finance teams in regulated environments.</div>
+        <span class="rc-tag soon">Coming soon</span>
+      </div>
+      
+      <div class="rc soon ani" style="animation-delay:.4s">
+        <div class="rc-icon" style="background:rgba(52,211,153,.1)">💰</div>
+        <div class="rc-title">Treasury Dashboard</div>
+        <div class="rc-desc">Cash position monitoring, liquidity management and investment portfolio tracking.</div>
+        <span class="rc-tag soon">Coming soon</span>
+      </div>
+    </div>
+    <div class="p-footer">&copy; <span id="yr"></span> <span>Felix Happy Michael</span> · FM Financial Tools · All rights reserved</div>
+  </div>
+</div>
+
+<!-- ══ ADMIN PANEL ═══════════════════════════════════════ -->
+<div id="admin-panel">
+  <div id="admin-bar">
+    <div class="plogo"><div class="plm">FM</div>Admin <span style="color:var(--t);margin-left:5px">Panel</span></div>
+    <div class="pbar-right">
+      <button class="pbar-btn" id="admin-back-portal">← Back to Portal</button>
+      <a href="../" class="pbar-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </a>
+      <button class="pbar-btn danger" id="admin-logout">Sign out</button>
+    </div>
+  </div>
+  <div id="admin-main">
+    <div class="admin-section-title">Manage <span>Users</span></div>
+    <div class="admin-msg" id="admin-msg"></div>
+    <div class="admin-toolbar">
+      <div style="font-size:12px;color:var(--tx3);font-family:var(--mo)">All registered users</div>
+      <button class="add-btn" id="add-user-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add User
+      </button>
+    </div>
+    <div style="overflow-x:auto;border:1px solid var(--b);border-radius:var(--r)">
+      <table class="users-table">
+        <thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+        <tbody id="users-tbody"><tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ USER FORM MODAL ═══════════════════════════════════ -->
+<div id="user-modal">
+  <div class="um-card ani">
+    <div class="um-title" id="um-title">Add User</div>
+    <div class="um-field"><label>Full Name</label><input class="um-inp" type="text" id="um-name" placeholder="e.g. John Doe"></div>
+    <div class="um-field"><label>Username</label><input class="um-inp" type="text" id="um-username" placeholder="e.g. john.doe" autocomplete="off"></div>
+    <div class="um-field"><label>Email Address</label><input class="um-inp" type="email" id="um-email" placeholder="e.g. john@company.com"></div>
+    <div class="um-field">
+      <label>Password <span id="um-pwd-hint" style="color:var(--tx3);text-transform:none;letter-spacing:0">(leave blank to keep current)</span></label>
+      <input class="um-inp" type="password" id="um-pwd" placeholder="Min 8 characters" autocomplete="new-password">
+    </div>
+    <div class="um-field"><label>Role</label>
+      <select class="um-select" id="um-role"><option value="user">User</option><option value="admin">Admin</option></select>
+    </div>
+    <div class="um-field" id="um-active-field" style="display:none"><label>Status</label>
+      <select class="um-select" id="um-active"><option value="true">Active</option><option value="false">Inactive</option></select>
+    </div>
+    <div class="um-err" id="um-err"></div>
+    <div class="um-row">
+      <button class="um-cancel" id="um-cancel">Cancel</button>
+      <button class="um-submit" id="um-submit">Create User</button>
+    </div>
+  </div>
+</div>
 
 <script>
-
 'use strict';
-// ── AUTH GATE ────────────────────────────────────────────────
-(function(){
-  var tok=sessionStorage.getItem('FM_token');
-  if(!tok){window.location.href='../portal/';return;}
-  fetch('https://eis-recbackend.onrender.com/api/auth/me',{headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'}})
-  .then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});})
-  .then(function(obj){
-    if(obj.s===200&&obj.d.success&&obj.d.user){
-      var u=obj.d.user; _user=u;
-      document.getElementById('user-name').textContent=u.name;
-      if(u.orgId||u.orgName){
-        document.getElementById('org-name-badge').textContent=u.orgName||'Organisation';
-        document.getElementById('org-badge').style.display='inline-flex';
-      }
-      if(u.orgRole==='admin'||u.accountType==='organisation'){
-        document.getElementById('nav-team').style.display='flex';
-      }
-      loadDashboard();
-    } else if(obj.s===401){
-      sessionStorage.removeItem('FM_token');window.location.href='../portal/';
-    } else { loadDashboard(); }
-  })
-  .catch(function(){loadDashboard();});
-})();
+var API='https://eis-recbackend.onrender.com/api';
+var _tok=null,_user=null;
 
-const API='https://eis-recbackend.onrender.com/api';
-var _user=null, _loansCache=[], _borrowCache=[], _invCache=[], _cashCache=[];
-var _eclResults=[], _eclMult=1, _loanFilter='all';
-var _charts={};
+// wake up backend silently
+(function(){fetch(API+'/health',{method:'GET'}).catch(function(){});})();
 
-// ── HELPERS ──────────────────────────────────────────────────
-async function api(ep,opts={}){
-  const tok=sessionStorage.getItem('FM_token');
-  const isForm=opts.body instanceof FormData;
-  const h={'Authorization':tok?'Bearer '+tok:''};
-  if(!isForm)h['Content-Type']='application/json';
-  const res=await fetch(API+ep,{...opts,headers:h});
-  const data=await res.json().catch(()=>({success:false,message:'No response.'}));
-  if(!res.ok)throw new Error(data.message||data.error||'Error '+res.status);
-  return data;
+// helpers
+function btnLoad(btn,on){
+  btn.querySelector('.bt').style.display=on?'none':'';
+  var bl=btn.querySelector('.bl');bl.style.display=on?'flex':'none';btn.disabled=on;
 }
-async function apiForm(ep,fd){
-  const tok=sessionStorage.getItem('FM_token');
-  const res=await fetch(API+ep,{method:'POST',body:fd,headers:{'Authorization':tok?'Bearer '+tok:''}});
-  const data=await res.json().catch(()=>({success:false,message:'No response.'}));
-  if(!res.ok)throw new Error(data.message||data.error||'Upload failed.');
-  return data;
-}
-const $=id=>document.getElementById(id);
-const fN=n=>n==null||isNaN(n)?'0.00':Number(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmt=n=>Number(n)>=1000?'\u20a6'+(Number(n)/1000).toFixed(1)+'B':'\u20a6'+Number(n).toFixed(1)+'M';
-const pct=n=>Number(n).toFixed(2)+'%';
-const fD=d=>!d?'\u2014':new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-const ts=()=>new Date().toISOString().slice(0,10);
-const PAL=['#00c9a7','#63b3ed','#a78bfa','#f5a623','#22c55e','#e05252'];
+function showErr(id,msg){var e=document.getElementById(id);e.textContent=msg;e.style.display='block';}
+function showOk(id,msg){var e=document.getElementById(id);e.textContent=msg;e.style.display='block';}
+function hideMsg(){[].slice.call(arguments).forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});}
+function openCard(id){document.querySelectorAll('.auth-card').forEach(function(c){c.classList.remove('open');});document.getElementById(id).classList.add('open');}
+function closeCard(id){document.getElementById(id).classList.remove('open');}
+async function apiFetch(path, opts) {
+  opts = opts || {};
 
-function toast(msg,type='ok'){
-  const el=$('toast');el.textContent=(type==='ok'?'\u2713  ':'\u26a0  ')+msg;
-  el.className='on '+type;setTimeout(()=>el.className='',4000);
-}
-function openModal(title,body,foot,wide=false){
-  $('modal-title').textContent=title;
-  $('modal-body').innerHTML=body;
-  $('modal-foot').innerHTML=foot||'<button onclick="closeModal()">Close</button>';
-  $('modal-box').className='modal'+(wide?' wide':'');
-  $('modal-bg').classList.add('on');
-}
-function closeModal(){$('modal-bg').classList.remove('on');}
-function empty(msg){return '<div class="ep"><div class="ei">\ud83d\udce6</div>'+msg+'</div>';}
-function mkChart(id,cfg){
-  if(_charts[id])_charts[id].destroy();
-  const c=$(id);if(!c)return;
-  _charts[id]=new Chart(c,cfg);
-}
-Chart.defaults.color='#8fa3bf';
-Chart.defaults.borderColor='rgba(255,255,255,.07)';
-Chart.defaults.font.family="'IBM Plex Mono',monospace";
-Chart.defaults.font.size=10;
+  var headers = {
+    'Content-Type': 'application/json'
+  };
 
-// ── NAVIGATION ────────────────────────────────────────────────
-function switchView(view){
-  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
-  document.querySelector('[data-view="'+view+'"]')?.classList.add('active');
-  $('view-'+view)?.classList.add('on');
-  const fn={dashboard:loadDashboard,loans:loadLoans,ecl:loadLoans,borrowings:loadBorrowings,investments:loadInvestments,cash:loadCash,liquidity:loadLiquidity,team:loadTeam,settings:loadSettings};
-  fn[view]?.();
-}
-document.getElementById('layout').addEventListener('click',function(e){
-  const ni=e.target.closest('.nav-item');
-  if(ni&&ni.dataset.view)switchView(ni.dataset.view);
-});
-$('modal-bg').addEventListener('click',e=>{if(e.target===$('modal-bg'))closeModal();});
-$('logout-btn').addEventListener('click',function(){
-  if(!confirm('Sign out?'))return;
-  sessionStorage.removeItem('FM_token');window.location.href='../portal/';
-});
-
-// ── SAMPLE DATA ───────────────────────────────────────────────
-const SL=[
-  {_id:'s1',loanId:'LN-001',customer:'Dangote Industries Ltd',product:'Invoice Discounting',principal:450,outstanding:420,interestRate:22,startDate:'2024-01-15',maturityDate:'2024-07-15',daysPastDue:0,stage:1,creditRating:'A',status:'active'},
-  {_id:'s2',loanId:'LN-002',customer:'Flour Mills Nigeria Plc',product:'Supply Chain Finance',principal:320,outstanding:310,interestRate:20,startDate:'2024-02-01',maturityDate:'2024-08-01',daysPastDue:18,stage:1,creditRating:'A-',status:'active'},
-  {_id:'s3',loanId:'LN-003',customer:'MTN Nigeria Comms',product:'Factoring',principal:280,outstanding:280,interestRate:21,startDate:'2024-03-10',maturityDate:'2024-09-10',daysPastDue:0,stage:1,creditRating:'AA',status:'active'},
-  {_id:'s4',loanId:'LN-004',customer:'Zenith Bank Plc',product:'Reverse Factoring',principal:500,outstanding:480,interestRate:19,startDate:'2023-11-01',maturityDate:'2024-05-01',daysPastDue:45,stage:2,creditRating:'BBB+',status:'active'},
-  {_id:'s5',loanId:'LN-005',customer:'BUA Foods Plc',product:'Invoice Discounting',principal:190,outstanding:190,interestRate:23,startDate:'2024-04-05',maturityDate:'2024-10-05',daysPastDue:0,stage:1,creditRating:'A',status:'active'},
-  {_id:'s6',loanId:'LN-006',customer:'Unilever Nigeria Plc',product:'Supply Chain Finance',principal:150,outstanding:145,interestRate:21,startDate:'2023-10-15',maturityDate:'2024-04-15',daysPastDue:62,stage:2,creditRating:'BB+',status:'active'},
-  {_id:'s7',loanId:'LN-007',customer:'Nigerian Breweries Plc',product:'Factoring',principal:220,outstanding:215,interestRate:22,startDate:'2024-03-20',maturityDate:'2024-09-20',daysPastDue:5,stage:1,creditRating:'A-',status:'active'},
-  {_id:'s8',loanId:'LN-008',customer:'Cadbury Nigeria Plc',product:'Invoice Discounting',principal:85,outstanding:82,interestRate:24,startDate:'2023-08-01',maturityDate:'2024-02-01',daysPastDue:120,stage:3,creditRating:'CCC',status:'active'},
-  {_id:'s9',loanId:'LN-009',customer:'PZ Cussons Nigeria',product:'Factoring',principal:110,outstanding:108,interestRate:22,startDate:'2023-09-10',maturityDate:'2024-03-10',daysPastDue:95,stage:3,creditRating:'B-',status:'active'},
-  {_id:'s10',loanId:'LN-010',customer:'Nestle Nigeria Plc',product:'Supply Chain Finance',principal:340,outstanding:340,interestRate:20,startDate:'2024-04-01',maturityDate:'2024-10-01',daysPastDue:0,stage:1,creditRating:'AA-',status:'active'},
-  {_id:'s11',loanId:'LN-011',customer:'NNPC Gas & Power Ltd',product:'Reverse Factoring',principal:600,outstanding:580,interestRate:18,startDate:'2024-01-20',maturityDate:'2024-07-20',daysPastDue:30,stage:1,creditRating:'A+',status:'active'},
-  {_id:'s12',loanId:'LN-012',customer:'Access Bank Plc',product:'Invoice Discounting',principal:250,outstanding:250,interestRate:20,startDate:'2024-02-15',maturityDate:'2024-08-15',daysPastDue:0,stage:1,creditRating:'AA',status:'active'},
-  {_id:'s13',loanId:'LN-013',customer:'Total Energies Nigeria',product:'Supply Chain Finance',principal:180,outstanding:172,interestRate:21,startDate:'2023-12-01',maturityDate:'2024-06-01',daysPastDue:75,stage:2,creditRating:'BB',status:'active'},
-  {_id:'s14',loanId:'LN-014',customer:'Lafarge Africa Plc',product:'Factoring',principal:130,outstanding:130,interestRate:23,startDate:'2024-03-01',maturityDate:'2024-09-01',daysPastDue:0,stage:1,creditRating:'A-',status:'active'},
-  {_id:'s15',loanId:'LN-015',customer:'Julius Berger Nigeria',product:'Invoice Discounting',principal:200,outstanding:195,interestRate:22,startDate:'2023-06-15',maturityDate:'2023-12-15',daysPastDue:155,stage:3,creditRating:'D',status:'active'},
-];
-const SB=[
-  {_id:'b1',borrowingId:'BW-001',lender:'FCMB Ltd',type:'Term Loan',principal:500,outstanding:420,interestRate:19.5,tenorMonths:24,repayment:'Monthly',maturityDate:'2025-06-30'},
-  {_id:'b2',borrowingId:'BW-002',lender:'Stanbic IBTC Bank',type:'Overdraft Facility',principal:200,outstanding:150,interestRate:23,tenorMonths:12,repayment:'Revolving',maturityDate:'2024-12-31'},
-  {_id:'b3',borrowingId:'BW-003',lender:'DBN Nigeria',type:'On-lending Facility',principal:800,outstanding:720,interestRate:14,tenorMonths:36,repayment:'Quarterly',maturityDate:'2026-09-30'},
-  {_id:'b4',borrowingId:'BW-004',lender:'Bank of Industry',type:'SME Fund',principal:300,outstanding:280,interestRate:12,tenorMonths:48,repayment:'Monthly',maturityDate:'2027-03-31'},
-  {_id:'b5',borrowingId:'BW-005',lender:'LAPO MfB',type:'Wholesale Borrowing',principal:150,outstanding:100,interestRate:21,tenorMonths:12,repayment:'Monthly',maturityDate:'2024-10-31'},
-  {_id:'b6',borrowingId:'BW-006',lender:'Pan-African Holdings',type:'Intercompany Loan',principal:1000,outstanding:1000,interestRate:16,tenorMonths:60,repayment:'Bullet',maturityDate:'2028-01-31'},
-];
-const SI=[
-  {_id:'i1',investmentId:'INV-001',counterparty:'Access Bank Plc',type:'Fixed Deposit',principal:300,interestRate:22,dateInvested:'2024-03-01',tenorDays:180,maturityDate:'2024-08-28'},
-  {_id:'i2',investmentId:'INV-002',counterparty:'GTBank Ltd',type:'Fixed Deposit',principal:200,interestRate:21.5,dateInvested:'2024-02-15',tenorDays:91,maturityDate:'2024-05-17'},
-  {_id:'i3',investmentId:'INV-003',counterparty:'FGN Bond (10yr)',type:'Government Security',principal:500,interestRate:17.5,dateInvested:'2023-10-01',tenorDays:365,maturityDate:'2033-10-01'},
-  {_id:'i4',investmentId:'INV-004',counterparty:'NTB (91-day)',type:'Treasury Bills',principal:250,interestRate:20.5,dateInvested:'2024-04-01',tenorDays:91,maturityDate:'2024-07-01'},
-  {_id:'i5',investmentId:'INV-005',counterparty:'Zenith Bank Plc',type:'Fixed Deposit',principal:150,interestRate:22,dateInvested:'2024-04-10',tenorDays:60,maturityDate:'2024-06-09'},
-  {_id:'i6',investmentId:'INV-006',counterparty:'NTB (182-day)',type:'Treasury Bills',principal:400,interestRate:21,dateInvested:'2024-01-15',tenorDays:182,maturityDate:'2024-07-15'},
-];
-const SC=[
-  {_id:'c1',accountId:'CA-001',bank:'Access Bank Plc',accountNo:'001-234567-001',type:'Current',currency:'NGN',balance:124.5,restricted:false},
-  {_id:'c2',accountId:'CA-002',bank:'GTBank Ltd',accountNo:'0123456789',type:'Current',currency:'NGN',balance:87.3,restricted:false},
-  {_id:'c3',accountId:'CA-003',bank:'First Bank Nigeria',accountNo:'2012345678',type:'Current',currency:'NGN',balance:43.8,restricted:true},
-  {_id:'c4',accountId:'CA-004',bank:'Zenith Bank Plc',accountNo:'1012345678',type:'Savings',currency:'NGN',balance:210.0,restricted:false},
-  {_id:'c5',accountId:'CA-005',bank:'UBA Plc',accountNo:'2012398765',type:'Current',currency:'NGN',balance:32.1,restricted:false},
-  {_id:'c6',accountId:'CA-006',bank:'Access Bank Plc',accountNo:'001-234567-002',type:'Dom (USD)',currency:'USD',balance:18.4,restricted:false},
-];
-
-// ── ECL ENGINE ────────────────────────────────────────────────
-const EP={1:{pd12:.02,pdL:.05,lgd:.45},2:{pd12:.15,pdL:.35,lgd:.55},3:{pd12:.75,pdL:.90,lgd:.65}};
-function calcECL(loans,mult=1){
-  let total=0;
-  const rows=loans.map(l=>{
-    const p=EP[l.stage]||EP[1];
-    const pd=(l.stage===1?p.pd12:p.pdL)*mult;
-    const ecl=pd*p.lgd*l.outstanding;
-    total+=ecl;
-    return{...l,pd:+pd.toFixed(4),lgd:p.lgd,ead:l.outstanding,ecl:+ecl.toFixed(2),eclRate:+(ecl/l.outstanding*100).toFixed(2)};
-  });
-  const ead=loans.reduce((a,b)=>a+b.outstanding,0);
-  return{rows,total:+total.toFixed(2),ead:+ead.toFixed(2),coverage:+(total/ead*100).toFixed(2)};
-}
-
-// ── DASHBOARD ─────────────────────────────────────────────────
-async function loadDashboard(){
-  $('dash-ts').textContent='Loading...';
-  $('dash-kpis').innerHTML='<div class="loading-row">Loading...</div>';
-  let loans=SL,borr=SB,inv=SI,cash=SC,isDemo=true;
-  try{
-    const [dl,db,di,dc]=await Promise.all([
-      api('/treasury/loans'),api('/treasury/borrowings'),
-      api('/treasury/investments'),api('/treasury/cash')
-    ]);
-    if(dl.loans?.length){loans=dl.loans;isDemo=false;}
-    if(db.borrowings?.length)borr=db.borrowings;
-    if(di.investments?.length)inv=di.investments;
-    if(dc.accounts?.length)cash=dc.accounts;
-    _loansCache=loans;_borrowCache=borr;_invCache=inv;_cashCache=cash;
-  }catch(e){/* use sample data */}
-  const eclR=calcECL(loans);
-  const totalCash=cash.filter(a=>a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
-  const totalLoans=loans.reduce((s,l)=>s+l.outstanding,0);
-  const totalDebt=borr.reduce((s,b)=>s+b.outstanding,0);
-  const totalInv=inv.reduce((s,i)=>s+i.principal,0);
-  const s1=loans.filter(l=>l.stage===1),s2=loans.filter(l=>l.stage===2),s3=loans.filter(l=>l.stage===3);
-  $('dash-ts').textContent=(isDemo?'Sample data  \u2014  ':'As at ')+new Date().toLocaleString('en-GB');
-  $('dash-kpis').innerHTML=(isDemo?'<div class="nt-info" style="grid-column:1/-1">Showing sample FSCF data. Upload real data in Loans, Borrowings, Investments and Cash modules.</div>':'')+
-  [{l:'Total Cash',v:fmt(totalCash),c:'tl',ac:true,sub:'NGN accounts'},
-   {l:'Net Liquidity',v:fmt(totalCash+totalInv-totalDebt*.1),c:'bl',sub:'Cash + Inv \u2212 Obligations'},
-   {l:'Loan Book',v:fmt(totalLoans),c:'gr',sub:loans.length+' facilities'},
-   {l:'ECL Provision',v:fmt(eclR.total),c:'am',sub:'Coverage: '+pct(eclR.coverage)},
-   {l:'Total Borrowings',v:fmt(totalDebt),c:'pu',sub:borr.length+' facilities'},
-   {l:'Investment Portfolio',v:fmt(totalInv),c:'bl',sub:'Avg yield 20.9%'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
-  $('dash-charts').innerHTML=
-    '<div class="chart-box"><div class="card-label">Loan Stage Distribution (EAD)</div><canvas id="ch-ds" height="180"></canvas></div>'+
-    '<div class="chart-box"><div class="card-label">Portfolio by Product (\u20a6M)</div><canvas id="ch-dp" height="180"></canvas></div>';
-  $('dash-charts2').innerHTML=
-    '<div class="chart-box"><div class="card-label">Loan Maturity Ladder (\u20a6M)</div><canvas id="ch-dm" height="180"></canvas></div>'+
-    '<div class="chart-box"><div class="card-label">EAD vs ECL by Stage (\u20a6M)</div><canvas id="ch-de" height="180"></canvas></div>';
-  const stageD=[{s:'Stage 1',v:s1.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s1).total,c:'#22c55e'},
-               {s:'Stage 2',v:s2.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s2).total,c:'#f5a623'},
-               {s:'Stage 3',v:s3.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s3).total,c:'#e05252'}];
-  const prodMap={};loans.forEach(l=>{prodMap[l.product]=(prodMap[l.product]||0)+l.outstanding;});
-  const now=new Date('2024-06-01');
-  const mb={'0-30d':0,'31-60d':0,'61-90d':0,'91-180d':0,'>180d':0};
-  loans.forEach(l=>{const d=Math.max(0,(new Date(l.maturityDate)-now)/86400000);if(d<=30)mb['0-30d']+=l.outstanding;else if(d<=60)mb['31-60d']+=l.outstanding;else if(d<=90)mb['61-90d']+=l.outstanding;else if(d<=180)mb['91-180d']+=l.outstanding;else mb['>180d']+=l.outstanding;});
-  setTimeout(()=>{
-    mkChart('ch-ds',{type:'doughnut',data:{labels:stageD.map(s=>s.s),datasets:[{data:stageD.map(s=>s.v),backgroundColor:stageD.map(s=>s.c),borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'62%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-    mkChart('ch-dp',{type:'bar',data:{labels:Object.keys(prodMap),datasets:[{data:Object.values(prodMap),backgroundColor:PAL,borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{display:false}}}}});
-    mkChart('ch-dm',{type:'bar',data:{labels:Object.keys(mb),datasets:[{data:Object.values(mb),backgroundColor:PAL,borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-de',{type:'bar',data:{labels:stageD.map(s=>s.s),datasets:[{label:'EAD',data:stageD.map(s=>s.v),backgroundColor:'rgba(99,179,237,.5)',borderRadius:2},{label:'ECL',data:stageD.map(s=>s.e),backgroundColor:'#f5a623',borderRadius:2}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-  },60);
-}
-
-// ── LOANS ─────────────────────────────────────────────────────
-async function loadLoans(){
-  $('loans-kpis').innerHTML='<div class="loading-row">Loading...</div>';
-  try{const d=await api('/treasury/loans');if(d.loans?.length)_loansCache=d.loans;}
-  catch(e){if(!_loansCache.length)_loansCache=SL;}
-  if(!_loansCache.length)_loansCache=SL;
-  renderLoanKPIs();renderLoanChart();renderLoanTable();
-}
-function renderLoanKPIs(){
-  const loans=_loansCache,total=loans.reduce((s,l)=>s+l.outstanding,0);
-  const npl=loans.filter(l=>l.stage===3);
-  $('loans-kpis').innerHTML=[
-    {l:'Total Exposure',v:fmt(total),c:'tl',ac:true},
-    {l:'Performing',v:fmt(loans.filter(l=>l.stage<3).reduce((s,l)=>s+l.outstanding,0)),c:'gr',sub:loans.filter(l=>l.stage<3).length+' loans'},
-    {l:'Non-Performing',v:fmt(npl.reduce((s,l)=>s+l.outstanding,0)),c:'rd',sub:npl.length+' loans'},
-    {l:'NPL Ratio',v:pct(npl.reduce((s,l)=>s+l.outstanding,0)/total*100),c:'am'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
-}
-function renderLoanChart(){
-  const ag=[{b:'Current',v:_loansCache.filter(l=>l.daysPastDue===0).reduce((s,l)=>s+l.outstanding,0)},{b:'1-30d',v:_loansCache.filter(l=>l.daysPastDue>0&&l.daysPastDue<=30).reduce((s,l)=>s+l.outstanding,0)},{b:'31-60d',v:_loansCache.filter(l=>l.daysPastDue>30&&l.daysPastDue<=60).reduce((s,l)=>s+l.outstanding,0)},{b:'61-90d',v:_loansCache.filter(l=>l.daysPastDue>60&&l.daysPastDue<=90).reduce((s,l)=>s+l.outstanding,0)},{b:'91-180d',v:_loansCache.filter(l=>l.daysPastDue>90&&l.daysPastDue<=180).reduce((s,l)=>s+l.outstanding,0)},{b:'>180d',v:_loansCache.filter(l=>l.daysPastDue>180).reduce((s,l)=>s+l.outstanding,0)}];
-  setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:ag.map(a=>a.b),datasets:[{data:ag.map(a=>a.v),backgroundColor:['#22c55e','#00c9a7','#63b3ed','#f5a623','#e05252','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}}),60);
-}
-function setLoanFilter(btn,stage){
-  document.querySelectorAll('#loan-filters button').forEach(b=>{b.style.cssText='';});
-  btn.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';
-  _loanFilter=stage;renderLoanTable();
-}
-function renderLoanTable(){
-  let loans=_loansCache;
-  if(_loanFilter!=='all')loans=loans.filter(l=>l.stage===+_loanFilter);
-  const q=$('loan-search')?.value?.toLowerCase()||'';
-  if(q)loans=loans.filter(l=>l.customer.toLowerCase().includes(q)||(l.loanId||'').toLowerCase().includes(q));
-  if(!loans.length){$('loans-table').innerHTML=empty('No loans match the current filter.');return;}
-  const sc=s=>s===1?'ps1':s===2?'ps2':'ps3';
-  const rc=r=>(r||'').startsWith('A')?'#22c55e':(r||'').startsWith('B')?'#f5a623':'#e05252';
-  $('loans-table').innerHTML='<div class="tw"><table>'+
-    '<thead><tr><th>Loan ID</th><th>Customer</th><th>Product</th><th class="nm">Outstanding</th><th class="nm">Rate</th><th class="nm">DPD</th><th>Stage</th><th>Rating</th><th>Maturity</th><th></th></tr></thead>'+
-    '<tbody>'+loans.map(l=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+l.loanId+'</td><td><strong>'+l.customer+'</strong></td>'+
-      '<td style="color:var(--tx2)">'+l.product+'</td>'+
-      '<td class="nm">\u20a6'+fN(l.outstanding)+'M</td>'+
-      '<td class="nm" style="font-family:var(--mo)">'+l.interestRate+'%</td>'+
-      '<td class="nm" style="font-family:var(--mo);color:'+(l.daysPastDue>=90?'#e05252':l.daysPastDue>=30?'#f5a623':'#22c55e')+'">'+l.daysPastDue+'</td>'+
-      '<td><span class="pl '+sc(l.stage)+'">Stage '+l.stage+'</span></td>'+
-      '<td style="font-family:var(--mo);color:'+rc(l.creditRating)+'">'+l.creditRating+'</td>'+
-      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(l.maturityDate)+'</td>'+
-      '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openLoanModal(\''+l._id+'\')" style="padding:4px 8px" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteLoan(\''+l._id+'\')" style="padding:4px 8px" title="Delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-      '</div></td></tr>').join('')+'</tbody></table></div>'+
-    '<div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">Showing '+loans.length+' of '+_loansCache.length+' \u00b7 Total: \u20a6'+fN(loans.reduce((s,l)=>s+l.outstanding,0))+'M</div>';
-}
-function openLoanModal(id){
-  const l=id?_loansCache.find(x=>x._id===id):null;
-  openModal(l?'Edit Loan':'Add Loan Facility',
-    '<div class="merr" id="loan-err"></div>'+
-    '<div class="fg"><div class="fld"><label>Loan ID *</label><input class="finput" id="fl-id" value="'+(l?.loanId||'')+'" placeholder="e.g. LN-001"></div>'+
-    '<div class="fld"><label>Customer Name *</label><input class="finput" id="fl-cust" value="'+(l?.customer||'')+'" placeholder="e.g. Dangote Industries Ltd"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Loan Product *</label><select class="finput" id="fl-prod">'+
-    ['Invoice Discounting','Supply Chain Finance','Factoring','Reverse Factoring','Term Loan'].map(p=>'<option value="'+p+'" '+(l?.product===p?'selected':'')+'>'+p+'</option>').join('')+'</select></div>'+
-    '<div class="fld"><label>Credit Rating</label><input class="finput" id="fl-rating" value="'+(l?.creditRating||'')+'" placeholder="e.g. A, BBB+"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (\u20a6M) *</label><input class="finput" type="number" id="fl-principal" value="'+(l?.principal||'')+'" min="0" step="0.01"></div>'+
-    '<div class="fld"><label>Outstanding (\u20a6M) *</label><input class="finput" type="number" id="fl-outstanding" value="'+(l?.outstanding||'')+'" min="0" step="0.01"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="fl-rate" value="'+(l?.interestRate||'')+'" min="0" step="0.01"></div>'+
-    '<div class="fld"><label>Days Past Due</label><input class="finput" type="number" id="fl-dpd" value="'+(l?.daysPastDue||0)+'" min="0"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Start Date *</label><input class="finput" type="date" id="fl-start" value="'+(l?.startDate?.slice(0,10)||'')+'"></div>'+
-    '<div class="fld"><label>Maturity Date *</label><input class="finput" type="date" id="fl-mat" value="'+(l?.maturityDate?.slice(0,10)||'')+'"></div></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveLoan(\''+id+'\')"><span id="loan-save-txt">'+(l?'Save Changes':'Add Loan')+'</span></button>');
-}
-async function saveLoan(id){
-  const err=$('loan-err');err.classList.remove('on');
-  const p={loanId:$('fl-id').value.trim(),customer:$('fl-cust').value.trim(),product:$('fl-prod').value,creditRating:$('fl-rating').value.trim(),principal:+$('fl-principal').value,outstanding:+$('fl-outstanding').value,interestRate:+$('fl-rate').value,daysPastDue:+$('fl-dpd').value,startDate:$('fl-start').value,maturityDate:$('fl-mat').value};
-  if(!p.loanId||!p.customer||!p.principal){err.textContent='Loan ID, customer and principal required.';err.classList.add('on');return;}
-  $('loan-save-txt').textContent='Saving...';
-  try{
-    if(id&&id!=='undefined')await api('/treasury/loans/'+id,{method:'PUT',body:JSON.stringify(p)});
-    else await api('/treasury/loans',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id&&id!=='undefined'?'Loan updated.':'Loan added.');loadLoans();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('loan-save-txt').textContent=id&&id!=='undefined'?'Save Changes':'Add Loan';}
-}
-async function deleteLoan(id){
-  if(!confirm('Delete this loan facility? This cannot be undone.'))return;
-  try{await api('/treasury/loans/'+id,{method:'DELETE'});toast('Loan deleted.');loadLoans();}catch(e){toast(e.message,'err');}
-}
-
-// ── ECL ───────────────────────────────────────────────────────
-function computeECL(){
-  const loans=_loansCache.length?_loansCache:SL;
-  if(!loans.length){toast('Load the loan portfolio first.','err');return;}
-  const ecl=calcECL(loans,_eclMult);
-  _eclResults=ecl.rows;
-  const s1=ecl.rows.filter(r=>r.stage===1),s2=ecl.rows.filter(r=>r.stage===2),s3=ecl.rows.filter(r=>r.stage===3);
-  $('ecl-kpis').innerHTML=[
-    {l:'Total Exposure (EAD)',v:'\u20a6'+fN(ecl.ead)+'M',c:'tl',ac:true},
-    {l:'Weighted ECL',v:'\u20a6'+fN(ecl.total)+'M',c:'rd'},
-    {l:'Coverage Ratio',v:pct(ecl.coverage),c:'am'},
-    {l:'Stage 1',v:fmt(s1.reduce((a,r)=>a+r.ead,0)),c:'gr',sub:s1.length+' loans'},
-    {l:'Stage 2',v:fmt(s2.reduce((a,r)=>a+r.ead,0)),c:'am',sub:s2.length+' loans'},
-    {l:'Stage 3',v:fmt(s3.reduce((a,r)=>a+r.ead,0)),c:'rd',sub:s3.length+' loans'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
-  $('ecl-banner').style.display='block';
-  $('ecl-banner').innerHTML='<div class="nt-info" style="display:flex;gap:2rem;flex-wrap:wrap">'+
-    '<div><div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Probability-Weighted ECL</div><div style="font-family:var(--di);font-size:22px;font-weight:700;color:var(--t)">\u20a6'+fN(ecl.total)+'M</div></div>'+
-    '<div><div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Coverage Ratio</div><div style="font-family:var(--di);font-size:22px;font-weight:700;color:var(--am)">'+pct(ecl.coverage)+'</div></div>'+
-    '<div><div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Total EAD</div><div style="font-family:var(--di);font-size:22px;font-weight:700;color:var(--bl)">\u20a6'+fN(ecl.ead)+'M</div></div></div>';
-  $('ecl-charts').innerHTML=
-    '<div class="chart-box"><div class="card-label">Stage Distribution (EAD)</div><canvas id="ch-ecl-stage" height="170"></canvas></div>'+
-    '<div class="chart-box"><div class="card-label">EAD vs ECL by Facility (top 12)</div><canvas id="ch-ecl-heat" height="170"></canvas></div>';
-  setTimeout(()=>{
-    mkChart('ch-ecl-stage',{type:'doughnut',data:{labels:['Stage 1','Stage 2','Stage 3'],datasets:[{data:[s1,s2,s3].map(x=>x.reduce((a,r)=>a+r.ead,0)),backgroundColor:['#22c55e','#f5a623','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'62%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-    const top=ecl.rows.slice(0,12);
-    mkChart('ch-ecl-heat',{type:'bar',data:{labels:top.map(r=>r.customer.split(' ')[0]),datasets:[{label:'EAD',data:top.map(r=>r.ead),backgroundColor:'rgba(99,179,237,.5)',borderRadius:2},{label:'ECL',data:top.map(r=>r.ecl),backgroundColor:'#f5a623',borderRadius:2}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-  },60);
-  const sc=r=>r.stage===1?'ps1':r.stage===2?'ps2':'ps3';
-  $('ecl-table').innerHTML='<div class="tw"><table>'+
-    '<thead><tr><th>Loan ID</th><th>Customer</th><th>Stage</th><th class="nm">EAD (\u20a6M)</th><th class="nm">PD</th><th class="nm">LGD</th><th class="nm">ECL (\u20a6M)</th><th class="nm">ECL Rate</th></tr></thead>'+
-    '<tbody>'+ecl.rows.map(r=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+r.loanId+'</td><td>'+r.customer+'</td>'+
-      '<td><span class="pl '+sc(r)+'">Stage '+r.stage+'</span></td>'+
-      '<td class="nm">'+fN(r.ead)+'</td>'+
-      '<td class="nm" style="color:'+(r.pd>.5?'#e05252':r.pd>.1?'#f5a623':'#22c55e')+'">'+pct(r.pd*100)+'</td>'+
-      '<td class="nm">'+pct(r.lgd*100)+'</td>'+
-      '<td class="nm" style="color:'+(r.ecl>50?'#e05252':r.ecl>20?'#f5a623':'#22c55e')+'">'+fN(r.ecl)+'</td>'+
-      '<td class="nm" style="color:'+(r.eclRate>50?'#e05252':r.eclRate>15?'#f5a623':'#00c9a7')+'">'+r.eclRate.toFixed(2)+'%</td>'+
-    '</tr>').join('')+
-    '<tr class="trt"><td colspan="3" style="text-align:right">TOTAL</td>'+
-    '<td class="nm">'+fN(ecl.ead)+'</td><td></td><td></td><td class="nm">'+fN(ecl.total)+'</td><td class="nm">'+pct(ecl.coverage)+'</td></tr>'+
-    '</tbody></table></div>';
-  $('ecl-export-btn').disabled=false;
-  toast('ECL computed \u2014 \u20a6'+fN(ecl.total)+'M across '+ecl.rows.length+' loans.');
-}
-function updateStress(v){
-  _eclMult=1+v/100;
-  const el=$('pd-val');if(el){el.textContent=(v>0?'+':'')+v+'%';el.style.color=v>0?'#e05252':'#22c55e';}
-  if(_eclResults.length){
-    const e=calcECL(_loansCache.length?_loansCache:SL,_eclMult);
-    $('stress-result').innerHTML='Stressed ECL: <span style="font-family:var(--mo);color:var(--am)">\u20a6'+fN(e.total)+'M</span> \u00b7 Coverage: <span style="font-family:var(--mo);color:var(--t)">'+pct(e.coverage)+'</span>';
+  if (_tok) {
+    headers['Authorization'] = 'Bearer ' + _tok;
   }
-}
-function exportECLExcel(){
-  if(!_eclResults.length){toast('Run Compute ECL first.','err');return;}
-  const wb=XLSX.utils.book_new();
-  const rows=_eclResults.map(r=>({'Loan ID':r.loanId,'Customer':r.customer,'Stage':'Stage '+r.stage,'EAD (NGN M)':+r.ead.toFixed(2),'PD (%)':+(r.pd*100).toFixed(4),'LGD (%)':+(r.lgd*100).toFixed(2),'ECL (NGN M)':+r.ecl.toFixed(2),'ECL Rate (%)':r.eclRate,'DPD':r.daysPastDue,'Maturity':fD(r.maturityDate)}));
-  const ws=XLSX.utils.json_to_sheet(rows);
-  ws['!cols']=[10,28,8,12,10,8,12,10,6,12].map(w=>({wch:w}));
-  XLSX.utils.book_append_sheet(wb,ws,'ECL Results');
-  XLSX.writeFile(wb,'FM-IFRS9-ECL-'+ts()+'.xlsx');
-  toast('ECL Excel exported.');
-}
 
-// ── BORROWINGS ────────────────────────────────────────────────
-async function loadBorrowings(){
-  $('borrowings-kpis').innerHTML='<div class="loading-row">Loading...</div>';
-  try{const d=await api('/treasury/borrowings');if(d.borrowings?.length)_borrowCache=d.borrowings;}catch(e){}
-  if(!_borrowCache.length)_borrowCache=SB;
-  renderBorrowings();
-}
-function renderBorrowings(){
-  const b=_borrowCache,total=b.reduce((s,x)=>s+x.outstanding,0);
-  const wacd=b.reduce((a,x)=>a+(x.outstanding/total)*x.interestRate,0);
-  $('borrowings-kpis').innerHTML=[
-    {l:'Total Debt',v:fmt(total),c:'pu',ac:true},
-    {l:'WACD',v:pct(wacd),c:'am',sub:'Weighted avg cost of debt'},
-    {l:'Facilities',v:b.length,c:'tl',sub:'Active borrowings'},
-    {l:'Interco. Debt',v:fmt(b.find(x=>x.type==='Intercompany Loan')?.outstanding||0),c:'bl',sub:'Intercompany'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
-  const now=new Date('2024-06-01');
-  const md=b.map(x=>({n:x.lender.split(' ')[0],v:x.outstanding,d:Math.max(0,(new Date(x.maturityDate)-now)/86400000)})).sort((a,b)=>a.d-b.d);
-  const typeMap={};b.forEach(x=>{typeMap[x.type]=(typeMap[x.type]||0)+x.outstanding;});
-  $('borrowings-charts').innerHTML='<div class="chart-box"><div class="card-label">Debt Maturity Profile</div><canvas id="ch-bw-mat" height="170"></canvas></div><div class="chart-box"><div class="card-label">Debt by Facility Type</div><canvas id="ch-bw-type" height="170"></canvas></div>';
-  setTimeout(()=>{
-    mkChart('ch-bw-mat',{type:'bar',data:{labels:md.map(x=>x.n),datasets:[{data:md.map(x=>x.v),backgroundColor:md.map(x=>x.d<180?'#e05252':x.d<360?'#f5a623':'#00c9a7'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-bw-type',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-  },60);
-  $('borrowings-table-wrap').innerHTML='<div class="card-label">Borrowings Schedule</div><div class="tw"><table>'+
-    '<thead><tr><th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding (\u20a6M)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Repayment</th><th>Maturity</th><th></th></tr></thead>'+
-    '<tbody>'+b.map(x=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+x.borrowingId+'</td><td><strong>'+x.lender+'</strong></td>'+
-      '<td style="color:var(--tx2)">'+x.type+'</td>'+
-      '<td class="nm">\u20a6'+fN(x.outstanding)+'M</td>'+
-      '<td class="nm" style="font-family:var(--mo);color:'+(x.interestRate>20?'#e05252':x.interestRate>16?'#f5a623':'#22c55e')+'">'+x.interestRate+'%</td>'+
-      '<td class="nm" style="font-family:var(--mo)">'+x.tenorMonths+'mo</td>'+
-      '<td style="color:var(--tx2)">'+x.repayment+'</td>'+
-      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(x.maturityDate)+'</td>'+
-      '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openBorrowingModal(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteBorrowing(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-      '</div></td></tr>').join('')+'</tbody></table></div>';
-}
-function openBorrowingModal(id){
-  const x=id&&id!=='undefined'?_borrowCache.find(b=>b._id===id):null;
-  openModal(x?'Edit Facility':'Add Borrowing Facility',
-    '<div class="merr" id="bw-err"></div>'+
-    '<div class="fg"><div class="fld"><label>Borrowing ID *</label><input class="finput" id="bw-id" value="'+(x?.borrowingId||'')+'"></div>'+
-    '<div class="fld"><label>Lender *</label><input class="finput" id="bw-lender" value="'+(x?.lender||'')+'"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Facility Type *</label><select class="finput" id="bw-type">'+
-    ['Term Loan','Overdraft Facility','On-lending Facility','SME Fund','Wholesale Borrowing','Intercompany Loan'].map(t=>'<option '+(x?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
-    '<div class="fld"><label>Repayment</label><select class="finput" id="bw-rep">'+
-    ['Monthly','Quarterly','Bullet','Revolving','Semi-annual'].map(t=>'<option '+(x?.repayment===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (\u20a6M)</label><input class="finput" type="number" id="bw-principal" value="'+(x?.principal||'')+'"></div>'+
-    '<div class="fld"><label>Outstanding (\u20a6M)</label><input class="finput" type="number" id="bw-outstanding" value="'+(x?.outstanding||'')+'"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="bw-rate" value="'+(x?.interestRate||'')+'"></div>'+
-    '<div class="fld"><label>Tenor (months)</label><input class="finput" type="number" id="bw-tenor" value="'+(x?.tenorMonths||'')+'"></div></div>'+
-    '<div class="fld"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="'+(x?.maturityDate?.slice(0,10)||'')+'"></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing(\''+id+'\')" ><span id="bw-save-txt">'+(x?'Save Changes':'Add Facility')+'</span></button>');
-}
-async function saveBorrowing(id){
-  const err=$('bw-err');err.classList.remove('on');
-  const p={borrowingId:$('bw-id').value.trim(),lender:$('bw-lender').value.trim(),type:$('bw-type').value,repayment:$('bw-rep').value,principal:+$('bw-principal').value,outstanding:+$('bw-outstanding').value,interestRate:+$('bw-rate').value,tenorMonths:+$('bw-tenor').value,maturityDate:$('bw-mat').value};
-  if(!p.borrowingId||!p.lender){err.textContent='ID and lender required.';err.classList.add('on');return;}
-  $('bw-save-txt').textContent='Saving...';
-  try{
-    if(id&&id!=='undefined')await api('/treasury/borrowings/'+id,{method:'PUT',body:JSON.stringify(p)});
-    else await api('/treasury/borrowings',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id&&id!=='undefined'?'Facility updated.':'Facility added.');loadBorrowings();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('bw-save-txt').textContent=id&&id!=='undefined'?'Save Changes':'Add Facility';}
-}
-async function deleteBorrowing(id){
-  if(!confirm('Delete this facility?'))return;
-  try{await api('/treasury/borrowings/'+id,{method:'DELETE'});toast('Deleted.');loadBorrowings();}catch(e){toast(e.message,'err');}
-}
-
-// ── INVESTMENTS ───────────────────────────────────────────────
-async function loadInvestments(){
-  $('investments-kpis').innerHTML='<div class="loading-row">Loading...</div>';
-  try{const d=await api('/treasury/investments');if(d.investments?.length)_invCache=d.investments;}catch(e){}
-  if(!_invCache.length)_invCache=SI;
-  renderInvestments();
-}
-function renderInvestments(){
-  const inv=_invCache,total=inv.reduce((s,i)=>s+i.principal,0);
-  const interest=inv.reduce((a,i)=>a+i.principal*(i.interestRate/100)*(i.tenorDays/365),0);
-  const avgY=inv.reduce((a,i)=>a+(i.principal/total)*i.interestRate,0);
-  $('investments-kpis').innerHTML=[
-    {l:'Portfolio Value',v:fmt(total),c:'tl',ac:true},
-    {l:'Projected Interest',v:fmt(interest),c:'am',sub:'Full tenor'},
-    {l:'Avg. Yield',v:pct(avgY),c:'gr',sub:'Weighted avg.'},
-    {l:'Instruments',v:inv.length,c:'bl',sub:'Active placements'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
-  const typeMap={};inv.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
-  $('investments-charts').innerHTML='<div class="chart-box"><div class="card-label">Maturity Ladder \u2014 Principal + Interest (\u20a6M)</div><canvas id="ch-inv-ladder" height="170"></canvas></div><div class="chart-box"><div class="card-label">Portfolio Mix</div><canvas id="ch-inv-mix" height="170"></canvas></div>';
-  setTimeout(()=>{
-    mkChart('ch-inv-ladder',{type:'bar',data:{labels:inv.map(i=>i.counterparty.split(' ')[0]),datasets:[{label:'Principal',data:inv.map(i=>i.principal),backgroundColor:'#00c9a7',stack:'a'},{label:'Interest',data:inv.map(i=>+(i.principal*(i.interestRate/100)*(i.tenorDays/365)).toFixed(2)),backgroundColor:'#f5a623',borderRadius:4,stack:'a'}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}},y:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-inv-mix',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-  },60);
-  $('investments-table-wrap').innerHTML='<div class="card-label">Investment Schedule</div><div class="tw"><table>'+
-    '<thead><tr><th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal (\u20a6M)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest (\u20a6M)</th><th></th></tr></thead>'+
-    '<tbody>'+inv.map(i=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+i.investmentId+'</td><td><strong>'+i.counterparty+'</strong></td>'+
-      '<td style="color:var(--tx2)">'+i.type+'</td>'+
-      '<td class="nm">\u20a6'+fN(i.principal)+'M</td>'+
-      '<td class="nm" style="font-family:var(--mo);color:#22c55e">'+i.interestRate+'%</td>'+
-      '<td class="nm" style="font-family:var(--mo)">'+i.tenorDays+'d</td>'+
-      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.dateInvested)+'</td>'+
-      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.maturityDate)+'</td>'+
-      '<td class="nm" style="color:#f5a623">\u20a6'+fN(i.principal*(i.interestRate/100)*(i.tenorDays/365))+'M</td>'+
-      '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openInvestmentModal(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteInvestment(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-      '</div></td></tr>').join('')+'</tbody></table></div>';
-}
-function openInvestmentModal(id){
-  const i=id&&id!=='undefined'?_invCache.find(x=>x._id===id):null;
-  openModal(i?'Edit Investment':'Add Investment',
-    '<div class="merr" id="inv2-err"></div>'+
-    '<div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="'+(i?.investmentId||'')+'"></div>'+
-    '<div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="'+(i?.counterparty||'')+'"></div></div>'+
-    '<div class="fld"><label>Type</label><select class="finput" id="ii-type">'+
-    ['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (\u20a6M) *</label><input class="finput" type="number" id="ii-principal" value="'+(i?.principal||'')+'"></div>'+
-    '<div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="ii-rate" value="'+(i?.interestRate||'')+'"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="'+(i?.dateInvested?.slice(0,10)||'')+'"></div>'+
-    '<div class="fld"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="'+(i?.tenorDays||'')+'"></div></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment(\''+id+'\')" ><span id="ii-save-txt">'+(i?'Save Changes':'Add Investment')+'</span></button>');
-}
-async function saveInvestment(id){
-  const err=$('inv2-err');err.classList.remove('on');
-  const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-principal').value,interestRate:+$('ii-rate').value,dateInvested:$('ii-date').value,tenorDays:+$('ii-days').value};
-  if(!p.investmentId||!p.counterparty||!p.principal){err.textContent='ID, counterparty and principal required.';err.classList.add('on');return;}
-  $('ii-save-txt').textContent='Saving...';
-  try{
-    if(id&&id!=='undefined')await api('/treasury/investments/'+id,{method:'PUT',body:JSON.stringify(p)});
-    else await api('/treasury/investments',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id&&id!=='undefined'?'Updated.':'Investment added.');loadInvestments();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('ii-save-txt').textContent=id&&id!=='undefined'?'Save Changes':'Add Investment';}
-}
-async function deleteInvestment(id){
-  if(!confirm('Delete this investment?'))return;
-  try{await api('/treasury/investments/'+id,{method:'DELETE'});toast('Deleted.');loadInvestments();}catch(e){toast(e.message,'err');}
-}
-
-// ── CASH ──────────────────────────────────────────────────────
-async function loadCash(){
-  $('cash-kpis').innerHTML='<div class="loading-row">Loading...</div>';
-  try{const d=await api('/treasury/cash');if(d.accounts?.length)_cashCache=d.accounts;}catch(e){}
-  if(!_cashCache.length)_cashCache=SC;
-  renderCash();
-}
-function renderCash(){
-  const ca=_cashCache,ngn=ca.filter(a=>a.currency==='NGN'),usd=ca.filter(a=>a.currency==='USD');
-  const totalNGN=ngn.reduce((s,a)=>s+a.balance,0),unres=ngn.filter(a=>!a.restricted).reduce((s,a)=>s+a.balance,0);
-  $('cash-kpis').innerHTML=[
-    {l:'Total NGN Cash',v:fmt(totalNGN),c:'tl',ac:true},
-    {l:'Unrestricted',v:fmt(unres),c:'gr',sub:'Available for use'},
-    {l:'Restricted',v:fmt(totalNGN-unres),c:'rd',sub:'Encumbered'},
-    {l:'FX Holdings (USD)',v:'$'+usd.reduce((s,a)=>s+a.balance,0).toFixed(1)+'M',c:'am'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
-  $('cash-charts').innerHTML='<div class="chart-box"><div class="card-label">Cash by Bank (NGN, \u20a6M)</div><canvas id="ch-cash-bank" height="170"></canvas></div><div class="chart-box"><div class="card-label">Restricted vs Unrestricted</div><canvas id="ch-cash-rest" height="170"></canvas></div>';
-  setTimeout(()=>{
-    mkChart('ch-cash-bank',{type:'bar',data:{labels:ngn.map(a=>a.bank.split(' ')[0]),datasets:[{data:ngn.map(a=>a.balance),backgroundColor:ngn.map((a,i)=>a.restricted?'#e05252':PAL[i%PAL.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-cash-rest',{type:'doughnut',data:{labels:['Unrestricted','Restricted'],datasets:[{data:[unres,totalNGN-unres],backgroundColor:['#22c55e','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-  },60);
-  $('cash-table-wrap').innerHTML='<div class="card-label">Bank Account Balances</div><div class="tw"><table>'+
-    '<thead><tr><th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance</th><th>Status</th><th></th></tr></thead>'+
-    '<tbody>'+ca.map(a=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+a.accountId+'</td><td><strong>'+a.bank+'</strong></td>'+
-      '<td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">'+a.accountNo+'</td>'+
-      '<td style="color:var(--tx2)">'+a.type+'</td>'+
-      '<td style="font-family:var(--mo);color:'+(a.currency==='USD'?'#f5a623':'inherit')+'">'+a.currency+'</td>'+
-      '<td class="nm">'+(a.currency==='USD'?'$':'\u20a6')+fN(a.balance)+(a.currency==='NGN'?'M':'')+'</td>'+
-      '<td><span class="pl '+(a.restricted?'pr':'pg')+'">'+(a.restricted?'\ud83d\udd12 Restricted':'\u2713 Available')+'</span></td>'+
-      '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openCashModal(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteCash(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-      '</div></td></tr>').join('')+'</tbody></table></div>';
-}
-function openCashModal(id){
-  const a=id&&id!=='undefined'?_cashCache.find(x=>x._id===id):null;
-  openModal(a?'Edit Account':'Add Cash Account',
-    '<div class="merr" id="ca-err"></div>'+
-    '<div class="fg"><div class="fld"><label>Account ID *</label><input class="finput" id="ca-id" value="'+(a?.accountId||'')+'"></div>'+
-    '<div class="fld"><label>Bank Name *</label><input class="finput" id="ca-bank" value="'+(a?.bank||'')+'"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Account Number</label><input class="finput" id="ca-acct" value="'+(a?.accountNo||'')+'"></div>'+
-    '<div class="fld"><label>Account Type</label><select class="finput" id="ca-type">'+
-    ['Current','Savings','Dom (USD)','Dom (EUR)'].map(t=>'<option '+(a?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
-    '<div class="fg"><div class="fld"><label>Currency</label><select class="finput" id="ca-ccy">'+
-    ['NGN','USD','EUR','GBP'].map(t=>'<option '+(a?.currency===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
-    '<div class="fld"><label>Balance</label><input class="finput" type="number" id="ca-bal" value="'+(a?.balance||0)+'" min="0" step="0.01"></div></div>'+
-    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ca-rest" '+(a?.restricted?'checked':'')+' style="accent-color:var(--t)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo);text-transform:none;letter-spacing:0">Mark as Restricted (encumbered/pledged)</span></label></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash(\''+id+'\')" ><span id="ca-save-txt">'+(a?'Save Changes':'Add Account')+'</span></button>');
-}
-async function saveCash(id){
-  const err=$('ca-err');err.classList.remove('on');
-  const p={accountId:$('ca-id').value.trim(),bank:$('ca-bank').value.trim(),accountNo:$('ca-acct').value.trim(),type:$('ca-type').value,currency:$('ca-ccy').value,balance:+$('ca-bal').value,restricted:$('ca-rest').checked};
-  if(!p.accountId||!p.bank){err.textContent='Account ID and bank required.';err.classList.add('on');return;}
-  $('ca-save-txt').textContent='Saving...';
-  try{
-    if(id&&id!=='undefined')await api('/treasury/cash/'+id,{method:'PUT',body:JSON.stringify(p)});
-    else await api('/treasury/cash',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id&&id!=='undefined'?'Account updated.':'Account added.');loadCash();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('ca-save-txt').textContent=id&&id!=='undefined'?'Save Changes':'Add Account';}
-}
-async function deleteCash(id){
-  if(!confirm('Delete this account?'))return;
-  try{await api('/treasury/cash/'+id,{method:'DELETE'});toast('Deleted.');loadCash();}catch(e){toast(e.message,'err');}
-}
-
-// ── LIQUIDITY ─────────────────────────────────────────────────
-async function loadLiquidity(){
-  $('liq-kpis').innerHTML='<div class="loading-row">Computing...</div>';
-  const loans=_loansCache.length?_loansCache:SL;
-  const borr=_borrowCache.length?_borrowCache:SB;
-  const inv=_invCache.length?_invCache:SI;
-  const cash=_cashCache.length?_cashCache:SC;
-  const totalCash=cash.filter(a=>a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
-  const totalInv=inv.reduce((s,i)=>s+i.principal,0);
-  const totalDebt=borr.reduce((s,b)=>s+b.outstanding,0);
-  const totalLoans=loans.reduce((s,l)=>s+l.outstanding,0);
-  const netLiq=totalCash+totalInv-totalDebt*.1;
-  const liqRatio=(totalCash+totalInv)/(totalDebt*.2+totalLoans*.1)*100;
-  $('liq-kpis').innerHTML=[
-    {l:'Net Liquidity',v:fmt(netLiq),c:'tl',ac:true},
-    {l:'Liquidity Ratio',v:pct(liqRatio),c:'gr',sub:'Liquid / Obligations'},
-    {l:'30d Forecast',v:fmt(totalCash+totalLoans*.08-totalDebt*.02),c:'bl'},
-    {l:'90d Gap',v:fmt(totalCash+totalLoans*.14-totalDebt*.13),c:totalCash>totalDebt*.1?'gr':'rd'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
-  const liqF=[
-    {p:'Now',n:totalCash,c:totalCash},
-    {p:'30d', n:totalLoans*.08-totalDebt*.02,c:totalCash+totalLoans*.08-totalDebt*.02},
-    {p:'60d', n:totalLoans*.06-totalDebt*.03,c:totalCash+totalLoans*.14-totalDebt*.05},
-    {p:'90d', n:-totalDebt*.08,c:totalCash+totalLoans*.14-totalDebt*.13},
-    {p:'120d',n:totalLoans*.12,c:totalCash+totalLoans*.26-totalDebt*.13},
-    {p:'150d',n:totalInv*.15,c:totalCash+totalLoans*.26+totalInv*.15-totalDebt*.13},
-    {p:'180d',n:totalLoans*.10,c:totalCash+totalLoans*.36+totalInv*.15-totalDebt*.13}
-  ];
-  const gapD=['0-7d','8-30d','31-60d','61-90d','91-180d','181-365d'].map((p,i)=>({
-    p,
-    in:[totalLoans*.04,totalLoans*.08,totalLoans*.12,totalLoans*.05,totalLoans*.15,totalLoans*.20][i],
-    out:[totalDebt*.02,totalDebt*.05,totalDebt*.04,totalDebt*.08,totalDebt*.03,totalDebt*.05][i]
-  }));
-  $('liq-charts2').innerHTML='<div class="chart-box"><div class="card-label">Liquidity Gap \u2014 Inflows vs Outflows (\u20a6M)</div><canvas id="ch-liq-gap" height="170"></canvas></div>'+
-    '<div class="chart-box"><div class="card-label">Liquidity Sources &amp; Obligations</div><div id="liq-src-inner" style="margin-top:.5rem"></div></div>';
-  const unres=cash.filter(a=>!a.restricted&&a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
-  const shortInv=inv.filter(i=>i.tenorDays<=90).reduce((s,i)=>s+i.principal,0);
-  setTimeout(()=>{
-    mkChart('ch-liq-forecast',{type:'line',data:{labels:liqF.map(d=>d.p),datasets:[{label:'Net Flow (\u20a6M)',data:liqF.map(d=>d.n),borderColor:'#00c9a7',backgroundColor:'rgba(0,201,167,.08)',fill:true,tension:.4,pointBackgroundColor:'#00c9a7',pointRadius:3},{label:'Cumulative (\u20a6M)',data:liqF.map(d=>d.c),borderColor:'#63b3ed',fill:false,tension:.3,borderDash:[5,5],pointBackgroundColor:'#63b3ed',pointRadius:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-liq-gap',{type:'bar',data:{labels:gapD.map(d=>d.p),datasets:[{label:'Inflows',data:gapD.map(d=>d.in),backgroundColor:'#22c55e',borderRadius:4},{label:'Outflows',data:gapD.map(d=>d.out),backgroundColor:'#e05252',borderRadius:4}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    const srcEl=$('liq-src-inner');
-    if(srcEl)srcEl.innerHTML=
-      [[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Short Investments (<90d)','#63b3ed'],[fmt(totalLoans*.12),'Loan Collections (est.)','#22c55e']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('')+
-      '<div style="font-size:11px;color:var(--tx3);font-family:var(--mo);padding:8px 0">Obligations:</div>'+
-      [[fmt(borr.filter(b=>b.type!=='Intercompany Loan').reduce((s,b)=>s+b.outstanding,0)*.12),'Debt Maturities (<90d)','#e05252'],[fmt(45),'Operational Expenses','#f5a623'],[fmt(120),'Funding Commitments','#a78bfa']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('');
-  },60);
-}
-
-// ── UPLOAD ────────────────────────────────────────────────────
-function openUploadModal(module){
-  const labels={loans:'Loan Portfolio',borrowings:'Borrowings',investments:'Investments',cash:'Cash Balances'};
-  const cols={loans:'loan_id, customer_name, loan_product_type, principal_amount, outstanding, interest_rate, start_date, maturity_date, days_past_due, credit_rating',borrowings:'borrowing_id, lender_name, borrowing_type, principal, outstanding, interest_rate, tenor_months, repayment_schedule, maturity_date',investments:'investment_id, company_name, investment_type, principal_amount, interest_rate, date_invested, number_of_days',cash:'account_id, bank, account_number, type, currency, balance, restricted'};
-  openModal('Upload '+labels[module],
-    '<div class="nt" style="margin-bottom:1rem">Required columns:<br><span style="font-family:var(--mo);font-size:11px;color:var(--t)">'+cols[module]+'</span></div>'+
-    '<label class="drop-zone" id="drop-zone">'+
-      '<div style="font-size:2rem;margin-bottom:8px">\ud83d\udcc2</div>'+
-      '<div style="font-size:13px;font-weight:500;margin-bottom:4px">Click or drop your Excel/CSV file</div>'+
-      '<div style="font-size:11px;color:var(--tx3)" id="upload-fname">Accepts .xlsx, .xls, .csv \u00b7 Max 5MB</div>'+
-      '<input type="file" accept=".csv,.xlsx,.xls" id="upload-file" style="display:none" onchange="handleUploadFile(this)">'+
-    '</label><div id="upload-log" style="display:none;margin-top:1rem"></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" id="upload-submit" onclick="doUpload(\''+module+'\')" disabled><span id="upload-txt">Import</span></button>'
+  var res = await fetch(
+    API + path,
+    Object.assign({}, opts, {
+      headers: Object.assign(headers, opts.headers || {})
+    })
   );
+
+  const text = await res.text();
+
+  let data;
+
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    throw new Error(
+      'Server returned HTML instead of JSON. Check API URL.'
+    );
+  }
+
+  if (!res.ok) {
+    throw new Error(
+      data.message ||
+      data.error ||
+      'Request failed'
+    );
+  }
+
+  return data;
 }
-function handleUploadFile(inp){
-  if(!inp.files[0])return;
-  $('upload-fname').textContent=inp.files[0].name;
-  $('upload-submit').disabled=false;
+
+// eye toggle
+document.getElementById('eye-btn').addEventListener('click',function(){
+  var inp=document.getElementById('pwd');var show=inp.type==='password';
+  inp.type=show?'text':'password';
+  document.getElementById('eye-show').style.display=show?'none':'';
+  document.getElementById('eye-hide').style.display=show?'':'none';
+});
+
+// card triggers
+document.getElementById('open-signup').addEventListener('click',function(){openCard('signup-card');});
+document.getElementById('open-forgot').addEventListener('click',function(){openCard('forgot-card');});
+document.getElementById('open-contact').addEventListener('click',function(){openCard('contact-card');});
+['signup-close','forgot-close','contact-close'].forEach(function(id){
+  document.getElementById(id).addEventListener('click',function(){document.querySelectorAll('.auth-card').forEach(function(c){c.classList.remove('open');});});
+});
+document.getElementById('su-to-login').addEventListener('click',function(){document.querySelectorAll('.auth-card').forEach(function(c){c.classList.remove('open');});});
+document.getElementById('fp-to-login').addEventListener('click',function(){document.querySelectorAll('.auth-card').forEach(function(c){c.classList.remove('open');});});
+document.querySelectorAll('.auth-card').forEach(function(card){card.addEventListener('click',function(e){if(e.target===card)card.classList.remove('open');});});
+
+// screens
+function showLogin(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('portal-screen').style.display='none';
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('home-link').style.display='flex';
 }
-async function doUpload(module){
-  const file=$('upload-file')?.files[0];if(!file)return;
-  $('upload-txt').textContent='Uploading...';$('upload-submit').disabled=true;
-  $('upload-log').style.display='block';
-  $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:var(--t);font-family:var(--mo)">\u2192</span><span style="color:var(--tx2)">Parsing '+file.name+'...</span></div></div>';
+function showPortal(user){
+  _user=user;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('portal-screen').style.display='block';
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('home-link').style.display='none';
+  document.getElementById('portal-user-name').textContent=user.name;
+  document.getElementById('portal-welcome-name').textContent=user.name.split(' ')[0];
+  document.getElementById('yr').textContent=new Date().getFullYear();
+  if(user.role==='admin')document.getElementById('admin-panel-btn').classList.add('show');
+  else document.getElementById('admin-panel-btn').classList.remove('show');
+}
+function showAdmin(){
+  document.getElementById('portal-screen').style.display='none';
+  document.getElementById('admin-panel').style.display='block';
+  loadUsers();
+}
+
+// LOGIN
+document.getElementById('login-btn').addEventListener('click',async function(){
+  var u=document.getElementById('usr').value.trim();var p=document.getElementById('pwd').value;
+  document.getElementById('login-err').classList.remove('show');
+  if(!u||!p){document.getElementById('login-err').textContent='Please enter both username and password.';document.getElementById('login-err').classList.add('show');return;}
+  document.getElementById('lbt').style.display='none';document.getElementById('lbl').style.display='flex';
+  document.getElementById('login-btn').disabled=true;
   try{
-    const fd=new FormData();fd.append('file',file);
-    const d=await apiForm('/treasury/'+module+'/upload',fd);
-    $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:#22c55e;font-family:var(--mo)">\u2713</span><span style="color:var(--tx2)">'+d.inserted+' records imported successfully.</span></div>'+
-      (d.errors?.length?d.errors.slice(0,5).map(e=>'<div class="ulog-row"><span style="color:#f5a623;font-family:var(--mo)">\u26a0</span><span style="color:var(--tx2)">'+e.error+'</span></div>').join(''):'')+'</div>'+
-      '<button class="bp" style="margin-top:.75rem;width:100%" onclick="closeModal()">Done</button>';
-    toast(d.inserted+' records imported.');
-    const reload={loans:loadLoans,borrowings:loadBorrowings,investments:loadInvestments,cash:loadCash};
-    reload[module]?.();
+    var data=await apiFetch('/auth/login',{method:'POST',body:JSON.stringify({username:u,password:p})});
+    _tok=data.token;sessionStorage.setItem('FM_token',_tok);
+    showPortal(data.user);
   }catch(e){
-    $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:#e05252;font-family:var(--mo)">\u2717</span><span style="color:var(--tx2)">'+e.message+'</span></div></div>';
-    $('upload-txt').textContent='Import';$('upload-submit').disabled=false;
-  }
-}
+    document.getElementById('login-err').textContent=e.message;document.getElementById('login-err').classList.add('show');
+    document.getElementById('pwd').value='';
+  }finally{document.getElementById('lbt').style.display='';document.getElementById('lbl').style.display='none';document.getElementById('login-btn').disabled=false;}
+});
+['usr','pwd'].forEach(function(id){document.getElementById(id).addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('login-btn').click();});});
 
-// ── TEAM ──────────────────────────────────────────────────────
-async function loadTeam(){
-  $('team-table').innerHTML='<div class="loading-row">Loading team members...</div>';
-  try{
-    const d=await api('/org/team');
-    if(!d.members?.length){$('team-table').innerHTML=empty('No team members yet. Add members to share treasury access with your team.');return;}
-    $('team-table').innerHTML='<div class="tw"><table>'+
-      '<thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th></th></tr></thead>'+
-      '<tbody>'+d.members.map(m=>'<tr>'+
-        '<td><strong>'+m.name+'</strong></td>'+
-        '<td style="font-family:var(--mo);font-size:11px">'+m.username+'</td>'+
-        '<td style="font-size:12px;color:var(--tx2)">'+m.email+'</td>'+
-        '<td><span class="team-role-badge '+(m.orgRole==='admin'?'team-role-admin':'team-role-member')+'">'+m.orgRole+'</span></td>'+
-        '<td style="font-size:12px"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:'+(m.active?'#22c55e':'#e05252')+'"></span>'+(m.active?'Active':'Inactive')+'</span></td>'+
-        '<td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">'+(m.lastLogin?fD(m.lastLogin):'Never')+'</td>'+
-        '<td><button class="bsm bd" onclick="removeTeamMember(\''+m._id+'\')" style="padding:4px 10px" title="Remove member">Remove</button></td>'+
-      '</tr>').join('')+'</tbody></table></div>';
-  }catch(e){$('team-table').innerHTML='<div class="nt">\u26a0 '+e.message+'<br><span style="font-size:11px;color:var(--tx3)">Team management requires an Organisation account. <a href="#" onclick="switchView('settings');return false" style="color:var(--t)">Check your account type</a>.</span></div>';}
-}
-function openTeamMemberModal(){
-  openModal('Add Team Member',
-    '<div class="merr" id="tm-err"></div>'+
-    '<div class="nt-info" style="margin-bottom:1rem">The new member will receive a confirmation email to set their password and join your organisation\u2019s treasury workspace. They will have access to all treasury data in your organisation.</div>'+
-    '<div class="fg"><div class="fld"><label>Full Name *</label><input class="finput" id="tm-name" placeholder="e.g. Chioma Okafor"></div>'+
-    '<div class="fld"><label>Email Address *</label><input class="finput" type="email" id="tm-email" placeholder="e.g. chioma@fscfng.com"></div></div>'+
-    '<div class="fld"><label>Role</label><select class="finput" id="tm-role"><option value="member">Member \u2014 view &amp; edit treasury data</option><option value="admin">Admin \u2014 manage team + data</option></select></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveTeamMember()"><span id="tm-save-txt">Send Invitation</span></button>'
-  );
-}
-async function saveTeamMember(){
-  const err=$('tm-err');err.classList.remove('on');
-  const p={name:$('tm-name').value.trim(),email:$('tm-email').value.trim(),orgRole:$('tm-role').value};
-  if(!p.name||!p.email){err.textContent='Name and email are required.';err.classList.add('on');return;}
-  $('tm-save-txt').textContent='Sending...';
-  try{
-    await api('/org/team',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast('Invitation sent to '+p.email);loadTeam();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('tm-save-txt').textContent='Send Invitation';}
-}
-async function removeTeamMember(id){
-  if(!confirm('Remove this member from your organisation?'))return;
-  try{await api('/org/team/'+id,{method:'DELETE'});toast('Member removed.');loadTeam();}catch(e){toast(e.message,'err');}
-}
-
-// ── SETTINGS ──────────────────────────────────────────────────
-async function loadSettings(){
-  $('settings-form').innerHTML='<div class="loading-row">Loading settings...</div>';
-  try{
-    const d=await api('/org/profile');
-    const u=d.user||{},org=d.org||{};
-    const isOrg=u.accountType==='organisation'||!!u.orgId;
-    $('settings-form').innerHTML=
-      '<div class="card" style="margin-bottom:1rem"><div class="section-ttl">Account Information</div>'+
-      '<div class="merr" id="set-err"></div><div class="mok" id="set-ok"></div>'+
-      '<div class="fg"><div class="fld"><label>Full Name</label><input class="finput" id="s-name" value="'+(u.name||'')+'"></div>'+
-      '<div class="fld"><label>Email</label><input class="finput" value="'+(u.email||'')+'" disabled style="opacity:.5"></div></div>'+
-      '<div class="fld"><label>Account Type</label><div style="font-family:var(--mo);font-size:12px;color:var(--t);padding:8px 12px;background:var(--n3);border:1px solid var(--b);border-radius:var(--r)">'+(isOrg?'\ud83c\udfe2 Organisation Account':'\ud83d\udc64 Individual Account')+'</div></div></div>'+
-      (isOrg?
-        '<div class="card" style="margin-bottom:1rem"><div class="section-ttl">Organisation Profile</div>'+
-        '<div class="fg"><div class="fld"><label>Organisation Name</label><input class="finput" id="s-orgname" value="'+(org.name||'')+'"></div>'+
-        '<div class="fld"><label>Domain (e.g. fscfng.com)</label><input class="finput" id="s-domain" value="'+(org.domain||'')+'" placeholder="yourcompany.com"></div></div>'+
-        '<div class="fg"><div class="fld"><label>Description</label><input class="finput" id="s-desc" value="'+(org.description||'')+'"></div>'+
-        '<div class="fld"><label>Organisation Size</label><select class="finput" id="s-size">'+
-        ['1-10','11-50','51-200','201-500','500+'].map(s=>'<option '+(org.size===s?'selected':'')+'>'+s+'</option>').join('')+'</select></div></div></div>':'')+
-      '<div style="display:flex;justify-content:flex-end"><button class="bp" onclick="saveSettings()"><span id="set-save-txt">Save Settings</span></button></div>';
-  }catch(e){$('settings-form').innerHTML='<div class="nt">\u26a0 '+e.message+'</div>';}
-}
-async function saveSettings(){
-  const err=$('set-err'),ok=$('set-ok');
-  if(err)err.classList.remove('on');if(ok)ok.classList.remove('on');
-  $('set-save-txt').textContent='Saving...';
-  try{
-    const p={name:$('s-name')?.value.trim()};
-    if($('s-orgname'))p.orgName=$('s-orgname').value.trim();
-    if($('s-domain'))p.orgDomain=$('s-domain').value.trim();
-    if($('s-desc'))p.orgDescription=$('s-desc').value.trim();
-    if($('s-size'))p.orgSize=$('s-size').value;
-    await api('/org/profile',{method:'PUT',body:JSON.stringify(p)});
-    if(ok){ok.textContent='\u2713 Settings saved.';ok.classList.add('on');}
-    toast('Settings saved.');
-  }catch(e){if(err){err.textContent=e.message;err.classList.add('on');}}
-  finally{if($('set-save-txt'))$('set-save-txt').textContent='Save Settings';}
-}
-
-// ── INIT ──────────────────────────────────────────────────────
-(function(){
-  const fb=$('f-all');if(fb)fb.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';
+// auto-login
+(async function(){
+  var saved=sessionStorage.getItem('FM_token');
+  if(!saved){showLogin();return;}
+  _tok=saved;
+  try{var d=await apiFetch('/auth/me');showPortal(d.user);}
+  catch(e){sessionStorage.removeItem('FM_token');_tok=null;showLogin();}
 })();
 
+// logout
+function doLogout(){
+  if(!confirm('Sign out?'))return;
+  _tok=null;_user=null;sessionStorage.removeItem('FM_token');
+  document.getElementById('usr').value='';document.getElementById('pwd').value='';
+  document.getElementById('login-err').classList.remove('show');
+  showLogin();
+}
+document.getElementById('dd-logout').addEventListener('click',doLogout);
+document.getElementById('admin-logout').addEventListener('click',doLogout);
+
+// user chip dropdown
+document.getElementById('user-chip').addEventListener('click',function(e){
+  e.stopPropagation();document.getElementById('chip-dropdown').classList.toggle('open');
+});
+document.addEventListener('click',function(){document.getElementById('chip-dropdown').classList.remove('open');});
+
+// change password via dropdown
+document.getElementById('dd-chpwd').addEventListener('click',function(){
+  document.getElementById('chip-dropdown').classList.remove('open');
+  hideMsg('chpwd-err','chpwd-ok');
+  ['ch-current','ch-new','ch-confirm'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('chpwd-modal').classList.add('open');
+});
+document.getElementById('chpwd-close').addEventListener('click',function(){document.getElementById('chpwd-modal').classList.remove('open');});
+document.getElementById('chpwd-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+document.getElementById('chpwd-btn').addEventListener('click',async function(){
+  hideMsg('chpwd-err','chpwd-ok');
+  var cur=document.getElementById('ch-current').value;
+  var nw=document.getElementById('ch-new').value;
+  var cf=document.getElementById('ch-confirm').value;
+  if(!cur||!nw||!cf){showErr('chpwd-err','All fields are required.');return;}
+  if(nw.length<8){showErr('chpwd-err','New password must be at least 8 characters.');return;}
+  if(nw!==cf){showErr('chpwd-err','New passwords do not match.');return;}
+  var btn=this;btnLoad(btn,true);
+  try{
+    var d=await apiFetch('/auth/change-password',{method:'PUT',body:JSON.stringify({currentPassword:cur,newPassword:nw})});
+    showOk('chpwd-ok',d.message);
+    setTimeout(function(){document.getElementById('chpwd-modal').classList.remove('open');},2000);
+  }catch(e){showErr('chpwd-err',e.message);}
+  finally{btnLoad(btn,false);}
+});
+
+// admin panel
+document.getElementById('admin-panel-btn').addEventListener('click',showAdmin);
+document.getElementById('admin-back-portal').addEventListener('click',function(){
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('portal-screen').style.display='block';
+});
+
+// URL token check
+(async function(){
+  var p=new URLSearchParams(window.location.search);
+  var ct=p.get('confirm'),rt=p.get('reset');
+  if(ct){
+    openCard('setpwd-card');
+    try{var d=await apiFetch('/auth/confirm/'+ct);document.getElementById('setpwd-greeting').textContent='Welcome, '+d.otherNames+' '+d.surname+'! Create your password.';document.getElementById('setpwd-card').dataset.tok=ct;}
+    catch(e){showErr('sp-err',e.message);document.getElementById('sp-btn').disabled=true;}
+  }
+  if(rt){
+    openCard('resetpwd-card');
+    try{var d2=await apiFetch('/auth/verify-reset/'+rt);document.getElementById('rp-greeting').textContent='Hi '+d2.name+'! Enter your new password.';document.getElementById('resetpwd-card').dataset.tok=rt;}
+    catch(e){showErr('rp-err',e.message);document.getElementById('rp-btn').disabled=true;}
+  }
+})();
+
+// SIGNUP
+document.getElementById('su-btn').addEventListener('click',async function(){
+  hideMsg('su-err','su-ok');
+  var sur=document.getElementById('su-surname').value.trim();
+  var oth=document.getElementById('su-other').value.trim();
+  var eml=document.getElementById('su-email').value.trim();
+  var ph=document.getElementById('su-phone').value.trim();
+  if(!sur||!oth||!eml||!ph){showErr('su-err','Please fill in all fields.');return;}
+  var btn=this;btnLoad(btn,true);
+  try{
+    var d=await apiFetch('/auth/signup',{method:'POST',body:JSON.stringify({surname:sur,otherNames:oth,email:eml,phone:ph})});
+    showOk('su-ok',d.message);
+    ['su-surname','su-other','su-email','su-phone'].forEach(function(id){document.getElementById(id).value='';});
+  }catch(e){showErr('su-err',e.message);}
+  finally{btnLoad(btn,false);}
+});
+
+// SET PASSWORD
+document.getElementById('sp-btn').addEventListener('click',async function(){
+  hideMsg('sp-err','sp-ok');
+  var pwd=document.getElementById('sp-pwd').value;var cpwd=document.getElementById('sp-cpwd').value;
+  var tok=document.getElementById('setpwd-card').dataset.tok;
+  if(!tok){showErr('sp-err','Invalid session. Use your confirmation email link.');return;}
+  if(pwd.length<8){showErr('sp-err','Password must be at least 8 characters.');return;}
+  if(pwd!==cpwd){showErr('sp-err','Passwords do not match.');return;}
+  var btn=this;btnLoad(btn,true);
+  try{
+    var d=await apiFetch('/auth/set-password',{method:'POST',body:JSON.stringify({token:tok,password:pwd})});
+    showOk('sp-ok',d.message+' Redirecting to login...');btn.style.display='none';
+    setTimeout(function(){window.history.replaceState({},'',window.location.pathname);closeCard('setpwd-card');document.getElementById('usr').focus();},2500);
+  }catch(e){showErr('sp-err',e.message);btnLoad(btn,false);}
+});
+
+// FORGOT PASSWORD
+document.getElementById('fp-btn').addEventListener('click',async function(){
+  hideMsg('fp-err','fp-ok');
+  var eml=document.getElementById('fp-email').value.trim();
+  if(!eml){showErr('fp-err','Please enter your email address.');return;}
+  var btn=this;btnLoad(btn,true);
+  try{var d=await apiFetch('/auth/forgot-password',{method:'POST',body:JSON.stringify({email:eml})});showOk('fp-ok',d.message);document.getElementById('fp-email').value='';}
+  catch(e){showErr('fp-err',e.message);}
+  finally{btnLoad(btn,false);}
+});
+
+// RESET PASSWORD
+document.getElementById('rp-btn').addEventListener('click',async function(){
+  hideMsg('rp-err','rp-ok');
+  var pwd=document.getElementById('rp-pwd').value;var cpwd=document.getElementById('rp-cpwd').value;
+  var tok=document.getElementById('resetpwd-card').dataset.tok;
+  if(!tok){showErr('rp-err','Invalid session. Use your reset email link.');return;}
+  if(pwd.length<8){showErr('rp-err','Password must be at least 8 characters.');return;}
+  if(pwd!==cpwd){showErr('rp-err','Passwords do not match.');return;}
+  var btn=this;btnLoad(btn,true);
+  try{
+    var d=await apiFetch('/auth/reset-password',{method:'POST',body:JSON.stringify({token:tok,password:pwd})});
+    showOk('rp-ok',d.message+' Redirecting to login...');btn.style.display='none';
+    setTimeout(function(){window.history.replaceState({},'',window.location.pathname);closeCard('resetpwd-card');document.getElementById('usr').focus();},2500);
+  }catch(e){showErr('rp-err',e.message);btnLoad(btn,false);}
+});
+
+// CONTACT ADMIN
+document.getElementById('ca-btn').addEventListener('click',async function(){
+  hideMsg('ca-err','ca-ok');
+  var uname=document.getElementById('ca-username').value.trim();
+  var email=document.getElementById('ca-email').value.trim();
+  var msg=document.getElementById('ca-msg').value.trim();
+  if(!uname||!email||!msg){showErr('ca-err','Please fill in all fields.');return;}
+  var btn=this;btnLoad(btn,true);
+  try{
+    var d=await apiFetch('/auth/contact-admin',{method:'POST',body:JSON.stringify({username:uname,email:email,message:msg})});
+    showOk('ca-ok',d.message);
+    ['ca-username','ca-email','ca-msg'].forEach(function(id){document.getElementById(id).value='';});
+    setTimeout(function(){closeCard('contact-card');},3000);
+  }catch(e){showErr('ca-err',e.message);}
+  finally{btnLoad(btn,false);}
+});
+
+// ══ ADMIN USER MANAGEMENT ══
+var _editId=null;
+async function loadUsers(){
+  var tbody=document.getElementById('users-tbody');
+  tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr>';
+  try{
+    var d=await apiFetch('/users');
+    if (!d.users || !Array.isArray(d.users) || d.users.length === 0) {
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="7" style="
+                text-align:center;
+                padding:2rem;
+                color:var(--tx3);
+                font-family:var(--mo);
+                font-size:12px
+            ">
+                No users found.
+            </td>
+        </tr>
+    `;
+    return;
+}
+
+// Escape HTML
+function escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// Safe string conversion
+function safeText(value) {
+    if (value === null || value === undefined) return '—';
+
+    if (typeof value === 'object') {
+        try {
+            return JSON.stringify(value);
+        } catch {
+            return '—';
+        }
+    }
+
+    return String(value);
+}
+
+tbody.innerHTML = d.users.map((u) => {
+
+    const id = safeText(u._id);
+    const username = safeText(u.username);
+    const name = safeText(u.name);
+    const email = safeText(u.email);
+    const role = safeText(u.role);
+    const active = Boolean(u.active);
+
+    let lastLogin = '—';
+
+    if (u.lastLogin) {
+        try {
+            lastLogin = new Date(u.lastLogin)
+                .toLocaleDateString('en-GB');
+        } catch (e) {
+            lastLogin = '—';
+        }
+    }
+
+    return `
+        <tr>
+            <td style="font-family:var(--mo);font-size:12px">
+                ${escapeHtml(username)}
+            </td>
+
+            <td>
+                ${escapeHtml(name)}
+            </td>
+
+            <td style="font-size:12px;color:var(--tx2)">
+                ${escapeHtml(email)}
+            </td>
+
+            <td>
+                <span class="role-badge ${escapeHtml(role)}">
+                    ${escapeHtml(role)}
+                </span>
+            </td>
+
+            <td>
+                <span class="sdot ${active ? 'active' : 'inactive'}"></span>
+                ${active ? 'Active' : 'Inactive'}
+            </td>
+
+            <td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">
+                ${lastLogin}
+            </td>
+
+            <td style="display:flex;gap:6px">
+                <button
+                    class="act-btn"
+                    data-id="${escapeHtml(id)}"
+                    data-username="${escapeHtml(username)}"
+                    data-name="${escapeHtml(name)}"
+                    data-email="${escapeHtml(email)}"
+                    data-role="${escapeHtml(role)}"
+                    data-active="${active}"
+                    onclick="
+                        editUser(
+                            this.dataset.id,
+                            this.dataset.username,
+                            this.dataset.name,
+                            this.dataset.email,
+                            this.dataset.role,
+                            this.dataset.active === 'true'
+                        )
+                    "
+                >
+                    Edit
+                </button>
+
+                <button
+                    class="act-btn danger"
+                    data-id="${escapeHtml(id)}"
+                    data-username="${escapeHtml(username)}"
+                    onclick="
+                        delUser(
+                            this.dataset.id,
+                            this.dataset.username
+                        )
+                    "
+                >
+                    Delete
+                </button>
+            </td>
+        </tr>
+    `;
+}).join('');
+  }catch(e){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--rd);font-family:var(--mo);font-size:12px">'+e.message+'</td></tr>';}
+}
+function showAdminMsg(msg,type){
+  var el=document.getElementById('admin-msg');el.textContent=msg;el.className='admin-msg '+(type||'ok');
+  setTimeout(function(){el.className='admin-msg';},4000);
+}
+document.getElementById('add-user-btn').addEventListener('click',function(){
+  _editId=null;
+  document.getElementById('um-title').textContent='Add New User';
+  document.getElementById('um-name').value='';
+  document.getElementById('um-username').value='';document.getElementById('um-username').disabled=false;
+  document.getElementById('um-email').value='';document.getElementById('um-email').disabled=false;
+  document.getElementById('um-pwd').value='';document.getElementById('um-pwd').placeholder='Min 8 characters';
+  document.getElementById('um-pwd-hint').style.display='none';
+  document.getElementById('um-role').value='user';
+  document.getElementById('um-active-field').style.display='none';
+  document.getElementById('um-err').className='um-err';
+  document.getElementById('um-submit').textContent='Create User';
+  document.getElementById('user-modal').classList.add('open');
+});
+function editUser(id,username,name,email,role,active){
+  _editId=id;
+  document.getElementById('um-title').textContent='Edit User';
+  document.getElementById('um-name').value=name;
+  document.getElementById('um-username').value=username;document.getElementById('um-username').disabled=true;
+  document.getElementById('um-email').value=email;document.getElementById('um-email').disabled=true;
+  document.getElementById('um-pwd').value='';document.getElementById('um-pwd').placeholder='Leave blank to keep current';
+  document.getElementById('um-pwd-hint').style.display='';
+  document.getElementById('um-role').value=role;
+  document.getElementById('um-active-field').style.display='';
+  document.getElementById('um-active').value=String(active);
+  document.getElementById('um-err').className='um-err';
+  document.getElementById('um-submit').textContent='Save Changes';
+  document.getElementById('user-modal').classList.add('open');
+}
+document.getElementById('um-cancel').addEventListener('click',function(){document.getElementById('user-modal').classList.remove('open');_editId=null;});
+document.getElementById('um-submit').addEventListener('click',async function(){
+  var btn=this;var errEl=document.getElementById('um-err');errEl.className='um-err';
+  var name=document.getElementById('um-name').value.trim();
+  var pwd=document.getElementById('um-pwd').value;
+  var role=document.getElementById('um-role').value;
+  var active=document.getElementById('um-active').value==='true';
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    if(_editId){
+      var body={name,role,active};if(pwd)body.password=pwd;
+      await apiFetch('/users/'+_editId,{method:'PUT',body:JSON.stringify(body)});
+      showAdminMsg('User updated successfully.');
+    }else{
+      var username=document.getElementById('um-username').value.trim();
+      var email=document.getElementById('um-email').value.trim();
+      if(!name||!username||!email||!pwd){errEl.textContent='All fields required for new user.';errEl.className='um-err show';return;}
+      await apiFetch('/users',{method:'POST',body:JSON.stringify({name,username,email,password:pwd,role})});
+      showAdminMsg('User created successfully.');
+    }
+    document.getElementById('user-modal').classList.remove('open');_editId=null;loadUsers();
+  }catch(e){errEl.textContent=e.message;errEl.className='um-err show';}
+  finally{btn.disabled=false;btn.textContent=_editId?'Save Changes':'Create User';}
+});
+async function delUser(id,username){
+  if(!confirm('Permanently delete user "'+username+'"? This cannot be undone.'))return;
+  try{await apiFetch('/users/'+id,{method:'DELETE'});showAdminMsg('User deleted.');loadUsers();}
+  catch(e){showAdminMsg(e.message,'err');}
+}
 </script>
 </body>
 </html>
