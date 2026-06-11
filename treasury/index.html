@@ -994,7 +994,7 @@ async function loadTeam(){
         '<td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">'+(m.lastLogin?fD(m.lastLogin):'Never')+'</td>'+
         '<td><button class="bsm bd" onclick="removeTeamMember(\''+m._id+'\')" style="padding:4px 10px" title="Remove member">Remove</button></td>'+
       '</tr>').join('')+'</tbody></table></div>';
-  }catch(e){$('team-table').innerHTML='<div class="nt">\u26a0 '+e.message+'<br><span style="font-size:11px;color:var(--tx3)">Team management requires an Organisation account. <a href="#" onclick="switchView('settings');return false" style="color:var(--t)">Check your account type</a>.</span></div>';}
+  }catch(e){$('team-table').innerHTML='<div class="nt">&#9888; '+e.message+'<br><span style="font-size:11px;color:var(--tx3)">Team management requires an Organisation account. Go to Settings to check your account type.</span></div>';}
 }
 function openTeamMemberModal(){
   openModal('Add Team Member',
