@@ -298,6 +298,14 @@ footer{background:var(--n2);border-top:1px solid var(--b);padding:1.25rem 2rem;d
 </div>
 
 <!-- ═══ PAGE: FOREX ═══ -->
+  app.get('/api/proxy', async (req, res) => {
+  try {
+    const r = await fetch(decodeURIComponent(req.query.url));
+    const text = await r.text();
+    res.send(text);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+  
 <div class="_pg" id="pg-forex" role="tabpanel" aria-labelledby="tab-forex">
   <div class="_ph">
     <div>
@@ -576,7 +584,7 @@ var _FIT=[
 var _YHMAP={dow:'%5EDJI',ndx:'%5EIXIC',sp500:'%5EGSPC',ftse:'%5EFTSE',dax:'%5EGDAXI',nky:'%5EN225',sse:'000001.SS',snsx:'%5EBSESN',ngx:'%5ENGSEINDX',jse:'%5EJ203.JO',egx:'%5EEGX30'};
 var _CG_IDS='bitcoin,ethereum,binancecoin,ripple,solana,tether,cardano,avalanche-2,dogecoin,chainlink';
 var _CG_MAP={bitcoin:'BTC',ethereum:'ETH',binancecoin:'BNB',ripple:'XRP',solana:'SOL',tether:'USDT',cardano:'ADA','avalanche-2':'AVAX',dogecoin:'DOGE',chainlink:'LINK'};
-var _px='https://corsproxy.io/?url=';
+var _px='https://https://api.allorigins.win/raw?url=';
 
 function _upd(){var e=_$('_ts');if(e)e.textContent='Updated: '+new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+' WAT';}
 function _sts(id,st){var e=_$('_as1');if(!e)return;var m={live:'● Live',loading:'◌ Fetching…',fallback:'○ Cached'};var c={live:'var(--gr)',loading:'var(--am)',fallback:'var(--tx3)'};e.textContent=m[st]||m.fallback;e.style.color=c[st]||c.fallback;}
@@ -957,7 +965,7 @@ async function _fNG(){
   if(mpc||infl||tbill){_ngCache={data:{mpc,infl,tbill},ts:Date.now()};_apNG({mpc,infl,tbill});}
 }
 async function _sCBN(){
-  var url='https://www.cbn.gov.ng/MonetaryPolicy/decisions.asp';
+  var url='https://eis-recbackend.onrender.com/api/proxy?url=${encodeURIComponent('https://www.cbn.gov.ng/MonetaryPolicy/decisions.asp';
   var r=await fetch(_px+encodeURIComponent(url),{signal:AbortSignal.timeout(14000)});
   if(!r.ok)throw new Error('CBN '+r.status);
   var html=await r.text();
@@ -980,7 +988,7 @@ async function _sNBS(){
   return{headline:series[series.length-1],prev:series.length>=2?series[series.length-2]:null};
 }
 async function _sTB(){
-  var url='https://www.cbn.gov.ng/rates/tBillsrates.asp';
+  var url='https://eis-recbackend.onrender.com/api/proxy?url=${encodeURIComponent('https://www.cbn.gov.ng/rates/tBillsrates.asp';
   var r=await fetch(_px+encodeURIComponent(url),{signal:AbortSignal.timeout(14000)});
   if(!r.ok)throw new Error('TBill '+r.status);
   var html=await r.text();
