@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>Treasury Intelligence — FM Finance Suite</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -132,7 +132,87 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 .team-role-badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:600}
 .team-role-admin{background:rgba(0,201,167,.12);color:var(--t);border:1px solid rgba(0,201,167,.25)}
 .team-role-member{background:var(--sf2);color:var(--tx3);border:1px solid var(--b2)}
-
+@media(max-width:640px){
+  #topbar{padding:0 1rem;height:52px}
+  .logo{font-size:15px}
+  .lm{width:26px;height:26px;font-size:8px}
+  .org-badge{display:none}
+  .user-chip-top{display:none}
+  .nav-btn-link{padding:5px 9px;font-size:10.5px}
+  #topbar .nav-btn-link[href="../"]{display:none}
+}
+@media(max-width:768px){
+  #layout{flex-direction:column;overflow:visible}
+  #sidebar{
+    width:100%;height:auto;border-right:none;border-top:1px solid var(--b2);
+    padding:0;overflow-x:auto;overflow-y:hidden;
+    display:flex;flex-direction:row;
+    position:fixed;bottom:0;left:0;right:0;z-index:150;
+    background:var(--n2);box-shadow:0 -4px 20px rgba(0,0,0,.4);
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  #sidebar::-webkit-scrollbar{display:none}
+  .nav-section{display:none}
+  .nav-item{
+    flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;padding:8px 12px;font-size:9px;
+    border-left:none;border-top:3px solid transparent;
+    white-space:nowrap;flex-shrink:0;min-width:60px;
+  }
+  .nav-item.active{border-left:none;border-top-color:var(--t);background:var(--td)}
+  .nav-item svg{width:17px;height:17px;opacity:.8}
+  .nav-item.active svg{opacity:1}
+  #content{padding:1rem;padding-bottom:80px;overflow-y:auto;flex:1}
+}
+@media(max-width:640px){
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:7px}
+  .kpi{padding:12px 14px}
+  .kv{font-size:18px}
+  .kl{font-size:9.5px}
+  .ks{font-size:9.5px}
+  .vhdr{flex-direction:column;align-items:flex-start;gap:.5rem}
+  .vacts{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .vacts::-webkit-scrollbar{display:none}
+  .vttl{font-size:18px}
+  .chart-2{grid-template-columns:1fr}
+  .chart-box{padding:.85rem}
+  #modal-bg{align-items:flex-end;padding:0}
+  .modal{border-radius:var(--rl) var(--rl) 0 0;max-height:92dvh;width:100%;max-width:100%}
+  .modal.wide{max-width:100%}
+  .mhdr{padding:1rem 1.25rem}
+  .mbody{padding:1.25rem}
+  .mfoot{padding:.85rem 1.25rem;gap:.4rem}
+  .mfoot button{flex:1;justify-content:center}
+  .fg{grid-template-columns:1fr}
+  .card{padding:1.1rem 1rem}
+}
+@media(max-width:768px){
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tw table{min-width:640px}
+  #loans-table .tw table{min-width:760px}
+  #ecl-table .tw table{min-width:680px}
+  #borrowings-table-wrap .tw table{min-width:700px}
+  #investments-table-wrap .tw table{min-width:720px}
+  #cash-table-wrap .tw table{min-width:580px}
+  .tw thead th:first-child,
+  .tw tbody td:first-child{
+    position:sticky;left:0;background:var(--n3);z-index:2;
+    box-shadow:2px 0 6px rgba(0,0,0,.25);
+  }
+  .tw tbody tr:hover td:first-child{background:var(--n4)}
+}
+@media(max-width:480px){
+  #toast{left:1rem;right:1rem;transform:none;max-width:none;white-space:normal}
+  .vacts button{font-size:11.5px;padding:7px 12px}
+  .stress-row{flex-direction:column;gap:.5rem}
+  .stress-row input[type=range]{width:100%}
+}
+@media(max-width:360px){
+  .kpi-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .finput,select,input,textarea{font-size:16px!important}
+}
 </style>
 </head>
 <body>
@@ -1061,11 +1141,17 @@ async function saveSettings(){
   finally{if($('set-save-txt'))$('set-save-txt').textContent='Save Settings';}
 }
 
-// ── INIT ──────────────────────────────────────────────────────
+
 (function(){
   const fb=$('f-all');if(fb)fb.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';
 })();
 
+  if(CSS.supports('padding-bottom','env(safe-area-inset-bottom)')){
+  document.getElementById('sidebar').style.paddingBottom='env(safe-area-inset-bottom)';
+  document.getElementById('content').style.paddingBottom='calc(80px + env(safe-area-inset-bottom))';
+}
+document.getElementById('modal-bg').addEventListener('click',function(e){if(e.target===this)closeModal();});
+  
 </script>
 </body>
 </html>
