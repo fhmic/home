@@ -39,15 +39,7 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .back-btn:hover{background:var(--sf2);color:var(--tx)}
 .logout-btn{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--b2);border-radius:var(--r);padding:6px 14px;font-size:12px;font-family:var(--mo);color:var(--tx3);cursor:pointer;transition:all .2s;}
 .logout-btn:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
-.role-badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:500;}
-.role-badge.admin{background:rgba(0,201,167,.12);color:var(--t);border:1px solid rgba(0,201,167,.25);}
-.role-badge.user{background:var(--sf2);color:var(--tx3);border:1px solid var(--b2);}
-.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
-.status-dot.active{background:var(--gr);}
-.status-dot.inactive{background:var(--rd);}
-.action-btn{background:transparent;border:1px solid var(--b2);color:var(--tx3);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-family:var(--mo);transition:all .2s;}
-.action-btn:hover{background:var(--sf2);color:var(--tx);}
-.action-btn.danger:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd);}
+
 #main{max-width:1140px;margin:0 auto;padding:2.5rem 1.5rem 0}
 #stp{display:flex;align-items:center;margin-bottom:2.5rem}
 .si{display:flex;align-items:center;gap:10px;font-size:12px;font-family:var(--mo);color:var(--tx3);transition:color .3s}
@@ -181,7 +173,7 @@ tbody tr:hover{background:var(--sf)}
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span id="user-display">User</span>
     </div>
-   
+
     <a href="../" class="back-btn" title="Back to Homepage">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Home
@@ -313,8 +305,7 @@ async function _apiFetch(path, opts){
     const data = await _apiFetch('/auth/me');
     _currentUser = data.user;
     document.getElementById('user-display').textContent = data.user.name;
-    if(data.user.role==='admin') document.getElementById('admin-nav-btn').classList.add('visible');
-  } catch(e){
+     } catch(e){
     sessionStorage.removeItem('FM_token');
     window.location.href='../portal/';
   }
@@ -325,10 +316,6 @@ document.getElementById('logout-btn').addEventListener('click',function(){
   sessionStorage.removeItem('FM_token');
   window.location.href='../portal/';
 });
-
-const _adminModal = document.getElementById('admin-modal');
-const _userFormModal = document.getElementById('user-form-modal');
-let _editUserId = null;
 
 document.getElementById('admin-nav-btn').addEventListener('click',function(){
   _adminModal.classList.add('open'); _loadUsers();
