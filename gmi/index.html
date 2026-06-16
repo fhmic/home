@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>FM Markets — Global Intelligence | FM Finance Suite</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">ac
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -324,7 +324,7 @@ footer{background:var(--n2);border-top:1px solid var(--b);padding:1.25rem 2rem;d
   <div class="_sep"></div>
   <div class="_sh fx" style="margin-bottom:1rem">Historical Currency Lookup <span class="_sb of">Free API</span></div>
   <div class="_pan">
-    <div class="_ph2"><div><div class="_pt2">Check Any Currency Pair on Any Date</div><div class="_ps2">Powered by frankfurter.app — free historical data, full CORS support</div></div></div>
+    <div class="_ph2"><div><div class="_pt2">Check Any Currency Pair on Any Date</div><div class="_ps2">Powered by frankfurter.dev — free historical data, full CORS support</div></div></div>
     <div class="_ni">Select a base currency, target currency, and date to retrieve the exact exchange rate on that day.</div>
     <div class="_fg" style="align-items:flex-end">
       <div class="_fld"><label class="_flbl" for="_hbase">Base Currency</label>
@@ -581,7 +581,7 @@ var _FIT=[
 var _YHMAP={dow:'%5EDJI',ndx:'%5EIXIC',sp500:'%5EGSPC',ftse:'%5EFTSE',dax:'%5EGDAXI',nky:'%5EN225',sse:'000001.SS',snsx:'%5EBSESN',ngx:'%5ENGSEINDX',jse:'%5EJ203.JO',egx:'%5EEGX30'};
 var _CG_IDS='bitcoin,ethereum,binancecoin,ripple,solana,tether,cardano,avalanche-2,dogecoin,chainlink';
 var _CG_MAP={bitcoin:'BTC',ethereum:'ETH',binancecoin:'BNB',ripple:'XRP',solana:'SOL',tether:'USDT',cardano:'ADA','avalanche-2':'AVAX',dogecoin:'DOGE',chainlink:'LINK'};
-var _px='https://corsproxy.io/?url=';
+var _px='https://proxy.corsfix.com/?';
 
 function _upd(){var e=_$('_ts');if(e)e.textContent='Updated: '+new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+' WAT';}
 function _sts(id,st){var e=_$('_as1');if(!e)return;var m={live:'● Live',loading:'◌ Fetching…',fallback:'○ Cached'};var c={live:'var(--gr)',loading:'var(--am)',fallback:'var(--tx3)'};e.textContent=m[st]||m.fallback;e.style.color=c[st]||c.fallback;}
@@ -821,25 +821,25 @@ window._lkup=async function(){
       var ngnRate=d.rates&&d.rates['NGN'];
       if(!ngnRate)throw new Error('NGN rate not available');
       rate=base==='NGN'?(1/ngnRate):ngnRate;
-      src='open.er-api.com (latest — NGN historical not available via free tier)';
+      src='open.er-api.com/v6/latest (NGN historical rates not in ECB data — showing current rate)';
     } else {
-      var url2='https://api.frankfurter.app/'+dt+'?from='+base+'&to='+tgt;
+      var url2='https://api.frankfurter.dev/v1/'+dt+'?from='+base+'&to='+tgt;
       var r2=await fetch(url2,{signal:AbortSignal.timeout(10000)});
       if(!r2.ok){
         if(r2.status===404){
-          var nearUrl='https://api.frankfurter.app/latest?from='+base+'&to='+tgt;
+          var nearUrl='https://api.frankfurter.dev/v1/latest?from='+base+'&to='+tgt;
           var r3=await fetch(nearUrl,{signal:AbortSignal.timeout(10000)});
           if(!r3.ok)throw new Error('Pair not available');
           var d3=await r3.json();
           rate=d3.rates&&d3.rates[tgt];
-          src='frankfurter.app (latest rate — date '+dt+' may be a weekend/holiday)';
+          src='frankfurter.dev (latest rate — date '+dt+' may be a weekend/holiday)';
         } else {
           throw new Error('HTTP '+r2.status);
         }
       } else {
         var d2=await r2.json();
         rate=d2.rates&&d2.rates[tgt];
-        src='frankfurter.app';
+        src='frankfurter.dev';
       }
     }
 
@@ -853,7 +853,12 @@ window._lkup=async function(){
       +'<div style="font-size:13px;color:var(--tx2);margin-top:6px">Inverse: 1 '+tgt+' = '+invFmt+' '+base+'</div>'
       +'<div style="font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:8px">Source: '+src+' · Date: '+dt+'</div>'
       +'</div>';
-  }catch(e){re.innerHTML='<div class="_nt">Could not fetch rate: '+e.message+'. Try a weekday date (markets are closed on weekends) or check the currency pair is supported.</div>';}
+  }catch(e){re.innerHTML='<div class="_nt"><strong>Could not fetch rate.</strong> '+e.message+'<br><br>'
+        +'<strong>Tips:</strong> Use a weekday date — ECB does not publish on weekends or holidays. '
+        +'NGN pairs show the current live rate (ECB does not track NGN historically). '
+        +'RUB is unavailable via ECB data. '
+        +'Supported currencies: EUR USD GBP JPY CAD CHF AUD CNY SGD NOK SEK INR ZAR GHS KES.'
+        +'</div>';}
 };
 (function(){var di=_$('_hdt');if(di){di.max=_ts();di.value=_ts();}})();
 
@@ -934,22 +939,26 @@ async function _fFX(){
 
 async function _fIdx(){
   _sts('stocks','loading');
-  var _proxies=[
+  var _yprox=[
     'https://corsproxy.io/?url=',
-    'https://api.codetabs.com/v1/proxy?quest=',
-    'https://thingproxy.freeboard.io/fetch/'
+    'https://proxy.corsfix.com/?'
   ];
   async function _tryIdx(yh){
-    var enc='https://query1.finance.yahoo.com/v8/finance/chart/'+yh+'?interval=1d&range=5d';
-    for(var pi=0;pi<_proxies.length;pi++){
-      try{
-        var r=await fetch(_proxies[pi]+encodeURIComponent(enc),{signal:AbortSignal.timeout(10000)});
-        if(!r.ok)continue;
-        var data=await r.json();
-        if(data&&data.chart&&data.chart.result&&data.chart.result[0])return data;
-      }catch(e){continue;}
+    var hosts=['query2.finance.yahoo.com','query1.finance.yahoo.com'];
+    for(var pi=0;pi<_yprox.length;pi++){
+      for(var hi=0;hi<hosts.length;hi++){
+        try{
+          var enc='https://'+hosts[hi]+'/v8/finance/chart/'+yh+'?interval=1d&range=5d';
+          var r=await fetch(_yprox[pi]+encodeURIComponent(enc),{signal:AbortSignal.timeout(8000)});
+          if(!r.ok)continue;
+          var ct=r.headers.get('content-type')||'';
+          if(!ct.includes('json'))continue;
+          var data=await r.json();
+          if(data&&data.chart&&data.chart.result&&data.chart.result[0])return data;
+        }catch(e){continue;}
+      }
     }
-    throw new Error('all proxies failed for '+yh);
+    throw new Error('yahoo unavailable for '+yh);
   }
   var res=await Promise.allSettled(Object.entries(_YHMAP).map(async function(en){
     var id=en[0],yh=en[1];
