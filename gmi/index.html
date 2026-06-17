@@ -815,8 +815,13 @@ window._lkup=async function(){
     var hasRUB=(base==='RUB'||tgt==='RUB');
 
     if(hasNGN){
-      var ngnRate=await _ngnHist(dt);
-      if(!ngnRate)throw new Error('No historical USD/NGN data for this date');
+      var ngnResult=await _ngnHist(dt);
+      if(!ngnResult||!ngnResult.value){
+        var reason=ngnResult&&ngnResult.error?ngnResult.error:'Yahoo Finance has no USD/NGN data near this date';
+        throw new Error(reason);
+      }
+      var ngnRate=ngnResult.value;
+      var dateNote=ngnResult.daysOff>0?' (closest available: '+ngnResult.daysOff+' day(s) from requested date)':'';
       if(base==='NGN'&&tgt==='USD'){rate=1/ngnRate;}
       else if(base==='USD'&&tgt==='NGN'){rate=ngnRate;}
       else if(base==='NGN'){
@@ -828,7 +833,7 @@ window._lkup=async function(){
         if(!otherToUsd)throw new Error(base+' rate not available for this date');
         rate=otherToUsd*ngnRate;
       }
-      src='Yahoo Finance (USD/NGN=X historical close)';
+      src='Yahoo Finance (USD/NGN=X historical close)'+dateNote;
     } else if(hasRUB){
       var nonRub=base==='RUB'?tgt:base;
       var url='https://open.er-api.com/v6/latest/'+nonRub;
@@ -856,10 +861,11 @@ window._lkup=async function(){
       +'<div style="font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:8px">Source: '+src+' · Date: '+dt+'</div>'
       +'</div>';
   }catch(e){re.innerHTML='<div class="_nt"><strong>Could not fetch rate.</strong> '+e.message+'<br><br>'
-        +'<strong>Tips:</strong> Use a weekday date — markets are closed on weekends and holidays. '
-        +'NGN historical data comes from Yahoo Finance and may be sparse before 2017. '
-        +'RUB shows live rate only (historical RUB data is restricted). '
-        +'Try a nearby weekday if this exact date has no data.'
+        +'<strong>What this usually means:</strong><br>'
+        +'• Yahoo Finance has gaps in its USD/NGN=X feed — try a date a few days earlier or later<br>'
+        +'• A CORS proxy may be temporarily rate-limited — wait a moment and retry<br>'
+        +'• For non-NGN/RUB pairs, frankfurter.dev (ECB data) does not publish on weekends/holidays<br>'
+        +'• RUB only shows the current live rate (historical RUB data is restricted)'
         +'</div>';}
 };
 
@@ -885,34 +891,45 @@ var _ngnCache={};
 async function _ngnHist(dt){
   if(_ngnCache[dt]!==undefined)return _ngnCache[dt];
   var target=new Date(dt).getTime()/1000;
-  var p1=Math.floor(target-7*86400);
-  var p2=Math.ceil(target+7*86400);
+  var p1=Math.floor(target-21*86400);
+  var p2=Math.ceil(target+21*86400);
   var hosts=['query2.finance.yahoo.com','query1.finance.yahoo.com'];
   var proxies=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url='];
+  var lastErr='';
   for(var pi=0;pi<proxies.length;pi++){
     for(var hi=0;hi<hosts.length;hi++){
       try{
         var enc='https://'+hosts[hi]+'/v8/finance/chart/NGN%3DX?period1='+p1+'&period2='+p2+'&interval=1d';
         var r=await fetch(proxies[pi]+encodeURIComponent(enc),{signal:_sig(9000)});
-        if(!r.ok)continue;
-        var data=await r.json();
+        if(!r.ok){lastErr='HTTP '+r.status+' from '+hosts[hi];continue;}
+        var txt=await r.text();
+        var data;
+        try{data=JSON.parse(txt);}catch(pe){lastErr='Non-JSON response (proxy likely blocked)';continue;}
         var result=data&&data.chart&&data.chart.result&&data.chart.result[0];
-        if(!result)continue;
+        if(!result){
+          var apiErr=data&&data.chart&&data.chart.error&&data.chart.error.description;
+          lastErr=apiErr||'Yahoo returned no result for this symbol/range';
+          continue;
+        }
         var ts=result.timestamp||[];
         var closes=(result.indicators&&result.indicators.quote&&result.indicators.quote[0]&&result.indicators.quote[0].close)||[];
-        if(!ts.length)continue;
-        var bestIdx=0,bestDiff=Infinity;
+        if(!ts.length){lastErr='Yahoo returned zero data points in the ±21 day window';continue;}
+        var bestIdx=-1,bestDiff=Infinity;
         for(var i=0;i<ts.length;i++){
+          if(closes[i]==null)continue;
           var diff=Math.abs(ts[i]-target);
-          if(diff<bestDiff&&closes[i]!=null){bestDiff=diff;bestIdx=i;}
+          if(diff<bestDiff){bestDiff=diff;bestIdx=i;}
         }
+        if(bestIdx===-1){lastErr='All data points in range were null';continue;}
         var val=closes[bestIdx];
-        if(val){_ngnCache[dt]=val;return val;}
-      }catch(e){continue;}
+        var daysOff=Math.round(bestDiff/86400);
+        _ngnCache[dt]={value:val,daysOff:daysOff};
+        return _ngnCache[dt];
+      }catch(e){lastErr=e.message;continue;}
     }
   }
-  _ngnCache[dt]=null;
-  return null;
+  _ngnCache[dt]={value:null,daysOff:null,error:lastErr||'All proxies and hosts failed'};
+  return _ngnCache[dt];
 }
 (function(){var di=_$('_hdt');if(di){di.max=_ts();di.value=_ts();}})();
 
