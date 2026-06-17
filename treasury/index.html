@@ -836,7 +836,7 @@ function openInvestmentModal(id){
     '<div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="'+(i?.investmentId||'')+'"></div>'+
     '<div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="'+(i?.counterparty||'')+'"></div></div>'+
     '<div class="fld"><label>Type</label><select class="finput" id="ii-type">'+
-    ['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
+    ['Fixed Deposit','Treasury Bills','Money Market Funds','Mutual Funds','Government Security','Commercial Paper','Others'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
     '<div class="fg"><div class="fld"><label>Principal (\u20a6M) *</label><input class="finput" type="number" id="ii-principal" value="'+(i?.principal||'')+'"></div>'+
     '<div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="ii-rate" value="'+(i?.interestRate||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="'+(i?.dateInvested?.slice(0,10)||'')+'"></div>'+
