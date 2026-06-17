@@ -553,8 +553,8 @@ async function loadDashboard(){
   const stageD=[{s:'Stage 1',v:s1.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s1).total,c:'#22c55e'},{s:'Stage 2',v:s2.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s2).total,c:'#f5a623'},{s:'Stage 3',v:s3.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s3).total,c:'#e05252'}];
   const prodMap={};loans.forEach(l=>{prodMap[l.product]=(prodMap[l.product]||0)+l.outstanding;});
   const now=new Date('2024-06-01');
-  const mb={'0-30d':0,'31-60d':0,'61-90d':0,'91-180d':0,'>180d':0};
-  loans.forEach(l=>{const d=Math.max(0,(new Date(l.maturityDate)-now)/86400000);if(d<=30)mb['0-30d']+=l.outstanding;else if(d<=60)mb['31-60d']+=l.outstanding;else if(d<=90)mb['61-90d']+=l.outstanding;else if(d<=180)mb['91-180d']+=l.outstanding;else mb['>180d']+=l.outstanding;});
+  const mb={'0-30d':0,'31-60d':0,'61-90d':0,'91-180d':0,'181-365d':0,'>365d':0};
+  loans.forEach(l=>{const d=Math.max(0,(new Date(l.maturityDate)-now)/86400000);if(d<=30)mb['0-30d']+=l.outstanding;else if(d<=60)mb['31-60d']+=l.outstanding;else if(d<=90)mb['61-90d']+=l.outstanding;else if(d<=180)mb['91-180d']+=l.outstanding;else if(d<=365)mb['181-365d']+=l.outstanding;else mb['>365d']+=l.outstanding;});
   setTimeout(()=>{
     mkChart('ch-ds',{type:'doughnut',data:{labels:stageD.map(s=>s.s),datasets:[{data:stageD.map(s=>s.v),backgroundColor:stageD.map(s=>s.c),borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'62%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
     mkChart('ch-dp',{type:'bar',data:{labels:Object.keys(prodMap),datasets:[{data:Object.values(prodMap),backgroundColor:PAL,borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{display:false}}}}});
