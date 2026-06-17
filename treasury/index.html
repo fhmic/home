@@ -11,7 +11,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --n:#0a1628;--n2:#0f1f3d;--n3:#162747;--n4:#1c3057;
@@ -133,90 +132,45 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 .team-role-admin{background:rgba(0,201,167,.12);color:var(--t);border:1px solid rgba(0,201,167,.25)}
 .team-role-member{background:var(--sf2);color:var(--tx3);border:1px solid var(--b2)}
 @media(max-width:640px){
-  #topbar{padding:0 1rem;height:52px}
-  .logo{font-size:15px}
-  .lm{width:26px;height:26px;font-size:8px}
-  .org-badge{display:none}
-  .user-chip-top{display:none}
-  .nav-btn-link{padding:5px 9px;font-size:10.5px}
+  #topbar{padding:0 1rem;height:52px}.logo{font-size:15px}.lm{width:26px;height:26px;font-size:8px}
+  .org-badge{display:none}.user-chip-top{display:none}.nav-btn-link{padding:5px 9px;font-size:10.5px}
   #topbar .nav-btn-link[href="../"]{display:none}
 }
 @media(max-width:768px){
   #layout{flex-direction:column;overflow:visible}
-  #sidebar{
-    width:100%;height:auto;border-right:none;border-top:1px solid var(--b2);
-    padding:0;overflow-x:auto;overflow-y:hidden;
-    display:flex;flex-direction:row;
-    position:fixed;bottom:0;left:0;right:0;z-index:150;
-    background:var(--n2);box-shadow:0 -4px 20px rgba(0,0,0,.4);
-    -webkit-overflow-scrolling:touch;scrollbar-width:none;
-  }
-  #sidebar::-webkit-scrollbar{display:none}
-  .nav-section{display:none}
-  .nav-item{
-    flex-direction:column;align-items:center;justify-content:center;
-    gap:3px;padding:8px 12px;font-size:9px;
-    border-left:none;border-top:3px solid transparent;
-    white-space:nowrap;flex-shrink:0;min-width:60px;
-  }
+  #sidebar{width:100%;height:auto;border-right:none;border-top:1px solid var(--b2);padding:0;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:row;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--n2);box-shadow:0 -4px 20px rgba(0,0,0,.4);-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  #sidebar::-webkit-scrollbar{display:none}.nav-section{display:none}
+  .nav-item{flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 12px;font-size:9px;border-left:none;border-top:3px solid transparent;white-space:nowrap;flex-shrink:0;min-width:60px;}
   .nav-item.active{border-left:none;border-top-color:var(--t);background:var(--td)}
-  .nav-item svg{width:17px;height:17px;opacity:.8}
-  .nav-item.active svg{opacity:1}
+  .nav-item svg{width:17px;height:17px;opacity:.8}.nav-item.active svg{opacity:1}
   #content{padding:1rem;padding-bottom:80px;overflow-y:auto;flex:1}
 }
 @media(max-width:640px){
-  .kpi-grid{grid-template-columns:1fr 1fr;gap:7px}
-  .kpi{padding:12px 14px}
-  .kv{font-size:18px}
-  .kl{font-size:9.5px}
-  .ks{font-size:9.5px}
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:7px}.kpi{padding:12px 14px}.kv{font-size:18px}.kl{font-size:9.5px}.ks{font-size:9.5px}
   .vhdr{flex-direction:column;align-items:flex-start;gap:.5rem}
   .vacts{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .vacts::-webkit-scrollbar{display:none}
-  .vttl{font-size:18px}
-  .chart-2{grid-template-columns:1fr}
-  .chart-box{padding:.85rem}
+  .vacts::-webkit-scrollbar{display:none}.vttl{font-size:18px}.chart-2{grid-template-columns:1fr}.chart-box{padding:.85rem}
   #modal-bg{align-items:flex-end;padding:0}
   .modal{border-radius:var(--rl) var(--rl) 0 0;max-height:92dvh;width:100%;max-width:100%}
-  .modal.wide{max-width:100%}
-  .mhdr{padding:1rem 1.25rem}
-  .mbody{padding:1.25rem}
-  .mfoot{padding:.85rem 1.25rem;gap:.4rem}
-  .mfoot button{flex:1;justify-content:center}
-  .fg{grid-template-columns:1fr}
-  .card{padding:1.1rem 1rem}
+  .modal.wide{max-width:100%}.mhdr{padding:1rem 1.25rem}.mbody{padding:1.25rem}
+  .mfoot{padding:.85rem 1.25rem;gap:.4rem}.mfoot button{flex:1;justify-content:center}.fg{grid-template-columns:1fr}.card{padding:1.1rem 1rem}
 }
 @media(max-width:768px){
-  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .tw table{min-width:640px}
-  #loans-table .tw table{min-width:760px}
-  #ecl-table .tw table{min-width:680px}
-  #borrowings-table-wrap .tw table{min-width:700px}
-  #investments-table-wrap .tw table{min-width:720px}
-  #cash-table-wrap .tw table{min-width:580px}
-  .tw thead th:first-child,
-  .tw tbody td:first-child{
-    position:sticky;left:0;background:var(--n3);z-index:2;
-    box-shadow:2px 0 6px rgba(0,0,0,.25);
-  }
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}.tw table{min-width:640px}
+  #loans-table .tw table{min-width:760px}#ecl-table .tw table{min-width:680px}
+  #borrowings-table-wrap .tw table{min-width:700px}#investments-table-wrap .tw table{min-width:720px}#cash-table-wrap .tw table{min-width:580px}
+  .tw thead th:first-child,.tw tbody td:first-child{position:sticky;left:0;background:var(--n3);z-index:2;box-shadow:2px 0 6px rgba(0,0,0,.25);}
   .tw tbody tr:hover td:first-child{background:var(--n4)}
 }
 @media(max-width:480px){
   #toast{left:1rem;right:1rem;transform:none;max-width:none;white-space:normal}
-  .vacts button{font-size:11.5px;padding:7px 12px}
-  .stress-row{flex-direction:column;gap:.5rem}
-  .stress-row input[type=range]{width:100%}
+  .vacts button{font-size:11.5px;padding:7px 12px}.stress-row{flex-direction:column;gap:.5rem}.stress-row input[type=range]{width:100%}
 }
-@media(max-width:360px){
-  .kpi-grid{grid-template-columns:1fr}
-}
-@media(max-width:768px){
-  .finput,select,input,textarea{font-size:16px!important}
-}
+@media(max-width:360px){.kpi-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.finput,select,input,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>
-
 <div id="app">
   <div id="topbar">
     <div class="logo">
@@ -276,7 +230,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
     <main id="content">
       <div class="view on" id="view-dashboard">
         <div class="vhdr">
-          <div><div class="vttl">Executive Dashboard</div><div class="vsub" id="dash-ts">—</div></div>
+          <div><div class="vttl">Executive Dashboard</div><div class="vsub" id="dash-ts">&#8212;</div></div>
           <button class="bp" onclick="loadDashboard()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
         </div>
         <div class="kpi-grid" id="dash-kpis"></div>
@@ -292,7 +246,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           </div>
         </div>
         <div class="kpi-grid" id="loans-kpis"></div>
-        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">Loan Aging Distribution (₦M)</div><canvas id="ch-loan-aging" height="130"></canvas></div>
+        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">Loan Aging Distribution (&#8358;M)</div><canvas id="ch-loan-aging" height="130"></canvas></div>
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
             <div style="display:flex;gap:6px" id="loan-filters">
@@ -308,7 +262,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
       </div>
       <div class="view" id="view-ecl">
         <div class="vhdr">
-          <div><div class="vttl">IFRS 9 ECL Model</div><div class="vsub">Expected Credit Loss · Stage 1: 12-month · Stage 2 &amp; 3: Lifetime</div></div>
+          <div><div class="vttl">IFRS 9 ECL Model</div><div class="vsub">Expected Credit Loss &middot; Stage 1: 12-month &middot; Stage 2 &amp; 3: Lifetime</div></div>
           <div class="vacts">
             <button onclick="loadLoans()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Reload Portfolio</button>
             <button class="bp" onclick="computeECL()" id="ecl-compute-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Compute ECL</button>
@@ -319,7 +273,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div id="ecl-banner" style="display:none;margin-bottom:1.25rem"></div>
         <div class="chart-2" id="ecl-charts"></div>
         <div class="card" style="margin-bottom:1.25rem">
-          <div class="card-label">PD Stress Test — Scenario Analysis</div>
+          <div class="card-label">PD Stress Test &#8212; Scenario Analysis</div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
             <span style="font-size:12px;color:var(--tx2)">Shift all PD assumptions uniformly</span>
             <span id="pd-val" style="font-family:var(--mo);font-size:12px;color:var(--gr)">0%</span>
@@ -327,7 +281,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           <div class="stress-row"><input type="range" min="-50" max="100" value="0" id="pd-slider" oninput="updateStress(this.value)"></div>
           <div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)" id="stress-result">Run Compute ECL first to enable stress testing</div>
         </div>
-        <div class="card"><div class="card-label">Loan-level ECL Schedule</div><div id="ecl-table"><div class="ep"><div class="ei">⚡</div>Click Compute ECL to generate the schedule</div></div></div>
+        <div class="card"><div class="card-label">Loan-level ECL Schedule</div><div id="ecl-table"><div class="ep"><div class="ei">&#9889;</div>Click Compute ECL to generate the schedule</div></div></div>
       </div>
       <div class="view" id="view-borrowings">
         <div class="vhdr">
@@ -367,16 +321,16 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
       </div>
       <div class="view" id="view-liquidity">
         <div class="vhdr">
-          <div><div class="vttl">Liquidity Management</div><div class="vsub">Net liquidity · Cash flow forecast · Gap analysis</div></div>
+          <div><div class="vttl">Liquidity Management</div><div class="vsub">Net liquidity &middot; Cash flow forecast &middot; Gap analysis</div></div>
           <button class="bp" onclick="loadLiquidity()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
         </div>
         <div class="kpi-grid" id="liq-kpis"></div>
-        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">180-Day Liquidity Forecast (₦M)</div><canvas id="ch-liq-forecast" height="200"></canvas></div>
+        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">180-Day Liquidity Forecast (&#8358;M)</div><canvas id="ch-liq-forecast" height="200"></canvas></div>
         <div class="chart-2" id="liq-charts2"></div>
       </div>
       <div class="view" id="view-team">
         <div class="vhdr">
-          <div><div class="vttl">Team Management</div><div class="vsub" id="team-vsub">Manage your organisation's treasury users</div></div>
+          <div><div class="vttl">Team Management</div><div class="vsub" id="team-vsub">Manage your organisation&#8217;s treasury users</div></div>
           <button class="bp" onclick="openTeamMemberModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Team Member</button>
         </div>
         <div class="nt-info" id="team-info">Team members share access to all organisation treasury data.</div>
@@ -392,7 +346,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 <div id="modal-bg">
   <div class="modal" id="modal-box">
     <div class="mhdr">
-      <div class="mttl" id="modal-title">—</div>
+      <div class="mttl" id="modal-title">&#8212;</div>
       <button class="mclose" onclick="closeModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="mbody" id="modal-body"></div>
@@ -400,9 +354,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
   </div>
 </div>
 <div id="toast"></div>
-
 <script>
-
 'use strict';
 // ── AUTH GATE ────────────────────────────────────────────────
 (function(){
@@ -412,7 +364,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
   .then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});})
   .then(function(obj){
     if(obj.s===200&&obj.d.success&&obj.d.user){
-      var u=obj.d.user; _user=u;
+      var u=obj.d.user;_user=u;
       document.getElementById('user-name').textContent=u.name;
       if(u.orgId||u.orgName){
         document.getElementById('org-name-badge').textContent=u.orgName||'Organisation';
@@ -422,16 +374,16 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         document.getElementById('nav-team').style.display='flex';
       }
       loadDashboard();
-    } else if(obj.s===401){
+    }else if(obj.s===401){
       sessionStorage.removeItem('FM_token');window.location.href='../portal/';
-    } else { loadDashboard(); }
+    }else{loadDashboard();}
   })
   .catch(function(){loadDashboard();});
 })();
 
 const API='https://eis-recbackend.onrender.com/api';
-var _user=null, _loansCache=[], _borrowCache=[], _invCache=[], _cashCache=[];
-var _eclResults=[], _eclMult=1, _loanFilter='all';
+var _user=null,_loansCache=[],_borrowCache=[],_invCache=[],_cashCache=[];
+var _eclResults=[],_eclMult=1,_loanFilter='all';
 var _charts={};
 
 // ── HELPERS ──────────────────────────────────────────────────
@@ -459,6 +411,16 @@ const pct=n=>Number(n).toFixed(2)+'%';
 const fD=d=>!d?'\u2014':new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 const ts=()=>new Date().toISOString().slice(0,10);
 const PAL=['#00c9a7','#63b3ed','#a78bfa','#f5a623','#22c55e','#e05252'];
+
+// ── SAMPLE-ID GUARD ───────────────────────────────────────────
+// MongoDB ObjectIds are exactly 24 hex characters.
+// Sample data uses short IDs like 's1','b3','i2','c4'.
+// Sending these to the backend causes a CastError -> HTTP 500.
+// isSampleId() returns true for any non-ObjectId string so we
+// block API calls and show a friendly message instead.
+function isSampleId(id){
+  return !id||id==='undefined'||id==='null'||!/^[a-f\d]{24}$/i.test(id);
+}
 
 function toast(msg,type='ok'){
   const el=$('toast');el.textContent=(type==='ok'?'\u2713  ':'\u26a0  ')+msg;
@@ -501,7 +463,6 @@ $('logout-btn').addEventListener('click',function(){
   if(!confirm('Sign out?'))return;
   sessionStorage.removeItem('FM_token');window.location.href='../portal/';
 });
-
 // ── SAMPLE DATA ───────────────────────────────────────────────
 const SL=[
   {_id:'s1',loanId:'LN-001',customer:'Dangote Industries Ltd',product:'Invoice Discounting',principal:450,outstanding:420,interestRate:22,startDate:'2024-01-15',maturityDate:'2024-07-15',daysPastDue:0,stage:1,creditRating:'A',status:'active'},
@@ -559,23 +520,19 @@ function calcECL(loans,mult=1){
   const ead=loans.reduce((a,b)=>a+b.outstanding,0);
   return{rows,total:+total.toFixed(2),ead:+ead.toFixed(2),coverage:+(total/ead*100).toFixed(2)};
 }
-
 // ── DASHBOARD ─────────────────────────────────────────────────
 async function loadDashboard(){
   $('dash-ts').textContent='Loading...';
   $('dash-kpis').innerHTML='<div class="loading-row">Loading...</div>';
   let loans=SL,borr=SB,inv=SI,cash=SC,isDemo=true;
   try{
-    const [dl,db,di,dc]=await Promise.all([
-      api('/treasury/loans'),api('/treasury/borrowings'),
-      api('/treasury/investments'),api('/treasury/cash')
-    ]);
+    const [dl,db,di,dc]=await Promise.all([api('/treasury/loans'),api('/treasury/borrowings'),api('/treasury/investments'),api('/treasury/cash')]);
     if(dl.loans?.length){loans=dl.loans;isDemo=false;}
     if(db.borrowings?.length)borr=db.borrowings;
     if(di.investments?.length)inv=di.investments;
     if(dc.accounts?.length)cash=dc.accounts;
     _loansCache=loans;_borrowCache=borr;_invCache=inv;_cashCache=cash;
-  }catch(e){/* use sample data */}
+  }catch(e){}
   const eclR=calcECL(loans);
   const totalCash=cash.filter(a=>a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
   const totalLoans=loans.reduce((s,l)=>s+l.outstanding,0);
@@ -591,15 +548,9 @@ async function loadDashboard(){
    {l:'Total Borrowings',v:fmt(totalDebt),c:'pu',sub:borr.length+' facilities'},
    {l:'Investment Portfolio',v:fmt(totalInv),c:'bl',sub:'Avg yield 20.9%'},
   ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
-  $('dash-charts').innerHTML=
-    '<div class="chart-box"><div class="card-label">Loan Stage Distribution (EAD)</div><canvas id="ch-ds" height="180"></canvas></div>'+
-    '<div class="chart-box"><div class="card-label">Portfolio by Product (\u20a6M)</div><canvas id="ch-dp" height="180"></canvas></div>';
-  $('dash-charts2').innerHTML=
-    '<div class="chart-box"><div class="card-label">Loan Maturity Ladder (\u20a6M)</div><canvas id="ch-dm" height="180"></canvas></div>'+
-    '<div class="chart-box"><div class="card-label">EAD vs ECL by Stage (\u20a6M)</div><canvas id="ch-de" height="180"></canvas></div>';
-  const stageD=[{s:'Stage 1',v:s1.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s1).total,c:'#22c55e'},
-               {s:'Stage 2',v:s2.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s2).total,c:'#f5a623'},
-               {s:'Stage 3',v:s3.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s3).total,c:'#e05252'}];
+  $('dash-charts').innerHTML='<div class="chart-box"><div class="card-label">Loan Stage Distribution (EAD)</div><canvas id="ch-ds" height="180"></canvas></div><div class="chart-box"><div class="card-label">Portfolio by Product (\u20a6M)</div><canvas id="ch-dp" height="180"></canvas></div>';
+  $('dash-charts2').innerHTML='<div class="chart-box"><div class="card-label">Loan Maturity Ladder (\u20a6M)</div><canvas id="ch-dm" height="180"></canvas></div><div class="chart-box"><div class="card-label">EAD vs ECL by Stage (\u20a6M)</div><canvas id="ch-de" height="180"></canvas></div>';
+  const stageD=[{s:'Stage 1',v:s1.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s1).total,c:'#22c55e'},{s:'Stage 2',v:s2.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s2).total,c:'#f5a623'},{s:'Stage 3',v:s3.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s3).total,c:'#e05252'}];
   const prodMap={};loans.forEach(l=>{prodMap[l.product]=(prodMap[l.product]||0)+l.outstanding;});
   const now=new Date('2024-06-01');
   const mb={'0-30d':0,'31-60d':0,'61-90d':0,'91-180d':0,'>180d':0};
@@ -664,8 +615,10 @@ function renderLoanTable(){
       '</div></td></tr>').join('')+'</tbody></table></div>'+
     '<div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">Showing '+loans.length+' of '+_loansCache.length+' \u00b7 Total: \u20a6'+fN(loans.reduce((s,l)=>s+l.outstanding,0))+'M</div>';
 }
+// openLoanModal: sample IDs open a blank Add Loan form instead of erroring
 function openLoanModal(id){
-  const l=id?_loansCache.find(x=>x._id===id):null;
+  const realId=isSampleId(id)?null:id;
+  const l=realId?_loansCache.find(x=>x._id===realId):null;
   openModal(l?'Edit Loan':'Add Loan Facility',
     '<div class="merr" id="loan-err"></div>'+
     '<div class="fg"><div class="fld"><label>Loan ID *</label><input class="finput" id="fl-id" value="'+(l?.loanId||'')+'" placeholder="e.g. LN-001"></div>'+
@@ -679,24 +632,25 @@ function openLoanModal(id){
     '<div class="fld"><label>Days Past Due</label><input class="finput" type="number" id="fl-dpd" value="'+(l?.daysPastDue||0)+'" min="0"></div></div>'+
     '<div class="fg"><div class="fld"><label>Start Date *</label><input class="finput" type="date" id="fl-start" value="'+(l?.startDate?.slice(0,10)||'')+'"></div>'+
     '<div class="fld"><label>Maturity Date *</label><input class="finput" type="date" id="fl-mat" value="'+(l?.maturityDate?.slice(0,10)||'')+'"></div></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveLoan(\''+id+'\')"><span id="loan-save-txt">'+(l?'Save Changes':'Add Loan')+'</span></button>');
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveLoan(\''+realId+'\')"><span id="loan-save-txt">'+(l?'Save Changes':'Add Loan')+'</span></button>');
 }
 async function saveLoan(id){
   const err=$('loan-err');err.classList.remove('on');
   const p={loanId:$('fl-id').value.trim(),customer:$('fl-cust').value.trim(),product:$('fl-prod').value,creditRating:$('fl-rating').value.trim(),principal:+$('fl-principal').value,outstanding:+$('fl-outstanding').value,interestRate:+$('fl-rate').value,daysPastDue:+$('fl-dpd').value,startDate:$('fl-start').value,maturityDate:$('fl-mat').value};
   if(!p.loanId||!p.customer||!p.principal){err.textContent='Loan ID, customer and principal required.';err.classList.add('on');return;}
+  const isEdit=!isSampleId(id);
   $('loan-save-txt').textContent='Saving...';
   try{
-    if(id&&id!=='undefined')await api('/treasury/loans/'+id,{method:'PUT',body:JSON.stringify(p)});
+    if(isEdit)await api('/treasury/loans/'+id,{method:'PUT',body:JSON.stringify(p)});
     else await api('/treasury/loans',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id&&id!=='undefined'?'Loan updated.':'Loan added.');loadLoans();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('loan-save-txt').textContent=id&&id!=='undefined'?'Save Changes':'Add Loan';}
+    closeModal();toast(isEdit?'Loan updated.':'Loan added.');loadLoans();
+  }catch(e){err.textContent=e.message;err.classList.add('on');$('loan-save-txt').textContent=isEdit?'Save Changes':'Add Loan';}
 }
 async function deleteLoan(id){
+  if(isSampleId(id)){toast('Sample data cannot be deleted. Add real loans via the form or CSV upload.','err');return;}
   if(!confirm('Delete this loan facility? This cannot be undone.'))return;
   try{await api('/treasury/loans/'+id,{method:'DELETE'});toast('Loan deleted.');loadLoans();}catch(e){toast(e.message,'err');}
 }
-
 // ── ECL ───────────────────────────────────────────────────────
 function computeECL(){
   const loans=_loansCache.length?_loansCache:SL;
@@ -717,9 +671,7 @@ function computeECL(){
     '<div><div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Probability-Weighted ECL</div><div style="font-family:var(--di);font-size:22px;font-weight:700;color:var(--t)">\u20a6'+fN(ecl.total)+'M</div></div>'+
     '<div><div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Coverage Ratio</div><div style="font-family:var(--di);font-size:22px;font-weight:700;color:var(--am)">'+pct(ecl.coverage)+'</div></div>'+
     '<div><div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Total EAD</div><div style="font-family:var(--di);font-size:22px;font-weight:700;color:var(--bl)">\u20a6'+fN(ecl.ead)+'M</div></div></div>';
-  $('ecl-charts').innerHTML=
-    '<div class="chart-box"><div class="card-label">Stage Distribution (EAD)</div><canvas id="ch-ecl-stage" height="170"></canvas></div>'+
-    '<div class="chart-box"><div class="card-label">EAD vs ECL by Facility (top 12)</div><canvas id="ch-ecl-heat" height="170"></canvas></div>';
+  $('ecl-charts').innerHTML='<div class="chart-box"><div class="card-label">Stage Distribution (EAD)</div><canvas id="ch-ecl-stage" height="170"></canvas></div><div class="chart-box"><div class="card-label">EAD vs ECL by Facility (top 12)</div><canvas id="ch-ecl-heat" height="170"></canvas></div>';
   setTimeout(()=>{
     mkChart('ch-ecl-stage',{type:'doughnut',data:{labels:['Stage 1','Stage 2','Stage 3'],datasets:[{data:[s1,s2,s3].map(x=>x.reduce((a,r)=>a+r.ead,0)),backgroundColor:['#22c55e','#f5a623','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'62%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
     const top=ecl.rows.slice(0,12);
@@ -737,8 +689,7 @@ function computeECL(){
       '<td class="nm" style="color:'+(r.ecl>50?'#e05252':r.ecl>20?'#f5a623':'#22c55e')+'">'+fN(r.ecl)+'</td>'+
       '<td class="nm" style="color:'+(r.eclRate>50?'#e05252':r.eclRate>15?'#f5a623':'#00c9a7')+'">'+r.eclRate.toFixed(2)+'%</td>'+
     '</tr>').join('')+
-    '<tr class="trt"><td colspan="3" style="text-align:right">TOTAL</td>'+
-    '<td class="nm">'+fN(ecl.ead)+'</td><td></td><td></td><td class="nm">'+fN(ecl.total)+'</td><td class="nm">'+pct(ecl.coverage)+'</td></tr>'+
+    '<tr class="trt"><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">'+fN(ecl.ead)+'</td><td></td><td></td><td class="nm">'+fN(ecl.total)+'</td><td class="nm">'+pct(ecl.coverage)+'</td></tr>'+
     '</tbody></table></div>';
   $('ecl-export-btn').disabled=false;
   toast('ECL computed \u2014 \u20a6'+fN(ecl.total)+'M across '+ecl.rows.length+' loans.');
@@ -801,8 +752,10 @@ function renderBorrowings(){
         '<button class="bsm bd" onclick="deleteBorrowing(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
       '</div></td></tr>').join('')+'</tbody></table></div>';
 }
+// openBorrowingModal: sample IDs open blank Add form
 function openBorrowingModal(id){
-  const x=id&&id!=='undefined'?_borrowCache.find(b=>b._id===id):null;
+  const realId=isSampleId(id)?null:id;
+  const x=realId?_borrowCache.find(b=>b._id===realId):null;
   openModal(x?'Edit Facility':'Add Borrowing Facility',
     '<div class="merr" id="bw-err"></div>'+
     '<div class="fg"><div class="fld"><label>Borrowing ID *</label><input class="finput" id="bw-id" value="'+(x?.borrowingId||'')+'"></div>'+
@@ -816,24 +769,25 @@ function openBorrowingModal(id){
     '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="bw-rate" value="'+(x?.interestRate||'')+'"></div>'+
     '<div class="fld"><label>Tenor (months)</label><input class="finput" type="number" id="bw-tenor" value="'+(x?.tenorMonths||'')+'"></div></div>'+
     '<div class="fld"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="'+(x?.maturityDate?.slice(0,10)||'')+'"></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing(\''+id+'\')" ><span id="bw-save-txt">'+(x?'Save Changes':'Add Facility')+'</span></button>');
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing(\''+realId+'\')"><span id="bw-save-txt">'+(x?'Save Changes':'Add Facility')+'</span></button>');
 }
 async function saveBorrowing(id){
   const err=$('bw-err');err.classList.remove('on');
   const p={borrowingId:$('bw-id').value.trim(),lender:$('bw-lender').value.trim(),type:$('bw-type').value,repayment:$('bw-rep').value,principal:+$('bw-principal').value,outstanding:+$('bw-outstanding').value,interestRate:+$('bw-rate').value,tenorMonths:+$('bw-tenor').value,maturityDate:$('bw-mat').value};
   if(!p.borrowingId||!p.lender){err.textContent='ID and lender required.';err.classList.add('on');return;}
+  const isEdit=!isSampleId(id);
   $('bw-save-txt').textContent='Saving...';
   try{
-    if(id&&id!=='undefined')await api('/treasury/borrowings/'+id,{method:'PUT',body:JSON.stringify(p)});
+    if(isEdit)await api('/treasury/borrowings/'+id,{method:'PUT',body:JSON.stringify(p)});
     else await api('/treasury/borrowings',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id&&id!=='undefined'?'Facility updated.':'Facility added.');loadBorrowings();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('bw-save-txt').textContent=id&&id!=='undefined'?'Save Changes':'Add Facility';}
+    closeModal();toast(isEdit?'Facility updated.':'Facility added.');loadBorrowings();
+  }catch(e){err.textContent=e.message;err.classList.add('on');$('bw-save-txt').textContent=isEdit?'Save Changes':'Add Facility';}
 }
 async function deleteBorrowing(id){
+  if(isSampleId(id)){toast('Sample data cannot be deleted. Add real facilities via the form or CSV upload.','err');return;}
   if(!confirm('Delete this facility?'))return;
   try{await api('/treasury/borrowings/'+id,{method:'DELETE'});toast('Deleted.');loadBorrowings();}catch(e){toast(e.message,'err');}
 }
-
 // ── INVESTMENTS ───────────────────────────────────────────────
 async function loadInvestments(){
   $('investments-kpis').innerHTML='<div class="loading-row">Loading...</div>';
@@ -873,8 +827,10 @@ function renderInvestments(){
         '<button class="bsm bd" onclick="deleteInvestment(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
       '</div></td></tr>').join('')+'</tbody></table></div>';
 }
+// openInvestmentModal: sample IDs open blank Add form
 function openInvestmentModal(id){
-  const i=id&&id!=='undefined'?_invCache.find(x=>x._id===id):null;
+  const realId=isSampleId(id)?null:id;
+  const i=realId?_invCache.find(x=>x._id===realId):null;
   openModal(i?'Edit Investment':'Add Investment',
     '<div class="merr" id="inv2-err"></div>'+
     '<div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="'+(i?.investmentId||'')+'"></div>'+
@@ -885,20 +841,22 @@ function openInvestmentModal(id){
     '<div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="ii-rate" value="'+(i?.interestRate||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="'+(i?.dateInvested?.slice(0,10)||'')+'"></div>'+
     '<div class="fld"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="'+(i?.tenorDays||'')+'"></div></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment(\''+id+'\')" ><span id="ii-save-txt">'+(i?'Save Changes':'Add Investment')+'</span></button>');
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment(\''+realId+'\')"><span id="ii-save-txt">'+(i?'Save Changes':'Add Investment')+'</span></button>');
 }
 async function saveInvestment(id){
   const err=$('inv2-err');err.classList.remove('on');
   const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-principal').value,interestRate:+$('ii-rate').value,dateInvested:$('ii-date').value,tenorDays:+$('ii-days').value};
   if(!p.investmentId||!p.counterparty||!p.principal){err.textContent='ID, counterparty and principal required.';err.classList.add('on');return;}
+  const isEdit=!isSampleId(id);
   $('ii-save-txt').textContent='Saving...';
   try{
-    if(id&&id!=='undefined')await api('/treasury/investments/'+id,{method:'PUT',body:JSON.stringify(p)});
+    if(isEdit)await api('/treasury/investments/'+id,{method:'PUT',body:JSON.stringify(p)});
     else await api('/treasury/investments',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id&&id!=='undefined'?'Updated.':'Investment added.');loadInvestments();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('ii-save-txt').textContent=id&&id!=='undefined'?'Save Changes':'Add Investment';}
+    closeModal();toast(isEdit?'Updated.':'Investment added.');loadInvestments();
+  }catch(e){err.textContent=e.message;err.classList.add('on');$('ii-save-txt').textContent=isEdit?'Save Changes':'Add Investment';}
 }
 async function deleteInvestment(id){
+  if(isSampleId(id)){toast('Sample data cannot be deleted. Add real investments via the form or CSV upload.','err');return;}
   if(!confirm('Delete this investment?'))return;
   try{await api('/treasury/investments/'+id,{method:'DELETE'});toast('Deleted.');loadInvestments();}catch(e){toast(e.message,'err');}
 }
@@ -938,8 +896,10 @@ function renderCash(){
         '<button class="bsm bd" onclick="deleteCash(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
       '</div></td></tr>').join('')+'</tbody></table></div>';
 }
+// openCashModal: sample IDs open blank Add form
 function openCashModal(id){
-  const a=id&&id!=='undefined'?_cashCache.find(x=>x._id===id):null;
+  const realId=isSampleId(id)?null:id;
+  const a=realId?_cashCache.find(x=>x._id===realId):null;
   openModal(a?'Edit Account':'Add Cash Account',
     '<div class="merr" id="ca-err"></div>'+
     '<div class="fg"><div class="fld"><label>Account ID *</label><input class="finput" id="ca-id" value="'+(a?.accountId||'')+'"></div>'+
@@ -951,24 +911,25 @@ function openCashModal(id){
     ['NGN','USD','EUR','GBP'].map(t=>'<option '+(a?.currency===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
     '<div class="fld"><label>Balance</label><input class="finput" type="number" id="ca-bal" value="'+(a?.balance||0)+'" min="0" step="0.01"></div></div>'+
     '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ca-rest" '+(a?.restricted?'checked':'')+' style="accent-color:var(--t)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo);text-transform:none;letter-spacing:0">Mark as Restricted (encumbered/pledged)</span></label></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash(\''+id+'\')" ><span id="ca-save-txt">'+(a?'Save Changes':'Add Account')+'</span></button>');
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash(\''+realId+'\')"><span id="ca-save-txt">'+(a?'Save Changes':'Add Account')+'</span></button>');
 }
 async function saveCash(id){
   const err=$('ca-err');err.classList.remove('on');
   const p={accountId:$('ca-id').value.trim(),bank:$('ca-bank').value.trim(),accountNo:$('ca-acct').value.trim(),type:$('ca-type').value,currency:$('ca-ccy').value,balance:+$('ca-bal').value,restricted:$('ca-rest').checked};
   if(!p.accountId||!p.bank){err.textContent='Account ID and bank required.';err.classList.add('on');return;}
+  const isEdit=!isSampleId(id);
   $('ca-save-txt').textContent='Saving...';
   try{
-    if(id&&id!=='undefined')await api('/treasury/cash/'+id,{method:'PUT',body:JSON.stringify(p)});
+    if(isEdit)await api('/treasury/cash/'+id,{method:'PUT',body:JSON.stringify(p)});
     else await api('/treasury/cash',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id&&id!=='undefined'?'Account updated.':'Account added.');loadCash();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('ca-save-txt').textContent=id&&id!=='undefined'?'Save Changes':'Add Account';}
+    closeModal();toast(isEdit?'Account updated.':'Account added.');loadCash();
+  }catch(e){err.textContent=e.message;err.classList.add('on');$('ca-save-txt').textContent=isEdit?'Save Changes':'Add Account';}
 }
 async function deleteCash(id){
+  if(isSampleId(id)){toast('Sample data cannot be deleted. Add real accounts via the form or CSV upload.','err');return;}
   if(!confirm('Delete this account?'))return;
   try{await api('/treasury/cash/'+id,{method:'DELETE'});toast('Deleted.');loadCash();}catch(e){toast(e.message,'err');}
 }
-
 // ── LIQUIDITY ─────────────────────────────────────────────────
 async function loadLiquidity(){
   $('liq-kpis').innerHTML='<div class="loading-row">Computing...</div>';
@@ -990,9 +951,9 @@ async function loadLiquidity(){
   ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
   const liqF=[
     {p:'Now',n:totalCash,c:totalCash},
-    {p:'30d', n:totalLoans*.08-totalDebt*.02,c:totalCash+totalLoans*.08-totalDebt*.02},
-    {p:'60d', n:totalLoans*.06-totalDebt*.03,c:totalCash+totalLoans*.14-totalDebt*.05},
-    {p:'90d', n:-totalDebt*.08,c:totalCash+totalLoans*.14-totalDebt*.13},
+    {p:'30d',n:totalLoans*.08-totalDebt*.02,c:totalCash+totalLoans*.08-totalDebt*.02},
+    {p:'60d',n:totalLoans*.06-totalDebt*.03,c:totalCash+totalLoans*.14-totalDebt*.05},
+    {p:'90d',n:-totalDebt*.08,c:totalCash+totalLoans*.14-totalDebt*.13},
     {p:'120d',n:totalLoans*.12,c:totalCash+totalLoans*.26-totalDebt*.13},
     {p:'150d',n:totalInv*.15,c:totalCash+totalLoans*.26+totalInv*.15-totalDebt*.13},
     {p:'180d',n:totalLoans*.10,c:totalCash+totalLoans*.36+totalInv*.15-totalDebt*.13}
@@ -1141,17 +1102,15 @@ async function saveSettings(){
   finally{if($('set-save-txt'))$('set-save-txt').textContent='Save Settings';}
 }
 
-
+// ── INIT ──────────────────────────────────────────────────────
 (function(){
   const fb=$('f-all');if(fb)fb.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';
 })();
-
-  if(CSS.supports('padding-bottom','env(safe-area-inset-bottom)')){
+if(CSS.supports('padding-bottom','env(safe-area-inset-bottom)')){
   document.getElementById('sidebar').style.paddingBottom='env(safe-area-inset-bottom)';
   document.getElementById('content').style.paddingBottom='calc(80px + env(safe-area-inset-bottom))';
 }
 document.getElementById('modal-bg').addEventListener('click',function(e){if(e.target===this)closeModal();});
-  
 </script>
 </body>
 </html>
