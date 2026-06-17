@@ -328,10 +328,10 @@ footer{background:var(--n2);border-top:1px solid var(--b);padding:1.25rem 2rem;d
     <div class="_ni">Select a base currency, target currency, and date to retrieve the exact exchange rate on that day.</div>
     <div class="_fg" style="align-items:flex-end">
       <div class="_fld"><label class="_flbl" for="_hbase">Base Currency</label>
-        <select class="_finput _fsel" id="_hbase"><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="NGN">NGN — Nigerian Naira</option><option value="JPY">JPY — Japanese Yen</option><option value="CNY">CNY — Chinese Yuan</option><option value="ZAR">ZAR — South African Rand</option><option value="GHS">GHS — Ghanaian Cedi</option><option value="KES">KES — Kenyan Shilling</option><option value="EGP">EGP — Egyptian Pound</option><option value="CHF">CHF — Swiss Franc</option><option value="AUD">AUD — Australian Dollar</option><option value="CAD">CAD — Canadian Dollar</option><option value="BRL">BRL — Brazilian Real</option><option value="INR">INR — Indian Rupee</option><option value="SGD">SGD — Singapore Dollar</option><option value="NOK">NOK — Norwegian Krone</option><option value="SEK">SEK — Swedish Krona</option><option value="CAD">CAD — Canadian Dollar</option><option value="RUB">RUB — Russian Ruble</option></select>
+        <select class="_finput _fsel" id="_hbase"><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="NGN">NGN — Nigerian Naira</option><option value="JPY">JPY — Japanese Yen</option><option value="CNY">CNY — Chinese Yuan</option><option value="ZAR">ZAR — South African Rand</option><option value="GHS">GHS — Ghanaian Cedi</option><option value="KES">KES — Kenyan Shilling</option><option value="EGP">EGP — Egyptian Pound</option><option value="CHF">CHF — Swiss Franc</option><option value="AUD">AUD — Australian Dollar</option><option value="CAD">CAD — Canadian Dollar</option><option value="BRL">BRL — Brazilian Real</option><option value="INR">INR — Indian Rupee</option><option value="SGD">SGD — Singapore Dollar</option><option value="NOK">NOK — Norwegian Krone</option><option value="SEK">SEK — Swedish Krona</option><option value="RUB">RUB — Russian Ruble</option></select>
       </div>
       <div class="_fld"><label class="_flbl" for="_htgt">Target Currency</label>
-        <select class="_finput _fsel" id="_htgt"><option value="NGN">NGN — Nigerian Naira</option><option value="USD" selected>USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="JPY">JPY — Japanese Yen</option><option value="CNY">CNY — Chinese Yuan</option><option value="ZAR">ZAR — South African Rand</option><option value="GHS">GHS — Ghanaian Cedi</option><option value="KES">KES — Kenyan Shilling</option><option value="EGP">EGP — Egyptian Pound</option><option value="CHF">CHF — Swiss Franc</option><option value="AUD">AUD — Australian Dollar</option><option value="CAD">CAD — Canadian Dollar</option><option value="BRL">BRL — Brazilian Real</option><option value="INR">INR — Indian Rupee</option><option value="CAD">CAD — Canadian Dollar</option><option value="RUB">RUB — Russian Ruble</option><option value="NGN">NGN — Nigerian Naira</option></select>
+        <select class="_finput _fsel" id="_htgt"><option value="NGN">NGN — Nigerian Naira</option><option value="USD" selected>USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="JPY">JPY — Japanese Yen</option><option value="CNY">CNY — Chinese Yuan</option><option value="ZAR">ZAR — South African Rand</option><option value="GHS">GHS — Ghanaian Cedi</option><option value="KES">KES — Kenyan Shilling</option><option value="EGP">EGP — Egyptian Pound</option><option value="CHF">CHF — Swiss Franc</option><option value="AUD">AUD — Australian Dollar</option><option value="CAD">CAD — Canadian Dollar</option><option value="BRL">BRL — Brazilian Real</option><option value="INR">INR — Indian Rupee</option><option value="RUB">RUB — Russian Ruble</option></select>
       </div>
       <div class="_fld"><label class="_flbl" for="_hdt">Date</label><input class="_finput" type="date" id="_hdt" max=""></div>
       <div class="_fld" style="align-self:flex-end"><button class="_rbtn" style="background:var(--t);color:var(--n);border-color:var(--t);font-weight:700;width:100%;justify-content:center" onclick="window._lkup()">Look Up Rate</button></div>
@@ -435,6 +435,7 @@ var _cc=function(v){return v>=0?'u':'d';};
 var _cs=function(v){return v>=0?'+':'';};
 var _ar=function(v){return v>=0?'▲':'▼';};
 var _ts=function(){return new Date().toISOString().slice(0,10);};
+function _sig(ms){try{var c=new AbortController();setTimeout(function(){try{c.abort();}catch(e){}},ms);return c.signal;}catch(e){return undefined;}}
 var _$=function(id){return document.getElementById(id);};
 
 function _sp(cv,data,col,fill){
@@ -581,10 +582,10 @@ var _FIT=[
 var _YHMAP={dow:'%5EDJI',ndx:'%5EIXIC',sp500:'%5EGSPC',ftse:'%5EFTSE',dax:'%5EGDAXI',nky:'%5EN225',sse:'000001.SS',snsx:'%5EBSESN',ngx:'%5ENGSEINDX',jse:'%5EJ203.JO',egx:'%5EEGX30'};
 var _CG_IDS='bitcoin,ethereum,binancecoin,ripple,solana,tether,cardano,avalanche-2,dogecoin,chainlink';
 var _CG_MAP={bitcoin:'BTC',ethereum:'ETH',binancecoin:'BNB',ripple:'XRP',solana:'SOL',tether:'USDT',cardano:'ADA','avalanche-2':'AVAX',dogecoin:'DOGE',chainlink:'LINK'};
-var _px='https://proxy.corsfix.com/?';
+var _px='https://corsproxy.io/?url=';
 
 function _upd(){var e=_$('_ts');if(e)e.textContent='Updated: '+new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+' WAT';}
-function _sts(id,st){var e=_$('_as1');if(!e)return;var m={live:'Live',loading:'◌ Fetching…',fallback:'○ Cached'};var c={live:'var(--gr)',loading:'var(--am)',fallback:'var(--tx3)'};e.textContent=m[st]||m.fallback;e.style.color=c[st]||c.fallback;}
+function _sts(id,st){var e=_$('_as1');if(!e)return;var m={live:'● Live',loading:'◌ Fetching…',fallback:'○ Cached'};var c={live:'var(--gr)',loading:'var(--am)',fallback:'var(--tx3)'};e.textContent=m[st]||m.fallback;e.style.color=c[st]||c.fallback;}
 
 function _btk(){
   var items=[];
@@ -810,37 +811,38 @@ window._lkup=async function(){
     var rate=null,src='';
     var dobj=new Date(dt);
     var dstr=dobj.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+    var hasNGN=(base==='NGN'||tgt==='NGN');
+    var hasRUB=(base==='RUB'||tgt==='RUB');
 
-    if(base==='NGN'||tgt==='NGN'){
-      var nonNGN=base==='NGN'?tgt:base;
-      var url='https://open.er-api.com/v6/latest/'+nonNGN;
-      var r=await fetch(url,{signal:AbortSignal.timeout(10000)});
+    if(hasNGN){
+      var ngnRate=await _ngnHist(dt);
+      if(!ngnRate)throw new Error('No historical USD/NGN data for this date');
+      if(base==='NGN'&&tgt==='USD'){rate=1/ngnRate;}
+      else if(base==='USD'&&tgt==='NGN'){rate=ngnRate;}
+      else if(base==='NGN'){
+        var usdToOther=await _frkRate(dt,'USD',tgt);
+        if(!usdToOther)throw new Error(tgt+' rate not available for this date');
+        rate=usdToOther/ngnRate;
+      } else {
+        var otherToUsd=await _frkRate(dt,base,'USD');
+        if(!otherToUsd)throw new Error(base+' rate not available for this date');
+        rate=otherToUsd*ngnRate;
+      }
+      src='Yahoo Finance (USD/NGN=X historical close)';
+    } else if(hasRUB){
+      var nonRub=base==='RUB'?tgt:base;
+      var url='https://open.er-api.com/v6/latest/'+nonRub;
+      var r=await fetch(url,{signal:_sig(10000)});
       if(!r.ok)throw new Error('HTTP '+r.status);
       var d=await r.json();
       if(d.result!=='success')throw new Error(d['error-type']||'API error');
-      var ngnRate=d.rates&&d.rates['NGN'];
-      if(!ngnRate)throw new Error('NGN rate not available');
-      rate=base==='NGN'?(1/ngnRate):ngnRate;
-      src='open.er-api.com/v6/latest (NGN historical rates not in ECB data — showing current rate)';
+      var rubRate=d.rates&&d.rates['RUB'];
+      if(!rubRate)throw new Error('RUB rate not available');
+      rate=(base==='RUB')?(1/rubRate):rubRate;
+      src='open.er-api.com (live rate — RUB not tracked historically due to data restrictions)';
     } else {
-      var url2='https://api.frankfurter.dev/v1/'+dt+'?from='+base+'&to='+tgt;
-      var r2=await fetch(url2,{signal:AbortSignal.timeout(10000)});
-      if(!r2.ok){
-        if(r2.status===404){
-          var nearUrl='https://api.frankfurter.dev/v1/latest?from='+base+'&to='+tgt;
-          var r3=await fetch(nearUrl,{signal:AbortSignal.timeout(10000)});
-          if(!r3.ok)throw new Error('Pair not available');
-          var d3=await r3.json();
-          rate=d3.rates&&d3.rates[tgt];
-          src='frankfurter.dev (latest rate — date '+dt+' may be a weekend/holiday)';
-        } else {
-          throw new Error('HTTP '+r2.status);
-        }
-      } else {
-        var d2=await r2.json();
-        rate=d2.rates&&d2.rates[tgt];
-        src='frankfurter.dev';
-      }
+      rate=await _frkRate(dt,base,tgt,true);
+      src=_frkSrc;
     }
 
     if(!rate||!isFinite(rate))throw new Error('Rate not available for this pair on '+dt);
@@ -854,19 +856,71 @@ window._lkup=async function(){
       +'<div style="font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:8px">Source: '+src+' · Date: '+dt+'</div>'
       +'</div>';
   }catch(e){re.innerHTML='<div class="_nt"><strong>Could not fetch rate.</strong> '+e.message+'<br><br>'
-        +'<strong>Tips:</strong> Use a weekday date — ECB does not publish on weekends or holidays. '
-        +'NGN pairs show the current live rate (ECB does not track NGN historically). '
-        +'RUB is unavailable via ECB data. '
-        +'Supported currencies: EUR USD GBP JPY CAD CHF AUD CNY SGD NOK SEK INR ZAR GHS KES.'
+        +'<strong>Tips:</strong> Use a weekday date — markets are closed on weekends and holidays. '
+        +'NGN historical data comes from Yahoo Finance and may be sparse before 2017. '
+        +'RUB shows live rate only (historical RUB data is restricted). '
+        +'Try a nearby weekday if this exact date has no data.'
         +'</div>';}
 };
+
+var _frkSrc='frankfurter.dev (ECB reference rates)';
+async function _frkRate(dt,fromCur,toCur,allowFallback){
+  var url2='https://api.frankfurter.dev/v1/'+dt+'?base='+fromCur+'&symbols='+toCur;
+  var r2=await fetch(url2,{signal:_sig(10000)});
+  if(r2.ok){
+    var d2=await r2.json();
+    var rt=d2.rates&&d2.rates[toCur];
+    if(rt){_frkSrc='frankfurter.dev (ECB reference rates)';return rt;}
+  }
+  if(!allowFallback)return null;
+  var nearUrl='https://api.frankfurter.dev/v1/latest?base='+fromCur+'&symbols='+toCur;
+  var r3=await fetch(nearUrl,{signal:_sig(10000)});
+  if(!r3.ok)return null;
+  var d3=await r3.json();
+  _frkSrc='frankfurter.dev (latest rate — '+dt+' may be a weekend/holiday with no published rate)';
+  return d3.rates&&d3.rates[toCur];
+}
+
+var _ngnCache={};
+async function _ngnHist(dt){
+  if(_ngnCache[dt]!==undefined)return _ngnCache[dt];
+  var target=new Date(dt).getTime()/1000;
+  var p1=Math.floor(target-7*86400);
+  var p2=Math.ceil(target+7*86400);
+  var hosts=['query2.finance.yahoo.com','query1.finance.yahoo.com'];
+  var proxies=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url='];
+  for(var pi=0;pi<proxies.length;pi++){
+    for(var hi=0;hi<hosts.length;hi++){
+      try{
+        var enc='https://'+hosts[hi]+'/v8/finance/chart/NGN%3DX?period1='+p1+'&period2='+p2+'&interval=1d';
+        var r=await fetch(proxies[pi]+encodeURIComponent(enc),{signal:_sig(9000)});
+        if(!r.ok)continue;
+        var data=await r.json();
+        var result=data&&data.chart&&data.chart.result&&data.chart.result[0];
+        if(!result)continue;
+        var ts=result.timestamp||[];
+        var closes=(result.indicators&&result.indicators.quote&&result.indicators.quote[0]&&result.indicators.quote[0].close)||[];
+        if(!ts.length)continue;
+        var bestIdx=0,bestDiff=Infinity;
+        for(var i=0;i<ts.length;i++){
+          var diff=Math.abs(ts[i]-target);
+          if(diff<bestDiff&&closes[i]!=null){bestDiff=diff;bestIdx=i;}
+        }
+        var val=closes[bestIdx];
+        if(val){_ngnCache[dt]=val;return val;}
+      }catch(e){continue;}
+    }
+  }
+  _ngnCache[dt]=null;
+  return null;
+}
 (function(){var di=_$('_hdt');if(di){di.max=_ts();di.value=_ts();}})();
 
 async function _fCI(){
   _sts('crypto','loading');
   try{
     var url='https://api.coingecko.com/api/v3/simple/price?ids='+_CG_IDS+'&vs_currencies=usd&include_24hr_change=true&include_market_cap=true';
-    var r=await fetch(url,{signal:AbortSignal.timeout(9000)});
+    var r=await fetch(url,{signal:_sig(9000)});
     if(!r.ok)throw new Error('CG '+r.status);
     var data=await r.json();
     Object.entries(_CG_MAP).forEach(function(e){
@@ -880,7 +934,7 @@ async function _fCI(){
       item.pct=+(d.usd_24h_change||0).toFixed(2);
       item.mcap=_fNK(d.usd_market_cap||0);
     });
-    var gr=await fetch('https://api.coingecko.com/api/v3/global',{signal:AbortSignal.timeout(9000)});
+    var gr=await fetch('https://api.coingecko.com/api/v3/global',{signal:_sig(9000)});
     if(gr.ok){
       var gd=await gr.json();
       var pct=gd.data&&gd.data.market_cap_percentage||{};
@@ -899,7 +953,7 @@ async function _fCI(){
 async function _fFX(){
   _sts('forex','loading');
   try{
-    var r=await fetch('https://open.er-api.com/v6/latest/USD',{signal:AbortSignal.timeout(9000)});
+    var r=await fetch('https://open.er-api.com/v6/latest/USD',{signal:_sig(9000)});
     if(!r.ok)throw new Error('ER '+r.status);
     var d=await r.json();
     if(d.result!=='success')throw new Error('ER err');
@@ -941,7 +995,7 @@ async function _fIdx(){
   _sts('stocks','loading');
   var _yprox=[
     'https://corsproxy.io/?url=',
-    'https://proxy.corsfix.com/?'
+    'https://api.allorigins.win/raw?url='
   ];
   async function _tryIdx(yh){
     var hosts=['query2.finance.yahoo.com','query1.finance.yahoo.com'];
@@ -949,7 +1003,7 @@ async function _fIdx(){
       for(var hi=0;hi<hosts.length;hi++){
         try{
           var enc='https://'+hosts[hi]+'/v8/finance/chart/'+yh+'?interval=1d&range=5d';
-          var r=await fetch(_yprox[pi]+encodeURIComponent(enc),{signal:AbortSignal.timeout(8000)});
+          var r=await fetch(_yprox[pi]+encodeURIComponent(enc),{signal:_sig(8000)});
           if(!r.ok)continue;
           var ct=r.headers.get('content-type')||'';
           if(!ct.includes('json'))continue;
@@ -997,7 +1051,7 @@ async function _fNG(){
 }
 async function _sCBN(){
   var url='https://www.cbn.gov.ng/MonetaryPolicy/decisions.asp';
-  var r=await fetch(_px+encodeURIComponent(url),{signal:AbortSignal.timeout(14000)});
+  var r=await fetch(_px+encodeURIComponent(url),{signal:_sig(14000)});
   if(!r.ok)throw new Error('CBN '+r.status);
   var html=await r.text();
   var mpr=null,crr=null,liq=null;
@@ -1009,7 +1063,7 @@ async function _sCBN(){
 }
 async function _sNBS(){
   var url='https://www.nigerianstat.gov.ng/';
-  var r=await fetch(_px+encodeURIComponent(url),{signal:AbortSignal.timeout(14000)});
+  var r=await fetch(_px+encodeURIComponent(url),{signal:_sig(14000)});
   if(!r.ok)throw new Error('NBS '+r.status);
   var html=await r.text();
   var sm=html.match(/Inflation Rate[^)]+\)\s*([\d.,\s]+)/i);
@@ -1020,7 +1074,7 @@ async function _sNBS(){
 }
 async function _sTB(){
   var url='https://www.cbn.gov.ng/rates/tBillsrates.asp';
-  var r=await fetch(_px+encodeURIComponent(url),{signal:AbortSignal.timeout(14000)});
+  var r=await fetch(_px+encodeURIComponent(url),{signal:_sig(14000)});
   if(!r.ok)throw new Error('TBill '+r.status);
   var html=await r.text();
   var rows=html.match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)||[];
