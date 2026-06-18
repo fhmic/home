@@ -553,8 +553,8 @@ async function loadDashboard(){
   const stageD=[{s:'Stage 1',v:s1.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s1).total,c:'#22c55e'},{s:'Stage 2',v:s2.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s2).total,c:'#f5a623'},{s:'Stage 3',v:s3.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s3).total,c:'#e05252'}];
   const prodMap={};loans.forEach(l=>{prodMap[l.product]=(prodMap[l.product]||0)+l.outstanding;});
   const now=new Date('2024-06-01');
-  const mb={'0-30d':0,'31-60d':0,'61-90d':0,'91-180d':0,'181-365d':0,'>365d':0};
-  loans.forEach(l=>{const d=Math.max(0,(new Date(l.maturityDate)-now)/86400000);if(d<=30)mb['0-30d']+=l.outstanding;else if(d<=60)mb['31-60d']+=l.outstanding;else if(d<=90)mb['61-90d']+=l.outstanding;else if(d<=180)mb['91-180d']+=l.outstanding;else if(d<=365)mb['181-365d']+=l.outstanding;else mb['>365d']+=l.outstanding;});
+  const mb={'0-30d':0,'31-60d':0,'61-90d':0,'91-180d':0,'>180d':0};
+  loans.forEach(l=>{const d=Math.max(0,(new Date(l.maturityDate)-now)/86400000);if(d<=30)mb['0-30d']+=l.outstanding;else if(d<=60)mb['31-60d']+=l.outstanding;else if(d<=90)mb['61-90d']+=l.outstanding;else if(d<=180)mb['91-180d']+=l.outstanding;else mb['>180d']+=l.outstanding;});
   setTimeout(()=>{
     mkChart('ch-ds',{type:'doughnut',data:{labels:stageD.map(s=>s.s),datasets:[{data:stageD.map(s=>s.v),backgroundColor:stageD.map(s=>s.c),borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'62%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
     mkChart('ch-dp',{type:'bar',data:{labels:Object.keys(prodMap),datasets:[{data:Object.values(prodMap),backgroundColor:PAL,borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{display:false}}}}});
@@ -836,7 +836,7 @@ function openInvestmentModal(id){
     '<div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="'+(i?.investmentId||'')+'"></div>'+
     '<div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="'+(i?.counterparty||'')+'"></div></div>'+
     '<div class="fld"><label>Type</label><select class="finput" id="ii-type">'+
-    ['Fixed Deposit','Treasury Bills','Money Market Funds','Mutual Funds','Trust Funds','Government Security','Commercial Paper','Stock','Others'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
+    ['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
     '<div class="fg"><div class="fld"><label>Principal (\u20a6M) *</label><input class="finput" type="number" id="ii-principal" value="'+(i?.principal||'')+'"></div>'+
     '<div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="ii-rate" value="'+(i?.interestRate||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="'+(i?.dateInvested?.slice(0,10)||'')+'"></div>'+
@@ -979,17 +979,155 @@ async function loadLiquidity(){
 }
 
 // ── UPLOAD ────────────────────────────────────────────────────
+// ── SAMPLE TEMPLATE DATA ──────────────────────────────────────
+// Each module defines headers + 2 illustrative sample rows so users
+// know exactly what format and values are expected.
+const UPLOAD_TEMPLATES = {
+  loans: {
+    label: 'Loan Portfolio',
+    filename: 'FM_Loans_Template.xlsx',
+    sheetName: 'Loans',
+    headers: ['loan_id','customer_name','loan_product_type','principal_amount','outstanding','interest_rate','start_date','maturity_date','days_past_due','credit_rating'],
+    samples: [
+      ['LN-001','Dangote Industries Ltd','Invoice Discounting',450000000,420000000,22,'2024-01-15','2024-07-15',0,'A'],
+      ['LN-002','Flour Mills Nigeria Plc','Supply Chain Finance',320000000,310000000,20,'2024-02-01','2024-08-01',18,'A-'],
+    ],
+    notes: [
+      'loan_id: Unique loan identifier (e.g. LN-001)',
+      'loan_product_type: Invoice Discounting | Supply Chain Finance | Factoring | Reverse Factoring | Term Loan',
+      'principal_amount / outstanding: in Naira (numbers only, no ₦ symbol)',
+      'interest_rate: annual rate as a number (e.g. 22 for 22%)',
+      'start_date / maturity_date: YYYY-MM-DD format',
+      'days_past_due: number of days overdue (0 if current)',
+      'credit_rating: e.g. A, A-, BBB+, BB, CCC, D',
+    ]
+  },
+  borrowings: {
+    label: 'Borrowings',
+    filename: 'FM_Borrowings_Template.xlsx',
+    sheetName: 'Borrowings',
+    headers: ['borrowing_id','lender_name','borrowing_type','principal','outstanding','interest_rate','tenor_months','repayment_schedule','maturity_date'],
+    samples: [
+      ['BW-001','FCMB Ltd','Term Loan',500000000,420000000,19.5,24,'Monthly','2025-06-30'],
+      ['BW-002','DBN Nigeria','On-lending Facility',800000000,720000000,14,36,'Quarterly','2026-09-30'],
+    ],
+    notes: [
+      'borrowing_id: Unique identifier (e.g. BW-001)',
+      'borrowing_type: Term Loan | Overdraft Facility | On-lending Facility | SME Fund | Wholesale Borrowing | Intercompany Loan',
+      'principal / outstanding: in Naira (numbers only)',
+      'interest_rate: annual rate as a number (e.g. 19.5)',
+      'tenor_months: loan tenor in months (e.g. 24)',
+      'repayment_schedule: Monthly | Quarterly | Bullet | Revolving | Semi-annual',
+      'maturity_date: YYYY-MM-DD format',
+    ]
+  },
+  investments: {
+    label: 'Investments',
+    filename: 'FM_Investments_Template.xlsx',
+    sheetName: 'Investments',
+    headers: ['investment_id','company_name','investment_type','principal_amount','interest_rate','date_invested','number_of_days'],
+    samples: [
+      ['INV-001','Access Bank Plc','Fixed Deposit',300000000,22,'2024-03-01',180],
+      ['INV-002','NTB (91-day)','Treasury Bills',250000000,20.5,'2024-04-01',91],
+    ],
+    notes: [
+      'investment_id: Unique identifier (e.g. INV-001)',
+      'investment_type: Fixed Deposit | Treasury Bills | Government Security | Commercial Paper',
+      'principal_amount: in Naira (numbers only)',
+      'interest_rate: annual rate as a number (e.g. 22)',
+      'date_invested: YYYY-MM-DD format',
+      'number_of_days: tenor/duration in calendar days',
+    ]
+  },
+  cash: {
+    label: 'Cash Balances',
+    filename: 'FM_CashBalances_Template.xlsx',
+    sheetName: 'Cash',
+    headers: ['account_id','bank','account_number','type','currency','balance','restricted'],
+    samples: [
+      ['CA-001','Access Bank Plc','001-234567-001','Current','NGN',124500000,false],
+      ['CA-002','GTBank Ltd','0123456789','Current','NGN',87300000,false],
+      ['CA-003','First Bank Nigeria','2012345678','Savings','NGN',43800000,true],
+    ],
+    notes: [
+      'account_id: Unique identifier (e.g. CA-001)',
+      'type: Current | Savings | Dom (USD) | Dom (EUR)',
+      'currency: NGN | USD | EUR | GBP',
+      'balance: account balance as a number (no ₦ symbol)',
+      'restricted: true if encumbered/pledged, false if freely available',
+    ]
+  }
+};
+
+function downloadSampleTemplate(module){
+  const tpl = UPLOAD_TEMPLATES[module];
+  if(!tpl) return;
+  const wb  = XLSX.utils.book_new();
+
+  // ── Main data sheet ──────────────────────────────────────────
+  const wsData = [tpl.headers, ...tpl.samples];
+  const ws     = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Style the header row width
+  ws['!cols'] = tpl.headers.map(h => ({ wch: Math.max(h.length + 4, 16) }));
+
+  // Freeze header row
+  ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+
+  XLSX.utils.book_append_sheet(wb, ws, tpl.sheetName);
+
+  // ── Instructions sheet ───────────────────────────────────────
+  const instrRows = [
+    ['FM Treasury Intelligence — ' + tpl.label + ' Upload Template'],
+    [''],
+    ['INSTRUCTIONS'],
+    ['1. Do not rename or reorder the column headers in the ' + tpl.sheetName + ' sheet.'],
+    ['2. Delete the sample rows before uploading — they are for illustration only.'],
+    ['3. Save the file as .xlsx, .xls, or .csv before uploading.'],
+    ['4. Maximum file size: 5MB.'],
+    [''],
+    ['COLUMN GUIDE'],
+    ...tpl.notes.map(n => ['  • ' + n]),
+    [''],
+    ['Generated by FM Treasury Intelligence · ' + new Date().toLocaleDateString('en-GB')],
+  ];
+  const wsInstr = XLSX.utils.aoa_to_sheet(instrRows);
+  wsInstr['!cols'] = [{ wch: 80 }];
+  XLSX.utils.book_append_sheet(wb, wsInstr, 'Instructions');
+
+  XLSX.writeFile(wb, tpl.filename);
+  toast('Template downloaded — ' + tpl.filename);
+}
+
 function openUploadModal(module){
-  const labels={loans:'Loan Portfolio',borrowings:'Borrowings',investments:'Investments',cash:'Cash Balances'};
-  const cols={loans:'loan_id, customer_name, loan_product_type, principal_amount, outstanding, interest_rate, start_date, maturity_date, days_past_due, credit_rating',borrowings:'borrowing_id, lender_name, borrowing_type, principal, outstanding, interest_rate, tenor_months, repayment_schedule, maturity_date',investments:'investment_id, company_name, investment_type, principal_amount, interest_rate, date_invested, number_of_days',cash:'account_id, bank, account_number, type, currency, balance, restricted'};
-  openModal('Upload '+labels[module],
-    '<div class="nt" style="margin-bottom:1rem">Required columns:<br><span style="font-family:var(--mo);font-size:11px;color:var(--t)">'+cols[module]+'</span></div>'+
-    '<label class="drop-zone" id="drop-zone">'+
-      '<div style="font-size:2rem;margin-bottom:8px">\ud83d\udcc2</div>'+
-      '<div style="font-size:13px;font-weight:500;margin-bottom:4px">Click or drop your Excel/CSV file</div>'+
-      '<div style="font-size:11px;color:var(--tx3)" id="upload-fname">Accepts .xlsx, .xls, .csv \u00b7 Max 5MB</div>'+
-      '<input type="file" accept=".csv,.xlsx,.xls" id="upload-file" style="display:none" onchange="handleUploadFile(this)">'+
-    '</label><div id="upload-log" style="display:none;margin-top:1rem"></div>',
+  const tpl = UPLOAD_TEMPLATES[module];
+  openModal('Upload ' + tpl.label,
+    // ── Step 1: Download template ────────────────────────────
+    '<div style="background:var(--td);border:1px solid rgba(0,201,167,.25);border-radius:var(--r);padding:14px 16px;margin-bottom:1.25rem">'+
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'+
+        '<div style="width:24px;height:24px;background:var(--t);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--n)">1</div>'+
+        '<span style="font-size:13px;font-weight:600;color:var(--tx)">Download the template</span>'+
+      '</div>'+
+      '<p style="font-size:12px;color:var(--tx2);margin:0 0 10px;line-height:1.5">Get the official Excel template with the correct column headers and sample data. Fill it in, then upload below.</p>'+
+      '<button onclick="downloadSampleTemplate(\''+module+'\')" style="background:var(--t);border-color:var(--t);color:var(--n);font-weight:600;padding:7px 16px;font-size:12px">'+
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'+
+        'Download '+tpl.filename+
+      '</button>'+
+    '</div>'+
+    // ── Step 2: Upload ───────────────────────────────────────
+    '<div style="background:var(--sf);border:1px solid var(--b2);border-radius:var(--r);padding:14px 16px;margin-bottom:1rem">'+
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'+
+        '<div style="width:24px;height:24px;background:var(--n3);border:1px solid var(--b2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--tx2)">2</div>'+
+        '<span style="font-size:13px;font-weight:600;color:var(--tx)">Upload your completed file</span>'+
+      '</div>'+
+      '<label class="drop-zone" id="drop-zone" onclick="$(\'upload-file\').click()" style="cursor:pointer">'+
+        '<div style="font-size:2rem;margin-bottom:8px">\ud83d\udcc2</div>'+
+        '<div style="font-size:13px;font-weight:500;margin-bottom:4px">Click to browse or drag &amp; drop</div>'+
+        '<div style="font-size:11px;color:var(--tx3)" id="upload-fname">Accepts .xlsx, .xls, .csv \u00b7 Max 5MB</div>'+
+        '<input type="file" accept=".csv,.xlsx,.xls" id="upload-file" style="display:none" onchange="handleUploadFile(this)">'+
+      '</label>'+
+    '</div>'+
+    '<div id="upload-log" style="display:none;margin-top:1rem"></div>',
     '<button onclick="closeModal()">Cancel</button><button class="bp" id="upload-submit" onclick="doUpload(\''+module+'\')" disabled><span id="upload-txt">Import</span></button>'
   );
 }
