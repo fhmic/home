@@ -277,7 +277,13 @@ button,a,input,select{touch-action:manipulation}
   <div class="pan on ani" id="p1">
     <div class="card">
       <div class="ct">Upload source files</div>
-      <div class="cs">Accepts CSV, XLSX, XLS or XLSM. Columns: Date · Narration · DR Amount · CR Amount · Balance Amount.<br>Headers and blank rows are auto-skipped. Multi-month statements are fully supported.</div>
+     <div class="cs">
+          Accepts CSV, XLSX, XLS or XLSM. 
+          <a href="#" id="downloadTemplate" style="color:#00c9a7;text-decoration:underline;">
+          Download sample template file
+          </a><br>
+          Fill in your data using this format before upload. Headers and blank rows are auto-skipped. Multi-month statements are fully supported.
+          </div>
       <div class="upg">
         <div>
           <div class="ubx" id="bb"><input type="file" id="bi" accept=".csv,.xlsx,.xls,.xlsm">
@@ -391,6 +397,37 @@ document.getElementById('logout-btn').addEventListener('click',function(){
   if(!confirm('Sign out?')) return;
   sessionStorage.removeItem('FM_token');
   window.location.href='../portal/';
+});
+
+  document.getElementById('downloadTemplate').addEventListener('click', function(e){
+  e.preventDefault();
+
+  // Sample structure
+  const sampleData = [
+    ['Date','Narration','DR Amount','CR Amount','Balance Amount'],
+    ['01/01/2026','Opening Balance',0,0,500000],
+    ['02/01/2026','POS Purchase',15000,0,485000],
+    ['03/01/2026','Customer Deposit',0,250000,735000],
+    ['05/01/2026','Transfer to Vendor',50000,0,685000],
+    ['07/01/2026','Bank Charges',1500,0,683500]
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(sampleData);
+
+  // Optional: set column widths for better UX
+  ws['!cols']=[
+    {wch:14},
+    {wch:40},
+    {wch:16},
+    {wch:16},
+    {wch:18}
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Template');
+
+  const filename = 'FM-BankRecon-Template.xlsx';
+  XLSX.writeFile(wb, filename);
 });
 </script>
 <script>
