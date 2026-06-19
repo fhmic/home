@@ -55,7 +55,7 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .card-label{font-size:10px;font-family:var(--mo);color:var(--tx2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:1.5rem}
 .kpi{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
-.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:var(--r) 0 0 var(--r)}
+.kpi::before{content:';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:var(--r) 0 0 var(--r)}
 .kpi.tl::before,.kpi.ac::before{background:var(--t)}.kpi.rd::before{background:var(--rd)}.kpi.am::before{background:var(--am)}.kpi.gr::before{background:var(--gr)}.kpi.bl::before{background:var(--bl)}.kpi.pu::before{background:var(--pu)}
 .kpi.ac{border-color:rgba(0,201,167,.3);background:var(--td)}
 .kl{font-size:10px;font-family:var(--mo);color:var(--tx3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
@@ -391,7 +391,7 @@ var _charts={};
 async function api(ep,opts={}){
   const tok=sessionStorage.getItem('FM_token');
   const isForm=opts.body instanceof FormData;
-  const h={'Authorization':tok?'Bearer '+tok:''};
+  const h={'Authorization':tok?'Bearer '+tok:'};
   if(!isForm)h['Content-Type']='application/json';
   const res=await fetch(API+ep,{...opts,headers:h});
   const data=await res.json().catch(()=>({success:false,message:'No response.'}));
@@ -400,7 +400,7 @@ async function api(ep,opts={}){
 }
 async function apiForm(ep,fd){
   const tok=sessionStorage.getItem('FM_token');
-  const res=await fetch(API+ep,{method:'POST',body:fd,headers:{'Authorization':tok?'Bearer '+tok:''}});
+  const res=await fetch(API+ep,{method:'POST',body:fd,headers:{'Authorization':tok?'Bearer '+tok:'}});
   const data=await res.json().catch(()=>({success:false,message:'No response.'}));
   if(!res.ok)throw new Error(data.message||data.error||'Upload failed.');
   return data;
@@ -420,12 +420,12 @@ const PAL=['#00c9a7','#63b3ed','#a78bfa','#f5a623','#22c55e','#e05252'];
 // isSampleId() returns true for any non-ObjectId string so we
 // block API calls and show a friendly message instead.
 function bulkBar(module,selSet,total){
-  if(!selSet.size)return'';
+  if(!selSet.size)return';
   const count=selSet.size;
   return '<div style="display:flex;align-items:center;gap:10px;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:8px 14px;margin-bottom:.75rem;flex-wrap:wrap">'+
     '<span style="font-size:12px;font-family:var(--mo);color:var(--rd)">'+count+' of '+total+' selected</span>'+
-    '<button class="bsm bd" onclick="bulkDelete(''+module+'')" style="padding:5px 12px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg> Delete selected</button>'+
-    '<button class="bsm" onclick="clearSel(''+module+'')" style="padding:5px 12px">Clear</button>'+
+    '<button class="bsm bd" onclick="bulkDelete('+module+')" style="padding:5px 12px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg> Delete selected</button>'+
+    '<button class="bsm" onclick="clearSel('+module+')" style="padding:5px 12px">Clear</button>'+
   '</div>';
 }
 function toggleSel(module,id){
@@ -454,7 +454,7 @@ async function bulkDelete(module){
   const m={loans:_selLoans,borrowings:_selBorrow,investments:_selInv,cash:_selCash}[module];
   if(!m||!m.size)return;
   const count=m.size;
-  if(!confirm('Permanently delete '+count+' selected item'+(count>1?'s':'')+' ?'))return;
+  if(!confirm('Permanently delete '+count+' selected item'+(count>1?'s':')+' ?'))return;
   const ids=[...m];
   const ep={loans:'/treasury/loans',borrowings:'/treasury/borrowings',investments:'/treasury/investments',cash:'/treasury/cash'}[module];
   let done=0,failed=0;
@@ -462,7 +462,7 @@ async function bulkDelete(module){
     try{await api(ep+'/'+id,{method:'DELETE'});done++;m.delete(id);}
     catch(e){failed++;}
   }
-  toast(done+' deleted'+(failed?' · '+failed+' failed':'')+'.',failed?'err':'ok');
+  toast(done+' deleted'+(failed?' · '+failed+' failed':')+'.',failed?'err':'ok');
   const fn={loans:loadLoans,borrowings:loadBorrowings,investments:loadInvestments,cash:loadCash}[module];
   if(fn)fn();
 }
@@ -472,13 +472,13 @@ function isSampleId(id){
 
 function toast(msg,type='ok'){
   const el=$('toast');el.textContent=(type==='ok'?'\u2713  ':'\u26a0  ')+msg;
-  el.className='on '+type;setTimeout(()=>el.className='',4000);
+  el.className='on '+type;setTimeout(()=>el.className=',4000);
 }
 function openModal(title,body,foot,wide=false){
   $('modal-title').textContent=title;
   $('modal-body').innerHTML=body;
   $('modal-foot').innerHTML=foot||'<button onclick="closeModal()">Close</button>';
-  $('modal-box').className='modal'+(wide?' wide':'');
+  $('modal-box').className='modal'+(wide?' wide':');
   $('modal-bg').classList.add('on');
 }
 function closeModal(){$('modal-bg').classList.remove('on');}
@@ -588,14 +588,14 @@ async function loadDashboard(){
   const totalInv=inv.reduce((s,i)=>s+i.principal,0);
   const s1=loans.filter(l=>l.stage===1),s2=loans.filter(l=>l.stage===2),s3=loans.filter(l=>l.stage===3);
   $('dash-ts').textContent=(isDemo?'Sample data  \u2014  ':'As at ')+new Date().toLocaleString('en-GB');
-  $('dash-kpis').innerHTML=(isDemo?'<div class="nt-info" style="grid-column:1/-1">Showing sample data. Upload real data in Loans, Borrowings, Investments and Cash modules.</div>':'')+
+  $('dash-kpis').innerHTML=(isDemo?'<div class="nt-info" style="grid-column:1/-1">Showing sample data. Upload real data in Loans, Borrowings, Investments and Cash modules.</div>':')+
   [{l:'Total Cash',v:fmt(totalCash),c:'tl',ac:true,sub:'NGN accounts'},
    {l:'Net Liquidity',v:fmt(totalCash+totalInv-totalDebt*.1),c:'bl',sub:'Cash + Inv \u2212 Obligations'},
    {l:'Loan Book',v:fmt(totalLoans),c:'gr',sub:loans.length+' facilities'},
    {l:'ECL Provision',v:fmt(eclR.total),c:'am',sub:'Coverage: '+pct(eclR.coverage)},
    {l:'Total Borrowings',v:fmt(totalDebt),c:'pu',sub:borr.length+' facilities'},
    {l:'Investment Portfolio',v:fmt(totalInv),c:'bl',sub:'Avg yield 20.9%'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':')+' </div>').join(');
   $('dash-charts').innerHTML='<div class="chart-box"><div class="card-label">Loan Stage Distribution (EAD)</div><canvas id="ch-ds" height="180"></canvas></div><div class="chart-box"><div class="card-label">Portfolio by Product (\u20a6M)</div><canvas id="ch-dp" height="180"></canvas></div>';
   $('dash-charts2').innerHTML='<div class="chart-box"><div class="card-label">Loan Maturity Ladder (\u20a6M)</div><canvas id="ch-dm" height="180"></canvas></div><div class="chart-box"><div class="card-label">EAD vs ECL by Stage (\u20a6M)</div><canvas id="ch-de" height="180"></canvas></div>';
   const stageD=[{s:'Stage 1',v:s1.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s1).total,c:'#22c55e'},{s:'Stage 2',v:s2.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s2).total,c:'#f5a623'},{s:'Stage 3',v:s3.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s3).total,c:'#e05252'}];
@@ -628,36 +628,36 @@ function renderLoanKPIs(){
     {l:'Performing',v:fmt(loans.filter(l=>l.stage<3).reduce((s,l)=>s+l.outstanding,0)),c:'gr',sub:loans.filter(l=>l.stage<3).length+' loans'},
     {l:'Non-Performing',v:fmt(npl.reduce((s,l)=>s+l.outstanding,0)),c:'rd',sub:npl.length+' loans'},
     {l:'NPL Ratio',v:pct(npl.reduce((s,l)=>s+l.outstanding,0)/total*100),c:'am'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':')+' </div>').join(');
 }
 function renderLoanChart(){
   const ag=[{b:'Current',v:_loansCache.filter(l=>l.daysPastDue===0).reduce((s,l)=>s+l.outstanding,0)},{b:'1-30d',v:_loansCache.filter(l=>l.daysPastDue>0&&l.daysPastDue<=30).reduce((s,l)=>s+l.outstanding,0)},{b:'31-60d',v:_loansCache.filter(l=>l.daysPastDue>30&&l.daysPastDue<=60).reduce((s,l)=>s+l.outstanding,0)},{b:'61-90d',v:_loansCache.filter(l=>l.daysPastDue>60&&l.daysPastDue<=90).reduce((s,l)=>s+l.outstanding,0)},{b:'91-180d',v:_loansCache.filter(l=>l.daysPastDue>90&&l.daysPastDue<=180).reduce((s,l)=>s+l.outstanding,0)},{b:'>180d',v:_loansCache.filter(l=>l.daysPastDue>180).reduce((s,l)=>s+l.outstanding,0)}];
   setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:ag.map(a=>a.b),datasets:[{data:ag.map(a=>a.v),backgroundColor:['#22c55e','#00c9a7','#63b3ed','#f5a623','#e05252','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}}),60);
 }
 function setLoanFilter(btn,stage){
-  document.querySelectorAll('#loan-filters button').forEach(b=>{b.style.cssText='';});
+  document.querySelectorAll('#loan-filters button').forEach(b=>{b.style.cssText=';});
   btn.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';
   _loanFilter=stage;renderLoanTable();
 }
 function renderLoanTable(){
   let loans=_loansCache;
   if(_loanFilter!=='all')loans=loans.filter(l=>l.stage===+_loanFilter);
-  const q=$('loan-search')?.value?.toLowerCase()||'';
-  if(q)loans=loans.filter(l=>l.customer.toLowerCase().includes(q)||(l.loanId||'').toLowerCase().includes(q));
+  const q=$('loan-search')?.value?.toLowerCase()||';
+  if(q)loans=loans.filter(l=>l.customer.toLowerCase().includes(q)||(l.loanId||').toLowerCase().includes(q));
   if(!loans.length){$('loans-table').innerHTML=empty('No loans match the current filter.');return;}
   const sc=s=>s===1?'ps1':s===2?'ps2':'ps3';
-  const rc=r=>(r||'').startsWith('A')?'#22c55e':(r||'').startsWith('B')?'#f5a623':'#e05252';
+  const rc=r=>(r||').startsWith('A')?'#22c55e':(r||').startsWith('B')?'#f5a623':'#e05252';
   const lRealIds=loans.filter(l=>!isSampleId(l._id)).map(l=>l._id);
   const lAllChk=lRealIds.length>0&&lRealIds.every(id=>_selLoans.has(id));
   $('loans-table').innerHTML=bulkBar('loans',_selLoans,loans.length)+'<div class="tw"><table>'+
     '<thead><tr>'+
-      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(lAllChk?'checked':'')+' onchange="toggleAllSel('loans','+JSON.stringify(lRealIds)+')" title="Select all real records"></th>'+
+      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(lAllChk?'checked':')+' onchange="toggleAllSel('loans','+JSON.stringify(lRealIds)+')" title="Select all real records"></th>'+
       '<th>Loan ID</th><th>Customer</th><th>Product</th><th class="nm">Outstanding (&#8358;)</th><th class="nm">Rate</th><th class="nm">DPD</th><th>Stage</th><th>Rating</th><th>Maturity</th><th></th>'+
     '</tr></thead>'+
     '<tbody>'+loans.map(l=>{
       const lSmp=isSampleId(l._id);const lChk=_selLoans.has(l._id);
-      return '<tr style="'+(lChk?'background:rgba(224,82,82,.07)':'')+'">'+
-        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(lSmp?'disabled title="Sample data"':(lChk?'checked':''))+' onchange="toggleSel('loans',''+l._id+'')"></td>'+
+      return '<tr style="'+(lChk?'background:rgba(224,82,82,.07)':')+'">'+
+        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(lSmp?'disabled title="Sample data"':(lChk?'checked':'))+' onchange="toggleSel('loans','+l._id+')"></td>'+
         '<td style="font-family:var(--mo);color:var(--t)">'+l.loanId+'</td><td><strong>'+l.customer+'</strong></td>'+
       '<td style="color:var(--tx2)">'+l.product+'</td>'+
       '<td class="nm">\u20a6'+fN(l.outstanding)+'M</td>'+
@@ -667,10 +667,10 @@ function renderLoanTable(){
       '<td style="font-family:var(--mo);color:'+rc(l.creditRating)+'">'+l.creditRating+'</td>'+
       '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(l.maturityDate)+'</td>'+
       '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openLoanModal(\''+l._id+'\')" style="padding:4px 8px" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteLoan(\''+l._id+'\')" style="padding:4px 8px" title="Delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+        '<button class="bsm" onclick="openLoanModal(\'+l._id+'\')" style="padding:4px 8px" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteLoan(\'+l._id+'\')" style="padding:4px 8px" title="Delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
           '</div></td></tr>';
-    }).join('')+'</tbody></table></div>'+
+    }).join(')+'</tbody></table></div>'+
     '<div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">Showing '+loans.length+' of '+_loansCache.length+' \u00b7 Total: \u20a6'+fN(loans.reduce((s,l)=>s+l.outstanding,0))+'M</div>';
 }
 // openLoanModal: sample IDs open a blank Add Loan form instead of erroring
@@ -679,18 +679,18 @@ function openLoanModal(id){
   const l=realId?_loansCache.find(x=>x._id===realId):null;
   openModal(l?'Edit Loan':'Add Loan Facility',
     '<div class="merr" id="loan-err"></div>'+
-    '<div class="fg"><div class="fld"><label>Loan ID *</label><input class="finput" id="fl-id" value="'+(l?.loanId||'')+'" placeholder="e.g. LN-001"></div>'+
-    '<div class="fld"><label>Customer Name *</label><input class="finput" id="fl-cust" value="'+(l?.customer||'')+'" placeholder="e.g. Dangote Industries Ltd"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Loan ID *</label><input class="finput" id="fl-id" value="'+(l?.loanId||')+'" placeholder="e.g. LN-001"></div>'+
+    '<div class="fld"><label>Customer Name *</label><input class="finput" id="fl-cust" value="'+(l?.customer||')+'" placeholder="e.g. Dangote Industries Ltd"></div></div>'+
     '<div class="fg"><div class="fld"><label>Loan Product *</label><select class="finput" id="fl-prod">'+
-    ['Invoice Discounting','Supply Chain Finance','Factoring','Reverse Factoring','Term Loan'].map(p=>'<option value="'+p+'" '+(l?.product===p?'selected':'')+'>'+p+'</option>').join('')+'</select></div>'+
-    '<div class="fld"><label>Credit Rating</label><input class="finput" id="fl-rating" value="'+(l?.creditRating||'')+'" placeholder="e.g. A, BBB+"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (&#8358;) *</label><input class="finput" type="number" id="fl-principal" value="'+(l?.principal||'')+'" min="0" step="0.01"></div>'+
-    '<div class="fld"><label>Outstanding (&#8358;) *</label><input class="finput" type="number" id="fl-outstanding" value="'+(l?.outstanding||'')+'" min="0" step="0.01"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="fl-rate" value="'+(l?.interestRate||'')+'" min="0" step="0.01"></div>'+
+    ['Invoice Discounting','Supply Chain Finance','Factoring','Reverse Factoring','Term Loan'].map(p=>'<option value="'+p+'" '+(l?.product===p?'selected':')+'>'+p+'</option>').join(')+'</select></div>'+
+    '<div class="fld"><label>Credit Rating</label><input class="finput" id="fl-rating" value="'+(l?.creditRating||')+'" placeholder="e.g. A, BBB+"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Principal (&#8358;) *</label><input class="finput" type="number" id="fl-principal" value="'+(l?.principal||')+'" min="0" step="0.01"></div>'+
+    '<div class="fld"><label>Outstanding (&#8358;) *</label><input class="finput" type="number" id="fl-outstanding" value="'+(l?.outstanding||')+'" min="0" step="0.01"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="fl-rate" value="'+(l?.interestRate||')+'" min="0" step="0.01"></div>'+
     '<div class="fld"><label>Days Past Due</label><input class="finput" type="number" id="fl-dpd" value="'+(l?.daysPastDue||0)+'" min="0"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Start Date *</label><input class="finput" type="date" id="fl-start" value="'+(l?.startDate?.slice(0,10)||'')+'"></div>'+
-    '<div class="fld"><label>Maturity Date *</label><input class="finput" type="date" id="fl-mat" value="'+(l?.maturityDate?.slice(0,10)||'')+'"></div></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveLoan(\''+realId+'\')"><span id="loan-save-txt">'+(l?'Save Changes':'Add Loan')+'</span></button>');
+    '<div class="fg"><div class="fld"><label>Start Date *</label><input class="finput" type="date" id="fl-start" value="'+(l?.startDate?.slice(0,10)||')+'"></div>'+
+    '<div class="fld"><label>Maturity Date *</label><input class="finput" type="date" id="fl-mat" value="'+(l?.maturityDate?.slice(0,10)||')+'"></div></div>',
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveLoan(\'+realId+'\')"><span id="loan-save-txt">'+(l?'Save Changes':'Add Loan')+'</span></button>');
 }
 async function saveLoan(id){
   const err=$('loan-err');err.classList.remove('on');
@@ -723,7 +723,7 @@ function computeECL(){
     {l:'Stage 1',v:fmt(s1.reduce((a,r)=>a+r.ead,0)),c:'gr',sub:s1.length+' loans'},
     {l:'Stage 2',v:fmt(s2.reduce((a,r)=>a+r.ead,0)),c:'am',sub:s2.length+' loans'},
     {l:'Stage 3',v:fmt(s3.reduce((a,r)=>a+r.ead,0)),c:'rd',sub:s3.length+' loans'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':')+' </div>').join(');
   $('ecl-banner').style.display='block';
   $('ecl-banner').innerHTML='<div class="nt-info" style="display:flex;gap:2rem;flex-wrap:wrap">'+
     '<div><div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Probability-Weighted ECL</div><div style="font-family:var(--di);font-size:22px;font-weight:700;color:var(--t)">\u20a6'+fN(ecl.total)+'M</div></div>'+
@@ -746,7 +746,7 @@ function computeECL(){
       '<td class="nm">'+pct(r.lgd*100)+'</td>'+
       '<td class="nm" style="color:'+(r.ecl>50?'#e05252':r.ecl>20?'#f5a623':'#22c55e')+'">'+fN(r.ecl)+'</td>'+
       '<td class="nm" style="color:'+(r.eclRate>50?'#e05252':r.eclRate>15?'#f5a623':'#00c9a7')+'">'+r.eclRate.toFixed(2)+'%</td>'+
-    '</tr>').join('')+
+    '</tr>').join(')+
     '<tr class="trt"><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">'+fN(ecl.ead)+'</td><td></td><td></td><td class="nm">'+fN(ecl.total)+'</td><td class="nm">'+pct(ecl.coverage)+'</td></tr>'+
     '</tbody></table></div>';
   $('ecl-export-btn').disabled=false;
@@ -754,7 +754,7 @@ function computeECL(){
 }
 function updateStress(v){
   _eclMult=1+v/100;
-  const el=$('pd-val');if(el){el.textContent=(v>0?'+':'')+v+'%';el.style.color=v>0?'#e05252':'#22c55e';}
+  const el=$('pd-val');if(el){el.textContent=(v>0?'+':')+v+'%';el.style.color=v>0?'#e05252':'#22c55e';}
   if(_eclResults.length){
     const e=calcECL(_loansCache.length?_loansCache:SL,_eclMult);
     $('stress-result').innerHTML='Stressed ECL: <span style="font-family:var(--mo);color:var(--am)">\u20a6'+fN(e.total)+'M</span> \u00b7 Coverage: <span style="font-family:var(--mo);color:var(--t)">'+pct(e.coverage)+'</span>';
@@ -787,7 +787,7 @@ function renderBorrowings(){
     {l:'WACD',v:pct(wacd),c:'am',sub:'Weighted avg cost of debt'},
     {l:'Facilities',v:b.length,c:'tl',sub:'Active borrowings'},
     {l:'Interco. Debt',v:fmt(b.find(x=>x.type==='Intercompany Loan')?.outstanding||0),c:'bl',sub:'Intercompany'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':')+' </div>').join(');
   const now=new Date('2024-06-01');
   const md=b.map(x=>({n:x.lender.split(' ')[0],v:x.outstanding,d:Math.max(0,(new Date(x.maturityDate)-now)/86400000)})).sort((a,b)=>a.d-b.d);
   const typeMap={};b.forEach(x=>{typeMap[x.type]=(typeMap[x.type]||0)+x.outstanding;});
@@ -800,13 +800,13 @@ function renderBorrowings(){
   const bAllChk=bRealIds.length>0&&bRealIds.every(id=>_selBorrow.has(id));
   $('borrowings-table-wrap').innerHTML=bulkBar('borrowings',_selBorrow,b.length)+'<div class="card-label">Borrowings Schedule</div><div class="tw"><table>'+
     '<thead><tr>'+
-      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(bAllChk?'checked':'')+' onchange="toggleAllSel('borrowings','+JSON.stringify(bRealIds)+')" title="Select all"></th>'+
+      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(bAllChk?'checked':')+' onchange="toggleAllSel('borrowings','+JSON.stringify(bRealIds)+')" title="Select all"></th>'+
       '<th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding (&#8358;)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Repayment</th><th>Maturity</th><th></th>'+
     '</tr></thead>'+
     '<tbody>'+b.map(x=>{
       const bSmp=isSampleId(x._id);const bChk=_selBorrow.has(x._id);
-      return '<tr style="'+(bChk?'background:rgba(224,82,82,.07)':'')+'">'+
-        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(bSmp?'disabled title="Sample data"':(bChk?'checked':''))+' onchange="toggleSel('borrowings',''+x._id+'')"></td>'+
+      return '<tr style="'+(bChk?'background:rgba(224,82,82,.07)':')+'">'+
+        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(bSmp?'disabled title="Sample data"':(bChk?'checked':'))+' onchange="toggleSel('borrowings','+x._id+')"></td>'+
         '<td style="font-family:var(--mo);color:var(--t)">'+x.borrowingId+'</td><td><strong>'+x.lender+'</strong></td>'+
         '<td style="color:var(--tx2)">'+x.type+'</td>'+
         '<td class="nm">'+fmt(x.outstanding)+'</td>'+
@@ -815,10 +815,10 @@ function renderBorrowings(){
         '<td style="color:var(--tx2)">'+x.repayment+'</td>'+
         '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(x.maturityDate)+'</td>'+
         '<td><div style="display:flex;gap:4px">'+
-          '<button class="bsm" onclick="openBorrowingModal(''+x._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-          '<button class="bsm bd" onclick="deleteBorrowing(''+x._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+          '<button class="bsm" onclick="openBorrowingModal('+x._id+')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+          '<button class="bsm bd" onclick="deleteBorrowing('+x._id+')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
         '</div></td></tr>';
-    }).join('')+'</tbody></table></div>';
+    }).join(')+'</tbody></table></div>';
 }
 // openBorrowingModal: sample IDs open blank Add form
 function openBorrowingModal(id){
@@ -826,18 +826,18 @@ function openBorrowingModal(id){
   const x=realId?_borrowCache.find(b=>b._id===realId):null;
   openModal(x?'Edit Facility':'Add Borrowing Facility',
     '<div class="merr" id="bw-err"></div>'+
-    '<div class="fg"><div class="fld"><label>Borrowing ID *</label><input class="finput" id="bw-id" value="'+(x?.borrowingId||'')+'"></div>'+
-    '<div class="fld"><label>Lender *</label><input class="finput" id="bw-lender" value="'+(x?.lender||'')+'"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Borrowing ID *</label><input class="finput" id="bw-id" value="'+(x?.borrowingId||')+'"></div>'+
+    '<div class="fld"><label>Lender *</label><input class="finput" id="bw-lender" value="'+(x?.lender||')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Facility Type *</label><select class="finput" id="bw-type">'+
-    ['Term Loan','Overdraft Facility','On-lending Facility','SME Fund','Wholesale Borrowing','Intercompany Loan'].map(t=>'<option '+(x?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
+    ['Term Loan','Overdraft Facility','On-lending Facility','SME Fund','Wholesale Borrowing','Intercompany Loan'].map(t=>'<option '+(x?.type===t?'selected':')+'>'+t+'</option>').join(')+'</select></div>'+
     '<div class="fld"><label>Repayment</label><select class="finput" id="bw-rep">'+
-    ['Monthly','Quarterly','Bullet','Revolving','Semi-annual'].map(t=>'<option '+(x?.repayment===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (&#8358;)</label><input class="finput" type="number" id="bw-principal" value="'+(x?.principal||'')+'"></div>'+
-    '<div class="fld"><label>Outstanding (&#8358;)</label><input class="finput" type="number" id="bw-outstanding" value="'+(x?.outstanding||'')+'"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="bw-rate" value="'+(x?.interestRate||'')+'"></div>'+
-    '<div class="fld"><label>Tenor (months)</label><input class="finput" type="number" id="bw-tenor" value="'+(x?.tenorMonths||'')+'"></div></div>'+
-    '<div class="fld"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="'+(x?.maturityDate?.slice(0,10)||'')+'"></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing(\''+realId+'\')"><span id="bw-save-txt">'+(x?'Save Changes':'Add Facility')+'</span></button>');
+    ['Monthly','Quarterly','Bullet','Revolving','Semi-annual'].map(t=>'<option '+(x?.repayment===t?'selected':')+'>'+t+'</option>').join(')+'</select></div></div>'+
+    '<div class="fg"><div class="fld"><label>Principal (&#8358;)</label><input class="finput" type="number" id="bw-principal" value="'+(x?.principal||')+'"></div>'+
+    '<div class="fld"><label>Outstanding (&#8358;)</label><input class="finput" type="number" id="bw-outstanding" value="'+(x?.outstanding||')+'"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="bw-rate" value="'+(x?.interestRate||')+'"></div>'+
+    '<div class="fld"><label>Tenor (months)</label><input class="finput" type="number" id="bw-tenor" value="'+(x?.tenorMonths||')+'"></div></div>'+
+    '<div class="fld"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="'+(x?.maturityDate?.slice(0,10)||')+'"></div>',
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing(\'+realId+'\')"><span id="bw-save-txt">'+(x?'Save Changes':'Add Facility')+'</span></button>');
 }
 async function saveBorrowing(id){
   const err=$('bw-err');err.classList.remove('on');
@@ -873,7 +873,7 @@ function renderInvestments(){
     {l:'Projected Interest',v:fmt(interest),c:'am',sub:'Full tenor'},
     {l:'Avg. Yield',v:pct(avgY),c:'gr',sub:'Weighted avg.'},
     {l:'Instruments',v:inv.length,c:'bl',sub:'Active placements'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':')+' </div>').join(');
   const typeMap={};inv.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
   $('investments-charts').innerHTML='<div class="chart-box"><div class="card-label">Maturity Ladder \u2014 Principal + Interest (\u20a6M)</div><canvas id="ch-inv-ladder" height="170"></canvas></div><div class="chart-box"><div class="card-label">Portfolio Mix</div><canvas id="ch-inv-mix" height="170"></canvas></div>';
   setTimeout(()=>{
@@ -884,13 +884,13 @@ function renderInvestments(){
   const iAllChk=iRealIds.length>0&&iRealIds.every(id=>_selInv.has(id));
   $('investments-table-wrap').innerHTML=bulkBar('investments',_selInv,inv.length)+'<div class="card-label">Investment Schedule</div><div class="tw"><table>'+
     '<thead><tr>'+
-      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(iAllChk?'checked':'')+' onchange="toggleAllSel('investments','+JSON.stringify(iRealIds)+')" title="Select all"></th>'+
+      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(iAllChk?'checked':')+' onchange="toggleAllSel('investments','+JSON.stringify(iRealIds)+')" title="Select all"></th>'+
       '<th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal (&#8358;)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest (&#8358;)</th><th></th>'+
     '</tr></thead>'+
     '<tbody>'+inv.map(i=>{
       const iSmp=isSampleId(i._id);const iChk=_selInv.has(i._id);
-      return '<tr style="'+(iChk?'background:rgba(224,82,82,.07)':'')+'">'+
-        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(iSmp?'disabled title="Sample data"':(iChk?'checked':''))+' onchange="toggleSel('investments',''+i._id+'')"></td>'+
+      return '<tr style="'+(iChk?'background:rgba(224,82,82,.07)':')+'">'+
+        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(iSmp?'disabled title="Sample data"':(iChk?'checked':'))+' onchange="toggleSel('investments','+i._id+')"></td>'+
         '<td style="font-family:var(--mo);color:var(--t)">'+i.investmentId+'</td><td><strong>'+i.counterparty+'</strong></td>'+
         '<td style="color:var(--tx2)">'+i.type+'</td>'+
         '<td class="nm">'+fmt(i.principal)+'</td>'+
@@ -900,10 +900,10 @@ function renderInvestments(){
         '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.maturityDate)+'</td>'+
         '<td class="nm" style="color:#f5a623">'+fmt(i.principal*(i.interestRate/100)*(i.tenorDays/365))+'</td>'+
         '<td><div style="display:flex;gap:4px">'+
-          '<button class="bsm" onclick="openInvestmentModal(''+i._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-          '<button class="bsm bd" onclick="deleteInvestment(''+i._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+          '<button class="bsm" onclick="openInvestmentModal('+i._id+')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+          '<button class="bsm bd" onclick="deleteInvestment('+i._id+')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
         '</div></td></tr>';
-    }).join('')+'</tbody></table></div>';
+    }).join(')+'</tbody></table></div>';
 }
 // openInvestmentModal: sample IDs open blank Add form
 function openInvestmentModal(id){
@@ -911,15 +911,15 @@ function openInvestmentModal(id){
   const i=realId?_invCache.find(x=>x._id===realId):null;
   openModal(i?'Edit Investment':'Add Investment',
     '<div class="merr" id="inv2-err"></div>'+
-    '<div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="'+(i?.investmentId||'')+'"></div>'+
-    '<div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="'+(i?.counterparty||'')+'"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="'+(i?.investmentId||')+'"></div>'+
+    '<div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="'+(i?.counterparty||')+'"></div></div>'+
     '<div class="fld"><label>Type</label><select class="finput" id="ii-type">'+
-    ['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (&#8358;) *</label><input class="finput" type="number" id="ii-principal" value="'+(i?.principal||'')+'"></div>'+
-    '<div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="ii-rate" value="'+(i?.interestRate||'')+'"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="'+(i?.dateInvested?.slice(0,10)||'')+'"></div>'+
-    '<div class="fld"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="'+(i?.tenorDays||'')+'"></div></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment(\''+realId+'\')"><span id="ii-save-txt">'+(i?'Save Changes':'Add Investment')+'</span></button>');
+    ['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper'].map(t=>'<option '+(i?.type===t?'selected':')+'>'+t+'</option>').join(')+'</select></div>'+
+    '<div class="fg"><div class="fld"><label>Principal (&#8358;) *</label><input class="finput" type="number" id="ii-principal" value="'+(i?.principal||')+'"></div>'+
+    '<div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="ii-rate" value="'+(i?.interestRate||')+'"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="'+(i?.dateInvested?.slice(0,10)||')+'"></div>'+
+    '<div class="fld"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="'+(i?.tenorDays||')+'"></div></div>',
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment(\'+realId+'\')"><span id="ii-save-txt">'+(i?'Save Changes':'Add Investment')+'</span></button>');
 }
 async function saveInvestment(id){
   const err=$('inv2-err');err.classList.remove('on');
@@ -955,7 +955,7 @@ function renderCash(){
     {l:'Unrestricted',v:fmt(unres),c:'gr',sub:'Available for use'},
     {l:'Restricted',v:fmt(totalNGN-unres),c:'rd',sub:'Encumbered'},
     {l:'FX Holdings (USD)',v:fmt(usd.reduce((s,a)=>s+a.balance,0)),c:'am'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':')+' </div>').join(');
   $('cash-charts').innerHTML='<div class="chart-box"><div class="card-label">Cash by Bank (NGN, \u20a6M)</div><canvas id="ch-cash-bank" height="170"></canvas></div><div class="chart-box"><div class="card-label">Restricted vs Unrestricted</div><canvas id="ch-cash-rest" height="170"></canvas></div>';
   setTimeout(()=>{
     mkChart('ch-cash-bank',{type:'bar',data:{labels:ngn.map(a=>a.bank.split(' ')[0]),datasets:[{data:ngn.map(a=>a.balance),backgroundColor:ngn.map((a,i)=>a.restricted?'#e05252':PAL[i%PAL.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
@@ -965,13 +965,13 @@ function renderCash(){
   const caAllChk=caRealIds.length>0&&caRealIds.every(id=>_selCash.has(id));
   $('cash-table-wrap').innerHTML=bulkBar('cash',_selCash,ca.length)+'<div class="card-label">Bank Account Balances</div><div class="tw"><table>'+
     '<thead><tr>'+
-      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(caAllChk?'checked':'')+' onchange="toggleAllSel('cash','+JSON.stringify(caRealIds)+')" title="Select all"></th>'+
+      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(caAllChk?'checked':')+' onchange="toggleAllSel('cash','+JSON.stringify(caRealIds)+')" title="Select all"></th>'+
       '<th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance (&#8358;)</th><th>Status</th><th></th>'+
     '</tr></thead>'+
     '<tbody>'+ca.map(a=>{
       const caSmp=isSampleId(a._id);const caChk=_selCash.has(a._id);
-      return '<tr style="'+(caChk?'background:rgba(224,82,82,.07)':'')+'">'+
-        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(caSmp?'disabled title="Sample data"':(caChk?'checked':''))+' onchange="toggleSel('cash',''+a._id+'')"></td>'+
+      return '<tr style="'+(caChk?'background:rgba(224,82,82,.07)':')+'">'+
+        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(caSmp?'disabled title="Sample data"':(caChk?'checked':'))+' onchange="toggleSel('cash','+a._id+')"></td>'+
         '<td style="font-family:var(--mo);color:var(--t)">'+a.accountId+'</td><td><strong>'+a.bank+'</strong></td>'+
         '<td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">'+a.accountNo+'</td>'+
         '<td style="color:var(--tx2)">'+a.type+'</td>'+
@@ -979,10 +979,10 @@ function renderCash(){
         '<td class="nm">'+fmt(a.balance)+'</td>'+
         '<td><span class="pl '+(a.restricted?'pr':'pg')+'">'+(a.restricted?'&#128274; Restricted':'&#10003; Available')+'</span></td>'+
         '<td><div style="display:flex;gap:4px">'+
-          '<button class="bsm" onclick="openCashModal(''+a._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-          '<button class="bsm bd" onclick="deleteCash(''+a._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+          '<button class="bsm" onclick="openCashModal('+a._id+')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+          '<button class="bsm bd" onclick="deleteCash('+a._id+')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
         '</div></td></tr>';
-    }).join('')+'</tbody></table></div>';
+    }).join(')+'</tbody></table></div>';
 }
 // openCashModal: sample IDs open blank Add form
 function openCashModal(id){
@@ -990,16 +990,16 @@ function openCashModal(id){
   const a=realId?_cashCache.find(x=>x._id===realId):null;
   openModal(a?'Edit Account':'Add Cash Account',
     '<div class="merr" id="ca-err"></div>'+
-    '<div class="fg"><div class="fld"><label>Account ID *</label><input class="finput" id="ca-id" value="'+(a?.accountId||'')+'"></div>'+
-    '<div class="fld"><label>Bank Name *</label><input class="finput" id="ca-bank" value="'+(a?.bank||'')+'"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Account Number</label><input class="finput" id="ca-acct" value="'+(a?.accountNo||'')+'"></div>'+
+    '<div class="fg"><div class="fld"><label>Account ID *</label><input class="finput" id="ca-id" value="'+(a?.accountId||')+'"></div>'+
+    '<div class="fld"><label>Bank Name *</label><input class="finput" id="ca-bank" value="'+(a?.bank||')+'"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Account Number</label><input class="finput" id="ca-acct" value="'+(a?.accountNo||')+'"></div>'+
     '<div class="fld"><label>Account Type</label><select class="finput" id="ca-type">'+
-    ['Current','Savings','Dom (USD)','Dom (EUR)'].map(t=>'<option '+(a?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
+    ['Current','Savings','Dom (USD)','Dom (EUR)'].map(t=>'<option '+(a?.type===t?'selected':')+'>'+t+'</option>').join(')+'</select></div></div>'+
     '<div class="fg"><div class="fld"><label>Currency</label><select class="finput" id="ca-ccy">'+
-    ['NGN','USD','EUR','GBP'].map(t=>'<option '+(a?.currency===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
+    ['NGN','USD','EUR','GBP'].map(t=>'<option '+(a?.currency===t?'selected':')+'>'+t+'</option>').join(')+'</select></div>'+
     '<div class="fld"><label>Balance</label><input class="finput" type="number" id="ca-bal" value="'+(a?.balance||0)+'" min="0" step="0.01"></div></div>'+
-    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ca-rest" '+(a?.restricted?'checked':'')+' style="accent-color:var(--t)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo);text-transform:none;letter-spacing:0">Mark as Restricted (encumbered/pledged)</span></label></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash(\''+realId+'\')"><span id="ca-save-txt">'+(a?'Save Changes':'Add Account')+'</span></button>');
+    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ca-rest" '+(a?.restricted?'checked':')+' style="accent-color:var(--t)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo);text-transform:none;letter-spacing:0">Mark as Restricted (encumbered/pledged)</span></label></div>',
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash(\'+realId+'\')"><span id="ca-save-txt">'+(a?'Save Changes':'Add Account')+'</span></button>');
 }
 async function saveCash(id){
   const err=$('ca-err');err.classList.remove('on');
@@ -1036,7 +1036,7 @@ async function loadLiquidity(){
     {l:'Liquidity Ratio',v:pct(liqRatio),c:'gr',sub:'Liquid / Obligations'},
     {l:'30d Forecast',v:fmt(totalCash+totalLoans*.08-totalDebt*.02),c:'bl'},
     {l:'90d Gap',v:fmt(totalCash+totalLoans*.14-totalDebt*.13),c:totalCash>totalDebt*.1?'gr':'rd'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':')+' </div>').join(');
   const liqF=[
     {p:'Now',n:totalCash,c:totalCash},
     {p:'30d',n:totalLoans*.08-totalDebt*.02,c:totalCash+totalLoans*.08-totalDebt*.02},
@@ -1060,9 +1060,9 @@ async function loadLiquidity(){
     mkChart('ch-liq-gap',{type:'bar',data:{labels:gapD.map(d=>d.p),datasets:[{label:'Inflows',data:gapD.map(d=>d.in),backgroundColor:'#22c55e',borderRadius:4},{label:'Outflows',data:gapD.map(d=>d.out),backgroundColor:'#e05252',borderRadius:4}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     const srcEl=$('liq-src-inner');
     if(srcEl)srcEl.innerHTML=
-      [[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Short Investments (<90d)','#63b3ed'],[fmt(totalLoans*.12),'Loan Collections (est.)','#22c55e']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('')+
+      [[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Short Investments (<90d)','#63b3ed'],[fmt(totalLoans*.12),'Loan Collections (est.)','#22c55e']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join(')+
       '<div style="font-size:11px;color:var(--tx3);font-family:var(--mo);padding:8px 0">Obligations:</div>'+
-      [[fmt(borr.filter(b=>b.type!=='Intercompany Loan').reduce((s,b)=>s+b.outstanding,0)*.12),'Debt Maturities (<90d)','#e05252'],[fmt(45),'Operational Expenses','#f5a623'],[fmt(120),'Funding Commitments','#a78bfa']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('');
+      [[fmt(borr.filter(b=>b.type!=='Intercompany Loan').reduce((s,b)=>s+b.outstanding,0)*.12),'Debt Maturities (<90d)','#e05252'],[fmt(45),'Operational Expenses','#f5a623'],[fmt(120),'Funding Commitments','#a78bfa']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join(');
   },60);
 }
 
@@ -1167,16 +1167,16 @@ function downloadSampleTemplate(module){
   // ── Instructions sheet ───────────────────────────────────────
   const instrRows = [
     ['FM Treasury Intelligence — ' + tpl.label + ' Upload Template'],
-    [''],
+    ['],
     ['INSTRUCTIONS'],
     ['1. Do not rename or reorder the column headers in the ' + tpl.sheetName + ' sheet.'],
     ['2. Delete the sample rows before uploading — they are for illustration only.'],
     ['3. Save the file as .xlsx, .xls, or .csv before uploading.'],
     ['4. Maximum file size: 5MB.'],
-    [''],
+    ['],
     ['COLUMN GUIDE'],
     ...tpl.notes.map(n => ['  • ' + n]),
-    [''],
+    ['],
     ['Generated by FM Treasury Intelligence · ' + new Date().toLocaleDateString('en-GB')],
   ];
   const wsInstr = XLSX.utils.aoa_to_sheet(instrRows);
@@ -1197,7 +1197,7 @@ function openUploadModal(module){
         '<span style="font-size:13px;font-weight:600;color:var(--tx)">Download the template</span>'+
       '</div>'+
       '<p style="font-size:12px;color:var(--tx2);margin:0 0 10px;line-height:1.5">Get the official Excel template with the correct column headers and sample data. Fill it in, then upload below.</p>'+
-      '<button onclick="downloadSampleTemplate(\''+module+'\')" style="background:var(--t);border-color:var(--t);color:var(--n);font-weight:600;padding:7px 16px;font-size:12px">'+
+      '<button onclick="downloadSampleTemplate(\'+module+'\')" style="background:var(--t);border-color:var(--t);color:var(--n);font-weight:600;padding:7px 16px;font-size:12px">'+
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'+
         'Download '+tpl.filename+
       '</button>'+
@@ -1216,7 +1216,7 @@ function openUploadModal(module){
       '</label>'+
     '</div>'+
     '<div id="upload-log" style="display:none;margin-top:1rem"></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" id="upload-submit" onclick="doUpload(\''+module+'\')" disabled><span id="upload-txt">Import</span></button>'
+    '<button onclick="closeModal()">Cancel</button><button class="bp" id="upload-submit" onclick="doUpload(\'+module+'\')" disabled><span id="upload-txt">Import</span></button>'
   );
 }
 function handleUploadFile(inp){
@@ -1233,7 +1233,7 @@ async function doUpload(module){
     const fd=new FormData();fd.append('file',file);
     const d=await apiForm('/treasury/'+module+'/upload',fd);
     $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:#22c55e;font-family:var(--mo)">\u2713</span><span style="color:var(--tx2)">'+d.inserted+' records imported successfully.</span></div>'+
-      (d.errors?.length?d.errors.slice(0,5).map(e=>'<div class="ulog-row"><span style="color:#f5a623;font-family:var(--mo)">\u26a0</span><span style="color:var(--tx2)">'+e.error+'</span></div>').join(''):'')+'</div>'+
+      (d.errors?.length?d.errors.slice(0,5).map(e=>'<div class="ulog-row"><span style="color:#f5a623;font-family:var(--mo)">\u26a0</span><span style="color:var(--tx2)">'+e.error+'</span></div>').join('):')+'</div>'+
       '<button class="bp" style="margin-top:.75rem;width:100%" onclick="closeModal()">Done</button>';
     toast(d.inserted+' records imported.');
     const reload={loans:loadLoans,borrowings:loadBorrowings,investments:loadInvestments,cash:loadCash};
@@ -1259,8 +1259,8 @@ async function loadTeam(){
         '<td><span class="team-role-badge '+(m.orgRole==='admin'?'team-role-admin':'team-role-member')+'">'+m.orgRole+'</span></td>'+
         '<td style="font-size:12px"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:'+(m.active?'#22c55e':'#e05252')+'"></span>'+(m.active?'Active':'Inactive')+'</span></td>'+
         '<td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">'+(m.lastLogin?fD(m.lastLogin):'Never')+'</td>'+
-        '<td><button class="bsm bd" onclick="removeTeamMember(\''+m._id+'\')" style="padding:4px 10px" title="Remove member">Remove</button></td>'+
-      '</tr>').join('')+'</tbody></table></div>';
+        '<td><button class="bsm bd" onclick="removeTeamMember(\'+m._id+'\')" style="padding:4px 10px" title="Remove member">Remove</button></td>'+
+      '</tr>').join(')+'</tbody></table></div>';
   }catch(e){$('team-table').innerHTML='<div class="nt">&#9888; '+e.message+'<br><span style="font-size:11px;color:var(--tx3)">Team management requires an Organisation account. Go to Settings to check your account type.</span></div>';}
 }
 function openTeamMemberModal(){
@@ -1298,16 +1298,16 @@ async function loadSettings(){
     $('settings-form').innerHTML=
       '<div class="card" style="margin-bottom:1rem"><div class="section-ttl">Account Information</div>'+
       '<div class="merr" id="set-err"></div><div class="mok" id="set-ok"></div>'+
-      '<div class="fg"><div class="fld"><label>Full Name</label><input class="finput" id="s-name" value="'+(u.name||'')+'"></div>'+
-      '<div class="fld"><label>Email</label><input class="finput" value="'+(u.email||'')+'" disabled style="opacity:.5"></div></div>'+
+      '<div class="fg"><div class="fld"><label>Full Name</label><input class="finput" id="s-name" value="'+(u.name||')+'"></div>'+
+      '<div class="fld"><label>Email</label><input class="finput" value="'+(u.email||')+'" disabled style="opacity:.5"></div></div>'+
       '<div class="fld"><label>Account Type</label><div style="font-family:var(--mo);font-size:12px;color:var(--t);padding:8px 12px;background:var(--n3);border:1px solid var(--b);border-radius:var(--r)">'+(isOrg?'\ud83c\udfe2 Organisation Account':'\ud83d\udc64 Individual Account')+'</div></div></div>'+
       (isOrg?
         '<div class="card" style="margin-bottom:1rem"><div class="section-ttl">Organisation Profile</div>'+
-        '<div class="fg"><div class="fld"><label>Organisation Name</label><input class="finput" id="s-orgname" value="'+(org.name||'')+'"></div>'+
-        '<div class="fld"><label>Domain (e.g. company.com)</label><input class="finput" id="s-domain" value="'+(org.domain||'')+'" placeholder="yourcompany.com"></div></div>'+
-        '<div class="fg"><div class="fld"><label>Description</label><input class="finput" id="s-desc" value="'+(org.description||'')+'"></div>'+
+        '<div class="fg"><div class="fld"><label>Organisation Name</label><input class="finput" id="s-orgname" value="'+(org.name||')+'"></div>'+
+        '<div class="fld"><label>Domain (e.g. company.com)</label><input class="finput" id="s-domain" value="'+(org.domain||')+'" placeholder="yourcompany.com"></div></div>'+
+        '<div class="fg"><div class="fld"><label>Description</label><input class="finput" id="s-desc" value="'+(org.description||')+'"></div>'+
         '<div class="fld"><label>Organisation Size</label><select class="finput" id="s-size">'+
-        ['1-10','11-50','51-200','201-500','500+'].map(s=>'<option '+(org.size===s?'selected':'')+'>'+s+'</option>').join('')+'</select></div></div></div>':'')+
+        ['1-10','11-50','51-200','201-500','500+'].map(s=>'<option '+(org.size===s?'selected':')+'>'+s+'</option>').join(')+'</select></div></div></div>':')+
       '<div style="display:flex;justify-content:flex-end"><button class="bp" onclick="saveSettings()"><span id="set-save-txt">Save Settings</span></button></div>';
   }catch(e){$('settings-form').innerHTML='<div class="nt">\u26a0 '+e.message+'</div>';}
 }
