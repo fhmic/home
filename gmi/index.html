@@ -204,13 +204,83 @@ footer{background:var(--n2);border-top:1px solid var(--b);padding:1.25rem 2rem;d
 @media(max-width:960px){._g5{grid-template-columns:repeat(3,1fr)}._g4{grid-template-columns:repeat(2,1fr)}._g3{grid-template-columns:repeat(2,1fr)}._hg{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:768px){.stock-split{grid-template-columns:1fr !important}}
 @media(max-width:600px){._pg{padding:1rem}._ga,._g2,._g3,._g4,._g5{grid-template-columns:1fr 1fr}._hg{grid-template-columns:repeat(3,1fr)}._fg{grid-template-columns:1fr}.stock-split{grid-template-columns:1fr !important}}
+
+/* ════════════════════════════════════════════════
+   MOBILE OPTIMISATION — phones & tablets
+   ════════════════════════════════════════════════ */
+button,a,select,input{touch-action:manipulation}
+
+@media(max-width:860px){
+  #_nb{padding:0 1rem;height:auto;min-height:52px;flex-wrap:wrap;row-gap:6px;padding-top:6px;padding-bottom:6px}
+  ._nl{font-size:15px;gap:7px}
+  ._nm{width:26px;height:26px}
+  ._nc{order:3;width:100%;justify-content:flex-start;gap:0;overflow-x:auto;scrollbar-width:none}
+  ._nc::-webkit-scrollbar{display:none}
+  ._nmi{padding:7px 11px;font-size:11px;flex-shrink:0}
+  ._nr{gap:5px}
+  ._ast{display:none}
+  ._uc span{display:none}
+  ._uc{padding:5px 7px}
+  ._pg{padding:1.25rem 1rem 2.5rem}
+  ._pt{font-size:21px}
+}
+
+@media(max-width:680px){
+  ._nb2 span{display:none}
+  ._nb2{padding:7px;gap:0}
+  ._nb2 svg{width:13px;height:13px}
+  ._ph{flex-direction:column;align-items:stretch}
+  ._ph>div:last-child{width:100%}
+  ._dtag{display:none}
+  #_rfb{width:100%;justify-content:center}
+  ._sh{font-size:13px}
+  ._mv{font-size:18px}
+  ._ngr{font-size:24px}
+  ._sph[style]{grid-template-columns:repeat(3,1fr) !important}
+  ._mbox{max-height:94vh;border-radius:12px}
+  ._mhd{padding:1rem}
+  ._mbd{padding:1rem}
+  div[style*="grid-template-columns:190px 1fr"]{grid-template-columns:1fr !important;justify-items:center;text-align:center}
+  ._fld[style*="align-self:flex-end"]{align-self:stretch}
+  ._fld[style*="align-self:flex-end"] button{width:100%}
+  thead th{padding:7px 9px;font-size:8px}
+  tbody td{padding:7px 9px}
+  tbody td:not(:first-child){font-size:10px}
+  ._twp{font-size:11px}
+}
+
+@media(max-width:430px){
+  html{font-size:13px}
+  #_tw{height:32px}
+  ._ti{padding:0 16px;font-size:10px}
+  ._nl{font-size:13px}
+  ._nlt{display:none}
+  ._nmi{padding:6px 9px;font-size:10px}
+  ._pe{font-size:9px}
+  ._pt{font-size:18px}
+  ._ga,._g2,._g3,._g4,._g5{grid-template-columns:1fr 1fr}
+  ._hg{grid-template-columns:repeat(2,1fr)}
+  ._mc,._cc{padding:11px 12px}
+  ._mv{font-size:16px}
+  ._cpr{font-size:15px}
+  ._ngc{padding:13px 14px}
+  ._ngr{font-size:21px}
+  ._fxc{grid-template-columns:auto 1fr auto;gap:7px;padding:11px 12px}
+  ._ff{font-size:16px}
+  ._fp{font-size:11px}
+  ._fv{font-size:14px}
+  ._sph[style]{grid-template-columns:repeat(2,1fr) !important}
+  ._spc{padding:6px 5px}
+  footer{flex-direction:column;align-items:flex-start;padding:1rem}
+  ._fli{flex-wrap:wrap;gap:10px 14px}
+}
 </style>
 </head>
 <body>
 <a href="#_main" class="skip-link">Skip to main content</a>
 <div id="_tw" aria-label="Live market ticker" role="marquee"><div id="_tt"></div></div>
 <nav id="_nb" aria-label="Main navigation">
-  <a href="../" class="_nl" aria-label="FM Markets home"><div class="_nm" aria-hidden="true">FM</div>FM <span style="color:var(--t);margin-left:4px">Markets</span></a>
+  <a href="../" class="_nl" aria-label="FM Markets home"><div class="_nm" aria-hidden="true">FM</div><span class="_nlt">FM <span style="color:var(--t);margin-left:4px">Markets</span></span></a>
   <div class="_nc" role="tablist" aria-label="Market sections">
     <button class="_nmi on" data-pg="home" role="tab" aria-selected="true" aria-controls="pg-home">Market</button>
     <button class="_nmi" data-pg="forex" role="tab" aria-selected="false" aria-controls="pg-forex">Forex</button>
@@ -223,12 +293,12 @@ footer{background:var(--n2);border-top:1px solid var(--b);padding:1.25rem 2rem;d
     </div>
     <div class="_uc"><div class="_ld" aria-hidden="true"></div><span id="_un" style="font-family:var(--mo);font-size:11px">Live</span></div>
     <a href="../portal/" class="_nb2" aria-label="Return to portal">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Portal
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Portal</span>
     </a>
     <a href="../" class="_nb2" aria-label="Return to home">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span>
     </a>
-    <button class="_nb2" id="_lo">Sign out</button>
+    <button class="_nb2" id="_lo"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Sign out</span></button>
   </div>
 </nav>
 
@@ -990,10 +1060,8 @@ async function _fFX(){
     });
     _FXH.forEach(function(item){
       var sym=item.s;
-      // Try direct USD/SYM pair first
       var pr=_FXP.find(function(p){return p.f==='USD'&&p.t===sym;});
       if(pr){item.c=pr.pct;return;}
-      // Try cross rate: SYM/NGN pair (e.g. CAD/NGN)
       var xr=_FXP.find(function(p){return p.f===sym&&p.t==='NGN';});
       if(xr){item.c=xr.pct;}
     });
