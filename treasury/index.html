@@ -424,7 +424,7 @@ function bulkBar(module,selSet,total){
   const count=selSet.size;
   return '<div style="display:flex;align-items:center;gap:10px;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:8px 14px;margin-bottom:.75rem;flex-wrap:wrap">'+
     '<span style="font-size:12px;font-family:var(--mo);color:var(--rd)">'+count+' of '+total+' selected</span>'+
-    '<button class="bsm bd" onclick="bulkDelete('+module+')" style="padding:5px 12px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg> Delete selected</button>'+
+    '<button class="bsm bd" onclick="bulkDelete(\'\'+module+\'\')" style="padding:5px 12px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg> Delete selected</button>'+
     '<button class="bsm" onclick="clearSel('+module+')" style="padding:5px 12px">Clear</button>'+
   '</div>';
 }
