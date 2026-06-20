@@ -12,7 +12,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --n:#050d1a;--n2:#0a1628;--n3:#0f1f3d;--n4:#162747;
-  --t:#00c9a7;--t2:#00a98e;--am:#f5a623;--rd:#e05252;--gr:#22c55e;
+  --t:#00c9a7;--t2:#00a98e;--am:#f5a623;--rd:#e05252;--gr:#22c55e;--pu:#a78bfa;
   --tx:#e8edf5;--tx2:#8fa3bf;--tx3:#4a6080;
   --b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
   --sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.08);
@@ -30,7 +30,6 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;position:relative;overflow:hidden}
 #login-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(0,201,167,.07) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 80% 80%,rgba(0,201,167,.04) 0%,transparent 60%);pointer-events:none}
 #login-screen::after{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.018) 39px,rgba(255,255,255,.018) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.018) 39px,rgba(255,255,255,.018) 40px);pointer-events:none}
-/* home link top-left */
 .home-link{position:fixed;top:18px;left:22px;z-index:200;display:flex;align-items:center;gap:7px;background:rgba(10,22,40,.8);border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:7px 14px;font-size:12px;font-family:var(--mo);color:var(--tx3);text-decoration:none;backdrop-filter:blur(8px);transition:all .2s}
 .home-link:hover{color:var(--t);border-color:rgba(0,201,167,.3)}
 .login-wrap{position:relative;z-index:1;width:100%;max-width:880px;display:grid;grid-template-columns:1fr 1fr;border-radius:22px;overflow:hidden;border:1px solid var(--b2);box-shadow:var(--sh)}
@@ -72,9 +71,10 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .sec-dot{width:5px;height:5px;border-radius:50%;background:var(--gr)}
 
 /* ══ AUTH CARDS (modals) ════════════════════════════════════ */
-.auth-card{display:none;position:fixed;inset:0;z-index:300;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
+.auth-card{display:none;position:fixed;inset:0;z-index:300;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto}
 .auth-card.open{display:flex}
-.auth-inner{background:var(--n2);border:1px solid var(--b2);border-radius:18px;width:100%;max-width:430px;padding:2.1rem 1.9rem 1.9rem;box-shadow:var(--sh);position:relative}
+.auth-inner{background:var(--n2);border:1px solid var(--b2);border-radius:18px;width:100%;max-width:430px;padding:2.1rem 1.9rem 1.9rem;box-shadow:var(--sh);position:relative;margin:auto}
+.auth-inner.wide{max-width:520px}
 .ac-close{position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--b2);color:var(--tx3);padding:5px 10px;border-radius:var(--r);cursor:pointer;font-size:11px;font-family:var(--mo);transition:all .2s}
 .ac-close:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
 .ac-brand{display:flex;align-items:center;gap:10px;margin-bottom:1.35rem}
@@ -83,25 +83,53 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .ac-sub{font-size:12.5px;color:var(--tx2);margin-bottom:1.35rem;line-height:1.55}
 .ac-err{display:none;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:9px 13px;font-size:12px;color:var(--rd);margin-bottom:.9rem;font-family:var(--mo)}
 .ac-ok{display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:var(--r);padding:9px 13px;font-size:12px;color:var(--gr);margin-bottom:.9rem;font-family:var(--mo);line-height:1.6}
+.ac-info{display:none;background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.2);border-radius:var(--r);padding:9px 13px;font-size:12px;color:var(--t);margin-bottom:.9rem;font-family:var(--mo);line-height:1.6}
 .ac-field{margin-bottom:.9rem}
 .ac-field label{display:block;font-size:10px;font-family:var(--mo);color:var(--tx2);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase}
 .ac-inp{width:100%;padding:10px 13px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;outline:none;transition:border-color .2s}
 .ac-inp:focus{border-color:var(--t);box-shadow:0 0 0 3px rgba(0,201,167,.09)}
 .ac-inp::placeholder{color:var(--tx3)}
+.ac-inp:disabled{opacity:.55;cursor:not-allowed}
 .ac-ta{width:100%;padding:10px 13px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;outline:none;resize:vertical;min-height:85px;transition:border-color .2s}
 .ac-ta:focus{border-color:var(--t);box-shadow:0 0 0 3px rgba(0,201,167,.09)}
 .ac-btn{width:100%;padding:11px;border:none;border-radius:var(--r);color:var(--n);font-family:var(--di);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:.4rem}
 .ac-btn.teal{background:var(--t)}.ac-btn.teal:hover{background:var(--t2)}
 .ac-btn.amber{background:var(--am)}.ac-btn.amber:hover{background:#e09416}
+.ac-btn.ghost{background:transparent;border:1px solid var(--b2);color:var(--tx2)}.ac-btn.ghost:hover{background:var(--sf2)}
 .ac-btn:disabled{opacity:.6;cursor:not-allowed}
 .ac-back{text-align:center;margin-top:.9rem;font-size:12px;color:var(--tx3);font-family:var(--mo)}
 .ac-back span{color:var(--t);cursor:pointer;text-decoration:underline}
+.ac-row{display:flex;gap:.6rem}
+.ac-row .ac-field{flex:1}
+
+/* account type picker (Individual vs Corporate) */
+.atype-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.1rem}
+.atype-card{background:var(--n3);border:1.5px solid var(--b2);border-radius:12px;padding:1.1rem .9rem;cursor:pointer;transition:all .2s;text-align:left}
+.atype-card:hover{border-color:rgba(0,201,167,.4)}
+.atype-card.active{border-color:var(--t);background:rgba(0,201,167,.06)}
+.atype-icon{width:34px;height:34px;border-radius:8px;background:rgba(0,201,167,.12);display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;font-size:15px}
+.atype-card.active .atype-icon{background:var(--t);color:var(--n)}
+.atype-name{font-family:var(--di);font-size:13.5px;font-weight:700;margin-bottom:3px}
+.atype-desc{font-size:10.5px;color:var(--tx3);line-height:1.5}
+
+/* domain check status pill */
+.domain-status{display:none;align-items:center;gap:7px;padding:8px 12px;border-radius:8px;font-size:11.5px;font-family:var(--mo);margin:-.3rem 0 .9rem}
+.domain-status.show{display:flex}
+.domain-status.checking{background:var(--sf2);color:var(--tx2)}
+.domain-status.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--gr)}
+.domain-status.warn{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.25);color:var(--am)}
+.domain-status.bad{background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);color:var(--rd)}
+
+/* ══ CHANGE PASSWORD MODAL ══════════════════════════════════ */
+#chpwd-modal{display:none;position:fixed;inset:0;z-index:400;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
+#chpwd-modal.open{display:flex}
 
 /* ══ PORTAL DASHBOARD ═══════════════════════════════════════ */
 #portal-screen{display:none}
-#portal-bar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+#portal-bar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:.5rem}
 .plogo{font-family:var(--di);font-weight:700;font-size:17px;letter-spacing:-.03em;color:var(--tx);display:flex;align-items:center;gap:9px}
 .plm{width:30px;height:30px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--n);font-weight:700}
+.org-pill{display:flex;align-items:center;gap:6px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:20px;padding:4px 11px;font-size:10.5px;font-family:var(--mo);color:var(--pu);margin-left:4px}
 .pbar-right{display:flex;align-items:center;gap:10px}
 .user-chip{display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--b2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--tx2);font-family:var(--mo);cursor:pointer;transition:all .2s;position:relative}
 .user-chip:hover{border-color:var(--t);color:var(--t)}
@@ -111,6 +139,8 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .admin-btn{display:none;align-items:center;gap:6px;background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.25);border-radius:var(--r);padding:6px 13px;font-size:11.5px;font-family:var(--mo);color:var(--t);cursor:pointer;transition:all .2s}
 .admin-btn:hover{background:rgba(0,201,167,.15)}
 .admin-btn.show{display:flex}
+.admin-btn.purple{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3);color:var(--pu)}
+.admin-btn.purple:hover{background:rgba(167,139,250,.18)}
 
 /* user dropdown */
 .chip-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--n2);border:1px solid var(--b2);border-radius:var(--r);min-width:200px;box-shadow:var(--sh);z-index:50;overflow:hidden}
@@ -118,10 +148,6 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .chip-dd-item{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:12.5px;cursor:pointer;color:var(--tx2);transition:all .15s;border:none;background:transparent;width:100%;text-align:left;font-family:var(--sa)}
 .chip-dd-item:hover{background:var(--sf2);color:var(--tx)}
 .chip-dd-sep{height:1px;background:var(--b)}
-
-/* password change modal */
-#chpwd-modal{display:none;position:fixed;inset:0;z-index:400;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
-#chpwd-modal.open{display:flex}
 
 /* portal main */
 #portal-main{max-width:1060px;margin:0 auto;padding:2.75rem 1.5rem 4rem}
@@ -139,22 +165,32 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .rc.soon{cursor:default;opacity:.55}
 .rc.soon:hover{transform:none;border-color:var(--b);box-shadow:none}
 .rc.soon:hover::before{opacity:0}
+.rc.locked{cursor:not-allowed;opacity:.4;filter:grayscale(.4)}
+.rc.locked:hover{transform:none;border-color:var(--b);box-shadow:none}
+.rc.locked:hover::before{opacity:0}
 .rc-icon{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:1.1rem;position:relative;z-index:1}
-.rc-title{font-family:var(--di);font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:5px;position:relative;z-index:1}
+.rc-title{font-family:var(--di);font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:5px;position:relative;z-index:1;display:flex;align-items:center;gap:7px}
 .rc-desc{font-size:12.5px;color:var(--tx2);line-height:1.55;margin-bottom:1.1rem;position:relative;z-index:1}
 .rc-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:500;position:relative;z-index:1}
 .rc-tag.live{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
 .rc-tag.soon{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2)}
+.rc-tag.locked{background:rgba(224,82,82,.1);color:var(--rd);border:1px solid rgba(224,82,82,.2)}
 .rc-arr{position:absolute;right:1.35rem;bottom:1.35rem;color:var(--t);opacity:0;transition:all .25s;font-size:16px}
 .rc:hover .rc-arr{opacity:1;transform:translateX(4px)}
 .p-footer{text-align:center;padding-top:1.75rem;border-top:1px solid var(--b);font-family:var(--mo);font-size:11px;color:var(--tx3)}
 .p-footer span{color:var(--t)}
 .expiry-notice{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:var(--r);padding:9px 14px;font-size:12px;color:var(--am);font-family:var(--mo);margin-bottom:1.75rem;display:none}
 
-/* ══ ADMIN PANEL ════════════════════════════════════════════ */
+/* ══ ADMIN PANEL (super-admin: users) ══════════════════════ */
 #admin-panel{display:none;position:fixed;inset:0;z-index:200;background:rgba(5,13,26,.95);backdrop-filter:blur(8px);overflow-y:auto}
-#admin-bar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-#admin-main{max-width:980px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+#admin-bar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:.5rem}
+#admin-main{max-width:1040px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+.admin-tabs{display:flex;gap:.5rem;margin-bottom:1.75rem;border-bottom:1px solid var(--b);flex-wrap:wrap}
+.admin-tab{background:transparent;border:none;color:var(--tx3);font-family:var(--mo);font-size:12px;padding:9px 4px;cursor:pointer;border-bottom:2px solid transparent;margin-right:1.25rem;transition:all .2s}
+.admin-tab:hover{color:var(--tx2)}
+.admin-tab.active{color:var(--t);border-bottom-color:var(--t)}
+.admin-tabpanel{display:none}
+.admin-tabpanel.active{display:block}
 .admin-section-title{font-family:var(--di);font-size:20px;font-weight:700;letter-spacing:-.03em;margin-bottom:1.5rem}
 .admin-section-title span{color:var(--t)}
 .users-table{width:100%;border-collapse:collapse;font-size:12.5px}
@@ -165,6 +201,7 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .role-badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:500}
 .role-badge.admin{background:rgba(0,201,167,.12);color:var(--t);border:1px solid rgba(0,201,167,.25)}
 .role-badge.user{background:var(--sf2);color:var(--tx3);border:1px solid var(--b2)}
+.role-badge.member{background:var(--sf2);color:var(--tx3);border:1px solid var(--b2)}
 .sdot{width:7px;height:7px;border-radius:50%;display:inline-block}
 .sdot.active{background:var(--gr)}.sdot.inactive{background:var(--rd)}
 .admin-msg{padding:9px 13px;border-radius:var(--r);font-size:12px;font-family:var(--mo);margin-bottom:1rem;display:none}
@@ -177,9 +214,43 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .act-btn:hover{background:var(--sf2);color:var(--tx)}
 .act-btn.danger:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
 
+/* domain whitelist table */
+.domain-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:1rem}
+.domain-table th{background:var(--n3);color:var(--tx3);font-family:var(--mo);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;text-align:left;border-bottom:1px solid var(--b)}
+.domain-table td{padding:10px 12px;border-bottom:1px solid var(--b)}
+.add-domain-row{display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap}
+.add-domain-row input{flex:1;min-width:160px;padding:9px 13px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;outline:none}
+.add-domain-row input:focus{border-color:var(--t)}
+
+/* ══ ORG TEAM / PERMISSIONS PANEL ═══════════════════════════ */
+#org-panel{display:none;position:fixed;inset:0;z-index:200;background:rgba(5,13,26,.95);backdrop-filter:blur(8px);overflow-y:auto}
+#org-bar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:.5rem}
+#org-main{max-width:1040px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+.org-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.75rem}
+.org-header h2{font-family:var(--di);font-size:20px;font-weight:700;letter-spacing:-.03em}
+.org-header h2 span{color:var(--pu)}
+.org-domain-tag{font-family:var(--mo);font-size:11px;color:var(--tx3);margin-top:3px}
+.perm-table{width:100%;border-collapse:collapse;font-size:12px}
+.perm-table th{background:var(--n3);color:var(--tx3);font-family:var(--mo);font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:9px 8px;text-align:center;border-bottom:1px solid var(--b)}
+.perm-table th:first-child,.perm-table td:first-child{text-align:left;padding-left:12px}
+.perm-table td{padding:9px 8px;border-bottom:1px solid var(--b);text-align:center;vertical-align:middle}
+.perm-table tr:hover td{background:var(--sf)}
+.perm-member-name{font-weight:600;font-size:12.5px}
+.perm-member-email{font-size:10.5px;color:var(--tx3);font-family:var(--mo)}
+.perm-toggle{width:34px;height:19px;border-radius:20px;background:var(--sf2);border:1px solid var(--b2);position:relative;cursor:pointer;display:inline-block;transition:all .2s;vertical-align:middle}
+.perm-toggle::after{content:'';position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:var(--tx3);transition:all .2s}
+.perm-toggle.on{background:rgba(0,201,167,.25);border-color:var(--t)}
+.perm-toggle.on::after{background:var(--t);transform:translateX(15px)}
+.perm-toggle.disabled{opacity:.4;cursor:not-allowed}
+.perm-role-select{background:var(--sf);border:1px solid var(--b2);border-radius:6px;color:var(--tx);font-family:var(--mo);font-size:10.5px;padding:4px 6px;cursor:pointer;outline:none}
+.perm-role-select:focus{border-color:var(--t)}
+.org-empty{text-align:center;padding:3rem 1rem;color:var(--tx3);font-family:var(--mo);font-size:12.5px}
+
 /* user form modal */
-#user-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
+#user-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto}
 #user-modal.open{display:flex}
+#team-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto}
+#team-modal.open{display:flex}
 .um-card{background:var(--n2);border:1px solid var(--b2);border-radius:16px;width:100%;max-width:420px;padding:2rem;box-shadow:var(--sh)}
 .um-title{font-family:var(--di);font-size:17px;font-weight:700;margin-bottom:1.35rem;letter-spacing:-.02em}
 .um-field{margin-bottom:.9rem}
@@ -196,6 +267,12 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .um-submit{background:var(--t);border:none;color:var(--n);padding:8px 18px;border-radius:var(--r);cursor:pointer;font-family:var(--di);font-size:13px;font-weight:600;transition:all .2s}
 .um-submit:hover{background:var(--t2)}
 .um-submit:disabled{opacity:.5;cursor:not-allowed}
+
+/* permission checkbox list inside add-team-member modal */
+.perm-check-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.3rem}
+.perm-check-item{display:flex;align-items:center;gap:7px;background:var(--sf);border:1px solid var(--b2);border-radius:8px;padding:7px 10px;font-size:11.5px;cursor:pointer;transition:all .15s}
+.perm-check-item:hover{border-color:rgba(0,201,167,.3)}
+.perm-check-item input{accent-color:var(--t);width:14px;height:14px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -253,17 +330,40 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
       </div>
       <div class="form-foot">
         <div style="display:flex;align-items:center;gap:6px"><span class="sec-dot"></span>Secured · FM Financial Tools</div>
-        <span>v5.0</span>
+        <span>v6.0</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ SIGNUP ════════════════════════════════════════════ -->
+<!-- ══ STEP 0: ACCOUNT TYPE PICKER ═══════════════════════ -->
+<div class="auth-card" id="atype-card">
+  <div class="auth-inner ani">
+    <button class="ac-close" id="atype-close">✕</button>
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--t)">FM</div><div class="ac-title">Request Access</div></div>
+    <div class="ac-sub">How will you be using FM Resources Portal?</div>
+    <div class="atype-grid">
+      <button class="atype-card active" id="atype-individual" type="button">
+        <div class="atype-icon">👤</div>
+        <div class="atype-name">Individual</div>
+        <div class="atype-desc">Personal account. Full access to all tools.</div>
+      </button>
+      <button class="atype-card" id="atype-corporate" type="button">
+        <div class="atype-icon">🏢</div>
+        <div class="atype-name">Corporate</div>
+        <div class="atype-desc">Company account. Admin assigns team access.</div>
+      </button>
+    </div>
+    <button class="ac-btn teal" id="atype-continue">Continue →</button>
+    <div class="ac-back">Already have access? <span id="atype-to-login">Sign in</span></div>
+  </div>
+</div>
+
+<!-- ══ INDIVIDUAL SIGNUP ══════════════════════════════════ -->
 <div class="auth-card" id="signup-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="signup-close">✕</button>
-    <div class="ac-brand"><div class="ac-mark" style="background:var(--t)">FM</div><div class="ac-title">Request Access</div></div>
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--t)">FM</div><div class="ac-title">Individual Sign Up</div></div>
     <div class="ac-sub">Fill in your details. A confirmation email will be sent to complete setup.</div>
     <div class="ac-err" id="su-err"></div><div class="ac-ok" id="su-ok"></div>
     <div class="ac-field"><label>Surname</label><input class="ac-inp" type="text" id="su-surname" placeholder="e.g. Michael"></div>
@@ -271,7 +371,82 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
     <div class="ac-field"><label>Email Address</label><input class="ac-inp" type="email" id="su-email" placeholder="e.g. felix@company.com"></div>
     <div class="ac-field"><label>Phone Number</label><input class="ac-inp" type="tel" id="su-phone" placeholder="e.g. 08012345678"></div>
     <button class="ac-btn teal" id="su-btn"><span class="bt">Sign up →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Sending...</span></button>
+    <button class="ac-btn ghost" id="su-back" type="button">← Back</button>
     <div class="ac-back">Already have access? <span id="su-to-login">Sign in</span></div>
+  </div>
+</div>
+
+<!-- ══ CORPORATE SIGNUP — EMAIL/DOMAIN CHECK STEP ═════════ -->
+<div class="auth-card" id="corp-check-card">
+  <div class="auth-inner ani">
+    <button class="ac-close" id="corp-check-close">✕</button>
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--pu)">FM</div><div class="ac-title">Corporate Sign Up</div></div>
+    <div class="ac-sub">Enter your work email. We'll check if your company's domain is approved for corporate access.</div>
+    <div class="ac-err" id="cc-err"></div>
+    <div class="ac-field"><label>Work Email Address</label><input class="ac-inp" type="email" id="cc-email" placeholder="e.g. you@company.com"></div>
+    <div class="domain-status" id="cc-status"></div>
+    <button class="ac-btn teal" id="cc-btn" style="background:var(--pu)"><span class="bt">Check domain →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Checking...</span></button>
+    <button class="ac-btn ghost" id="cc-back" type="button">← Back</button>
+  </div>
+</div>
+
+<!-- ══ CORPORATE SIGNUP — CREATE NEW ORG ═══════════════════ -->
+<div class="auth-card" id="corp-create-card">
+  <div class="auth-inner wide ani">
+    <button class="ac-close" id="corp-create-close">✕</button>
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--pu)">FM</div><div class="ac-title">Create Organisation</div></div>
+    <div class="ac-sub" id="corp-create-sub">Your domain is approved and no organisation exists yet for it. You'll be the organisation admin.</div>
+    <div class="ac-err" id="cor-err"></div><div class="ac-ok" id="cor-ok"></div>
+    <div class="ac-row">
+      <div class="ac-field"><label>Surname</label><input class="ac-inp" type="text" id="cor-surname" placeholder="e.g. Michael"></div>
+      <div class="ac-field"><label>Other Names</label><input class="ac-inp" type="text" id="cor-other" placeholder="e.g. Felix Happy"></div>
+    </div>
+    <div class="ac-row">
+      <div class="ac-field"><label>Work Email</label><input class="ac-inp" type="email" id="cor-email" disabled></div>
+      <div class="ac-field"><label>Phone Number</label><input class="ac-inp" type="tel" id="cor-phone" placeholder="e.g. 08012345678"></div>
+    </div>
+    <div class="ac-field"><label>Organisation Name</label><input class="ac-inp" type="text" id="cor-orgname" placeholder="e.g. Acme Finance Ltd"></div>
+    <div class="ac-row">
+      <div class="ac-field"><label>Company Size</label>
+        <select class="ac-inp" id="cor-size" style="cursor:pointer">
+          <option value="1-10">1–10 employees</option>
+          <option value="11-50">11–50 employees</option>
+          <option value="51-200">51–200 employees</option>
+          <option value="200+">200+ employees</option>
+        </select>
+      </div>
+      <div class="ac-field"><label>Description (optional)</label><input class="ac-inp" type="text" id="cor-desc" placeholder="What your company does"></div>
+    </div>
+    <button class="ac-btn teal" id="cor-btn" style="background:var(--pu)"><span class="bt">Create organisation →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Creating...</span></button>
+    <button class="ac-btn ghost" id="cor-back" type="button">← Back</button>
+  </div>
+</div>
+
+<!-- ══ CORPORATE SIGNUP — JOIN EXISTING ORG ════════════════ -->
+<div class="auth-card" id="corp-join-card">
+  <div class="auth-inner ani">
+    <button class="ac-close" id="corp-join-close">✕</button>
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--pu)">FM</div><div class="ac-title">Join Organisation</div></div>
+    <div class="ac-sub" id="corp-join-sub">Your company already has an organisation set up. Request to join — the admin will assign your access.</div>
+    <div class="ac-err" id="cj-err"></div><div class="ac-ok" id="cj-ok"></div>
+    <div class="ac-field"><label>Surname</label><input class="ac-inp" type="text" id="cj-surname" placeholder="e.g. Michael"></div>
+    <div class="ac-field"><label>Other Names</label><input class="ac-inp" type="text" id="cj-other" placeholder="e.g. Felix Happy"></div>
+    <div class="ac-field"><label>Work Email</label><input class="ac-inp" type="email" id="cj-email" disabled></div>
+    <div class="ac-field"><label>Phone Number</label><input class="ac-inp" type="tel" id="cj-phone" placeholder="e.g. 08012345678"></div>
+    <button class="ac-btn teal" id="cj-btn" style="background:var(--pu)"><span class="bt">Request to join →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Sending...</span></button>
+    <button class="ac-btn ghost" id="cj-back" type="button">← Back</button>
+  </div>
+</div>
+
+<!-- ══ CORPORATE SIGNUP — DOMAIN NOT APPROVED ══════════════ -->
+<div class="auth-card" id="corp-blocked-card">
+  <div class="auth-inner ani">
+    <button class="ac-close" id="corp-blocked-close">✕</button>
+    <div class="ac-brand"><div class="ac-mark" style="background:var(--rd)">FM</div><div class="ac-title">Domain Not Approved</div></div>
+    <div class="ac-sub">The domain <strong id="cb-domain" style="color:var(--tx)"></strong> isn't yet approved for corporate access on FM Resources Portal. Please contact the admin to request approval, or continue with an individual account instead.</div>
+    <button class="ac-btn amber" id="cb-contact">Contact Admin →</button>
+    <button class="ac-btn ghost" id="cb-individual" type="button" style="margin-top:.6rem">Continue as Individual instead</button>
+    <button class="ac-btn ghost" id="cb-back" type="button">← Back</button>
   </div>
 </div>
 
@@ -344,8 +519,15 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 <!-- ══ PORTAL DASHBOARD ══════════════════════════════════ -->
 <div id="portal-screen">
   <div id="portal-bar">
-    <div class="plogo"><div class="plm">FM</div>Resources <span style="color:var(--t);margin-left:5px">Portal</span></div>
+    <div class="plogo">
+      <div class="plm">FM</div>Resources <span style="color:var(--t);margin-left:5px">Portal</span>
+      <span class="org-pill" id="org-pill" style="display:none">🏢 <span id="org-pill-name"></span></span>
+    </div>
     <div class="pbar-right">
+      <button class="admin-btn purple" id="org-panel-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Team &amp; Permissions
+      </button>
       <button class="admin-btn" id="admin-panel-btn">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/><circle cx="20" cy="20" r="2"/><path d="M20 18v-1M20 22v-1M18 20h-1M22 20h-1"/></svg>
         Admin Panel
@@ -376,79 +558,17 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
     <div id="expiry-notice" class="expiry-notice"></div>
     <div class="p-welcome ani">
       <h1>Welcome! <span id="portal-welcome-name">there</span> 👋</h1>
-      <p>Select a tool or resource below to get started.</p>
+      <p id="portal-welcome-sub">Select a tool or resource below to get started.</p>
     </div>
     <div class="p-section-title">Available Tools</div>
-    <div class="resources-grid">
-      <a href="../job/" class="rc ani">
-        <div class="rc-icon" style="background:rgba(0,201,167,.12)">💼</div>
-        <div class="rc-title">Job Portal</div>
-        <div class="rc-desc">FM 360 Live Job Update: Find every opportunity, every day.</div>
-        <span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span>
-        <div class="rc-arr">→</div>
-      </a>
-
-     <a href="../gmi/" class="rc ani">
-       <div class="rc-icon" style="background:rgba(0,201,167,.12)">🏦</div>
-        <div class="rc-title">Global Market Intelligence</div>
-        <div class="rc-desc">FM 360 Live Capital Market &amp; FX rate Update: Get up to date Capital Market &amp; FX rate 24/7.</div>
-        <span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span>
-        <div class="rc-arr">→</div>
-      </a>
-
-   
-<!--
-       <div class="rc soon ani" style="animation-delay:.24s">
-        <div class="rc-icon" style="background:rgba(167,139,250,.1)">📋</div>
-        <div class="rc-title">Capital Market &amp; FX Rate Indicator</div>
-        <div class="rc-desc">FM 360 Live Capital Market &amp; FX rate Update: Get up to date Capital Market &amp; FX rate 24/7.</div>
-        <span class="rc-tag soon">Coming soon</span>
-      </div>
-      
--->
-        <a href="../recon/" class="rc ani">
-        <div class="rc-icon" style="background:rgba(0,201,167,.12)">🏦</div>
-        <div class="rc-title">Bank Reconciliation</div>
-        <div class="rc-desc">Automated bank-to-GL reconciliation engine with fuzzy matching, multi-pass logic and full audit trail.</div>
-        <span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span>
-        <div class="rc-arr">→</div>
-      </a>
-      <a href="../receivables/" class="rc ani" style="animation-delay:.16s">
-        <div class="rc-icon" style="background:rgba(245,166,35,.12)">🧾</div>
-        <div class="rc-title">Receivables Tracker</div>
-        <div class="rc-desc">Track debtors, manage outstanding invoices, ageing analysis and automated payment reminders.</div>
-        <span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span>
-        <div class="rc-arr">→</div>
-      </a>
-<!--
-       <a href="../treasury/" class="rc ani">
-       <div class="rc-icon" style="background:rgba(0,201,167,.12)">🏦</div>
-        <div class="rc-title">Treasury Dashboard</div>
-        <div class="rc-desc">Cash position monitoring, liquidity management and investment portfolio tracking.</div>
-        <span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span>
-        <div class="rc-arr">→</div>
-      </a>
--->
-      <div class="rc soon ani" style="animation-delay:.24s">
-        <div class="rc-icon" style="background:rgba(167,139,250,.1)">📋</div>
-        <div class="rc-title">Financial Models</div>
-        <div class="rc-desc">Dynamic budgeting, forecasting and ALM models for finance teams in regulated environments.</div>
-        <span class="rc-tag soon">Coming soon</span>
-      </div>
-    
-      <div class="rc soon ani" style="animation-delay:.4s">
-        <div class="rc-icon" style="background:rgba(52,211,153,.1)">💰</div>
-        <div class="rc-title">Treasury Dashboard</div>
-        <div class="rc-desc">Cash position monitoring, liquidity management and investment portfolio tracking.</div>
-        <span class="rc-tag soon">Coming soon</span>
-      </div>
-   
+    <div class="resources-grid" id="resources-grid">
+      <!-- rendered by JS based on permissions -->
     </div>
     <div class="p-footer">&copy; <span id="yr"></span> <span>Felix Happy Michael</span> · FM Financial Tools · All rights reserved</div>
   </div>
 </div>
 
-<!-- ══ ADMIN PANEL ═══════════════════════════════════════ -->
+<!-- ══ ADMIN PANEL (super-admin: Users + Domain Whitelist) ═ -->
 <div id="admin-panel">
   <div id="admin-bar">
     <div class="plogo"><div class="plm">FM</div>Admin <span style="color:var(--t);margin-left:5px">Panel</span></div>
@@ -462,33 +582,83 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
     </div>
   </div>
   <div id="admin-main">
-    <div class="admin-section-title">Manage <span>Users</span></div>
-    <div class="admin-msg" id="admin-msg"></div>
-    <div class="admin-toolbar">
-      <div style="font-size:12px;color:var(--tx3);font-family:var(--mo)">All registered users</div>
-      <button class="add-btn" id="add-user-btn">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add User
-      </button>
+    <div class="admin-tabs">
+      <button class="admin-tab active" id="tab-btn-users" data-tab="users">Users</button>
+      <button class="admin-tab" id="tab-btn-domains" data-tab="domains">Domain Whitelist</button>
     </div>
-    <div style="overflow-x:auto;border:1px solid var(--b);border-radius:var(--r)">
-      <table class="users-table">
-        <thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
-        <tbody id="users-tbody"><tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr></tbody>
-      </table>
 
-      <!-- ══ Settings Live Testing ═══════════════════════════════════ -->
-      <a href="../treasury/" class="rc ani" style="animation-delay:.16s">
-        <div class="rc-icon" style="background:rgba(245,166,35,.12)">⚙️</div>
-        <div class="rc-title">Treasury</div>
-        <div class="rc-desc">Testing live.</div>
-       </a>  
-      
+    <!-- USERS TAB -->
+    <div class="admin-tabpanel active" id="tab-users">
+      <div class="admin-msg" id="admin-msg"></div>
+      <div class="admin-toolbar">
+        <div style="font-size:12px;color:var(--tx3);font-family:var(--mo)">All registered users</div>
+        <button class="add-btn" id="add-user-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add User
+        </button>
+      </div>
+      <div style="overflow-x:auto;border:1px solid var(--b);border-radius:var(--r)">
+        <table class="users-table">
+          <thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Type</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+          <tbody id="users-tbody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DOMAIN WHITELIST TAB -->
+    <div class="admin-tabpanel" id="tab-domains">
+      <div class="admin-msg" id="domain-msg"></div>
+      <p style="font-size:12.5px;color:var(--tx2);margin-bottom:1.1rem;line-height:1.6">Only email domains listed here can register a Corporate account (create or join an organisation). Individual signups are unaffected.</p>
+      <div class="add-domain-row">
+        <input type="text" id="nd-domain" placeholder="e.g. company.com">
+        <input type="text" id="nd-label" placeholder="Label (optional, e.g. company name)">
+        <button class="add-btn" id="add-domain-btn">Add Domain</button>
+      </div>
+      <div style="overflow-x:auto;border:1px solid var(--b);border-radius:var(--r)">
+        <table class="domain-table">
+          <thead><tr><th>Domain</th><th>Label</th><th>Added By</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="domains-tbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ══ USER FORM MODAL ═══════════════════════════════════ -->
+<!-- ══ ORG TEAM & PERMISSIONS PANEL (org admin) ═══════════ -->
+<div id="org-panel">
+  <div id="org-bar">
+    <div class="plogo"><div class="plm">FM</div>Team <span style="color:var(--pu);margin-left:5px">&amp; Permissions</span></div>
+    <div class="pbar-right">
+      <button class="pbar-btn" id="org-back-portal">← Back to Portal</button>
+      <a href="../" class="pbar-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </a>
+      <button class="pbar-btn danger" id="org-logout">Sign out</button>
+    </div>
+  </div>
+  <div id="org-main">
+    <div class="org-header">
+      <div>
+        <h2><span id="org-name-h2">Your</span> Team</h2>
+        <div class="org-domain-tag" id="org-domain-tag">@domain.com</div>
+      </div>
+      <button class="add-btn" id="add-team-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Team Member
+      </button>
+    </div>
+    <div class="admin-msg" id="org-msg"></div>
+    <div style="overflow-x:auto;border:1px solid var(--b);border-radius:var(--r)">
+      <table class="perm-table" id="perm-table">
+        <thead><tr id="perm-thead-row"><th>Member</th><th>Role</th></tr></thead>
+        <tbody id="perm-tbody"><tr><td colspan="2" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ USER FORM MODAL (super-admin) ══════════════════════ -->
 <div id="user-modal">
   <div class="um-card ani">
     <div class="um-title" id="um-title">Add User</div>
@@ -513,15 +683,45 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
   </div>
 </div>
 
+<!-- ══ ADD TEAM MEMBER MODAL (org admin) ══════════════════ -->
+<div id="team-modal">
+  <div class="um-card ani">
+    <div class="um-title">Add Team Member</div>
+    <div class="um-field"><label>Full Name</label><input class="um-inp" type="text" id="tm-name" placeholder="e.g. Jane Doe"></div>
+    <div class="um-field"><label>Work Email</label><input class="um-inp" type="email" id="tm-email" placeholder="e.g. jane@yourcompany.com"></div>
+    <div class="um-field"><label>Role</label>
+      <select class="um-select" id="tm-role"><option value="member">Member</option><option value="admin">Admin</option></select>
+    </div>
+    <div class="um-field">
+      <label>App Access</label>
+      <div class="perm-check-grid" id="tm-perm-grid"></div>
+    </div>
+    <div class="um-err" id="tm-err"></div>
+    <div class="um-row">
+      <button class="um-cancel" id="tm-cancel">Cancel</button>
+      <button class="um-submit" id="tm-submit">Send Invitation</button>
+    </div>
+  </div>
+</div>
+
+
 <script>
 'use strict';
 var API='https://eis-recbackend.onrender.com/api';
 var _tok=null,_user=null;
+var APP_KEYS=['markets','bankrecon','receivables','treasury','jobs'];
+var APP_META={
+  markets:     { title:'Global Market Intelligence', desc:'FM 360 Live Capital Market & FX rate Update: Get up to date Capital Market & FX rate 24/7.', icon:'🏦', href:'../gmi/', color:'rgba(0,201,167,.12)' },
+  bankrecon:   { title:'Bank Reconciliation', desc:'Automated bank-to-GL reconciliation engine with fuzzy matching, multi-pass logic and full audit trail.', icon:'🏦', href:'../recon/', color:'rgba(0,201,167,.12)' },
+  receivables: { title:'Receivables Tracker', desc:'Track debtors, manage outstanding invoices, ageing analysis and automated payment reminders.', icon:'🧾', href:'../receivables/', color:'rgba(245,166,35,.12)' },
+  treasury:    { title:'Treasury Dashboard', desc:'Cash position monitoring, liquidity management and investment portfolio tracking.', icon:'💰', href:'../treasury/', color:'rgba(52,211,153,.1)' },
+  jobs:        { title:'Job Portal', desc:'FM 360 Live Job Update: Find every opportunity, every day.', icon:'💼', href:'../job/', color:'rgba(0,201,167,.12)' }
+};
 
 // wake up backend silently
 (function(){fetch(API+'/health',{method:'GET'}).catch(function(){});})();
 
-// helpers
+// ── helpers ──
 function btnLoad(btn,on){
   btn.querySelector('.bt').style.display=on?'none':'';
   var bl=btn.querySelector('.bl');bl.style.display=on?'flex':'none';btn.disabled=on;
@@ -530,45 +730,17 @@ function showErr(id,msg){var e=document.getElementById(id);e.textContent=msg;e.s
 function showOk(id,msg){var e=document.getElementById(id);e.textContent=msg;e.style.display='block';}
 function hideMsg(){[].slice.call(arguments).forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});}
 function openCard(id){document.querySelectorAll('.auth-card').forEach(function(c){c.classList.remove('open');});document.getElementById(id).classList.add('open');}
-function closeCard(id){document.getElementById(id).classList.remove('open');}
+function closeAllCards(){document.querySelectorAll('.auth-card').forEach(function(c){c.classList.remove('open');});}
 async function apiFetch(path, opts) {
   opts = opts || {};
-
-  var headers = {
-    'Content-Type': 'application/json'
-  };
-
-  if (_tok) {
-    headers['Authorization'] = 'Bearer ' + _tok;
-  }
-
-  var res = await fetch(
-    API + path,
-    Object.assign({}, opts, {
-      headers: Object.assign(headers, opts.headers || {})
-    })
-  );
-
+  var headers = { 'Content-Type': 'application/json' };
+  if (_tok) headers['Authorization'] = 'Bearer ' + _tok;
+  var res = await fetch(API + path, Object.assign({}, opts, { headers: Object.assign(headers, opts.headers || {}) }));
   const text = await res.text();
-
   let data;
-
-  try {
-    data = JSON.parse(text);
-  } catch (e) {
-    throw new Error(
-      'Server returned HTML instead of JSON. Check API URL.'
-    );
-  }
-
-  if (!res.ok) {
-    throw new Error(
-      data.message ||
-      data.error ||
-      'Request failed'
-    );
-  }
-
+  try { data = JSON.parse(text); }
+  catch (e) { throw new Error('Server returned HTML instead of JSON. Check API URL.'); }
+  if (!res.ok) throw new Error(data.message || data.error || 'Request failed');
   return data;
 }
 
@@ -580,43 +752,213 @@ document.getElementById('eye-btn').addEventListener('click',function(){
   document.getElementById('eye-hide').style.display=show?'':'none';
 });
 
-// card triggers
-document.getElementById('open-signup').addEventListener('click',function(){openCard('signup-card');});
+// ═══════════════════════════════════════════════════════════
+// SIGNUP FLOW ROUTING: Individual vs Corporate
+// ═══════════════════════════════════════════════════════════
+var _signupType='individual';
+
+document.getElementById('open-signup').addEventListener('click',function(){
+  _signupType='individual';
+  document.getElementById('atype-individual').classList.add('active');
+  document.getElementById('atype-corporate').classList.remove('active');
+  openCard('atype-card');
+});
+document.getElementById('atype-close').addEventListener('click',closeAllCards);
+document.getElementById('atype-to-login').addEventListener('click',closeAllCards);
+document.getElementById('atype-individual').addEventListener('click',function(){
+  _signupType='individual';
+  this.classList.add('active');
+  document.getElementById('atype-corporate').classList.remove('active');
+});
+document.getElementById('atype-corporate').addEventListener('click',function(){
+  _signupType='corporate';
+  this.classList.add('active');
+  document.getElementById('atype-individual').classList.remove('active');
+});
+document.getElementById('atype-continue').addEventListener('click',function(){
+  if(_signupType==='individual') openCard('signup-card');
+  else openCard('corp-check-card');
+});
+
+// individual signup back/close
+document.getElementById('signup-close').addEventListener('click',closeAllCards);
+document.getElementById('su-to-login').addEventListener('click',closeAllCards);
+document.getElementById('su-back').addEventListener('click',function(){openCard('atype-card');});
+
+// ── corporate: domain check step ──
+document.getElementById('corp-check-close').addEventListener('click',closeAllCards);
+document.getElementById('cc-back').addEventListener('click',function(){openCard('atype-card');});
+document.getElementById('cc-btn').addEventListener('click',async function(){
+  hideMsg('cc-err');
+  var statusEl=document.getElementById('cc-status');
+  statusEl.className='domain-status';
+  var email=document.getElementById('cc-email').value.trim();
+  if(!email||email.indexOf('@')===-1){showErr('cc-err','Please enter a valid work email.');return;}
+  var btn=this;btnLoad(btn,true);
+  statusEl.className='domain-status show checking';statusEl.textContent='Checking domain...';
+  try{
+    var d=await apiFetch('/auth/check-domain',{method:'POST',body:JSON.stringify({email:email})});
+    if(!d.allowed){
+      document.getElementById('cb-domain').textContent='@'+d.domain;
+      closeAllCards();openCard('corp-blocked-card');
+    } else if(d.orgExists){
+      document.getElementById('corp-join-sub').textContent='"'+d.orgName+'" already has an organisation on FM Resources Portal. Request to join — the admin will assign your access.';
+      document.getElementById('cj-email').value=email;
+      hideMsg('cj-err','cj-ok');
+      ['cj-surname','cj-other','cj-phone'].forEach(function(id){document.getElementById(id).value='';});
+      closeAllCards();openCard('corp-join-card');
+    } else {
+      document.getElementById('cor-email').value=email;
+      hideMsg('cor-err','cor-ok');
+      ['cor-surname','cor-other','cor-phone','cor-orgname','cor-desc'].forEach(function(id){document.getElementById(id).value='';});
+      closeAllCards();openCard('corp-create-card');
+    }
+  }catch(e){
+    statusEl.className='domain-status';
+    showErr('cc-err',e.message);
+  }finally{btnLoad(btn,false);}
+});
+
+// ── corporate: create new org ──
+document.getElementById('corp-create-close').addEventListener('click',closeAllCards);
+document.getElementById('cor-back').addEventListener('click',function(){openCard('corp-check-card');});
+document.getElementById('cor-btn').addEventListener('click',async function(){
+  hideMsg('cor-err','cor-ok');
+  var body={
+    surname:document.getElementById('cor-surname').value.trim(),
+    otherNames:document.getElementById('cor-other').value.trim(),
+    email:document.getElementById('cor-email').value.trim(),
+    phone:document.getElementById('cor-phone').value.trim(),
+    orgName:document.getElementById('cor-orgname').value.trim(),
+    orgSize:document.getElementById('cor-size').value,
+    orgDescription:document.getElementById('cor-desc').value.trim()
+  };
+  if(!body.surname||!body.otherNames||!body.phone||!body.orgName){showErr('cor-err','Please fill in all required fields.');return;}
+  var btn=this;btnLoad(btn,true);
+  try{
+    var d=await apiFetch('/auth/register-org',{method:'POST',body:JSON.stringify(body)});
+    showOk('cor-ok',d.message);
+  }catch(e){showErr('cor-err',e.message);}
+  finally{btnLoad(btn,false);}
+});
+
+// ── corporate: join existing org ──
+document.getElementById('corp-join-close').addEventListener('click',closeAllCards);
+document.getElementById('cj-back').addEventListener('click',function(){openCard('corp-check-card');});
+document.getElementById('cj-btn').addEventListener('click',async function(){
+  hideMsg('cj-err','cj-ok');
+  var body={
+    surname:document.getElementById('cj-surname').value.trim(),
+    otherNames:document.getElementById('cj-other').value.trim(),
+    email:document.getElementById('cj-email').value.trim(),
+    phone:document.getElementById('cj-phone').value.trim()
+  };
+  if(!body.surname||!body.otherNames||!body.phone){showErr('cj-err','Please fill in all required fields.');return;}
+  var btn=this;btnLoad(btn,true);
+  try{
+    var d=await apiFetch('/auth/join-org',{method:'POST',body:JSON.stringify(body)});
+    showOk('cj-ok',d.message);
+  }catch(e){showErr('cj-err',e.message);}
+  finally{btnLoad(btn,false);}
+});
+
+// ── corporate: domain blocked ──
+document.getElementById('corp-blocked-close').addEventListener('click',closeAllCards);
+document.getElementById('cb-back').addEventListener('click',function(){openCard('corp-check-card');});
+document.getElementById('cb-individual').addEventListener('click',function(){
+  document.getElementById('su-email').value=document.getElementById('cc-email').value.trim();
+  closeAllCards();openCard('signup-card');
+});
+document.getElementById('cb-contact').addEventListener('click',function(){
+  document.getElementById('ca-email').value=document.getElementById('cc-email').value.trim();
+  closeAllCards();openCard('contact-card');
+});
+
+// other card triggers (forgot / contact)
 document.getElementById('open-forgot').addEventListener('click',function(){openCard('forgot-card');});
 document.getElementById('open-contact').addEventListener('click',function(){openCard('contact-card');});
-['signup-close','forgot-close','contact-close'].forEach(function(id){
-  document.getElementById(id).addEventListener('click',function(){document.querySelectorAll('.auth-card').forEach(function(c){c.classList.remove('open');});});
-});
-document.getElementById('su-to-login').addEventListener('click',function(){document.querySelectorAll('.auth-card').forEach(function(c){c.classList.remove('open');});});
-document.getElementById('fp-to-login').addEventListener('click',function(){document.querySelectorAll('.auth-card').forEach(function(c){c.classList.remove('open');});});
+['forgot-close','contact-close'].forEach(function(id){document.getElementById(id).addEventListener('click',closeAllCards);});
+document.getElementById('fp-to-login').addEventListener('click',closeAllCards);
 document.querySelectorAll('.auth-card').forEach(function(card){card.addEventListener('click',function(e){if(e.target===card)card.classList.remove('open');});});
 
-// screens
+// ═══════════════════════════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════════════════════════
 function showLogin(){
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('portal-screen').style.display='none';
   document.getElementById('admin-panel').style.display='none';
+  document.getElementById('org-panel').style.display='none';
   document.getElementById('home-link').style.display='flex';
+}
+function renderResourceGrid(user){
+  var perms=user.permissions||{};
+  var grid=document.getElementById('resources-grid');
+  grid.innerHTML='';
+  var delay=0;
+  APP_KEYS.forEach(function(key){
+    var meta=APP_META[key];
+    var allowed=!!perms[key];
+    var el=document.createElement(allowed?'a':'div');
+    if(allowed) el.href=meta.href;
+    el.className='rc ani'+(allowed?'':' locked');
+    el.style.animationDelay=(delay*0.08)+'s';delay++;
+    el.innerHTML=
+      '<div class="rc-icon" style="background:'+meta.color+'">'+meta.icon+'</div>'+
+      '<div class="rc-title">'+meta.title+(allowed?'':' <span style="font-size:12px">🔒</span>')+'</div>'+
+      '<div class="rc-desc">'+meta.desc+'</div>'+
+      (allowed
+        ? '<span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span><div class="rc-arr">→</div>'
+        : '<span class="rc-tag locked">No access — contact your admin</span>');
+    grid.appendChild(el);
+  });
 }
 function showPortal(user){
   _user=user;
   document.getElementById('login-screen').style.display='none';
   document.getElementById('portal-screen').style.display='block';
   document.getElementById('admin-panel').style.display='none';
+  document.getElementById('org-panel').style.display='none';
   document.getElementById('home-link').style.display='none';
   document.getElementById('portal-user-name').textContent=user.name;
   document.getElementById('portal-welcome-name').textContent=user.name.split(' ')[0];
   document.getElementById('yr').textContent=new Date().getFullYear();
-  if(user.role==='admin')document.getElementById('admin-panel-btn').classList.add('show');
+
+  var orgPill=document.getElementById('org-pill');
+  if(user.accountType==='organisation' && user.orgName){
+    orgPill.style.display='flex';
+    document.getElementById('org-pill-name').textContent=user.orgName;
+    document.getElementById('portal-welcome-sub').textContent='Signed in to '+user.orgName+'. Select a tool below to get started.';
+  } else {
+    orgPill.style.display='none';
+    document.getElementById('portal-welcome-sub').textContent='Select a tool or resource below to get started.';
+  }
+
+  if(user.role==='admin') document.getElementById('admin-panel-btn').classList.add('show');
   else document.getElementById('admin-panel-btn').classList.remove('show');
+
+  if(user.accountType==='organisation' && user.orgRole==='admin') document.getElementById('org-panel-btn').classList.add('show');
+  else document.getElementById('org-panel-btn').classList.remove('show');
+
+  renderResourceGrid(user);
 }
 function showAdmin(){
   document.getElementById('portal-screen').style.display='none';
   document.getElementById('admin-panel').style.display='block';
   loadUsers();
+  loadDomains();
+}
+function showOrgPanel(){
+  document.getElementById('portal-screen').style.display='none';
+  document.getElementById('org-panel').style.display='block';
+  document.getElementById('org-name-h2').textContent=_user.orgName||'Your';
+  document.getElementById('org-domain-tag').textContent='@'+(_user.email.split('@')[1]||'');
+  loadTeam();
 }
 
+// ═══════════════════════════════════════════════════════════
 // LOGIN
+// ═══════════════════════════════════════════════════════════
 document.getElementById('login-btn').addEventListener('click',async function(){
   var u=document.getElementById('usr').value.trim();var p=document.getElementById('pwd').value;
   document.getElementById('login-err').classList.remove('show');
@@ -653,6 +995,7 @@ function doLogout(){
 }
 document.getElementById('dd-logout').addEventListener('click',doLogout);
 document.getElementById('admin-logout').addEventListener('click',doLogout);
+document.getElementById('org-logout').addEventListener('click',doLogout);
 
 // user chip dropdown
 document.getElementById('user-chip').addEventListener('click',function(e){
@@ -686,11 +1029,26 @@ document.getElementById('chpwd-btn').addEventListener('click',async function(){
   finally{btnLoad(btn,false);}
 });
 
-// admin panel
+// admin panel + org panel nav
 document.getElementById('admin-panel-btn').addEventListener('click',showAdmin);
 document.getElementById('admin-back-portal').addEventListener('click',function(){
   document.getElementById('admin-panel').style.display='none';
   document.getElementById('portal-screen').style.display='block';
+});
+document.getElementById('org-panel-btn').addEventListener('click',showOrgPanel);
+document.getElementById('org-back-portal').addEventListener('click',function(){
+  document.getElementById('org-panel').style.display='none';
+  document.getElementById('portal-screen').style.display='block';
+});
+
+// admin tabs
+document.querySelectorAll('.admin-tab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.admin-tab').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.admin-tabpanel').forEach(function(p){p.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
 });
 
 // URL token check
@@ -709,7 +1067,9 @@ document.getElementById('admin-back-portal').addEventListener('click',function()
   }
 })();
 
-// SIGNUP
+// ═══════════════════════════════════════════════════════════
+// INDIVIDUAL SIGNUP
+// ═══════════════════════════════════════════════════════════
 document.getElementById('su-btn').addEventListener('click',async function(){
   hideMsg('su-err','su-ok');
   var sur=document.getElementById('su-surname').value.trim();
@@ -738,7 +1098,7 @@ document.getElementById('sp-btn').addEventListener('click',async function(){
   try{
     var d=await apiFetch('/auth/set-password',{method:'POST',body:JSON.stringify({token:tok,password:pwd})});
     showOk('sp-ok',d.message+' Redirecting to login...');btn.style.display='none';
-    setTimeout(function(){window.history.replaceState({},'',window.location.pathname);closeCard('setpwd-card');document.getElementById('usr').focus();},2500);
+    setTimeout(function(){window.history.replaceState({},'',window.location.pathname);closeAllCards();document.getElementById('usr').focus();},2500);
   }catch(e){showErr('sp-err',e.message);btnLoad(btn,false);}
 });
 
@@ -765,7 +1125,7 @@ document.getElementById('rp-btn').addEventListener('click',async function(){
   try{
     var d=await apiFetch('/auth/reset-password',{method:'POST',body:JSON.stringify({token:tok,password:pwd})});
     showOk('rp-ok',d.message+' Redirecting to login...');btn.style.display='none';
-    setTimeout(function(){window.history.replaceState({},'',window.location.pathname);closeCard('resetpwd-card');document.getElementById('usr').focus();},2500);
+    setTimeout(function(){window.history.replaceState({},'',window.location.pathname);closeAllCards();document.getElementById('usr').focus();},2500);
   }catch(e){showErr('rp-err',e.message);btnLoad(btn,false);}
 });
 
@@ -781,152 +1141,59 @@ document.getElementById('ca-btn').addEventListener('click',async function(){
     var d=await apiFetch('/auth/contact-admin',{method:'POST',body:JSON.stringify({username:uname,email:email,message:msg})});
     showOk('ca-ok',d.message);
     ['ca-username','ca-email','ca-msg'].forEach(function(id){document.getElementById(id).value='';});
-    setTimeout(function(){closeCard('contact-card');},3000);
+    setTimeout(function(){closeAllCards();},3000);
   }catch(e){showErr('ca-err',e.message);}
   finally{btnLoad(btn,false);}
 });
+</script>
 
-// ══ ADMIN USER MANAGEMENT ══
+<script>
+'use strict';
+// ══ HTML escape / safe text helpers (shared) ══
+function escapeHtml(value){
+  if(value===null||value===undefined) return '';
+  return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function safeText(value){
+  if(value===null||value===undefined) return '—';
+  if(typeof value==='object'){ try{ return JSON.stringify(value); }catch(e){ return '—'; } }
+  return String(value);
+}
+
+// ═══════════════════════════════════════════════════════════
+// ══ ADMIN PANEL — USERS TAB ══
+// ═══════════════════════════════════════════════════════════
 var _editId=null;
 async function loadUsers(){
   var tbody=document.getElementById('users-tbody');
-  tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr>';
   try{
     var d=await apiFetch('/users');
-    if (!d.users || !Array.isArray(d.users) || d.users.length === 0) {
-    tbody.innerHTML = `
-        <tr>
-            <td colspan="7" style="
-                text-align:center;
-                padding:2rem;
-                color:var(--tx3);
-                font-family:var(--mo);
-                font-size:12px
-            ">
-                No users found.
-            </td>
-        </tr>
-    `;
-    return;
-}
-
-// Escape HTML
-function escapeHtml(value) {
-    if (value === null || value === undefined) return '';
-
-    return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
-
-// Safe string conversion
-function safeText(value) {
-    if (value === null || value === undefined) return '—';
-
-    if (typeof value === 'object') {
-        try {
-            return JSON.stringify(value);
-        } catch {
-            return '—';
-        }
+    if(!d.users||!Array.isArray(d.users)||d.users.length===0){
+      tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">No users found.</td></tr>';
+      return;
     }
-
-    return String(value);
-}
-
-tbody.innerHTML = d.users.map((u) => {
-
-    const id = safeText(u._id);
-    const username = safeText(u.username);
-    const name = safeText(u.name);
-    const email = safeText(u.email);
-    const role = safeText(u.role);
-    const active = Boolean(u.active);
-
-    let lastLogin = '—';
-
-    if (u.lastLogin) {
-        try {
-            lastLogin = new Date(u.lastLogin)
-                .toLocaleDateString('en-GB');
-        } catch (e) {
-            lastLogin = '—';
-        }
-    }
-
-    return `
-        <tr>
-            <td style="font-family:var(--mo);font-size:12px">
-                ${escapeHtml(username)}
-            </td>
-
-            <td>
-                ${escapeHtml(name)}
-            </td>
-
-            <td style="font-size:12px;color:var(--tx2)">
-                ${escapeHtml(email)}
-            </td>
-
-            <td>
-                <span class="role-badge ${escapeHtml(role)}">
-                    ${escapeHtml(role)}
-                </span>
-            </td>
-
-            <td>
-                <span class="sdot ${active ? 'active' : 'inactive'}"></span>
-                ${active ? 'Active' : 'Inactive'}
-            </td>
-
-            <td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">
-                ${lastLogin}
-            </td>
-
-            <td style="display:flex;gap:6px">
-                <button
-                    class="act-btn"
-                    data-id="${escapeHtml(id)}"
-                    data-username="${escapeHtml(username)}"
-                    data-name="${escapeHtml(name)}"
-                    data-email="${escapeHtml(email)}"
-                    data-role="${escapeHtml(role)}"
-                    data-active="${active}"
-                    onclick="
-                        editUser(
-                            this.dataset.id,
-                            this.dataset.username,
-                            this.dataset.name,
-                            this.dataset.email,
-                            this.dataset.role,
-                            this.dataset.active === 'true'
-                        )
-                    "
-                >
-                    Edit
-                </button>
-
-                <button
-                    class="act-btn danger"
-                    data-id="${escapeHtml(id)}"
-                    data-username="${escapeHtml(username)}"
-                    onclick="
-                        delUser(
-                            this.dataset.id,
-                            this.dataset.username
-                        )
-                    "
-                >
-                    Delete
-                </button>
-            </td>
-        </tr>
-    `;
-}).join('');
-  }catch(e){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--rd);font-family:var(--mo);font-size:12px">'+e.message+'</td></tr>';}
+    tbody.innerHTML=d.users.map(function(u){
+      var id=safeText(u._id),username=safeText(u.username),name=safeText(u.name),email=safeText(u.email),role=safeText(u.role);
+      var active=Boolean(u.active);
+      var accType=u.accountType==='organisation'?('Corp'+(u.orgName?' · '+escapeHtml(u.orgName):'')):'Individual';
+      var lastLogin='—';
+      if(u.lastLogin){ try{ lastLogin=new Date(u.lastLogin).toLocaleDateString('en-GB'); }catch(e){ lastLogin='—'; } }
+      return '<tr>'+
+        '<td style="font-family:var(--mo);font-size:12px">'+escapeHtml(username)+'</td>'+
+        '<td>'+escapeHtml(name)+'</td>'+
+        '<td style="font-size:12px;color:var(--tx2)">'+escapeHtml(email)+'</td>'+
+        '<td style="font-size:11px;color:var(--tx3);font-family:var(--mo)">'+accType+'</td>'+
+        '<td><span class="role-badge '+escapeHtml(role)+'">'+escapeHtml(role)+'</span></td>'+
+        '<td><span class="sdot '+(active?'active':'inactive')+'"></span> '+(active?'Active':'Inactive')+'</td>'+
+        '<td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">'+lastLogin+'</td>'+
+        '<td style="display:flex;gap:6px">'+
+          '<button class="act-btn" data-id="'+escapeHtml(id)+'" data-username="'+escapeHtml(username)+'" data-name="'+escapeHtml(name)+'" data-email="'+escapeHtml(email)+'" data-role="'+escapeHtml(role)+'" data-active="'+active+'" onclick="editUser(this.dataset.id,this.dataset.username,this.dataset.name,this.dataset.email,this.dataset.role,this.dataset.active===\'true\')">Edit</button>'+
+          '<button class="act-btn danger" data-id="'+escapeHtml(id)+'" data-username="'+escapeHtml(username)+'" onclick="delUser(this.dataset.id,this.dataset.username)">Delete</button>'+
+        '</td>'+
+      '</tr>';
+    }).join('');
+  }catch(e){ tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--rd);font-family:var(--mo);font-size:12px">'+escapeHtml(e.message)+'</td></tr>'; }
 }
 function showAdminMsg(msg,type){
   var el=document.getElementById('admin-msg');el.textContent=msg;el.className='admin-msg '+(type||'ok');
@@ -971,14 +1238,14 @@ document.getElementById('um-submit').addEventListener('click',async function(){
   btn.disabled=true;btn.textContent='Saving...';
   try{
     if(_editId){
-      var body={name,role,active};if(pwd)body.password=pwd;
+      var body={name:name,role:role,active:active};if(pwd)body.password=pwd;
       await apiFetch('/users/'+_editId,{method:'PUT',body:JSON.stringify(body)});
       showAdminMsg('User updated successfully.');
     }else{
       var username=document.getElementById('um-username').value.trim();
       var email=document.getElementById('um-email').value.trim();
-      if(!name||!username||!email||!pwd){errEl.textContent='All fields required for new user.';errEl.className='um-err show';return;}
-      await apiFetch('/users',{method:'POST',body:JSON.stringify({name,username,email,password:pwd,role})});
+      if(!name||!username||!email||!pwd){errEl.textContent='All fields required for new user.';errEl.className='um-err show';btn.disabled=false;btn.textContent='Create User';return;}
+      await apiFetch('/users',{method:'POST',body:JSON.stringify({name:name,username:username,email:email,password:pwd,role:role})});
       showAdminMsg('User created successfully.');
     }
     document.getElementById('user-modal').classList.remove('open');_editId=null;loadUsers();
@@ -990,6 +1257,155 @@ async function delUser(id,username){
   try{await apiFetch('/users/'+id,{method:'DELETE'});showAdminMsg('User deleted.');loadUsers();}
   catch(e){showAdminMsg(e.message,'err');}
 }
+
+// ═══════════════════════════════════════════════════════════
+// ══ ADMIN PANEL — DOMAIN WHITELIST TAB ══
+// ═══════════════════════════════════════════════════════════
+async function loadDomains(){
+  var tbody=document.getElementById('domains-tbody');
+  tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr>';
+  try{
+    var d=await apiFetch('/admin/allowed-domains');
+    if(!d.domains||!d.domains.length){
+      tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">No domains whitelisted yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML=d.domains.map(function(dm){
+      var dateStr='—';
+      try{ dateStr=new Date(dm.createdAt).toLocaleDateString('en-GB'); }catch(e){}
+      return '<tr>'+
+        '<td style="font-family:var(--mo);font-size:12px;color:var(--t)">'+escapeHtml(dm.domain)+'</td>'+
+        '<td>'+escapeHtml(dm.label||'—')+'</td>'+
+        '<td style="font-size:11px;color:var(--tx3);font-family:var(--mo)">'+escapeHtml(dm.addedBy||'—')+'</td>'+
+        '<td style="font-size:11px;color:var(--tx3);font-family:var(--mo)">'+dateStr+'</td>'+
+        '<td><button class="act-btn danger" data-id="'+escapeHtml(dm._id)+'" data-domain="'+escapeHtml(dm.domain)+'" onclick="delDomain(this.dataset.id,this.dataset.domain)">Remove</button></td>'+
+      '</tr>';
+    }).join('');
+  }catch(e){ tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--rd);font-family:var(--mo);font-size:12px">'+escapeHtml(e.message)+'</td></tr>'; }
+}
+function showDomainMsg(msg,type){
+  var el=document.getElementById('domain-msg');el.textContent=msg;el.className='admin-msg '+(type||'ok');
+  setTimeout(function(){el.className='admin-msg';},4000);
+}
+document.getElementById('add-domain-btn').addEventListener('click',async function(){
+  var domain=document.getElementById('nd-domain').value.trim();
+  var label=document.getElementById('nd-label').value.trim();
+  if(!domain){showDomainMsg('Please enter a domain.','err');return;}
+  var btn=this;btn.disabled=true;
+  try{
+    await apiFetch('/admin/allowed-domains',{method:'POST',body:JSON.stringify({domain:domain,label:label})});
+    showDomainMsg('Domain "'+domain+'" whitelisted.');
+    document.getElementById('nd-domain').value='';document.getElementById('nd-label').value='';
+    loadDomains();
+  }catch(e){showDomainMsg(e.message,'err');}
+  finally{btn.disabled=false;}
+});
+async function delDomain(id,domain){
+  if(!confirm('Remove "'+domain+'" from the whitelist? New corporate signups from this domain will be blocked.'))return;
+  try{await apiFetch('/admin/allowed-domains/'+id,{method:'DELETE'});showDomainMsg('Domain removed.');loadDomains();}
+  catch(e){showDomainMsg(e.message,'err');}
+}
+
+// ═══════════════════════════════════════════════════════════
+// ══ ORG TEAM & PERMISSIONS PANEL (org admin) ══
+// ═══════════════════════════════════════════════════════════
+var APP_LABELS_SHORT={ markets:'Markets', bankrecon:'Bank Recon', receivables:'Receivables', treasury:'Treasury', jobs:'Jobs' };
+
+function buildPermTableHead(){
+  var row=document.getElementById('perm-thead-row');
+  var html='<th>Member</th><th>Role</th>';
+  APP_KEYS.forEach(function(k){ html+='<th>'+APP_LABELS_SHORT[k]+'</th>'; });
+  row.innerHTML=html;
+}
+
+async function loadTeam(){
+  buildPermTableHead();
+  var tbody=document.getElementById('perm-tbody');
+  var colspan=2+APP_KEYS.length;
+  tbody.innerHTML='<tr><td colspan="'+colspan+'" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr>';
+  try{
+    var d=await apiFetch('/org/team');
+    if(!d.members||!d.members.length){
+      tbody.innerHTML='<tr><td colspan="'+colspan+'"><div class="org-empty">No team members yet. Click "Add Team Member" to invite someone on your domain.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML=d.members.map(function(m){
+      var perms=m.permissions||{};
+      var isSelf=_user&&m._id===_user.id;
+      var roleCell='<select class="perm-role-select" data-id="'+escapeHtml(m._id)+'" onchange="updateMemberRole(this.dataset.id,this.value)" '+(isSelf?'disabled title="You cannot change your own role"':'')+'>'+
+        '<option value="member" '+(m.orgRole==='member'?'selected':'')+'>Member</option>'+
+        '<option value="admin" '+(m.orgRole==='admin'?'selected':'')+'>Admin</option>'+
+      '</select>';
+      var toggles=APP_KEYS.map(function(k){
+        var on=!!perms[k];
+        var lockedAdmin=m.orgRole==='admin'; // admins always have full access; toggle disabled visually
+        return '<td><span class="perm-toggle '+(on?'on':'')+(lockedAdmin?' disabled':'')+'" data-id="'+escapeHtml(m._id)+'" data-app="'+k+'" '+(lockedAdmin?'':'onclick="toggleMemberPerm(this)"')+' title="'+(lockedAdmin?'Admins have full access':'Toggle '+APP_LABELS_SHORT[k])+'"></span></td>';
+      }).join('');
+      return '<tr>'+
+        '<td><div class="perm-member-name">'+escapeHtml(m.name)+(isSelf?' (you)':'')+'</div><div class="perm-member-email">'+escapeHtml(m.email)+'</div></td>'+
+        '<td>'+roleCell+'</td>'+
+        toggles+
+      '</tr>';
+    }).join('');
+  }catch(e){ tbody.innerHTML='<tr><td colspan="'+colspan+'" style="text-align:center;padding:2rem;color:var(--rd);font-family:var(--mo);font-size:12px">'+escapeHtml(e.message)+'</td></tr>'; }
+}
+function showOrgMsg(msg,type){
+  var el=document.getElementById('org-msg');el.textContent=msg;el.className='admin-msg '+(type||'ok');
+  setTimeout(function(){el.className='admin-msg';},4000);
+}
+async function toggleMemberPerm(el){
+  var id=el.dataset.id, app=el.dataset.app;
+  var nowOn=!el.classList.contains('on');
+  el.classList.toggle('on',nowOn);
+  var body={permissions:{}};body.permissions[app]=nowOn;
+  try{
+    await apiFetch('/org/team/'+id+'/permissions',{method:'PUT',body:JSON.stringify(body)});
+  }catch(e){
+    el.classList.toggle('on',!nowOn); // revert on failure
+    showOrgMsg(e.message,'err');
+  }
+}
+async function updateMemberRole(id,role){
+  try{
+    await apiFetch('/org/team/'+id+'/permissions',{method:'PUT',body:JSON.stringify({orgRole:role})});
+    showOrgMsg('Role updated.');
+    loadTeam();
+  }catch(e){ showOrgMsg(e.message,'err'); loadTeam(); }
+}
+
+// add team member modal
+function buildTeamPermGrid(){
+  var grid=document.getElementById('tm-perm-grid');
+  grid.innerHTML=APP_KEYS.map(function(k){
+    return '<label class="perm-check-item"><input type="checkbox" value="'+k+'" class="tm-perm-cb"> '+APP_LABELS_SHORT[k]+'</label>';
+  }).join('');
+}
+document.getElementById('add-team-btn').addEventListener('click',function(){
+  document.getElementById('tm-name').value='';
+  document.getElementById('tm-email').value='';
+  document.getElementById('tm-role').value='member';
+  buildTeamPermGrid();
+  document.getElementById('tm-err').className='um-err';
+  document.getElementById('team-modal').classList.add('open');
+});
+document.getElementById('tm-cancel').addEventListener('click',function(){document.getElementById('team-modal').classList.remove('open');});
+document.getElementById('tm-submit').addEventListener('click',async function(){
+  var btn=this;var errEl=document.getElementById('tm-err');errEl.className='um-err';
+  var name=document.getElementById('tm-name').value.trim();
+  var email=document.getElementById('tm-email').value.trim();
+  var role=document.getElementById('tm-role').value;
+  var perms={};
+  document.querySelectorAll('.tm-perm-cb').forEach(function(cb){ perms[cb.value]=cb.checked; });
+  if(!name||!email){errEl.textContent='Name and email are required.';errEl.className='um-err show';return;}
+  btn.disabled=true;btn.textContent='Sending...';
+  try{
+    await apiFetch('/org/team',{method:'POST',body:JSON.stringify({name:name,email:email,orgRole:role,permissions:perms})});
+    document.getElementById('team-modal').classList.remove('open');
+    showOrgMsg('Invitation sent to '+email+'.');
+    loadTeam();
+  }catch(e){errEl.textContent=e.message;errEl.className='um-err show';}
+  finally{btn.disabled=false;btn.textContent='Send Invitation';}
+});
 </script>
 </body>
 </html>
