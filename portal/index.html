@@ -1310,6 +1310,8 @@ async function delDomain(id,domain){
 // ══ ORG TEAM & PERMISSIONS PANEL (org admin) ══
 // ═══════════════════════════════════════════════════════════
 var APP_LABELS_SHORT={ markets:'Markets', bankrecon:'Bank Recon', receivables:'Receivables', treasury:'Treasury', jobs:'Jobs' };
+var _moduleDefs={}, _moduleLevels=['none','view','edit']; // populated from /api/org/team response
+var _teamMembersCache=[];
 
 function buildPermTableHead(){
   var row=document.getElementById('perm-thead-row');
@@ -1325,6 +1327,9 @@ async function loadTeam(){
   tbody.innerHTML='<tr><td colspan="'+colspan+'" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr>';
   try{
     var d=await apiFetch('/org/team');
+    _moduleDefs=d.moduleDefs||{};
+    _moduleLevels=d.moduleLevels||['none','view','edit'];
+    _teamMembersCache=d.members||[];
     if(!d.members||!d.members.length){
       tbody.innerHTML='<tr><td colspan="'+colspan+'"><div class="org-empty">No team members yet. Click "Add Team Member" to invite someone on your domain.</div></td></tr>';
       return;
@@ -1336,16 +1341,29 @@ async function loadTeam(){
         '<option value="member" '+(m.orgRole==='member'?'selected':'')+'>Member</option>'+
         '<option value="admin" '+(m.orgRole==='admin'?'selected':'')+'>Admin</option>'+
       '</select>';
+      var lockedAdminAll=m.orgRole==='admin';
       var toggles=APP_KEYS.map(function(k){
         var on=!!perms[k];
-        var lockedAdmin=m.orgRole==='admin'; // admins always have full access; toggle disabled visually
-        return '<td><span class="perm-toggle '+(on?'on':'')+(lockedAdmin?' disabled':'')+'" data-id="'+escapeHtml(m._id)+'" data-app="'+k+'" '+(lockedAdmin?'':'onclick="toggleMemberPerm(this)"')+' title="'+(lockedAdmin?'Admins have full access':'Toggle '+APP_LABELS_SHORT[k])+'"></span></td>';
+        var hasModules=_moduleDefs[k]&&_moduleDefs[k].length;
+        var toggleHtml='<span class="perm-toggle '+(on?'on':'')+(lockedAdminAll?' disabled':'')+'" data-id="'+escapeHtml(m._id)+'" data-app="'+k+'" '+(lockedAdminAll?'':'onclick="toggleMemberPerm(this)"')+' title="'+(lockedAdminAll?'Admins have full access':'Toggle '+APP_LABELS_SHORT[k])+'"></span>';
+        var moduleBtn=(hasModules&&on&&!lockedAdminAll)
+          ? ' <button class="act-btn" style="padding:2px 7px;font-size:9.5px;margin-left:4px" onclick="toggleModuleRow(\''+escapeHtml(m._id)+'\',\''+k+'\')" title="Set per-module access">&#9881;</button>'
+          : '';
+        return '<td>'+toggleHtml+moduleBtn+'</td>';
       }).join('');
-      return '<tr>'+
+      var rows='<tr>'+
         '<td><div class="perm-member-name">'+escapeHtml(m.name)+(isSelf?' (you)':'')+'</div><div class="perm-member-email">'+escapeHtml(m.email)+'</div></td>'+
         '<td>'+roleCell+'</td>'+
         toggles+
       '</tr>';
+      // Hidden expandable rows, one per app with module defs, toggled via the gear button
+      Object.keys(_moduleDefs).forEach(function(appKey){
+        if(!_moduleDefs[appKey].length) return;
+        rows+='<tr id="module-row-'+escapeHtml(m._id)+'-'+appKey+'" style="display:none"><td colspan="'+(2+APP_KEYS.length)+'" style="background:var(--n3);padding:.85rem 1rem">'+
+          renderModuleRow(m,appKey)+
+        '</td></tr>';
+      });
+      return rows;
     }).join('');
   }catch(e){ tbody.innerHTML='<tr><td colspan="'+colspan+'" style="text-align:center;padding:2rem;color:var(--rd);font-family:var(--mo);font-size:12px">'+escapeHtml(e.message)+'</td></tr>'; }
 }
@@ -1371,6 +1389,50 @@ async function updateMemberRole(id,role){
     showOrgMsg('Role updated.');
     loadTeam();
   }catch(e){ showOrgMsg(e.message,'err'); loadTeam(); }
+}
+
+// ── PER-MODULE (none/view/edit) ACCESS ──
+// REUSABLE BLOCK: renderModuleRow / toggleModuleRow / updateMemberModulePerm
+// all read from _moduleDefs (populated from the /api/org/team response's
+// moduleDefs field, which server-side comes straight from MODULE_DEFS).
+// To support another app's modules here, nothing in this block changes —
+// it already iterates whatever appKey/moduleKey pairs the server reports.
+function renderModuleRow(member,appKey){
+  var modules=_moduleDefs[appKey]||[];
+  var stored=(member.modulePermissions&&member.modulePermissions[appKey])||{};
+  var label=APP_LABELS_SHORT[appKey]||appKey;
+  return '<div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">'+label+' \u2014 module access for '+escapeHtml(member.name)+'</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:.6rem">'+
+    modules.map(function(modKey){
+      var lvl=stored[modKey]||'none';
+      var opts=_moduleLevels.map(function(l){
+        return '<option value="'+l+'" '+(lvl===l?'selected':'')+'>'+l.charAt(0).toUpperCase()+l.slice(1)+'</option>';
+      }).join('');
+      return '<div style="display:flex;flex-direction:column;gap:3px;min-width:120px">'+
+        '<label style="font-size:9.5px;font-family:var(--mo);color:var(--tx3);text-transform:capitalize">'+modKey+'</label>'+
+        '<select class="perm-role-select" data-id="'+escapeHtml(member._id)+'" data-app="'+appKey+'" data-module="'+modKey+'" onchange="updateMemberModulePerm(this)">'+opts+'</select>'+
+      '</div>';
+    }).join('')+
+    '</div>';
+}
+function toggleModuleRow(memberId,appKey){
+  var row=document.getElementById('module-row-'+memberId+'-'+appKey);
+  if(row) row.style.display=row.style.display==='none'?'table-row':'none';
+}
+async function updateMemberModulePerm(sel){
+  var id=sel.dataset.id, appKey=sel.dataset.app, modKey=sel.dataset.module, level=sel.value;
+  var body={ modulePermissions:{} };
+  body.modulePermissions[appKey]={};
+  body.modulePermissions[appKey][modKey]=level;
+  var prevValue=sel.dataset.prev||'none';
+  try{
+    await apiFetch('/org/team/'+id+'/permissions',{method:'PUT',body:JSON.stringify(body)});
+    sel.dataset.prev=level;
+    showOrgMsg(modKey+' set to '+level+'.');
+  }catch(e){
+    sel.value=prevValue;
+    showOrgMsg(e.message,'err');
+  }
 }
 
 // add team member modal
