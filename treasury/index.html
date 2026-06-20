@@ -246,7 +246,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           </div>
         </div>
         <div class="kpi-grid" id="loans-kpis"></div>
-        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">Loan Aging Distribution</div><canvas id="ch-loan-aging" height="130"></canvas></div>
+        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">Loan Aging Distribution (&#8358;M)</div><canvas id="ch-loan-aging" height="130"></canvas></div>
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
             <div style="display:flex;gap:6px" id="loan-filters">
@@ -325,7 +325,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           <button class="bp" onclick="loadLiquidity()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
         </div>
         <div class="kpi-grid" id="liq-kpis"></div>
-        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">180-Day Liquidity Forecast</div><canvas id="ch-liq-forecast" height="200"></canvas></div>
+        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">180-Day Liquidity Forecast (&#8358;M)</div><canvas id="ch-liq-forecast" height="200"></canvas></div>
         <div class="chart-2" id="liq-charts2"></div>
       </div>
       <div class="view" id="view-team">
@@ -384,7 +384,6 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 const API='https://eis-recbackend.onrender.com/api';
 var _user=null,_loansCache=[],_borrowCache=[],_invCache=[],_cashCache=[];
 var _eclResults=[],_eclMult=1,_loanFilter='all';
-var _selLoans=new Set(),_selBorrow=new Set(),_selInv=new Set(),_selCash=new Set();
 var _charts={};
 
 // ── HELPERS ──────────────────────────────────────────────────
@@ -407,7 +406,7 @@ async function apiForm(ep,fd){
 }
 const $=id=>document.getElementById(id);
 const fN=n=>n==null||isNaN(n)?'0.00':Number(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmt=n=>{const v=Number(n)||0;if(v>=1e9)return'₦'+(v/1e9).toFixed(2)+'B';if(v>=1e6)return'₦'+(v/1e6).toFixed(2)+'M';if(v>=1e3)return'₦'+(v/1e3).toFixed(1)+'K';return'₦'+v.toFixed(2);};
+const fmt=n=>Number(n)>=1000?'\u20a6'+(Number(n)/1000).toFixed(1)+'B':'\u20a6'+Number(n).toFixed(1)+'M';
 const pct=n=>Number(n).toFixed(2)+'%';
 const fD=d=>!d?'\u2014':new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 const ts=()=>new Date().toISOString().slice(0,10);
@@ -419,53 +418,6 @@ const PAL=['#00c9a7','#63b3ed','#a78bfa','#f5a623','#22c55e','#e05252'];
 // Sending these to the backend causes a CastError -> HTTP 500.
 // isSampleId() returns true for any non-ObjectId string so we
 // block API calls and show a friendly message instead.
-function bulkBar(module,selSet,total){
-  if(!selSet.size)return'';
-  const count=selSet.size;
-  return '<div style="display:flex;align-items:center;gap:10px;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:8px 14px;margin-bottom:.75rem;flex-wrap:wrap">'+
-    '<span style="font-size:12px;font-family:var(--mo);color:var(--rd)">'+count+' of '+total+' selected</span>'+
-    '<button class="bsm bd" onclick="bulkDelete('\'+module+'\')" style="padding:5px 12px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg> Delete selected</button>'+
-    '<button class="bsm" onclick="clearSel('\'+module+'\')" style="padding:5px 12px">Clear</button>'+
-  '</div>';
-}
-function toggleSel(module,id){
-  const m={loans:_selLoans,borrowings:_selBorrow,investments:_selInv,cash:_selCash}[module];
-  if(!m)return;
-  if(m.has(id))m.delete(id);else m.add(id);
-  const fn={loans:renderLoanTable,borrowings:renderBorrowings,investments:renderInvestments,cash:renderCash}[module];
-  if(fn)fn();
-}
-function clearSel(module){
-  const m={loans:_selLoans,borrowings:_selBorrow,investments:_selInv,cash:_selCash}[module];
-  if(m)m.clear();
-  const fn={loans:renderLoanTable,borrowings:renderBorrowings,investments:renderInvestments,cash:renderCash}[module];
-  if(fn)fn();
-}
-function toggleAllSel(module,ids){
-  const m={loans:_selLoans,borrowings:_selBorrow,investments:_selInv,cash:_selCash}[module];
-  if(!m)return;
-  const realIds=(ids||[]).filter(id=>!isSampleId(id));
-  const allSel=realIds.length>0&&realIds.every(id=>m.has(id));
-  if(allSel){realIds.forEach(id=>m.delete(id));}else{realIds.forEach(id=>m.add(id));}
-  const fn={loans:renderLoanTable,borrowings:renderBorrowings,investments:renderInvestments,cash:renderCash}[module];
-  if(fn)fn();
-}
-async function bulkDelete(module){
-  const m={loans:_selLoans,borrowings:_selBorrow,investments:_selInv,cash:_selCash}[module];
-  if(!m||!m.size)return;
-  const count=m.size;
-  if(!confirm('Permanently delete '+count+' selected item'+(count>1?'s':'')+' ?'))return;
-  const ids=[...m];
-  const ep={loans:'/treasury/loans',borrowings:'/treasury/borrowings',investments:'/treasury/investments',cash:'/treasury/cash'}[module];
-  let done=0,failed=0;
-  for(const id of ids){
-    try{await api(ep+'/'+id,{method:'DELETE'});done++;m.delete(id);}
-    catch(e){failed++;}
-  }
-  toast(done+' deleted'+(failed?' · '+failed+' failed':'')+'.',failed?'err':'ok');
-  const fn={loans:loadLoans,borrowings:loadBorrowings,investments:loadInvestments,cash:loadCash}[module];
-  if(fn)fn();
-}
 function isSampleId(id){
   return !id||id==='undefined'||id==='null'||!/^[a-f\d]{24}$/i.test(id);
 }
@@ -513,45 +465,45 @@ $('logout-btn').addEventListener('click',function(){
 });
 // ── SAMPLE DATA ───────────────────────────────────────────────
 const SL=[
-  {_id:'s1',loanId:'LN-001',customer:'Dangote Industries Ltd',product:'Invoice Discounting',principal:450000000,outstanding:420000000,interestRate:22,startDate:'2024-01-15',maturityDate:'2024-07-15',daysPastDue:0,stage:1,creditRating:'A',status:'active'},
-  {_id:'s2',loanId:'LN-002',customer:'Flour Mills Nigeria Plc',product:'Supply Chain Finance',principal:320000000,outstanding:310000000,interestRate:20,startDate:'2024-02-01',maturityDate:'2024-08-01',daysPastDue:18,stage:1,creditRating:'A-',status:'active'},
-  {_id:'s3',loanId:'LN-003',customer:'MTN Nigeria Comms',product:'Factoring',principal:280000000,outstanding:280000000,interestRate:21,startDate:'2024-03-10',maturityDate:'2024-09-10',daysPastDue:0,stage:1,creditRating:'AA',status:'active'},
-  {_id:'s4',loanId:'LN-004',customer:'Zenith Bank Plc',product:'Reverse Factoring',principal:500000000,outstanding:480000000,interestRate:19,startDate:'2023-11-01',maturityDate:'2024-05-01',daysPastDue:45,stage:2,creditRating:'BBB+',status:'active'},
-  {_id:'s5',loanId:'LN-005',customer:'BUA Foods Plc',product:'Invoice Discounting',principal:190000000,outstanding:190000000,interestRate:23,startDate:'2024-04-05',maturityDate:'2024-10-05',daysPastDue:0,stage:1,creditRating:'A',status:'active'},
-  {_id:'s6',loanId:'LN-006',customer:'Unilever Nigeria Plc',product:'Supply Chain Finance',principal:150000000,outstanding:145000000,interestRate:21,startDate:'2023-10-15',maturityDate:'2024-04-15',daysPastDue:62,stage:2,creditRating:'BB+',status:'active'},
-  {_id:'s7',loanId:'LN-007',customer:'Nigerian Breweries Plc',product:'Factoring',principal:220000000,outstanding:215000000,interestRate:22,startDate:'2024-03-20',maturityDate:'2024-09-20',daysPastDue:5,stage:1,creditRating:'A-',status:'active'},
-  {_id:'s8',loanId:'LN-008',customer:'Cadbury Nigeria Plc',product:'Invoice Discounting',principal:85000000,outstanding:82000000,interestRate:24,startDate:'2023-08-01',maturityDate:'2024-02-01',daysPastDue:120,stage:3,creditRating:'CCC',status:'active'},
-  {_id:'s9',loanId:'LN-009',customer:'PZ Cussons Nigeria',product:'Factoring',principal:110000000,outstanding:108000000,interestRate:22,startDate:'2023-09-10',maturityDate:'2024-03-10',daysPastDue:95,stage:3,creditRating:'B-',status:'active'},
-  {_id:'s10',loanId:'LN-010',customer:'Nestle Nigeria Plc',product:'Supply Chain Finance',principal:340000000,outstanding:340000000,interestRate:20,startDate:'2024-04-01',maturityDate:'2024-10-01',daysPastDue:0,stage:1,creditRating:'AA-',status:'active'},
-  {_id:'s11',loanId:'LN-011',customer:'NNPC Gas & Power Ltd',product:'Reverse Factoring',principal:600000000,outstanding:580000000,interestRate:18,startDate:'2024-01-20',maturityDate:'2024-07-20',daysPastDue:30,stage:1,creditRating:'A+',status:'active'},
-  {_id:'s12',loanId:'LN-012',customer:'Access Bank Plc',product:'Invoice Discounting',principal:250000000,outstanding:250000000,interestRate:20,startDate:'2024-02-15',maturityDate:'2024-08-15',daysPastDue:0,stage:1,creditRating:'AA',status:'active'},
-  {_id:'s13',loanId:'LN-013',customer:'Total Energies Nigeria',product:'Supply Chain Finance',principal:180000000,outstanding:172000000,interestRate:21,startDate:'2023-12-01',maturityDate:'2024-06-01',daysPastDue:75,stage:2,creditRating:'BB',status:'active'},
-  {_id:'s14',loanId:'LN-014',customer:'Lafarge Africa Plc',product:'Factoring',principal:130000000,outstanding:130000000,interestRate:23,startDate:'2024-03-01',maturityDate:'2024-09-01',daysPastDue:0,stage:1,creditRating:'A-',status:'active'},
-  {_id:'s15',loanId:'LN-015',customer:'Julius Berger Nigeria',product:'Invoice Discounting',principal:200000000,outstanding:195000000,interestRate:22,startDate:'2023-06-15',maturityDate:'2023-12-15',daysPastDue:155,stage:3,creditRating:'D',status:'active'},
+  {_id:'s1',loanId:'LN-001',customer:'Dangote Industries Ltd',product:'Invoice Discounting',principal:450,outstanding:420,interestRate:22,startDate:'2024-01-15',maturityDate:'2024-07-15',daysPastDue:0,stage:1,creditRating:'A',status:'active'},
+  {_id:'s2',loanId:'LN-002',customer:'Flour Mills Nigeria Plc',product:'Supply Chain Finance',principal:320,outstanding:310,interestRate:20,startDate:'2024-02-01',maturityDate:'2024-08-01',daysPastDue:18,stage:1,creditRating:'A-',status:'active'},
+  {_id:'s3',loanId:'LN-003',customer:'MTN Nigeria Comms',product:'Factoring',principal:280,outstanding:280,interestRate:21,startDate:'2024-03-10',maturityDate:'2024-09-10',daysPastDue:0,stage:1,creditRating:'AA',status:'active'},
+  {_id:'s4',loanId:'LN-004',customer:'Zenith Bank Plc',product:'Reverse Factoring',principal:500,outstanding:480,interestRate:19,startDate:'2023-11-01',maturityDate:'2024-05-01',daysPastDue:45,stage:2,creditRating:'BBB+',status:'active'},
+  {_id:'s5',loanId:'LN-005',customer:'BUA Foods Plc',product:'Invoice Discounting',principal:190,outstanding:190,interestRate:23,startDate:'2024-04-05',maturityDate:'2024-10-05',daysPastDue:0,stage:1,creditRating:'A',status:'active'},
+  {_id:'s6',loanId:'LN-006',customer:'Unilever Nigeria Plc',product:'Supply Chain Finance',principal:150,outstanding:145,interestRate:21,startDate:'2023-10-15',maturityDate:'2024-04-15',daysPastDue:62,stage:2,creditRating:'BB+',status:'active'},
+  {_id:'s7',loanId:'LN-007',customer:'Nigerian Breweries Plc',product:'Factoring',principal:220,outstanding:215,interestRate:22,startDate:'2024-03-20',maturityDate:'2024-09-20',daysPastDue:5,stage:1,creditRating:'A-',status:'active'},
+  {_id:'s8',loanId:'LN-008',customer:'Cadbury Nigeria Plc',product:'Invoice Discounting',principal:85,outstanding:82,interestRate:24,startDate:'2023-08-01',maturityDate:'2024-02-01',daysPastDue:120,stage:3,creditRating:'CCC',status:'active'},
+  {_id:'s9',loanId:'LN-009',customer:'PZ Cussons Nigeria',product:'Factoring',principal:110,outstanding:108,interestRate:22,startDate:'2023-09-10',maturityDate:'2024-03-10',daysPastDue:95,stage:3,creditRating:'B-',status:'active'},
+  {_id:'s10',loanId:'LN-010',customer:'Nestle Nigeria Plc',product:'Supply Chain Finance',principal:340,outstanding:340,interestRate:20,startDate:'2024-04-01',maturityDate:'2024-10-01',daysPastDue:0,stage:1,creditRating:'AA-',status:'active'},
+  {_id:'s11',loanId:'LN-011',customer:'NNPC Gas & Power Ltd',product:'Reverse Factoring',principal:600,outstanding:580,interestRate:18,startDate:'2024-01-20',maturityDate:'2024-07-20',daysPastDue:30,stage:1,creditRating:'A+',status:'active'},
+  {_id:'s12',loanId:'LN-012',customer:'Access Bank Plc',product:'Invoice Discounting',principal:250,outstanding:250,interestRate:20,startDate:'2024-02-15',maturityDate:'2024-08-15',daysPastDue:0,stage:1,creditRating:'AA',status:'active'},
+  {_id:'s13',loanId:'LN-013',customer:'Total Energies Nigeria',product:'Supply Chain Finance',principal:180,outstanding:172,interestRate:21,startDate:'2023-12-01',maturityDate:'2024-06-01',daysPastDue:75,stage:2,creditRating:'BB',status:'active'},
+  {_id:'s14',loanId:'LN-014',customer:'Lafarge Africa Plc',product:'Factoring',principal:130,outstanding:130,interestRate:23,startDate:'2024-03-01',maturityDate:'2024-09-01',daysPastDue:0,stage:1,creditRating:'A-',status:'active'},
+  {_id:'s15',loanId:'LN-015',customer:'Julius Berger Nigeria',product:'Invoice Discounting',principal:200,outstanding:195,interestRate:22,startDate:'2023-06-15',maturityDate:'2023-12-15',daysPastDue:155,stage:3,creditRating:'D',status:'active'},
 ];
 const SB=[
-  {_id:'b1',borrowingId:'BW-001',lender:'FCMB Ltd',type:'Term Loan',principal:500000000,outstanding:420000000,interestRate:19.5,tenorMonths:24,repayment:'Monthly',maturityDate:'2025-06-30'},
-  {_id:'b2',borrowingId:'BW-002',lender:'Stanbic IBTC Bank',type:'Overdraft Facility',principal:200000000,outstanding:150000000,interestRate:23,tenorMonths:12,repayment:'Revolving',maturityDate:'2024-12-31'},
-  {_id:'b3',borrowingId:'BW-003',lender:'DBN Nigeria',type:'On-lending Facility',principal:800000000,outstanding:720000000,interestRate:14,tenorMonths:36,repayment:'Quarterly',maturityDate:'2026-09-30'},
-  {_id:'b4',borrowingId:'BW-004',lender:'Bank of Industry',type:'SME Fund',principal:300000000,outstanding:280000000,interestRate:12,tenorMonths:48,repayment:'Monthly',maturityDate:'2027-03-31'},
-  {_id:'b5',borrowingId:'BW-005',lender:'LAPO MfB',type:'Wholesale Borrowing',principal:150000000,outstanding:100000000,interestRate:21,tenorMonths:12,repayment:'Monthly',maturityDate:'2024-10-31'},
-  {_id:'b6',borrowingId:'BW-006',lender:'Pan-African Holdings',type:'Intercompany Loan',principal:1000000000,outstanding:1000000000,interestRate:16,tenorMonths:60,repayment:'Bullet',maturityDate:'2028-01-31'},
+  {_id:'b1',borrowingId:'BW-001',lender:'FCMB Ltd',type:'Term Loan',principal:500,outstanding:420,interestRate:19.5,tenorMonths:24,repayment:'Monthly',maturityDate:'2025-06-30'},
+  {_id:'b2',borrowingId:'BW-002',lender:'Stanbic IBTC Bank',type:'Overdraft Facility',principal:200,outstanding:150,interestRate:23,tenorMonths:12,repayment:'Revolving',maturityDate:'2024-12-31'},
+  {_id:'b3',borrowingId:'BW-003',lender:'DBN Nigeria',type:'On-lending Facility',principal:800,outstanding:720,interestRate:14,tenorMonths:36,repayment:'Quarterly',maturityDate:'2026-09-30'},
+  {_id:'b4',borrowingId:'BW-004',lender:'Bank of Industry',type:'SME Fund',principal:300,outstanding:280,interestRate:12,tenorMonths:48,repayment:'Monthly',maturityDate:'2027-03-31'},
+  {_id:'b5',borrowingId:'BW-005',lender:'LAPO MfB',type:'Wholesale Borrowing',principal:150,outstanding:100,interestRate:21,tenorMonths:12,repayment:'Monthly',maturityDate:'2024-10-31'},
+  {_id:'b6',borrowingId:'BW-006',lender:'Pan-African Holdings',type:'Intercompany Loan',principal:1000,outstanding:1000,interestRate:16,tenorMonths:60,repayment:'Bullet',maturityDate:'2028-01-31'},
 ];
 const SI=[
-  {_id:'i1',investmentId:'INV-001',counterparty:'Access Bank Plc',type:'Fixed Deposit',principal:300000000,interestRate:22,dateInvested:'2024-03-01',tenorDays:180,maturityDate:'2024-08-28'},
-  {_id:'i2',investmentId:'INV-002',counterparty:'GTBank Ltd',type:'Fixed Deposit',principal:200000000,interestRate:21.5,dateInvested:'2024-02-15',tenorDays:91,maturityDate:'2024-05-17'},
-  {_id:'i3',investmentId:'INV-003',counterparty:'FGN Bond (10yr)',type:'Government Security',principal:500000000,interestRate:17.5,dateInvested:'2023-10-01',tenorDays:365,maturityDate:'2033-10-01'},
-  {_id:'i4',investmentId:'INV-004',counterparty:'NTB (91-day)',type:'Treasury Bills',principal:250000000,interestRate:20.5,dateInvested:'2024-04-01',tenorDays:91,maturityDate:'2024-07-01'},
-  {_id:'i5',investmentId:'INV-005',counterparty:'Zenith Bank Plc',type:'Fixed Deposit',principal:150000000,interestRate:22,dateInvested:'2024-04-10',tenorDays:60,maturityDate:'2024-06-09'},
-  {_id:'i6',investmentId:'INV-006',counterparty:'NTB (182-day)',type:'Treasury Bills',principal:400000000,interestRate:21,dateInvested:'2024-01-15',tenorDays:182,maturityDate:'2024-07-15'},
+  {_id:'i1',investmentId:'INV-001',counterparty:'Access Bank Plc',type:'Fixed Deposit',principal:300,interestRate:22,dateInvested:'2024-03-01',tenorDays:180,maturityDate:'2024-08-28'},
+  {_id:'i2',investmentId:'INV-002',counterparty:'GTBank Ltd',type:'Fixed Deposit',principal:200,interestRate:21.5,dateInvested:'2024-02-15',tenorDays:91,maturityDate:'2024-05-17'},
+  {_id:'i3',investmentId:'INV-003',counterparty:'FGN Bond (10yr)',type:'Government Security',principal:500,interestRate:17.5,dateInvested:'2023-10-01',tenorDays:365,maturityDate:'2033-10-01'},
+  {_id:'i4',investmentId:'INV-004',counterparty:'NTB (91-day)',type:'Treasury Bills',principal:250,interestRate:20.5,dateInvested:'2024-04-01',tenorDays:91,maturityDate:'2024-07-01'},
+  {_id:'i5',investmentId:'INV-005',counterparty:'Zenith Bank Plc',type:'Fixed Deposit',principal:150,interestRate:22,dateInvested:'2024-04-10',tenorDays:60,maturityDate:'2024-06-09'},
+  {_id:'i6',investmentId:'INV-006',counterparty:'NTB (182-day)',type:'Treasury Bills',principal:400,interestRate:21,dateInvested:'2024-01-15',tenorDays:182,maturityDate:'2024-07-15'},
 ];
 const SC=[
-  {_id:'c1',accountId:'CA-001',bank:'Access Bank Plc',accountNo:'001-234567-001',type:'Current',currency:'NGN',balance:124500000,restricted:false},
-  {_id:'c2',accountId:'CA-002',bank:'GTBank Ltd',accountNo:'0123456789',type:'Current',currency:'NGN',balance:87300000,restricted:false},
-  {_id:'c3',accountId:'CA-003',bank:'First Bank Nigeria',accountNo:'2012345678',type:'Current',currency:'NGN',balance:43800000,restricted:true},
-  {_id:'c4',accountId:'CA-004',bank:'Zenith Bank Plc',accountNo:'1012345678',type:'Savings',currency:'NGN',balance:210000000,restricted:false},
-  {_id:'c5',accountId:'CA-005',bank:'UBA Plc',accountNo:'2012398765',type:'Current',currency:'NGN',balance:32100000,restricted:false},
-  {_id:'c6',accountId:'CA-006',bank:'Access Bank Plc',accountNo:'001-234567-002',type:'Dom (USD)',currency:'USD',balance:18400000,restricted:false},
+  {_id:'c1',accountId:'CA-001',bank:'Access Bank Plc',accountNo:'001-234567-001',type:'Current',currency:'NGN',balance:124.5,restricted:false},
+  {_id:'c2',accountId:'CA-002',bank:'GTBank Ltd',accountNo:'0123456789',type:'Current',currency:'NGN',balance:87.3,restricted:false},
+  {_id:'c3',accountId:'CA-003',bank:'First Bank Nigeria',accountNo:'2012345678',type:'Current',currency:'NGN',balance:43.8,restricted:true},
+  {_id:'c4',accountId:'CA-004',bank:'Zenith Bank Plc',accountNo:'1012345678',type:'Savings',currency:'NGN',balance:210.0,restricted:false},
+  {_id:'c5',accountId:'CA-005',bank:'UBA Plc',accountNo:'2012398765',type:'Current',currency:'NGN',balance:32.1,restricted:false},
+  {_id:'c6',accountId:'CA-006',bank:'Access Bank Plc',accountNo:'001-234567-002',type:'Dom (USD)',currency:'USD',balance:18.4,restricted:false},
 ];
 
 // ── ECL ENGINE ────────────────────────────────────────────────
@@ -601,8 +553,8 @@ async function loadDashboard(){
   const stageD=[{s:'Stage 1',v:s1.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s1).total,c:'#22c55e'},{s:'Stage 2',v:s2.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s2).total,c:'#f5a623'},{s:'Stage 3',v:s3.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s3).total,c:'#e05252'}];
   const prodMap={};loans.forEach(l=>{prodMap[l.product]=(prodMap[l.product]||0)+l.outstanding;});
   const now=new Date('2024-06-01');
-  const mb={'0-30d':0,'31-60d':0,'61-90d':0,'91-180d':0,'>180d':0};
-  loans.forEach(l=>{const d=Math.max(0,(new Date(l.maturityDate)-now)/86400000);if(d<=30)mb['0-30d']+=l.outstanding;else if(d<=60)mb['31-60d']+=l.outstanding;else if(d<=90)mb['61-90d']+=l.outstanding;else if(d<=180)mb['91-180d']+=l.outstanding;else mb['>180d']+=l.outstanding;});
+  const mb={'0-30d':0,'31-60d':0,'61-90d':0,'91-180d':0,'181-365d':0,'>365d':0};
+  loans.forEach(l=>{const d=Math.max(0,(new Date(l.maturityDate)-now)/86400000);if(d<=30)mb['0-30d']+=l.outstanding;else if(d<=60)mb['31-60d']+=l.outstanding;else if(d<=90)mb['61-90d']+=l.outstanding;else if(d<=180)mb['91-180d']+=l.outstanding;else if(d<=365)mb['181-365d']+=l.outstanding;else mb['>365d']+=l.outstanding;});
   setTimeout(()=>{
     mkChart('ch-ds',{type:'doughnut',data:{labels:stageD.map(s=>s.s),datasets:[{data:stageD.map(s=>s.v),backgroundColor:stageD.map(s=>s.c),borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'62%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
     mkChart('ch-dp',{type:'bar',data:{labels:Object.keys(prodMap),datasets:[{data:Object.values(prodMap),backgroundColor:PAL,borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{display:false}}}}});
@@ -613,7 +565,6 @@ async function loadDashboard(){
 
 // ── LOANS ─────────────────────────────────────────────────────
 async function loadLoans(){
-  _selLoans.clear();
   $('loans-kpis').innerHTML='<div class="loading-row">Loading...</div>';
   try{const d=await api('/treasury/loans');if(d.loans?.length)_loansCache=d.loans;}
   catch(e){if(!_loansCache.length)_loansCache=SL;}
@@ -647,18 +598,10 @@ function renderLoanTable(){
   if(!loans.length){$('loans-table').innerHTML=empty('No loans match the current filter.');return;}
   const sc=s=>s===1?'ps1':s===2?'ps2':'ps3';
   const rc=r=>(r||'').startsWith('A')?'#22c55e':(r||'').startsWith('B')?'#f5a623':'#e05252';
-  const lRealIds=loans.filter(l=>!isSampleId(l._id)).map(l=>l._id);
-  const lAllChk=lRealIds.length>0&&lRealIds.every(id=>_selLoans.has(id));
-  $('loans-table').innerHTML=bulkBar('loans',_selLoans,loans.length)+'<div class="tw"><table>'+
-    '<thead><tr>'+
-      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(lAllChk?'checked':'')+' onchange="toggleAllSel('loans','+JSON.stringify(lRealIds)+')" title="Select all real records"></th>'+
-      '<th>Loan ID</th><th>Customer</th><th>Product</th><th class="nm">Outstanding (&#8358;)</th><th class="nm">Rate</th><th class="nm">DPD</th><th>Stage</th><th>Rating</th><th>Maturity</th><th></th>'+
-    '</tr></thead>'+
-    '<tbody>'+loans.map(l=>{
-      const lSmp=isSampleId(l._id);const lChk=_selLoans.has(l._id);
-      return '<tr style="'+(lChk?'background:rgba(224,82,82,.07)':'')+'">'+
-        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(lSmp?'disabled title="Sample data"':(lChk?'checked':''))+' onchange="toggleSel('loans',''+l._id+'')"></td>'+
-        '<td style="font-family:var(--mo);color:var(--t)">'+l.loanId+'</td><td><strong>'+l.customer+'</strong></td>'+
+  $('loans-table').innerHTML='<div class="tw"><table>'+
+    '<thead><tr><th>Loan ID</th><th>Customer</th><th>Product</th><th class="nm">Outstanding</th><th class="nm">Rate</th><th class="nm">DPD</th><th>Stage</th><th>Rating</th><th>Maturity</th><th></th></tr></thead>'+
+    '<tbody>'+loans.map(l=>'<tr>'+
+      '<td style="font-family:var(--mo);color:var(--t)">'+l.loanId+'</td><td><strong>'+l.customer+'</strong></td>'+
       '<td style="color:var(--tx2)">'+l.product+'</td>'+
       '<td class="nm">\u20a6'+fN(l.outstanding)+'M</td>'+
       '<td class="nm" style="font-family:var(--mo)">'+l.interestRate+'%</td>'+
@@ -669,8 +612,7 @@ function renderLoanTable(){
       '<td><div style="display:flex;gap:4px">'+
         '<button class="bsm" onclick="openLoanModal(\''+l._id+'\')" style="padding:4px 8px" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
         '<button class="bsm bd" onclick="deleteLoan(\''+l._id+'\')" style="padding:4px 8px" title="Delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-          '</div></td></tr>';
-    }).join('')+'</tbody></table></div>'+
+      '</div></td></tr>').join('')+'</tbody></table></div>'+
     '<div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">Showing '+loans.length+' of '+_loansCache.length+' \u00b7 Total: \u20a6'+fN(loans.reduce((s,l)=>s+l.outstanding,0))+'M</div>';
 }
 // openLoanModal: sample IDs open a blank Add Loan form instead of erroring
@@ -684,8 +626,8 @@ function openLoanModal(id){
     '<div class="fg"><div class="fld"><label>Loan Product *</label><select class="finput" id="fl-prod">'+
     ['Invoice Discounting','Supply Chain Finance','Factoring','Reverse Factoring','Term Loan'].map(p=>'<option value="'+p+'" '+(l?.product===p?'selected':'')+'>'+p+'</option>').join('')+'</select></div>'+
     '<div class="fld"><label>Credit Rating</label><input class="finput" id="fl-rating" value="'+(l?.creditRating||'')+'" placeholder="e.g. A, BBB+"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (&#8358;) *</label><input class="finput" type="number" id="fl-principal" value="'+(l?.principal||'')+'" min="0" step="0.01"></div>'+
-    '<div class="fld"><label>Outstanding (&#8358;) *</label><input class="finput" type="number" id="fl-outstanding" value="'+(l?.outstanding||'')+'" min="0" step="0.01"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Principal (\u20a6M) *</label><input class="finput" type="number" id="fl-principal" value="'+(l?.principal||'')+'" min="0" step="0.01"></div>'+
+    '<div class="fld"><label>Outstanding (\u20a6M) *</label><input class="finput" type="number" id="fl-outstanding" value="'+(l?.outstanding||'')+'" min="0" step="0.01"></div></div>'+
     '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="fl-rate" value="'+(l?.interestRate||'')+'" min="0" step="0.01"></div>'+
     '<div class="fld"><label>Days Past Due</label><input class="finput" type="number" id="fl-dpd" value="'+(l?.daysPastDue||0)+'" min="0"></div></div>'+
     '<div class="fg"><div class="fld"><label>Start Date *</label><input class="finput" type="date" id="fl-start" value="'+(l?.startDate?.slice(0,10)||'')+'"></div>'+
@@ -717,8 +659,8 @@ function computeECL(){
   _eclResults=ecl.rows;
   const s1=ecl.rows.filter(r=>r.stage===1),s2=ecl.rows.filter(r=>r.stage===2),s3=ecl.rows.filter(r=>r.stage===3);
   $('ecl-kpis').innerHTML=[
-    {l:'Total Exposure (EAD)',v:fmt(ecl.ead),c:'tl',ac:true},
-    {l:'Weighted ECL',v:fmt(ecl.total),c:'rd'},
+    {l:'Total Exposure (EAD)',v:'\u20a6'+fN(ecl.ead)+'M',c:'tl',ac:true},
+    {l:'Weighted ECL',v:'\u20a6'+fN(ecl.total)+'M',c:'rd'},
     {l:'Coverage Ratio',v:pct(ecl.coverage),c:'am'},
     {l:'Stage 1',v:fmt(s1.reduce((a,r)=>a+r.ead,0)),c:'gr',sub:s1.length+' loans'},
     {l:'Stage 2',v:fmt(s2.reduce((a,r)=>a+r.ead,0)),c:'am',sub:s2.length+' loans'},
@@ -737,11 +679,11 @@ function computeECL(){
   },60);
   const sc=r=>r.stage===1?'ps1':r.stage===2?'ps2':'ps3';
   $('ecl-table').innerHTML='<div class="tw"><table>'+
-    '<thead><tr><th>Loan ID</th><th>Customer</th><th>Stage</th><th class="nm">EAD (&#8358;)</th><th class="nm">PD</th><th class="nm">LGD</th><th class="nm">ECL (&#8358;)</th><th class="nm">ECL Rate</th></tr></thead>'+
+    '<thead><tr><th>Loan ID</th><th>Customer</th><th>Stage</th><th class="nm">EAD (\u20a6M)</th><th class="nm">PD</th><th class="nm">LGD</th><th class="nm">ECL (\u20a6M)</th><th class="nm">ECL Rate</th></tr></thead>'+
     '<tbody>'+ecl.rows.map(r=>'<tr>'+
       '<td style="font-family:var(--mo);color:var(--t)">'+r.loanId+'</td><td>'+r.customer+'</td>'+
       '<td><span class="pl '+sc(r)+'">Stage '+r.stage+'</span></td>'+
-      '<td class="nm">'+fmt(r.ead)+'</td>'+
+      '<td class="nm">'+fN(r.ead)+'</td>'+
       '<td class="nm" style="color:'+(r.pd>.5?'#e05252':r.pd>.1?'#f5a623':'#22c55e')+'">'+pct(r.pd*100)+'</td>'+
       '<td class="nm">'+pct(r.lgd*100)+'</td>'+
       '<td class="nm" style="color:'+(r.ecl>50?'#e05252':r.ecl>20?'#f5a623':'#22c55e')+'">'+fN(r.ecl)+'</td>'+
@@ -750,7 +692,7 @@ function computeECL(){
     '<tr class="trt"><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">'+fN(ecl.ead)+'</td><td></td><td></td><td class="nm">'+fN(ecl.total)+'</td><td class="nm">'+pct(ecl.coverage)+'</td></tr>'+
     '</tbody></table></div>';
   $('ecl-export-btn').disabled=false;
-  toast('ECL computed \u2014 '+fmt(ecl.total)+' across '+ecl.rows.length+' loans.');
+  toast('ECL computed \u2014 \u20a6'+fN(ecl.total)+'M across '+ecl.rows.length+' loans.');
 }
 function updateStress(v){
   _eclMult=1+v/100;
@@ -763,7 +705,7 @@ function updateStress(v){
 function exportECLExcel(){
   if(!_eclResults.length){toast('Run Compute ECL first.','err');return;}
   const wb=XLSX.utils.book_new();
-  const rows=_eclResults.map(r=>({'Loan ID':r.loanId,'Customer':r.customer,'Stage':'Stage '+r.stage,'EAD (NGN)':+r.ead.toFixed(2),'PD (%)':+(r.pd*100).toFixed(4),'LGD (%)':+(r.lgd*100).toFixed(2),'ECL (NGN)':+r.ecl.toFixed(2),'ECL Rate (%)':r.eclRate,'DPD':r.daysPastDue,'Maturity':fD(r.maturityDate)}));
+  const rows=_eclResults.map(r=>({'Loan ID':r.loanId,'Customer':r.customer,'Stage':'Stage '+r.stage,'EAD (NGN M)':+r.ead.toFixed(2),'PD (%)':+(r.pd*100).toFixed(4),'LGD (%)':+(r.lgd*100).toFixed(2),'ECL (NGN M)':+r.ecl.toFixed(2),'ECL Rate (%)':r.eclRate,'DPD':r.daysPastDue,'Maturity':fD(r.maturityDate)}));
   const ws=XLSX.utils.json_to_sheet(rows);
   ws['!cols']=[10,28,8,12,10,8,12,10,6,12].map(w=>({wch:w}));
   XLSX.utils.book_append_sheet(wb,ws,'ECL Results');
@@ -773,7 +715,6 @@ function exportECLExcel(){
 
 // ── BORROWINGS ────────────────────────────────────────────────
 async function loadBorrowings(){
-  _selBorrow.clear();
   $('borrowings-kpis').innerHTML='<div class="loading-row">Loading...</div>';
   try{const d=await api('/treasury/borrowings');if(d.borrowings?.length)_borrowCache=d.borrowings;}catch(e){}
   if(!_borrowCache.length)_borrowCache=SB;
@@ -796,29 +737,20 @@ function renderBorrowings(){
     mkChart('ch-bw-mat',{type:'bar',data:{labels:md.map(x=>x.n),datasets:[{data:md.map(x=>x.v),backgroundColor:md.map(x=>x.d<180?'#e05252':x.d<360?'#f5a623':'#00c9a7'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-bw-type',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  const bRealIds=b.filter(x=>!isSampleId(x._id)).map(x=>x._id);
-  const bAllChk=bRealIds.length>0&&bRealIds.every(id=>_selBorrow.has(id));
-  $('borrowings-table-wrap').innerHTML=bulkBar('borrowings',_selBorrow,b.length)+'<div class="card-label">Borrowings Schedule</div><div class="tw"><table>'+
-    '<thead><tr>'+
-      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(bAllChk?'checked':'')+' onchange="toggleAllSel('borrowings','+JSON.stringify(bRealIds)+')" title="Select all"></th>'+
-      '<th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding (&#8358;)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Repayment</th><th>Maturity</th><th></th>'+
-    '</tr></thead>'+
-    '<tbody>'+b.map(x=>{
-      const bSmp=isSampleId(x._id);const bChk=_selBorrow.has(x._id);
-      return '<tr style="'+(bChk?'background:rgba(224,82,82,.07)':'')+'">'+
-        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(bSmp?'disabled title="Sample data"':(bChk?'checked':''))+' onchange="toggleSel('borrowings',''+x._id+'')"></td>'+
-        '<td style="font-family:var(--mo);color:var(--t)">'+x.borrowingId+'</td><td><strong>'+x.lender+'</strong></td>'+
-        '<td style="color:var(--tx2)">'+x.type+'</td>'+
-        '<td class="nm">'+fmt(x.outstanding)+'</td>'+
-        '<td class="nm" style="font-family:var(--mo);color:'+(x.interestRate>20?'#e05252':x.interestRate>16?'#f5a623':'#22c55e')+'">'+x.interestRate+'%</td>'+
-        '<td class="nm" style="font-family:var(--mo)">'+x.tenorMonths+'mo</td>'+
-        '<td style="color:var(--tx2)">'+x.repayment+'</td>'+
-        '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(x.maturityDate)+'</td>'+
-        '<td><div style="display:flex;gap:4px">'+
-          '<button class="bsm" onclick="openBorrowingModal(''+x._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-          '<button class="bsm bd" onclick="deleteBorrowing(''+x._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-        '</div></td></tr>';
-    }).join('')+'</tbody></table></div>';
+  $('borrowings-table-wrap').innerHTML='<div class="card-label">Borrowings Schedule</div><div class="tw"><table>'+
+    '<thead><tr><th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding (\u20a6M)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Repayment</th><th>Maturity</th><th></th></tr></thead>'+
+    '<tbody>'+b.map(x=>'<tr>'+
+      '<td style="font-family:var(--mo);color:var(--t)">'+x.borrowingId+'</td><td><strong>'+x.lender+'</strong></td>'+
+      '<td style="color:var(--tx2)">'+x.type+'</td>'+
+      '<td class="nm">\u20a6'+fN(x.outstanding)+'M</td>'+
+      '<td class="nm" style="font-family:var(--mo);color:'+(x.interestRate>20?'#e05252':x.interestRate>16?'#f5a623':'#22c55e')+'">'+x.interestRate+'%</td>'+
+      '<td class="nm" style="font-family:var(--mo)">'+x.tenorMonths+'mo</td>'+
+      '<td style="color:var(--tx2)">'+x.repayment+'</td>'+
+      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(x.maturityDate)+'</td>'+
+      '<td><div style="display:flex;gap:4px">'+
+        '<button class="bsm" onclick="openBorrowingModal(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteBorrowing(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+      '</div></td></tr>').join('')+'</tbody></table></div>';
 }
 // openBorrowingModal: sample IDs open blank Add form
 function openBorrowingModal(id){
@@ -832,8 +764,8 @@ function openBorrowingModal(id){
     ['Term Loan','Overdraft Facility','On-lending Facility','SME Fund','Wholesale Borrowing','Intercompany Loan'].map(t=>'<option '+(x?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
     '<div class="fld"><label>Repayment</label><select class="finput" id="bw-rep">'+
     ['Monthly','Quarterly','Bullet','Revolving','Semi-annual'].map(t=>'<option '+(x?.repayment===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (&#8358;)</label><input class="finput" type="number" id="bw-principal" value="'+(x?.principal||'')+'"></div>'+
-    '<div class="fld"><label>Outstanding (&#8358;)</label><input class="finput" type="number" id="bw-outstanding" value="'+(x?.outstanding||'')+'"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Principal (\u20a6M)</label><input class="finput" type="number" id="bw-principal" value="'+(x?.principal||'')+'"></div>'+
+    '<div class="fld"><label>Outstanding (\u20a6M)</label><input class="finput" type="number" id="bw-outstanding" value="'+(x?.outstanding||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="bw-rate" value="'+(x?.interestRate||'')+'"></div>'+
     '<div class="fld"><label>Tenor (months)</label><input class="finput" type="number" id="bw-tenor" value="'+(x?.tenorMonths||'')+'"></div></div>'+
     '<div class="fld"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="'+(x?.maturityDate?.slice(0,10)||'')+'"></div>',
@@ -858,7 +790,6 @@ async function deleteBorrowing(id){
 }
 // ── INVESTMENTS ───────────────────────────────────────────────
 async function loadInvestments(){
-  _selInv.clear();
   $('investments-kpis').innerHTML='<div class="loading-row">Loading...</div>';
   try{const d=await api('/treasury/investments');if(d.investments?.length)_invCache=d.investments;}catch(e){}
   if(!_invCache.length)_invCache=SI;
@@ -880,30 +811,21 @@ function renderInvestments(){
     mkChart('ch-inv-ladder',{type:'bar',data:{labels:inv.map(i=>i.counterparty.split(' ')[0]),datasets:[{label:'Principal',data:inv.map(i=>i.principal),backgroundColor:'#00c9a7',stack:'a'},{label:'Interest',data:inv.map(i=>+(i.principal*(i.interestRate/100)*(i.tenorDays/365)).toFixed(2)),backgroundColor:'#f5a623',borderRadius:4,stack:'a'}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}},y:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-inv-mix',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  const iRealIds=inv.filter(i=>!isSampleId(i._id)).map(i=>i._id);
-  const iAllChk=iRealIds.length>0&&iRealIds.every(id=>_selInv.has(id));
-  $('investments-table-wrap').innerHTML=bulkBar('investments',_selInv,inv.length)+'<div class="card-label">Investment Schedule</div><div class="tw"><table>'+
-    '<thead><tr>'+
-      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(iAllChk?'checked':'')+' onchange="toggleAllSel('investments','+JSON.stringify(iRealIds)+')" title="Select all"></th>'+
-      '<th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal (&#8358;)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest (&#8358;)</th><th></th>'+
-    '</tr></thead>'+
-    '<tbody>'+inv.map(i=>{
-      const iSmp=isSampleId(i._id);const iChk=_selInv.has(i._id);
-      return '<tr style="'+(iChk?'background:rgba(224,82,82,.07)':'')+'">'+
-        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(iSmp?'disabled title="Sample data"':(iChk?'checked':''))+' onchange="toggleSel('investments',''+i._id+'')"></td>'+
-        '<td style="font-family:var(--mo);color:var(--t)">'+i.investmentId+'</td><td><strong>'+i.counterparty+'</strong></td>'+
-        '<td style="color:var(--tx2)">'+i.type+'</td>'+
-        '<td class="nm">'+fmt(i.principal)+'</td>'+
-        '<td class="nm" style="font-family:var(--mo);color:#22c55e">'+i.interestRate+'%</td>'+
-        '<td class="nm" style="font-family:var(--mo)">'+i.tenorDays+'d</td>'+
-        '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.dateInvested)+'</td>'+
-        '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.maturityDate)+'</td>'+
-        '<td class="nm" style="color:#f5a623">'+fmt(i.principal*(i.interestRate/100)*(i.tenorDays/365))+'</td>'+
-        '<td><div style="display:flex;gap:4px">'+
-          '<button class="bsm" onclick="openInvestmentModal(''+i._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-          '<button class="bsm bd" onclick="deleteInvestment(''+i._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-        '</div></td></tr>';
-    }).join('')+'</tbody></table></div>';
+  $('investments-table-wrap').innerHTML='<div class="card-label">Investment Schedule</div><div class="tw"><table>'+
+    '<thead><tr><th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal (\u20a6M)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest (\u20a6M)</th><th></th></tr></thead>'+
+    '<tbody>'+inv.map(i=>'<tr>'+
+      '<td style="font-family:var(--mo);color:var(--t)">'+i.investmentId+'</td><td><strong>'+i.counterparty+'</strong></td>'+
+      '<td style="color:var(--tx2)">'+i.type+'</td>'+
+      '<td class="nm">\u20a6'+fN(i.principal)+'M</td>'+
+      '<td class="nm" style="font-family:var(--mo);color:#22c55e">'+i.interestRate+'%</td>'+
+      '<td class="nm" style="font-family:var(--mo)">'+i.tenorDays+'d</td>'+
+      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.dateInvested)+'</td>'+
+      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.maturityDate)+'</td>'+
+      '<td class="nm" style="color:#f5a623">\u20a6'+fN(i.principal*(i.interestRate/100)*(i.tenorDays/365))+'M</td>'+
+      '<td><div style="display:flex;gap:4px">'+
+        '<button class="bsm" onclick="openInvestmentModal(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteInvestment(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+      '</div></td></tr>').join('')+'</tbody></table></div>';
 }
 // openInvestmentModal: sample IDs open blank Add form
 function openInvestmentModal(id){
@@ -914,8 +836,8 @@ function openInvestmentModal(id){
     '<div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="'+(i?.investmentId||'')+'"></div>'+
     '<div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="'+(i?.counterparty||'')+'"></div></div>'+
     '<div class="fld"><label>Type</label><select class="finput" id="ii-type">'+
-    ['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (&#8358;) *</label><input class="finput" type="number" id="ii-principal" value="'+(i?.principal||'')+'"></div>'+
+    ['Fixed Deposit','Treasury Bills','Money Market Funds','Mutual Funds','Trust Funds','Government Security','Commercial Paper','Stock','Others'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
+    '<div class="fg"><div class="fld"><label>Principal (\u20a6M) *</label><input class="finput" type="number" id="ii-principal" value="'+(i?.principal||'')+'"></div>'+
     '<div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="ii-rate" value="'+(i?.interestRate||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="'+(i?.dateInvested?.slice(0,10)||'')+'"></div>'+
     '<div class="fld"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="'+(i?.tenorDays||'')+'"></div></div>',
@@ -941,7 +863,6 @@ async function deleteInvestment(id){
 
 // ── CASH ──────────────────────────────────────────────────────
 async function loadCash(){
-  _selCash.clear();
   $('cash-kpis').innerHTML='<div class="loading-row">Loading...</div>';
   try{const d=await api('/treasury/cash');if(d.accounts?.length)_cashCache=d.accounts;}catch(e){}
   if(!_cashCache.length)_cashCache=SC;
@@ -954,35 +875,26 @@ function renderCash(){
     {l:'Total NGN Cash',v:fmt(totalNGN),c:'tl',ac:true},
     {l:'Unrestricted',v:fmt(unres),c:'gr',sub:'Available for use'},
     {l:'Restricted',v:fmt(totalNGN-unres),c:'rd',sub:'Encumbered'},
-    {l:'FX Holdings (USD)',v:fmt(usd.reduce((s,a)=>s+a.balance,0)),c:'am'},
+    {l:'FX Holdings (USD)',v:'$'+usd.reduce((s,a)=>s+a.balance,0).toFixed(1)+'M',c:'am'},
   ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
   $('cash-charts').innerHTML='<div class="chart-box"><div class="card-label">Cash by Bank (NGN, \u20a6M)</div><canvas id="ch-cash-bank" height="170"></canvas></div><div class="chart-box"><div class="card-label">Restricted vs Unrestricted</div><canvas id="ch-cash-rest" height="170"></canvas></div>';
   setTimeout(()=>{
     mkChart('ch-cash-bank',{type:'bar',data:{labels:ngn.map(a=>a.bank.split(' ')[0]),datasets:[{data:ngn.map(a=>a.balance),backgroundColor:ngn.map((a,i)=>a.restricted?'#e05252':PAL[i%PAL.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-cash-rest',{type:'doughnut',data:{labels:['Unrestricted','Restricted'],datasets:[{data:[unres,totalNGN-unres],backgroundColor:['#22c55e','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  const caRealIds=ca.filter(a=>!isSampleId(a._id)).map(a=>a._id);
-  const caAllChk=caRealIds.length>0&&caRealIds.every(id=>_selCash.has(id));
-  $('cash-table-wrap').innerHTML=bulkBar('cash',_selCash,ca.length)+'<div class="card-label">Bank Account Balances</div><div class="tw"><table>'+
-    '<thead><tr>'+
-      '<th style="width:32px;text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(caAllChk?'checked':'')+' onchange="toggleAllSel('cash','+JSON.stringify(caRealIds)+')" title="Select all"></th>'+
-      '<th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance (&#8358;)</th><th>Status</th><th></th>'+
-    '</tr></thead>'+
-    '<tbody>'+ca.map(a=>{
-      const caSmp=isSampleId(a._id);const caChk=_selCash.has(a._id);
-      return '<tr style="'+(caChk?'background:rgba(224,82,82,.07)':'')+'">'+
-        '<td style="text-align:center"><input type="checkbox" style="accent-color:var(--t);cursor:pointer" '+(caSmp?'disabled title="Sample data"':(caChk?'checked':''))+' onchange="toggleSel('cash',''+a._id+'')"></td>'+
-        '<td style="font-family:var(--mo);color:var(--t)">'+a.accountId+'</td><td><strong>'+a.bank+'</strong></td>'+
-        '<td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">'+a.accountNo+'</td>'+
-        '<td style="color:var(--tx2)">'+a.type+'</td>'+
-        '<td style="font-family:var(--mo);color:'+(a.currency==='USD'?'#f5a623':'inherit')+'">'+a.currency+'</td>'+
-        '<td class="nm">'+fmt(a.balance)+'</td>'+
-        '<td><span class="pl '+(a.restricted?'pr':'pg')+'">'+(a.restricted?'&#128274; Restricted':'&#10003; Available')+'</span></td>'+
-        '<td><div style="display:flex;gap:4px">'+
-          '<button class="bsm" onclick="openCashModal(''+a._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-          '<button class="bsm bd" onclick="deleteCash(''+a._id+'')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-        '</div></td></tr>';
-    }).join('')+'</tbody></table></div>';
+  $('cash-table-wrap').innerHTML='<div class="card-label">Bank Account Balances</div><div class="tw"><table>'+
+    '<thead><tr><th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance</th><th>Status</th><th></th></tr></thead>'+
+    '<tbody>'+ca.map(a=>'<tr>'+
+      '<td style="font-family:var(--mo);color:var(--t)">'+a.accountId+'</td><td><strong>'+a.bank+'</strong></td>'+
+      '<td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">'+a.accountNo+'</td>'+
+      '<td style="color:var(--tx2)">'+a.type+'</td>'+
+      '<td style="font-family:var(--mo);color:'+(a.currency==='USD'?'#f5a623':'inherit')+'">'+a.currency+'</td>'+
+      '<td class="nm">'+(a.currency==='USD'?'$':'\u20a6')+fN(a.balance)+(a.currency==='NGN'?'M':'')+'</td>'+
+      '<td><span class="pl '+(a.restricted?'pr':'pg')+'">'+(a.restricted?'\ud83d\udd12 Restricted':'\u2713 Available')+'</span></td>'+
+      '<td><div style="display:flex;gap:4px">'+
+        '<button class="bsm" onclick="openCashModal(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteCash(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+      '</div></td></tr>').join('')+'</tbody></table></div>';
 }
 // openCashModal: sample IDs open blank Add form
 function openCashModal(id){
@@ -1067,155 +979,17 @@ async function loadLiquidity(){
 }
 
 // ── UPLOAD ────────────────────────────────────────────────────
-// ── SAMPLE TEMPLATE DATA ──────────────────────────────────────
-// Each module defines headers + 2 illustrative sample rows so users
-// know exactly what format and values are expected.
-const UPLOAD_TEMPLATES = {
-  loans: {
-    label: 'Loan Portfolio',
-    filename: 'FM_Loans_Template.xlsx',
-    sheetName: 'Loans',
-    headers: ['loan_id','customer_name','loan_product_type','principal_amount','outstanding','interest_rate','start_date','maturity_date','days_past_due','credit_rating'],
-    samples: [
-      ['LN-001','Dangote Industries Ltd','Invoice Discounting',450000000,420000000,22,'2024-01-15','2024-07-15',0,'A'],
-      ['LN-002','Flour Mills Nigeria Plc','Supply Chain Finance',320000000,310000000,20,'2024-02-01','2024-08-01',18,'A-'],
-    ],
-    notes: [
-      'loan_id: Unique loan identifier (e.g. LN-001)',
-      'loan_product_type: Invoice Discounting | Supply Chain Finance | Factoring | Reverse Factoring | Term Loan',
-      'principal_amount / outstanding: in Naira (numbers only, no ₦ symbol)',
-      'interest_rate: annual rate as a number (e.g. 22 for 22%)',
-      'start_date / maturity_date: YYYY-MM-DD format',
-      'days_past_due: number of days overdue (0 if current)',
-      'credit_rating: e.g. A, A-, BBB+, BB, CCC, D',
-    ]
-  },
-  borrowings: {
-    label: 'Borrowings',
-    filename: 'FM_Borrowings_Template.xlsx',
-    sheetName: 'Borrowings',
-    headers: ['borrowing_id','lender_name','borrowing_type','principal','outstanding','interest_rate','tenor_months','repayment_schedule','maturity_date'],
-    samples: [
-      ['BW-001','FCMB Ltd','Term Loan',500000000,420000000,19.5,24,'Monthly','2025-06-30'],
-      ['BW-002','DBN Nigeria','On-lending Facility',800000000,720000000,14,36,'Quarterly','2026-09-30'],
-    ],
-    notes: [
-      'borrowing_id: Unique identifier (e.g. BW-001)',
-      'borrowing_type: Term Loan | Overdraft Facility | On-lending Facility | SME Fund | Wholesale Borrowing | Intercompany Loan',
-      'principal / outstanding: in Naira (numbers only)',
-      'interest_rate: annual rate as a number (e.g. 19.5)',
-      'tenor_months: loan tenor in months (e.g. 24)',
-      'repayment_schedule: Monthly | Quarterly | Bullet | Revolving | Semi-annual',
-      'maturity_date: YYYY-MM-DD format',
-    ]
-  },
-  investments: {
-    label: 'Investments',
-    filename: 'FM_Investments_Template.xlsx',
-    sheetName: 'Investments',
-    headers: ['investment_id','company_name','investment_type','principal_amount','interest_rate','date_invested','number_of_days'],
-    samples: [
-      ['INV-001','Access Bank Plc','Fixed Deposit',300000000,22,'2024-03-01',180],
-      ['INV-002','NTB (91-day)','Treasury Bills',250000000,20.5,'2024-04-01',91],
-    ],
-    notes: [
-      'investment_id: Unique identifier (e.g. INV-001)',
-      'investment_type: Fixed Deposit | Treasury Bills | Government Security | Commercial Paper',
-      'principal_amount: in Naira (numbers only)',
-      'interest_rate: annual rate as a number (e.g. 22)',
-      'date_invested: YYYY-MM-DD format',
-      'number_of_days: tenor/duration in calendar days',
-    ]
-  },
-  cash: {
-    label: 'Cash Balances',
-    filename: 'FM_CashBalances_Template.xlsx',
-    sheetName: 'Cash',
-    headers: ['account_id','bank','account_number','type','currency','balance','restricted'],
-    samples: [
-      ['CA-001','Access Bank Plc','001-234567-001','Current','NGN',124500000,false],
-      ['CA-002','GTBank Ltd','0123456789','Current','NGN',87300000,false],
-      ['CA-003','First Bank Nigeria','2012345678','Savings','NGN',43800000,true],
-    ],
-    notes: [
-      'account_id: Unique identifier (e.g. CA-001)',
-      'type: Current | Savings | Dom (USD) | Dom (EUR)',
-      'currency: NGN | USD | EUR | GBP',
-      'balance: account balance as a number (no ₦ symbol)',
-      'restricted: true if encumbered/pledged, false if freely available',
-    ]
-  }
-};
-
-function downloadSampleTemplate(module){
-  const tpl = UPLOAD_TEMPLATES[module];
-  if(!tpl) return;
-  const wb  = XLSX.utils.book_new();
-
-  // ── Main data sheet ──────────────────────────────────────────
-  const wsData = [tpl.headers, ...tpl.samples];
-  const ws     = XLSX.utils.aoa_to_sheet(wsData);
-
-  // Style the header row width
-  ws['!cols'] = tpl.headers.map(h => ({ wch: Math.max(h.length + 4, 16) }));
-
-  // Freeze header row
-  ws['!freeze'] = { xSplit: 0, ySplit: 1 };
-
-  XLSX.utils.book_append_sheet(wb, ws, tpl.sheetName);
-
-  // ── Instructions sheet ───────────────────────────────────────
-  const instrRows = [
-    ['FM Treasury Intelligence — ' + tpl.label + ' Upload Template'],
-    [''],
-    ['INSTRUCTIONS'],
-    ['1. Do not rename or reorder the column headers in the ' + tpl.sheetName + ' sheet.'],
-    ['2. Delete the sample rows before uploading — they are for illustration only.'],
-    ['3. Save the file as .xlsx, .xls, or .csv before uploading.'],
-    ['4. Maximum file size: 5MB.'],
-    [''],
-    ['COLUMN GUIDE'],
-    ...tpl.notes.map(n => ['  • ' + n]),
-    [''],
-    ['Generated by FM Treasury Intelligence · ' + new Date().toLocaleDateString('en-GB')],
-  ];
-  const wsInstr = XLSX.utils.aoa_to_sheet(instrRows);
-  wsInstr['!cols'] = [{ wch: 80 }];
-  XLSX.utils.book_append_sheet(wb, wsInstr, 'Instructions');
-
-  XLSX.writeFile(wb, tpl.filename);
-  toast('Template downloaded — ' + tpl.filename);
-}
-
 function openUploadModal(module){
-  const tpl = UPLOAD_TEMPLATES[module];
-  openModal('Upload ' + tpl.label,
-    // ── Step 1: Download template ────────────────────────────
-    '<div style="background:var(--td);border:1px solid rgba(0,201,167,.25);border-radius:var(--r);padding:14px 16px;margin-bottom:1.25rem">'+
-      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'+
-        '<div style="width:24px;height:24px;background:var(--t);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--n)">1</div>'+
-        '<span style="font-size:13px;font-weight:600;color:var(--tx)">Download the template</span>'+
-      '</div>'+
-      '<p style="font-size:12px;color:var(--tx2);margin:0 0 10px;line-height:1.5">Get the official Excel template with the correct column headers and sample data. Fill it in, then upload below.</p>'+
-      '<button onclick="downloadSampleTemplate(\''+module+'\')" style="background:var(--t);border-color:var(--t);color:var(--n);font-weight:600;padding:7px 16px;font-size:12px">'+
-        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'+
-        'Download '+tpl.filename+
-      '</button>'+
-    '</div>'+
-    // ── Step 2: Upload ───────────────────────────────────────
-    '<div style="background:var(--sf);border:1px solid var(--b2);border-radius:var(--r);padding:14px 16px;margin-bottom:1rem">'+
-      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'+
-        '<div style="width:24px;height:24px;background:var(--n3);border:1px solid var(--b2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--tx2)">2</div>'+
-        '<span style="font-size:13px;font-weight:600;color:var(--tx)">Upload your completed file</span>'+
-      '</div>'+
-      '<label class="drop-zone" id="drop-zone" onclick="$(\'upload-file\').click()" style="cursor:pointer">'+
-        '<div style="font-size:2rem;margin-bottom:8px">\ud83d\udcc2</div>'+
-        '<div style="font-size:13px;font-weight:500;margin-bottom:4px">Click to browse or drag &amp; drop</div>'+
-        '<div style="font-size:11px;color:var(--tx3)" id="upload-fname">Accepts .xlsx, .xls, .csv \u00b7 Max 5MB</div>'+
-        '<input type="file" accept=".csv,.xlsx,.xls" id="upload-file" style="display:none" onchange="handleUploadFile(this)">'+
-      '</label>'+
-    '</div>'+
-    '<div id="upload-log" style="display:none;margin-top:1rem"></div>',
+  const labels={loans:'Loan Portfolio',borrowings:'Borrowings',investments:'Investments',cash:'Cash Balances'};
+  const cols={loans:'loan_id, customer_name, loan_product_type, principal_amount, outstanding, interest_rate, start_date, maturity_date, days_past_due, credit_rating',borrowings:'borrowing_id, lender_name, borrowing_type, principal, outstanding, interest_rate, tenor_months, repayment_schedule, maturity_date',investments:'investment_id, company_name, investment_type, principal_amount, interest_rate, date_invested, number_of_days',cash:'account_id, bank, account_number, type, currency, balance, restricted'};
+  openModal('Upload '+labels[module],
+    '<div class="nt" style="margin-bottom:1rem">Required columns:<br><span style="font-family:var(--mo);font-size:11px;color:var(--t)">'+cols[module]+'</span></div>'+
+    '<label class="drop-zone" id="drop-zone">'+
+      '<div style="font-size:2rem;margin-bottom:8px">\ud83d\udcc2</div>'+
+      '<div style="font-size:13px;font-weight:500;margin-bottom:4px">Click or drop your Excel/CSV file</div>'+
+      '<div style="font-size:11px;color:var(--tx3)" id="upload-fname">Accepts .xlsx, .xls, .csv \u00b7 Max 5MB</div>'+
+      '<input type="file" accept=".csv,.xlsx,.xls" id="upload-file" style="display:none" onchange="handleUploadFile(this)">'+
+    '</label><div id="upload-log" style="display:none;margin-top:1rem"></div>',
     '<button onclick="closeModal()">Cancel</button><button class="bp" id="upload-submit" onclick="doUpload(\''+module+'\')" disabled><span id="upload-txt">Import</span></button>'
   );
 }
