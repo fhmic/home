@@ -168,6 +168,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 }
 @media(max-width:360px){.kpi-grid{grid-template-columns:1fr}}
 @media(max-width:768px){.finput,select,input,textarea{font-size:16px!important}}
+.fm-view-only-banner{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:var(--r);padding:9px 14px;font-size:12px;color:var(--am);font-family:var(--mo);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
 </style>
 </head>
 <body>
@@ -196,27 +197,27 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
   </div>
   <div id="layout">
     <nav id="sidebar">
-      <div class="nav-item active" data-view="dashboard">
+      <div class="nav-item active" data-view="dashboard" data-fm-module="dashboard">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
       </div>
       <div class="nav-section">Credit</div>
-      <div class="nav-item" data-view="loans">
+      <div class="nav-item" data-view="loans" data-fm-module="loans">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Loan Portfolio
       </div>
-      <div class="nav-item" data-view="ecl">
+      <div class="nav-item" data-view="ecl" data-fm-module="ecl">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>IFRS 9 ECL Model
       </div>
       <div class="nav-section">Treasury</div>
-      <div class="nav-item" data-view="borrowings">
+      <div class="nav-item" data-view="borrowings" data-fm-module="borrowings">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Borrowings
       </div>
-      <div class="nav-item" data-view="investments">
+      <div class="nav-item" data-view="investments" data-fm-module="investments">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Investments
       </div>
-      <div class="nav-item" data-view="cash">
+      <div class="nav-item" data-view="cash" data-fm-module="cash">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>Cash Position
       </div>
-      <div class="nav-item" data-view="liquidity">
+      <div class="nav-item" data-view="liquidity" data-fm-module="liquidity">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>Liquidity
       </div>
       <div class="nav-section">Organisation</div>
@@ -241,10 +242,11 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div class="vhdr">
           <div><div class="vttl">Loan Portfolio</div><div class="vsub">Manage and track all loan facilities</div></div>
           <div class="vacts">
-            <button onclick="openUploadModal('loans')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload CSV/Excel</button>
-            <button class="bp" onclick="openLoanModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Loan</button>
+            <button onclick="openUploadModal('loans')" data-fm-edit-only="loans"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload CSV/Excel</button>
+            <button class="bp" onclick="openLoanModal()" data-fm-edit-only="loans"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Loan</button>
           </div>
         </div>
+        <div id="loans-view-banner"></div>
         <div class="kpi-grid" id="loans-kpis"></div>
         <div class="card" style="margin-bottom:1.25rem"><div class="card-label">Loan Aging Distribution</div><canvas id="ch-loan-aging" height="130"></canvas></div>
         <div class="card">
@@ -265,10 +267,11 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           <div><div class="vttl">IFRS 9 ECL Model</div><div class="vsub">Expected Credit Loss &middot; Stage 1: 12-month &middot; Stage 2 &amp; 3: Lifetime</div></div>
           <div class="vacts">
             <button onclick="loadLoans()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Reload Portfolio</button>
-            <button class="bp" onclick="computeECL()" id="ecl-compute-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Compute ECL</button>
+            <button class="bp" onclick="computeECL()" id="ecl-compute-btn" data-fm-edit-only="ecl"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Compute ECL</button>
             <button onclick="exportECLExcel()" id="ecl-export-btn" disabled><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Export Excel</button>
           </div>
         </div>
+        <div id="ecl-view-banner"></div>
         <div class="kpi-grid" id="ecl-kpis"></div>
         <div id="ecl-banner" style="display:none;margin-bottom:1.25rem"></div>
         <div class="chart-2" id="ecl-charts"></div>
@@ -278,7 +281,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
             <span style="font-size:12px;color:var(--tx2)">Shift all PD assumptions uniformly</span>
             <span id="pd-val" style="font-family:var(--mo);font-size:12px;color:var(--gr)">0%</span>
           </div>
-          <div class="stress-row"><input type="range" min="-50" max="100" value="0" id="pd-slider" oninput="updateStress(this.value)"></div>
+          <div class="stress-row"><input type="range" min="-50" max="100" value="0" id="pd-slider" oninput="updateStress(this.value)" data-fm-edit-only="ecl"></div>
           <div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)" id="stress-result">Run Compute ECL first to enable stress testing</div>
         </div>
         <div class="card"><div class="card-label">Loan-level ECL Schedule</div><div id="ecl-table"><div class="ep"><div class="ei">&#9889;</div>Click Compute ECL to generate the schedule</div></div></div>
@@ -287,10 +290,11 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div class="vhdr">
           <div><div class="vttl">Borrowings</div><div class="vsub">Debt facilities and cost of funds analysis</div></div>
           <div class="vacts">
-            <button onclick="openUploadModal('borrowings')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
-            <button class="bp" onclick="openBorrowingModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Facility</button>
+            <button onclick="openUploadModal('borrowings')" data-fm-edit-only="borrowings"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
+            <button class="bp" onclick="openBorrowingModal()" data-fm-edit-only="borrowings"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Facility</button>
           </div>
         </div>
+        <div id="borrowings-view-banner"></div>
         <div class="kpi-grid" id="borrowings-kpis"></div>
         <div class="chart-2" id="borrowings-charts"></div>
         <div class="card" id="borrowings-table-wrap"></div>
@@ -299,10 +303,11 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div class="vhdr">
           <div><div class="vttl">Investments</div><div class="vsub">Treasury placements and yield analysis</div></div>
           <div class="vacts">
-            <button onclick="openUploadModal('investments')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
-            <button class="bp" onclick="openInvestmentModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Investment</button>
+            <button onclick="openUploadModal('investments')" data-fm-edit-only="investments"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
+            <button class="bp" onclick="openInvestmentModal()" data-fm-edit-only="investments"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Investment</button>
           </div>
         </div>
+        <div id="investments-view-banner"></div>
         <div class="kpi-grid" id="investments-kpis"></div>
         <div class="chart-2" id="investments-charts"></div>
         <div class="card" id="investments-table-wrap"></div>
@@ -311,10 +316,11 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div class="vhdr">
           <div><div class="vttl">Cash Position</div><div class="vsub">Bank account balances and cash monitoring</div></div>
           <div class="vacts">
-            <button onclick="openUploadModal('cash')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
-            <button class="bp" onclick="openCashModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Account</button>
+            <button onclick="openUploadModal('cash')" data-fm-edit-only="cash"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
+            <button class="bp" onclick="openCashModal()" data-fm-edit-only="cash"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Account</button>
           </div>
         </div>
+        <div id="cash-view-banner"></div>
         <div class="kpi-grid" id="cash-kpis"></div>
         <div class="chart-2" id="cash-charts"></div>
         <div class="card" id="cash-table-wrap"></div>
@@ -356,6 +362,47 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 <div id="toast"></div>
 <script>
 'use strict';
+// ════════════════════════════════════════════════════════════
+// FM MODULE-PERMISSION BLOCK (reusable — copy this whole block
+// to any other app with the same data-fm-module/data-fm-edit-only
+// markup convention; the only thing to change is _FM_APP_KEY).
+// ════════════════════════════════════════════════════════════
+const _FM_APP_KEY='treasury';
+var _fmModulePerms={}; // { dashboard:'edit'|'view'|'none', loans:..., ... }
+function fmCanView(moduleKey){
+  const lvl=_fmModulePerms[moduleKey];
+  return lvl==='view'||lvl==='edit';
+}
+function fmCanEdit(moduleKey){
+  return _fmModulePerms[moduleKey]==='edit';
+}
+function applyModulePermissions(user){
+  _fmModulePerms=(user.modulePermissions&&user.modulePermissions[_FM_APP_KEY])||{};
+  // Hide nav items for modules with 'none' access
+  document.querySelectorAll('[data-fm-module]').forEach(function(el){
+    const mk=el.dataset.fmModule;
+    el.style.display=fmCanView(mk)?'':'none';
+  });
+  // Disable/hide edit-only controls (Add/Upload buttons, sliders, etc.) for view-only modules
+  document.querySelectorAll('[data-fm-edit-only]').forEach(function(el){
+    const mk=el.dataset.fmEditOnly;
+    if(!fmCanEdit(mk)){el.disabled=true;el.style.display='none';}
+  });
+  // If the currently active view is now hidden (no access at all), fall back to dashboard
+  const activeNav=document.querySelector('.nav-item.active[data-fm-module]');
+  if(activeNav&&activeNav.style.display==='none'){
+    const dashNav=document.querySelector('[data-view="dashboard"]');
+    if(dashNav)switchView('dashboard');
+  }
+}
+function fmViewOnlyBanner(moduleKey,label){
+  if(fmCanEdit(moduleKey))return'';
+  return '<div class="fm-view-only-banner">&#128065; You have view-only access to '+label+'. Ask your organisation admin for edit access to add, upload, or delete records here.</div>';
+}
+// ════════════════════════════════════════════════════════════
+// END FM MODULE-PERMISSION BLOCK
+// ════════════════════════════════════════════════════════════
+
 // ── AUTH GATE ────────────────────────────────────────────────
 (function(){
   var tok=sessionStorage.getItem('FM_token');
@@ -373,6 +420,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
       if(u.orgRole==='admin'||u.accountType==='organisation'){
         document.getElementById('nav-team').style.display='flex';
       }
+      applyModulePermissions(u);
       loadDashboard();
     }else if(obj.s===401){
       sessionStorage.removeItem('FM_token');window.location.href='../portal/';
@@ -413,12 +461,6 @@ const fD=d=>!d?'\u2014':new Date(d).toLocaleDateString('en-GB',{day:'2-digit',mo
 const ts=()=>new Date().toISOString().slice(0,10);
 const PAL=['#00c9a7','#63b3ed','#a78bfa','#f5a623','#22c55e','#e05252'];
 
-// ── SAMPLE-ID GUARD ───────────────────────────────────────────
-// MongoDB ObjectIds are exactly 24 hex characters.
-// Sample data uses short IDs like 's1','b3','i2','c4'.
-// Sending these to the backend causes a CastError -> HTTP 500.
-// isSampleId() returns true for any non-ObjectId string so we
-// block API calls and show a friendly message instead.
 function bulkBar(module,selSet,total){
   if(!selSet.size)return'';
   return'<div style="display:flex;align-items:center;gap:10px;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:8px 14px;margin-bottom:.75rem;flex-wrap:wrap">'+
@@ -446,6 +488,7 @@ function toggleAllSel(module,ids){
   ({loans:renderLoanTable,borrowings:renderBorrowings,investments:renderInvestments,cash:renderCash}[module]||function(){})();
 }
 async function bulkDelete(module){
+  if(!fmCanEdit(module)){toast('You have view-only access to this module.','err');return;}
   const m={loans:_selLoans,borrowings:_selBorrow,investments:_selInv,cash:_selCash}[module];
   if(!m||!m.size)return;
   const count=m.size;
@@ -495,6 +538,7 @@ Chart.defaults.font.size=10;
 
 // ── NAVIGATION ────────────────────────────────────────────────
 function switchView(view){
+  if(view!=='settings'&&view!=='team'&&!fmCanView(view)){toast('You do not have access to this module.','err');view='dashboard';}
   document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
   document.querySelector('[data-view="'+view+'"]')?.classList.add('active');
@@ -615,6 +659,7 @@ async function loadDashboard(){
 async function loadLoans(){
   _selLoans.clear();
   $('loans-kpis').innerHTML='<div class="loading-row">Loading...</div>';
+  $('loans-view-banner').innerHTML=fmViewOnlyBanner('loans','Loan Portfolio');
   try{const d=await api('/treasury/loans');if(d.loans?.length)_loansCache=d.loans;}
   catch(e){if(!_loansCache.length)_loansCache=SL;}
   if(!_loansCache.length)_loansCache=SL;
@@ -647,10 +692,11 @@ function renderLoanTable(){
   if(!loans.length){$('loans-table').innerHTML=empty('No loans match the current filter.');return;}
   const sc=s=>s===1?'ps1':s===2?'ps2':'ps3';
   const rc=r=>(r||'').startsWith('A')?'#22c55e':(r||'').startsWith('B')?'#f5a623':'#e05252';
-  $('loans-table').innerHTML=bulkBar('loans',_selLoans,loans.length)+'<div class="tw"><table>'+
-    '<thead><tr>'+(!_selLoans.size&&loans.some(l=>!isSampleId(l._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="loans" data-selall="'+encodeURIComponent(JSON.stringify(loans.filter(l=>!isSampleId(l._id)).map(l=>l._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>Loan ID</th><th>Customer</th><th>Product</th><th class="nm">Outstanding</th><th class="nm">Rate</th><th class="nm">DPD</th><th>Stage</th><th>Rating</th><th>Maturity</th><th></th></tr></thead>'+
+  const canEdit=fmCanEdit('loans');
+  $('loans-table').innerHTML=(canEdit?bulkBar('loans',_selLoans,loans.length):'')+'<div class="tw"><table>'+
+    '<thead><tr>'+(canEdit&&!_selLoans.size&&loans.some(l=>!isSampleId(l._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="loans" data-selall="'+encodeURIComponent(JSON.stringify(loans.filter(l=>!isSampleId(l._id)).map(l=>l._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>Loan ID</th><th>Customer</th><th>Product</th><th class="nm">Outstanding</th><th class="nm">Rate</th><th class="nm">DPD</th><th>Stage</th><th>Rating</th><th>Maturity</th><th></th></tr></thead>'+
     '<tbody>'+loans.map(l=>
-      (_selLoans.has(l._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(isSampleId(l._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="loans" data-selid="'+l._id+'" '+ (_selLoans.has(l._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+l.loanId+'</td><td><strong>'+l.customer+'</strong></td>'+
+      (_selLoans.has(l._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(!canEdit||isSampleId(l._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="loans" data-selid="'+l._id+'" '+ (_selLoans.has(l._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+l.loanId+'</td><td><strong>'+l.customer+'</strong></td>'+
       '<td style="color:var(--tx2)">'+l.product+'</td>'+
       '<td class="nm">\u20a6'+fN(l.outstanding)+'M</td>'+
       '<td class="nm" style="font-family:var(--mo)">'+l.interestRate+'%</td>'+
@@ -659,13 +705,13 @@ function renderLoanTable(){
       '<td style="font-family:var(--mo);color:'+rc(l.creditRating)+'">'+l.creditRating+'</td>'+
       '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(l.maturityDate)+'</td>'+
       '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openLoanModal(\''+l._id+'\')" style="padding:4px 8px" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteLoan(\''+l._id+'\')" style="padding:4px 8px" title="Delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+        (canEdit?('<button class="bsm" onclick="openLoanModal(\''+l._id+'\')" style="padding:4px 8px" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteLoan(\''+l._id+'\')" style="padding:4px 8px" title="Delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'):'<span style="color:var(--tx3);font-family:var(--mo);font-size:10px">view only</span>')+
       '</div></td></tr>').join('')+'</tbody></table></div>'+
     '<div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">Showing '+loans.length+' of '+_loansCache.length+' \u00b7 Total: \u20a6'+fN(loans.reduce((s,l)=>s+l.outstanding,0))+'M</div>';
 }
-// openLoanModal: sample IDs open a blank Add Loan form instead of erroring
 function openLoanModal(id){
+  if(!fmCanEdit('loans')){toast('You have view-only access to Loans.','err');return;}
   const realId=isSampleId(id)?null:id;
   const l=realId?_loansCache.find(x=>x._id===realId):null;
   openModal(l?'Edit Loan':'Add Loan Facility',
@@ -696,12 +742,14 @@ async function saveLoan(id){
   }catch(e){err.textContent=e.message;err.classList.add('on');$('loan-save-txt').textContent=isEdit?'Save Changes':'Add Loan';}
 }
 async function deleteLoan(id){
+  if(!fmCanEdit('loans')){toast('You have view-only access to Loans.','err');return;}
   if(isSampleId(id)){toast('Sample data cannot be deleted. Add real loans via the form or CSV upload.','err');return;}
   if(!confirm('Delete this loan facility? This cannot be undone.'))return;
   try{await api('/treasury/loans/'+id,{method:'DELETE'});toast('Loan deleted.');loadLoans();}catch(e){toast(e.message,'err');}
 }
 // ── ECL ───────────────────────────────────────────────────────
 function computeECL(){
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   const loans=_loansCache.length?_loansCache:SL;
   if(!loans.length){toast('Load the loan portfolio first.','err');return;}
   const ecl=calcECL(loans,_eclMult);
@@ -744,6 +792,7 @@ function computeECL(){
   toast('ECL computed \u2014 '+fmt(ecl.total)+' across '+ecl.rows.length+' loans.');
 }
 function updateStress(v){
+  if(!fmCanEdit('ecl'))return;
   _eclMult=1+v/100;
   const el=$('pd-val');if(el){el.textContent=(v>0?'+':'')+v+'%';el.style.color=v>0?'#e05252':'#22c55e';}
   if(_eclResults.length){
@@ -766,6 +815,7 @@ function exportECLExcel(){
 async function loadBorrowings(){
   _selBorrow.clear();
   $('borrowings-kpis').innerHTML='<div class="loading-row">Loading...</div>';
+  $('borrowings-view-banner').innerHTML=fmViewOnlyBanner('borrowings','Borrowings');
   try{const d=await api('/treasury/borrowings');if(d.borrowings?.length)_borrowCache=d.borrowings;}catch(e){}
   if(!_borrowCache.length)_borrowCache=SB;
   renderBorrowings();
@@ -787,10 +837,11 @@ function renderBorrowings(){
     mkChart('ch-bw-mat',{type:'bar',data:{labels:md.map(x=>x.n),datasets:[{data:md.map(x=>x.v),backgroundColor:md.map(x=>x.d<180?'#e05252':x.d<360?'#f5a623':'#00c9a7'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-bw-type',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  $('borrowings-table-wrap').innerHTML=bulkBar('borrowings',_selBorrow,b.length)+'<div class="card-label">Borrowings Schedule</div><div class="tw"><table>'+
-    '<thead><tr>'+(!_selBorrow.size&&b.some(x=>!isSampleId(x._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="borrowings" data-selall="'+encodeURIComponent(JSON.stringify(b.filter(x=>!isSampleId(x._id)).map(x=>x._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding (&#8358;)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Repayment</th><th>Maturity</th><th></th></tr></thead>'+
+  const canEdit=fmCanEdit('borrowings');
+  $('borrowings-table-wrap').innerHTML=(canEdit?bulkBar('borrowings',_selBorrow,b.length):'')+'<div class="card-label">Borrowings Schedule</div><div class="tw"><table>'+
+    '<thead><tr>'+(canEdit&&!_selBorrow.size&&b.some(x=>!isSampleId(x._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="borrowings" data-selall="'+encodeURIComponent(JSON.stringify(b.filter(x=>!isSampleId(x._id)).map(x=>x._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding (&#8358;)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Repayment</th><th>Maturity</th><th></th></tr></thead>'+
     '<tbody>'+b.map(x=>
-      (_selBorrow.has(x._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(isSampleId(x._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="borrowings" data-selid="'+x._id+'" '+(_selBorrow.has(x._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+x.borrowingId+'</td><td><strong>'+x.lender+'</strong></td>'+
+      (_selBorrow.has(x._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(!canEdit||isSampleId(x._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="borrowings" data-selid="'+x._id+'" '+(_selBorrow.has(x._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+x.borrowingId+'</td><td><strong>'+x.lender+'</strong></td>'+
       '<td style="color:var(--tx2)">'+x.type+'</td>'+
       '<td class="nm">'+fmt(x.outstanding)+'</td>'+
       '<td class="nm" style="font-family:var(--mo);color:'+(x.interestRate>20?'#e05252':x.interestRate>16?'#f5a623':'#22c55e')+'">'+x.interestRate+'%</td>'+
@@ -798,12 +849,12 @@ function renderBorrowings(){
       '<td style="color:var(--tx2)">'+x.repayment+'</td>'+
       '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(x.maturityDate)+'</td>'+
       '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openBorrowingModal(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteBorrowing(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+        (canEdit?('<button class="bsm" onclick="openBorrowingModal(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteBorrowing(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'):'<span style="color:var(--tx3);font-family:var(--mo);font-size:10px">view only</span>')+
       '</div></td></tr>').join('')+'</tbody></table></div>';
 }
-// openBorrowingModal: sample IDs open blank Add form
 function openBorrowingModal(id){
+  if(!fmCanEdit('borrowings')){toast('You have view-only access to Borrowings.','err');return;}
   const realId=isSampleId(id)?null:id;
   const x=realId?_borrowCache.find(b=>b._id===realId):null;
   openModal(x?'Edit Facility':'Add Borrowing Facility',
@@ -834,6 +885,7 @@ async function saveBorrowing(id){
   }catch(e){err.textContent=e.message;err.classList.add('on');$('bw-save-txt').textContent=isEdit?'Save Changes':'Add Facility';}
 }
 async function deleteBorrowing(id){
+  if(!fmCanEdit('borrowings')){toast('You have view-only access to Borrowings.','err');return;}
   if(isSampleId(id)){toast('Sample data cannot be deleted. Add real facilities via the form or CSV upload.','err');return;}
   if(!confirm('Delete this facility?'))return;
   try{await api('/treasury/borrowings/'+id,{method:'DELETE'});toast('Deleted.');loadBorrowings();}catch(e){toast(e.message,'err');}
@@ -842,6 +894,7 @@ async function deleteBorrowing(id){
 async function loadInvestments(){
   _selInv.clear();
   $('investments-kpis').innerHTML='<div class="loading-row">Loading...</div>';
+  $('investments-view-banner').innerHTML=fmViewOnlyBanner('investments','Investments');
   try{const d=await api('/treasury/investments');if(d.investments?.length)_invCache=d.investments;}catch(e){}
   if(!_invCache.length)_invCache=SI;
   renderInvestments();
@@ -862,10 +915,11 @@ function renderInvestments(){
     mkChart('ch-inv-ladder',{type:'bar',data:{labels:inv.map(i=>i.counterparty.split(' ')[0]),datasets:[{label:'Principal',data:inv.map(i=>i.principal),backgroundColor:'#00c9a7',stack:'a'},{label:'Interest',data:inv.map(i=>+(i.principal*(i.interestRate/100)*(i.tenorDays/365)).toFixed(2)),backgroundColor:'#f5a623',borderRadius:4,stack:'a'}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}},y:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-inv-mix',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  $('investments-table-wrap').innerHTML=bulkBar('investments',_selInv,inv.length)+'<div class="card-label">Investment Schedule</div><div class="tw"><table>'+
-    '<thead><tr>'+(!_selInv.size&&inv.some(i=>!isSampleId(i._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="investments" data-selall="'+encodeURIComponent(JSON.stringify(inv.filter(i=>!isSampleId(i._id)).map(i=>i._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal (&#8358;)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest (&#8358;)</th><th></th></tr></thead>'+
+  const canEdit=fmCanEdit('investments');
+  $('investments-table-wrap').innerHTML=(canEdit?bulkBar('investments',_selInv,inv.length):'')+'<div class="card-label">Investment Schedule</div><div class="tw"><table>'+
+    '<thead><tr>'+(canEdit&&!_selInv.size&&inv.some(i=>!isSampleId(i._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="investments" data-selall="'+encodeURIComponent(JSON.stringify(inv.filter(i=>!isSampleId(i._id)).map(i=>i._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal (&#8358;)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest (&#8358;)</th><th></th></tr></thead>'+
     '<tbody>'+inv.map(i=>
-      (_selInv.has(i._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(isSampleId(i._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="investments" data-selid="'+i._id+'" '+(_selInv.has(i._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+i.investmentId+'</td><td><strong>'+i.counterparty+'</strong></td>'+
+      (_selInv.has(i._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(!canEdit||isSampleId(i._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="investments" data-selid="'+i._id+'" '+(_selInv.has(i._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+i.investmentId+'</td><td><strong>'+i.counterparty+'</strong></td>'+
       '<td style="color:var(--tx2)">'+i.type+'</td>'+
       '<td class="nm">'+fmt(i.principal)+'</td>'+
       '<td class="nm" style="font-family:var(--mo);color:#22c55e">'+i.interestRate+'%</td>'+
@@ -874,12 +928,12 @@ function renderInvestments(){
       '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.maturityDate)+'</td>'+
       '<td class="nm" style="color:#f5a623">'+fmt(i.principal*(i.interestRate/100)*(i.tenorDays/365))+'</td>'+
       '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openInvestmentModal(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteInvestment(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+        (canEdit?('<button class="bsm" onclick="openInvestmentModal(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteInvestment(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'):'<span style="color:var(--tx3);font-family:var(--mo);font-size:10px">view only</span>')+
       '</div></td></tr>').join('')+'</tbody></table></div>';
 }
-// openInvestmentModal: sample IDs open blank Add form
 function openInvestmentModal(id){
+  if(!fmCanEdit('investments')){toast('You have view-only access to Investments.','err');return;}
   const realId=isSampleId(id)?null:id;
   const i=realId?_invCache.find(x=>x._id===realId):null;
   openModal(i?'Edit Investment':'Add Investment',
@@ -907,6 +961,7 @@ async function saveInvestment(id){
   }catch(e){err.textContent=e.message;err.classList.add('on');$('ii-save-txt').textContent=isEdit?'Save Changes':'Add Investment';}
 }
 async function deleteInvestment(id){
+  if(!fmCanEdit('investments')){toast('You have view-only access to Investments.','err');return;}
   if(isSampleId(id)){toast('Sample data cannot be deleted. Add real investments via the form or CSV upload.','err');return;}
   if(!confirm('Delete this investment?'))return;
   try{await api('/treasury/investments/'+id,{method:'DELETE'});toast('Deleted.');loadInvestments();}catch(e){toast(e.message,'err');}
@@ -916,6 +971,7 @@ async function deleteInvestment(id){
 async function loadCash(){
   _selCash.clear();
   $('cash-kpis').innerHTML='<div class="loading-row">Loading...</div>';
+  $('cash-view-banner').innerHTML=fmViewOnlyBanner('cash','Cash Position');
   try{const d=await api('/treasury/cash');if(d.accounts?.length)_cashCache=d.accounts;}catch(e){}
   if(!_cashCache.length)_cashCache=SC;
   renderCash();
@@ -934,22 +990,23 @@ function renderCash(){
     mkChart('ch-cash-bank',{type:'bar',data:{labels:ngn.map(a=>a.bank.split(' ')[0]),datasets:[{data:ngn.map(a=>a.balance),backgroundColor:ngn.map((a,i)=>a.restricted?'#e05252':PAL[i%PAL.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-cash-rest',{type:'doughnut',data:{labels:['Unrestricted','Restricted'],datasets:[{data:[unres,totalNGN-unres],backgroundColor:['#22c55e','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  $('cash-table-wrap').innerHTML=bulkBar('cash',_selCash,ca.length)+'<div class="card-label">Bank Account Balances</div><div class="tw"><table>'+
-    '<thead><tr>'+(!_selCash.size&&ca.some(a=>!isSampleId(a._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="cash" data-selall="'+encodeURIComponent(JSON.stringify(ca.filter(a=>!isSampleId(a._id)).map(a=>a._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance (&#8358;)</th><th>Status</th><th></th></tr></thead>'+
+  const canEdit=fmCanEdit('cash');
+  $('cash-table-wrap').innerHTML=(canEdit?bulkBar('cash',_selCash,ca.length):'')+'<div class="card-label">Bank Account Balances</div><div class="tw"><table>'+
+    '<thead><tr>'+(canEdit&&!_selCash.size&&ca.some(a=>!isSampleId(a._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="cash" data-selall="'+encodeURIComponent(JSON.stringify(ca.filter(a=>!isSampleId(a._id)).map(a=>a._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance (&#8358;)</th><th>Status</th><th></th></tr></thead>'+
     '<tbody>'+ca.map(a=>
-      (_selCash.has(a._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(isSampleId(a._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="cash" data-selid="'+a._id+'" '+(_selCash.has(a._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+a.accountId+'</td><td><strong>'+a.bank+'</strong></td>'+
+      (_selCash.has(a._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(!canEdit||isSampleId(a._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="cash" data-selid="'+a._id+'" '+(_selCash.has(a._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+a.accountId+'</td><td><strong>'+a.bank+'</strong></td>'+
       '<td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">'+a.accountNo+'</td>'+
       '<td style="color:var(--tx2)">'+a.type+'</td>'+
       '<td style="font-family:var(--mo);color:'+(a.currency==='USD'?'#f5a623':'inherit')+'">'+a.currency+'</td>'+
       '<td class="nm">'+fmt(a.balance)+'</td>'+
       '<td><span class="pl '+(a.restricted?'pr':'pg')+'">'+(a.restricted?'&#128274; Restricted':'&#10003; Available')+'</span></td>'+
       '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openCashModal(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteCash(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
+        (canEdit?('<button class="bsm" onclick="openCashModal(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteCash(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'):'<span style="color:var(--tx3);font-family:var(--mo);font-size:10px">view only</span>')+
       '</div></td></tr>').join('')+'</tbody></table></div>';
 }
-// openCashModal: sample IDs open blank Add form
 function openCashModal(id){
+  if(!fmCanEdit('cash')){toast('You have view-only access to Cash Position.','err');return;}
   const realId=isSampleId(id)?null:id;
   const a=realId?_cashCache.find(x=>x._id===realId):null;
   openModal(a?'Edit Account':'Add Cash Account',
@@ -978,6 +1035,7 @@ async function saveCash(id){
   }catch(e){err.textContent=e.message;err.classList.add('on');$('ca-save-txt').textContent=isEdit?'Save Changes':'Add Account';}
 }
 async function deleteCash(id){
+  if(!fmCanEdit('cash')){toast('You have view-only access to Cash Position.','err');return;}
   if(isSampleId(id)){toast('Sample data cannot be deleted. Add real accounts via the form or CSV upload.','err');return;}
   if(!confirm('Delete this account?'))return;
   try{await api('/treasury/cash/'+id,{method:'DELETE'});toast('Deleted.');loadCash();}catch(e){toast(e.message,'err');}
@@ -1031,9 +1089,6 @@ async function loadLiquidity(){
 }
 
 // ── UPLOAD ────────────────────────────────────────────────────
-// ── SAMPLE TEMPLATE DATA ──────────────────────────────────────
-// Each module defines headers + 2 illustrative sample rows so users
-// know exactly what format and values are expected.
 const UPLOAD_TEMPLATES = {
   loans: {
     label: 'Loan Portfolio',
@@ -1115,20 +1170,11 @@ function downloadSampleTemplate(module){
   const tpl = UPLOAD_TEMPLATES[module];
   if(!tpl) return;
   const wb  = XLSX.utils.book_new();
-
-  // ── Main data sheet ──────────────────────────────────────────
   const wsData = [tpl.headers, ...tpl.samples];
   const ws     = XLSX.utils.aoa_to_sheet(wsData);
-
-  // Style the header row width
   ws['!cols'] = tpl.headers.map(h => ({ wch: Math.max(h.length + 4, 16) }));
-
-  // Freeze header row
   ws['!freeze'] = { xSplit: 0, ySplit: 1 };
-
   XLSX.utils.book_append_sheet(wb, ws, tpl.sheetName);
-
-  // ── Instructions sheet ───────────────────────────────────────
   const instrRows = [
     ['FM Treasury Intelligence — ' + tpl.label + ' Upload Template'],
     [''],
@@ -1146,15 +1192,14 @@ function downloadSampleTemplate(module){
   const wsInstr = XLSX.utils.aoa_to_sheet(instrRows);
   wsInstr['!cols'] = [{ wch: 80 }];
   XLSX.utils.book_append_sheet(wb, wsInstr, 'Instructions');
-
   XLSX.writeFile(wb, tpl.filename);
   toast('Template downloaded — ' + tpl.filename);
 }
 
 function openUploadModal(module){
+  if(!fmCanEdit(module)){toast('You have view-only access to this module.','err');return;}
   const tpl = UPLOAD_TEMPLATES[module];
   openModal('Upload ' + tpl.label,
-    // ── Step 1: Download template ────────────────────────────
     '<div style="background:var(--td);border:1px solid rgba(0,201,167,.25);border-radius:var(--r);padding:14px 16px;margin-bottom:1.25rem">'+
       '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'+
         '<div style="width:24px;height:24px;background:var(--t);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--n)">1</div>'+
@@ -1166,7 +1211,6 @@ function openUploadModal(module){
         'Download '+tpl.filename+
       '</button>'+
     '</div>'+
-    // ── Step 2: Upload ───────────────────────────────────────
     '<div style="background:var(--sf);border:1px solid var(--b2);border-radius:var(--r);padding:14px 16px;margin-bottom:1rem">'+
       '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'+
         '<div style="width:24px;height:24px;background:var(--n3);border:1px solid var(--b2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--tx2)">2</div>'+
@@ -1230,10 +1274,10 @@ async function loadTeam(){
 function openTeamMemberModal(){
   openModal('Add Team Member',
     '<div class="merr" id="tm-err"></div>'+
-    '<div class="nt-info" style="margin-bottom:1rem">The new member will receive a confirmation email to set their password and join your organisation\u2019s treasury workspace. They will have access to all treasury data in your organisation.</div>'+
+    '<div class="nt-info" style="margin-bottom:1rem">The new member will receive a confirmation email to set their password and join your organisation\u2019s treasury workspace. Use the Portal\u2019s Team &amp; Permissions panel to control which modules they can access.</div>'+
     '<div class="fg"><div class="fld"><label>Full Name *</label><input class="finput" id="tm-name" placeholder="e.g. Juliet Nancy"></div>'+
     '<div class="fld"><label>Email Address *</label><input class="finput" type="email" id="tm-email" placeholder="e.g. Juliet@company.com"></div></div>'+
-    '<div class="fld"><label>Role</label><select class="finput" id="tm-role"><option value="member">Member \u2014 view &amp; edit treasury data</option><option value="admin">Admin \u2014 manage team + data</option></select></div>',
+    '<div class="fld"><label>Role</label><select class="finput" id="tm-role"><option value="member">Member \u2014 access set per-module via Portal</option><option value="admin">Admin \u2014 full access</option></select></div>',
     '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveTeamMember()"><span id="tm-save-txt">Send Invitation</span></button>'
   );
 }
@@ -1244,7 +1288,7 @@ async function saveTeamMember(){
   $('tm-save-txt').textContent='Sending...';
   try{
     await api('/org/team',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast('Invitation sent to '+p.email);loadTeam();
+    closeModal();toast('Invitation sent to '+p.email+'. Set their module access in the Portal\u2019s Team & Permissions panel.');loadTeam();
   }catch(e){err.textContent=e.message;err.classList.add('on');$('tm-save-txt').textContent='Send Invitation';}
 }
 async function removeTeamMember(id){
