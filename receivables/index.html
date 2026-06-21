@@ -330,68 +330,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
   
 </style>
 </head>
-   <script>
-(function () {
-  'use strict';
-
-  // ── CONFIGURE THIS PER PAGE ──
-  var APP_KEY = 'receivables'; // <-- change to 'markets' / 'receivables' / 'treasury' / 'jobs'
-  var PORTAL_URL = '../portal/'; // <-- relative path back to portal.html from this page
-
-  var API = 'https://eis-recbackend.onrender.com/api';
-  var token = sessionStorage.getItem('FM_token');
-
-  function denyAndRedirect(message) {
-    // Block rendering of the underlying page content while we redirect.
-    document.documentElement.style.visibility = 'hidden';
-    var overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#050d1a;color:#e8edf5;' +
-      'font-family:DM Sans,Arial,sans-serif;display:flex;align-items:center;justify-content:center;' +
-      'text-align:center;padding:2rem;visibility:visible';
-    overlay.innerHTML =
-      '<div style="max-width:380px">' +
-        '<div style="width:48px;height:48px;border-radius:12px;background:rgba(224,82,82,.12);' +
-          'display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:22px">🔒</div>' +
-        '<div style="font-family:Syne,Arial,sans-serif;font-size:18px;font-weight:700;margin-bottom:.5rem">Access restricted</div>' +
-        '<div style="font-size:13px;color:#8fa3bf;line-height:1.6">' + message + '</div>' +
-        '<div style="font-size:11px;color:#4a6080;margin-top:1.2rem;font-family:monospace">Redirecting to portal…</div>' +
-      '</div>';
-    document.body.innerHTML = '';
-    document.body.appendChild(overlay);
-    document.documentElement.style.visibility = 'visible';
-    setTimeout(function () { window.location.href = PORTAL_URL; }, 2200);
-  }
-
-  if (!token) {
-    denyAndRedirect('You need to sign in to FM Resources Portal first.');
-    return;
-  }
-
-  fetch(API + '/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
-    .then(function (res) {
-      if (!res.ok) throw new Error('session-invalid');
-      return res.json();
-    })
-    .then(function (data) {
-      var user = data.user || {};
-      var perms = user.permissions || {};
-      if (!perms[APP_KEY]) {
-        denyAndRedirect('Your account doesn\'t have access to this tool yet. ' +
-          (user.accountType === 'organisation'
-            ? 'Ask your organisation admin to enable it in Team &amp; Permissions.'
-            : 'Please contact the portal admin.'));
-        return;
-      }
-      // Access granted — expose the user object for the page's own scripts if useful.
-      window.FM_CURRENT_USER = user;
-      window.dispatchEvent(new CustomEvent('fm-permission-granted', { detail: user }));
-    })
-    .catch(function () {
-      sessionStorage.removeItem('FM_token');
-      denyAndRedirect('Your session has expired. Please sign in again.');
-    });
-})();
-</script>
+ 
 <body>
  <div id="app">
   <div id="topbar">
