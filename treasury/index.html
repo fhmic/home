@@ -227,9 +227,9 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
       <div class="nav-item active" data-view="dashboard">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
       </div>
-      <div class="nav-section">Assets</div>
+      <div class="nav-section">Financial Assets</div>
       <div class="nav-item" data-view="loans">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Debtor Book
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Debtors/Loans
       </div>
       <div class="nav-item" data-view="investments">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Investments
@@ -237,7 +237,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
       <div class="nav-item" data-view="cash">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>Cash Position
       </div>
-      <div class="nav-section">Liabilities</div>
+      <div class="nav-section">Financial Liabilities</div>
       <div class="nav-item" data-view="borrowings">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Borrowings
       </div>
@@ -586,13 +586,11 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
   const rI=buildRow(_invCache,i=>i.principal,i=>i.maturityDate,today);
   // Cash: unrestricted → bucket 0 (30d), restricted → last bucket
   const cashUnres=_cashCache.filter(a=>a.currency==='NGN'&&!a.restricted).reduce((s,a)=>s+a.balance,0);
-  const cashRes  =_cashCache.filter(a=>a.currency==='NGN'&& a.restricted).reduce((s,a)=>s+a.balance,0);
   const rC={b:[cashUnres,0,0,0,0,0],total:cashUnres};
-  const rCR={b:[0,0,0,0,0,cashRes],total:cashRes};
   const rB=buildRow(_borrowCache,b=>b.outstanding,b=>b.maturityDate,today);
 
-  const aBkts=TENOR_CAPS.map((_,i)=>rD.b[i]+rI.b[i]+rC.b[i]+rCR.b[i]);
-  const aTotal=rD.total+rI.total+rC.total+rCR.total;
+  const aBkts=TENOR_CAPS.map((_,i)=>rD.b[i]+rI.b[i]+rC.b[i]);
+  const aTotal=rD.total+rI.total+rC.total;
   const lBkts=rB.b.slice();const lTotal=rB.total;
   const gBkts=aBkts.map((v,i)=>v-lBkts[i]);const gTotal=aTotal-lTotal;
 
@@ -616,7 +614,6 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     <tr class="sub"><td>Risk Assets (Debtors)</td>${rD.b.map(v=>'<td style="color:var(--t)">'+N(v)+'</td>').join('')}<td style="color:var(--t);font-weight:600">${N(rD.total)}</td></tr>
     <tr class="sub"><td>Investments</td>${rI.b.map(v=>'<td style="color:var(--bl)">'+N(v)+'</td>').join('')}<td style="color:var(--bl);font-weight:600">${N(rI.total)}</td></tr>
     <tr class="sub"><td>Cash &amp; Cash Equivalents</td>${rC.b.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(rC.total)}</td></tr>
-    <tr class="sub"><td>Other Account Receivables/Prepayments</td>${rCR.b.map(v=>'<td style="color:var(--tx3)">'+N(v)+'</td>').join('')}<td style="color:var(--tx3)">${N(rCR.total)}</td></tr>
     <tr class="tot-a"><td>TOTAL FINANCIAL ASSETS</td>${aBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(aTotal)}</td></tr>
     <tr class="sec-hdr rd"><td colspan="9">FINANCIAL LIABILITIES</td></tr>
     <tr class="sub"><td>Borrowings from Customers / Lenders</td>${rB.b.map(v=>'<td style="color:var(--rd)">'+N(v)+'</td>').join('')}<td style="color:var(--rd);font-weight:600">${N(rB.total)}</td></tr>
