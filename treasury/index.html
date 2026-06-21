@@ -74,12 +74,12 @@ tbody tr:hover{background:var(--sf)}
 .ps1{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
 .ps2{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2)}
 .ps3{background:rgba(224,82,82,.1);color:var(--rd);border:1px solid rgba(224,82,82,.2)}
+.pt{background:var(--td);color:var(--t);border:1px solid rgba(0,201,167,.2)}
 .pg{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
 .pa{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2)}
 .pr{background:rgba(224,82,82,.1);color:var(--rd);border:1px solid rgba(224,82,82,.2)}
 .pb{background:rgba(99,179,237,.1);color:var(--bl);border:1px solid rgba(99,179,237,.2)}
 .pp{background:rgba(167,139,250,.1);color:var(--pu);border:1px solid rgba(167,139,250,.2)}
-.pdark{background:rgba(153,27,27,.2);color:#fca5a5;border:1px solid rgba(153,27,27,.4)}
 button{font-family:var(--sa);font-size:13px;font-weight:500;border-radius:var(--r);padding:8px 18px;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--tx2);transition:all .2s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
 button:hover:not(:disabled){background:var(--sf2);color:var(--tx)}
 button:disabled{opacity:.35;cursor:not-allowed}
@@ -126,76 +126,49 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 .drop-zone:hover{border-color:var(--t)}
 .ulog{background:var(--n);border-radius:8px;padding:12px;max-height:150px;overflow-y:auto;font-size:11px}
 .ulog-row{display:flex;gap:10px;padding:3px 0;border-bottom:1px solid rgba(26,46,74,.2)}
+.stress-row{display:flex;align-items:center;gap:12px}
+.stress-row input[type=range]{flex:1;accent-color:var(--t)}
 .team-role-badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:600}
 .team-role-admin{background:rgba(0,201,167,.12);color:var(--t);border:1px solid rgba(0,201,167,.25)}
 .team-role-member{background:var(--sf2);color:var(--tx3);border:1px solid var(--b2)}
-/* WACC cards */
-.wacc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin-bottom:1.5rem}
-.wacc-card{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px 16px}
-.wacc-card .wc-lbl{font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-.wacc-card .wc-val{font-family:var(--di);font-size:20px;font-weight:700;letter-spacing:-.02em}
-.wacc-card .wc-sub{font-size:10px;font-family:var(--mo);color:var(--tx2);margin-top:3px}
-.wacc-card.tl .wc-val{color:var(--t)}.wacc-card.gr .wc-val{color:var(--gr)}.wacc-card.am .wc-val{color:var(--am)}.wacc-card.rd .wc-val{color:var(--rd)}.wacc-card.bl .wc-val{color:var(--bl)}.wacc-card.pu .wc-val{color:var(--pu)}
-/* Maturity profile table */
-.mat-tbl{width:100%;border-collapse:collapse;font-size:11px;min-width:750px}
-.mat-tbl th{background:var(--n3);color:var(--t);font-family:var(--mo);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:8px 10px;text-align:right;border-bottom:2px solid rgba(0,201,167,.3);white-space:nowrap}
-.mat-tbl th:first-child{text-align:left;min-width:160px}
-.mat-tbl td{padding:7px 10px;border-bottom:1px solid var(--b);font-family:var(--mo);font-size:11px;text-align:right;color:var(--tx2)}
-.mat-tbl td:first-child{text-align:left;color:var(--tx2);font-family:var(--sa);font-size:12px}
-.mat-tbl .sub td{color:var(--tx3);font-size:10.5px}
-.mat-tbl .sub td:first-child{padding-left:20px;font-family:var(--sa)}
-.mat-tbl .sec-hdr td{background:transparent;padding:10px 10px 3px;font-size:9px;font-family:var(--mo);letter-spacing:.07em;text-transform:uppercase;border-bottom:none;color:var(--t)}
-.mat-tbl .sec-hdr.rd td{color:var(--rd)}
-.mat-tbl .sec-hdr.dim td{color:var(--tx3)}
-.mat-tbl .tot-a td{background:rgba(0,201,167,.08);color:var(--t);font-weight:700;border-top:2px solid rgba(0,201,167,.3)!important;font-family:var(--mo)}
-.mat-tbl .tot-a td:first-child{font-family:var(--sa)}
-.mat-tbl .tot-l td{background:rgba(224,82,82,.06);color:var(--rd);font-weight:700;border-top:2px solid rgba(224,82,82,.3)!important;font-family:var(--mo)}
-.mat-tbl .tot-l td:first-child{font-family:var(--sa)}
-.mat-tbl .gap-row td{background:rgba(99,179,237,.07);font-weight:700;border-top:2px solid var(--b2)!important;font-family:var(--mo)}
-.mat-tbl .gap-row td:first-child{font-family:var(--sa)}
-.mat-tbl .pct-row td{background:var(--sf);font-size:10px;color:var(--tx3);font-family:var(--mo)}
-.mat-tbl .pct-row td:first-child{font-family:var(--mo);font-size:10px}
-.mat-tbl .wacf-row td{background:rgba(245,166,35,.05);color:var(--am);font-family:var(--mo)}
-.mat-tbl .wara-row td{background:rgba(0,201,167,.05);color:var(--t);font-family:var(--mo)}
-.mat-tbl .spread-row td{font-weight:700;font-family:var(--mo)}
-/* Advisory */
-.advisory-panel{background:var(--n2);border:1px solid var(--b);border-radius:var(--rl);padding:1.5rem;margin-bottom:1.25rem}
-.advisory-section{margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--b)}
-.advisory-section:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
-.advisory-title{font-size:13px;font-weight:600;font-family:var(--di);margin-bottom:.75rem;display:flex;align-items:center;gap:8px}
-.advisory-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:.6rem;font-size:12px;color:var(--tx2);line-height:1.65}
-.adot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.adot.gr{background:var(--gr)}.adot.rd{background:var(--rd)}.adot.am{background:var(--am)}.adot.bl{background:var(--bl)}.adot.pu{background:var(--pu)}
 @media(max-width:640px){
   #topbar{padding:0 1rem;height:52px}.logo{font-size:15px}.lm{width:26px;height:26px;font-size:8px}
   .org-badge{display:none}.user-chip-top{display:none}.nav-btn-link{padding:5px 9px;font-size:10.5px}
-  .wacc-grid{grid-template-columns:1fr 1fr}
+  #topbar .nav-btn-link[href="../"]{display:none}
 }
 @media(max-width:768px){
   #layout{flex-direction:column;overflow:visible}
-  #sidebar{width:100%;height:auto;border-right:none;border-top:1px solid var(--b2);padding:0;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:row;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--n2);box-shadow:0 -4px 20px rgba(0,0,0,.4);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  #sidebar{width:100%;height:auto;border-right:none;border-top:1px solid var(--b2);padding:0;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:row;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--n2);box-shadow:0 -4px 20px rgba(0,0,0,.4);-webkit-overflow-scrolling:touch;scrollbar-width:none;}
   #sidebar::-webkit-scrollbar{display:none}.nav-section{display:none}
-  .nav-item{flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 10px;font-size:9px;border-left:none;border-top:3px solid transparent;white-space:nowrap;flex-shrink:0;min-width:56px}
+  .nav-item{flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 12px;font-size:9px;border-left:none;border-top:3px solid transparent;white-space:nowrap;flex-shrink:0;min-width:60px;}
   .nav-item.active{border-left:none;border-top-color:var(--t);background:var(--td)}
   .nav-item svg{width:17px;height:17px;opacity:.8}.nav-item.active svg{opacity:1}
   #content{padding:1rem;padding-bottom:80px;overflow-y:auto;flex:1}
-  .chart-2{grid-template-columns:1fr}.chart-box{padding:.85rem}
-  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
 }
 @media(max-width:640px){
-  .kpi-grid{grid-template-columns:1fr 1fr;gap:7px}.kpi{padding:12px 14px}.kv{font-size:18px}
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:7px}.kpi{padding:12px 14px}.kv{font-size:18px}.kl{font-size:9.5px}.ks{font-size:9.5px}
   .vhdr{flex-direction:column;align-items:flex-start;gap:.5rem}
   .vacts{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .vacts::-webkit-scrollbar{display:none}.vttl{font-size:18px}
+  .vacts::-webkit-scrollbar{display:none}.vttl{font-size:18px}.chart-2{grid-template-columns:1fr}.chart-box{padding:.85rem}
   #modal-bg{align-items:flex-end;padding:0}
   .modal{border-radius:var(--rl) var(--rl) 0 0;max-height:92dvh;width:100%;max-width:100%}
   .modal.wide{max-width:100%}.mhdr{padding:1rem 1.25rem}.mbody{padding:1.25rem}
-  .mfoot{padding:.85rem 1.25rem;gap:.4rem}.mfoot button{flex:1;justify-content:center}
-  .fg{grid-template-columns:1fr}.card{padding:1.1rem 1rem}
+  .mfoot{padding:.85rem 1.25rem;gap:.4rem}.mfoot button{flex:1;justify-content:center}.fg{grid-template-columns:1fr}.card{padding:1.1rem 1rem}
 }
+@media(max-width:768px){
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}.tw table{min-width:640px}
+  #loans-table .tw table{min-width:760px}#ecl-table .tw table{min-width:680px}
+  #borrowings-table-wrap .tw table{min-width:700px}#investments-table-wrap .tw table{min-width:720px}#cash-table-wrap .tw table{min-width:580px}
+  .tw thead th:first-child,.tw tbody td:first-child{position:sticky;left:0;background:var(--n3);z-index:2;box-shadow:2px 0 6px rgba(0,0,0,.25);}
+  .tw tbody tr:hover td:first-child{background:var(--n4)}
+}
+@media(max-width:480px){
+  #toast{left:1rem;right:1rem;transform:none;max-width:none;white-space:normal}
+  .vacts button{font-size:11.5px;padding:7px 12px}.stress-row{flex-direction:column;gap:.5rem}.stress-row input[type=range]{width:100%}
+}
+@media(max-width:360px){.kpi-grid{grid-template-columns:1fr}}
 @media(max-width:768px){.finput,select,input,textarea{font-size:16px!important}}
-@media(max-width:480px){#toast{left:1rem;right:1rem;transform:none;max-width:none;white-space:normal}}
-@media(max-width:360px){.kpi-grid{grid-template-columns:1fr}.wacc-grid{grid-template-columns:1fr}}
+.fm-view-only-banner{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:var(--r);padding:9px 14px;font-size:12px;color:var(--am);font-family:var(--mo);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
 </style>
 </head>
 <body>
@@ -224,174 +197,162 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
   </div>
   <div id="layout">
     <nav id="sidebar">
-      <div class="nav-item active" data-view="dashboard">
+      <div class="nav-item active" data-view="dashboard" data-fm-module="dashboard">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
       </div>
-      <div class="nav-section">Assets</div>
-      <div class="nav-item" data-view="loans">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Debtor Book
+      <div class="nav-section">Credit</div>
+      <div class="nav-item" data-view="loans" data-fm-module="loans">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Loan Portfolio
       </div>
-      <div class="nav-item" data-view="investments">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Investments
+      <div class="nav-item" data-view="ecl" data-fm-module="ecl">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>IFRS 9 ECL Model
       </div>
-      <div class="nav-item" data-view="cash">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>Cash Position
-      </div>
-      <div class="nav-section">Liabilities</div>
-      <div class="nav-item" data-view="borrowings">
+      <div class="nav-section">Treasury</div>
+      <div class="nav-item" data-view="borrowings" data-fm-module="borrowings">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Borrowings
       </div>
-      <div class="nav-section">Capital</div>
-      <div class="nav-item" data-view="equity">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Equity &amp; Capital
+      <div class="nav-item" data-view="investments" data-fm-module="investments">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Investments
       </div>
-      <div class="nav-section">Analysis</div>
-      <div class="nav-item" data-view="liquidity">
+      <div class="nav-item" data-view="cash" data-fm-module="cash">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>Cash Position
+      </div>
+      <div class="nav-item" data-view="liquidity" data-fm-module="liquidity">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>Liquidity
       </div>
       <div class="nav-section">Organisation</div>
       <div class="nav-item" id="nav-team" style="display:none" data-view="team">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Team
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Team Management
       </div>
       <div class="nav-item" data-view="settings">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings
       </div>
     </nav>
     <main id="content">
-
-      <!-- DASHBOARD -->
       <div class="view on" id="view-dashboard">
         <div class="vhdr">
-          <div><div class="vttl">Executive Dashboard</div><div class="vsub" id="dash-ts">—</div></div>
+          <div><div class="vttl">Executive Dashboard</div><div class="vsub" id="dash-ts">&#8212;</div></div>
           <button class="bp" onclick="loadDashboard()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
         </div>
         <div class="kpi-grid" id="dash-kpis"></div>
-        <div class="wacc-grid" id="dash-wacc"></div>
-        <div class="card" style="margin-bottom:1.25rem">
-          <div class="card-label">Asset &amp; Liability Maturity Profile (₦) — Tenor Gap Analysis</div>
-          <div class="tw"><table class="mat-tbl" id="maturity-tbl"><tr><td colspan="9" class="loading-row">Loading…</td></tr></table></div>
-        </div>
         <div class="chart-2" id="dash-charts"></div>
         <div class="chart-2" id="dash-charts2"></div>
-        <div class="advisory-panel" id="dash-advisory">
-          <div class="card-label" style="margin-bottom:1rem">Board Advisory — Financial Optimisation Analysis</div>
-          <div id="advisory-content"><div class="loading-row">Loading advisory…</div></div>
-        </div>
       </div>
-
-      <!-- DEBTOR BOOK -->
       <div class="view" id="view-loans">
         <div class="vhdr">
-          <div><div class="vttl">Debtor Book</div><div class="vsub">Live from Receivables module · Outstanding invoices &amp; staging</div></div>
+          <div><div class="vttl">Loan Portfolio</div><div class="vsub">Manage and track all loan facilities</div></div>
           <div class="vacts">
-            <button onclick="loadLoans()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
+            <button onclick="openUploadModal('loans')" data-fm-edit-only="loans"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload CSV/Excel</button>
+            <button class="bp" onclick="openLoanModal()" data-fm-edit-only="loans"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Loan</button>
           </div>
         </div>
-        <div class="nt-info">Data is sourced live from the <strong>Receivables module</strong>. To add or edit debtors and invoices, go to <a href="../receivables/" style="color:var(--t)">FM Receivables →</a>. IFRS 9 staging and ECL are computed there — results are reflected here automatically.</div>
+        <div id="loans-view-banner"></div>
         <div class="kpi-grid" id="loans-kpis"></div>
-        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">Outstanding by Ageing Bucket</div><canvas id="ch-loan-aging" height="130"></canvas></div>
+        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">Loan Aging Distribution</div><canvas id="ch-loan-aging" height="130"></canvas></div>
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
             <div style="display:flex;gap:6px" id="loan-filters">
-              <button class="bsm" id="f-all" onclick="setLoanFilter(this,'all')">All</button>
-              <button class="bsm" onclick="setLoanFilter(this,'1')">Stage 1</button>
-              <button class="bsm" onclick="setLoanFilter(this,'2')">Stage 2</button>
-              <button class="bsm" onclick="setLoanFilter(this,'3')">Stage 3</button>
+              <button class="bsm" id="f-all" data-stage="all" onclick="setLoanFilter(this,'all')">All</button>
+              <button class="bsm" data-stage="1" onclick="setLoanFilter(this,'1')">Stage 1</button>
+              <button class="bsm" data-stage="2" onclick="setLoanFilter(this,'2')">Stage 2</button>
+              <button class="bsm" data-stage="3" onclick="setLoanFilter(this,'3')">Stage 3</button>
             </div>
-            <input class="finput" id="loan-search" placeholder="Search debtor…" style="width:230px;padding:6px 12px" oninput="renderLoanTable()">
+            <input class="finput" id="loan-search" placeholder="Search customer / loan ID..." style="width:230px;padding:6px 12px" oninput="renderLoanTable()">
           </div>
           <div id="loans-table"></div>
         </div>
       </div>
-
-      <!-- BORROWINGS -->
+      <div class="view" id="view-ecl">
+        <div class="vhdr">
+          <div><div class="vttl">IFRS 9 ECL Model</div><div class="vsub">Expected Credit Loss &middot; Stage 1: 12-month &middot; Stage 2 &amp; 3: Lifetime</div></div>
+          <div class="vacts">
+            <button onclick="loadLoans()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Reload Portfolio</button>
+            <button class="bp" onclick="computeECL()" id="ecl-compute-btn" data-fm-edit-only="ecl"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Compute ECL</button>
+            <button onclick="exportECLExcel()" id="ecl-export-btn" disabled><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Export Excel</button>
+          </div>
+        </div>
+        <div id="ecl-view-banner"></div>
+        <div class="kpi-grid" id="ecl-kpis"></div>
+        <div id="ecl-banner" style="display:none;margin-bottom:1.25rem"></div>
+        <div class="chart-2" id="ecl-charts"></div>
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="card-label">PD Stress Test &#8212; Scenario Analysis</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+            <span style="font-size:12px;color:var(--tx2)">Shift all PD assumptions uniformly</span>
+            <span id="pd-val" style="font-family:var(--mo);font-size:12px;color:var(--gr)">0%</span>
+          </div>
+          <div class="stress-row"><input type="range" min="-50" max="100" value="0" id="pd-slider" oninput="updateStress(this.value)" data-fm-edit-only="ecl"></div>
+          <div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)" id="stress-result">Run Compute ECL first to enable stress testing</div>
+        </div>
+        <div class="card"><div class="card-label">Loan-level ECL Schedule</div><div id="ecl-table"><div class="ep"><div class="ei">&#9889;</div>Click Compute ECL to generate the schedule</div></div></div>
+      </div>
       <div class="view" id="view-borrowings">
         <div class="vhdr">
           <div><div class="vttl">Borrowings</div><div class="vsub">Debt facilities and cost of funds analysis</div></div>
           <div class="vacts">
-            <button onclick="openUploadModal('borrowings')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
-            <button class="bp" onclick="openBorrowingModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Facility</button>
+            <button onclick="openUploadModal('borrowings')" data-fm-edit-only="borrowings"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
+            <button class="bp" onclick="openBorrowingModal()" data-fm-edit-only="borrowings"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Facility</button>
           </div>
         </div>
+        <div id="borrowings-view-banner"></div>
         <div class="kpi-grid" id="borrowings-kpis"></div>
         <div class="chart-2" id="borrowings-charts"></div>
         <div class="card" id="borrowings-table-wrap"></div>
       </div>
-
-      <!-- INVESTMENTS -->
       <div class="view" id="view-investments">
         <div class="vhdr">
           <div><div class="vttl">Investments</div><div class="vsub">Treasury placements and yield analysis</div></div>
           <div class="vacts">
-            <button onclick="openUploadModal('investments')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
-            <button class="bp" onclick="openInvestmentModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Investment</button>
+            <button onclick="openUploadModal('investments')" data-fm-edit-only="investments"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
+            <button class="bp" onclick="openInvestmentModal()" data-fm-edit-only="investments"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Investment</button>
           </div>
         </div>
+        <div id="investments-view-banner"></div>
         <div class="kpi-grid" id="investments-kpis"></div>
         <div class="chart-2" id="investments-charts"></div>
         <div class="card" id="investments-table-wrap"></div>
       </div>
-
-      <!-- CASH -->
       <div class="view" id="view-cash">
         <div class="vhdr">
           <div><div class="vttl">Cash Position</div><div class="vsub">Bank account balances and cash monitoring</div></div>
           <div class="vacts">
-            <button onclick="openUploadModal('cash')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
-            <button class="bp" onclick="openCashModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Account</button>
+            <button onclick="openUploadModal('cash')" data-fm-edit-only="cash"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload</button>
+            <button class="bp" onclick="openCashModal()" data-fm-edit-only="cash"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Account</button>
           </div>
         </div>
+        <div id="cash-view-banner"></div>
         <div class="kpi-grid" id="cash-kpis"></div>
         <div class="chart-2" id="cash-charts"></div>
         <div class="card" id="cash-table-wrap"></div>
       </div>
-
-      <!-- EQUITY & CAPITAL -->
-      <div class="view" id="view-equity">
-        <div class="vhdr">
-          <div><div class="vttl">Equity &amp; Capital Structure</div><div class="vsub">Share capital · Retained earnings · Capital adequacy</div></div>
-          <button class="bp" onclick="openEquityModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Update Capital Data</button>
-        </div>
-        <div class="nt-info">Capital structure data is stored locally in your browser and used for WACC computation and the board advisory panel. Enter your paid-up share capital, retained earnings and cost of equity (Ke).</div>
-        <div class="kpi-grid" id="equity-kpis"></div>
-        <div class="chart-2" id="equity-charts"></div>
-        <div id="equity-detail"></div>
-      </div>
-
-      <!-- LIQUIDITY -->
       <div class="view" id="view-liquidity">
         <div class="vhdr">
-          <div><div class="vttl">Liquidity Management</div><div class="vsub">Net liquidity · Cash flow forecast · Gap analysis</div></div>
+          <div><div class="vttl">Liquidity Management</div><div class="vsub">Net liquidity &middot; Cash flow forecast &middot; Gap analysis</div></div>
           <button class="bp" onclick="loadLiquidity()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
         </div>
         <div class="kpi-grid" id="liq-kpis"></div>
         <div class="card" style="margin-bottom:1.25rem"><div class="card-label">180-Day Liquidity Forecast</div><canvas id="ch-liq-forecast" height="200"></canvas></div>
         <div class="chart-2" id="liq-charts2"></div>
       </div>
-
-      <!-- TEAM -->
       <div class="view" id="view-team">
         <div class="vhdr">
-          <div><div class="vttl">Team Management</div><div class="vsub">Manage organisation treasury users</div></div>
-          <button class="bp" onclick="openTeamMemberModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Member</button>
+          <div><div class="vttl">Team Management</div><div class="vsub" id="team-vsub">Manage your organisation&#8217;s treasury users</div></div>
+          <button class="bp" onclick="openTeamMemberModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Team Member</button>
         </div>
-        <div class="nt-info" style="margin-bottom:1rem">Team members share access to all organisation treasury data.</div>
+        <div class="nt-info" id="team-info">Team members share access to all organisation treasury data.</div>
         <div id="team-table"></div>
       </div>
-
-      <!-- SETTINGS -->
       <div class="view" id="view-settings">
         <div class="vhdr"><div><div class="vttl">Settings</div><div class="vsub">Organisation profile and account preferences</div></div></div>
         <div id="settings-form"></div>
       </div>
-
     </main>
   </div>
 </div>
 <div id="modal-bg">
   <div class="modal" id="modal-box">
     <div class="mhdr">
-      <div class="mttl" id="modal-title">—</div>
+      <div class="mttl" id="modal-title">&#8212;</div>
       <button class="mclose" onclick="closeModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="mbody" id="modal-body"></div>
@@ -401,36 +362,80 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 <div id="toast"></div>
 <script>
 'use strict';
-// ── AUTH + PERMISSIONS ───────────────────────────────────────
-var _user=null,_borrowCache=[],_invCache=[],_cashCache=[],_debtorCache=[],_portfolioCache=[];
-var _equityData={shareCapital:0,retainedEarnings:0,otherReserves:0,costOfEquity:20};
-var _loanFilter='all';
-var _charts={};
-// Persist equity locally
-(function(){try{const e=localStorage.getItem('fm_equity');if(e)_equityData=JSON.parse(e);}catch(x){}})();
+// ════════════════════════════════════════════════════════════
+// FM MODULE-PERMISSION BLOCK (reusable — copy this whole block
+// to any other app with the same data-fm-module/data-fm-edit-only
+// markup convention; the only thing to change is _FM_APP_KEY).
+// ════════════════════════════════════════════════════════════
+const _FM_APP_KEY='treasury';
+var _fmModulePerms={}; // { dashboard:'edit'|'view'|'none', loans:..., ... }
+function fmCanView(moduleKey){
+  const lvl=_fmModulePerms[moduleKey];
+  return lvl==='view'||lvl==='edit';
+}
+function fmCanEdit(moduleKey){
+  return _fmModulePerms[moduleKey]==='edit';
+}
+function applyModulePermissions(user){
+  _fmModulePerms=(user.modulePermissions&&user.modulePermissions[_FM_APP_KEY])||{};
+  // Hide nav items for modules with 'none' access
+  document.querySelectorAll('[data-fm-module]').forEach(function(el){
+    const mk=el.dataset.fmModule;
+    el.style.display=fmCanView(mk)?'':'none';
+  });
+  // Disable/hide edit-only controls (Add/Upload buttons, sliders, etc.) for view-only modules
+  document.querySelectorAll('[data-fm-edit-only]').forEach(function(el){
+    const mk=el.dataset.fmEditOnly;
+    if(!fmCanEdit(mk)){el.disabled=true;el.style.display='none';}
+  });
+  // If the currently active view is now hidden (no access at all), fall back to dashboard
+  const activeNav=document.querySelector('.nav-item.active[data-fm-module]');
+  if(activeNav&&activeNav.style.display==='none'){
+    const dashNav=document.querySelector('[data-view="dashboard"]');
+    if(dashNav)switchView('dashboard');
+  }
+}
+function fmViewOnlyBanner(moduleKey,label){
+  if(fmCanEdit(moduleKey))return'';
+  return '<div class="fm-view-only-banner">&#128065; You have view-only access to '+label+'. Ask your organisation admin for edit access to add, upload, or delete records here.</div>';
+}
+// ════════════════════════════════════════════════════════════
+// END FM MODULE-PERMISSION BLOCK
+// ════════════════════════════════════════════════════════════
 
+// ── AUTH GATE ────────────────────────────────────────────────
 (function(){
   var tok=sessionStorage.getItem('FM_token');
   if(!tok){window.location.href='../portal/';return;}
-  fetch('https://eis-recbackend.onrender.com/api/auth/me',{headers:{'Authorization':'Bearer '+tok}})
-  .then(r=>r.json().then(d=>({s:r.status,d})))
-  .then(obj=>{
+  fetch('https://eis-recbackend.onrender.com/api/auth/me',{headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'}})
+  .then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});})
+  .then(function(obj){
     if(obj.s===200&&obj.d.success&&obj.d.user){
-      _user=obj.d.user;
-      document.getElementById('user-name').textContent=_user.name;
-      if(_user.orgId||_user.orgName){
-        document.getElementById('org-name-badge').textContent=_user.orgName||'Organisation';
+      var u=obj.d.user;_user=u;
+      document.getElementById('user-name').textContent=u.name;
+      if(u.orgId||u.orgName){
+        document.getElementById('org-name-badge').textContent=u.orgName||'Organisation';
         document.getElementById('org-badge').style.display='inline-flex';
       }
-      if(_user.orgRole==='admin'||_user.accountType==='organisation')
+      if(u.orgRole==='admin'||u.accountType==='organisation'){
         document.getElementById('nav-team').style.display='flex';
+      }
+      applyModulePermissions(u);
       loadDashboard();
-    }else if(obj.s===401){sessionStorage.removeItem('FM_token');window.location.href='../portal/';}
-    else loadDashboard();
-  }).catch(()=>loadDashboard());
+    }else if(obj.s===401){
+      sessionStorage.removeItem('FM_token');window.location.href='../portal/';
+    }else{loadDashboard();}
+  })
+  .catch(function(){loadDashboard();});
 })();
 
 const API='https://eis-recbackend.onrender.com/api';
+var _user=null,_loansCache=[],_borrowCache=[],_invCache=[],_cashCache=[];
+var _eclResults=[],_eclMult=1,_loanFilter='all';
+var _selLoans=new Set(),_selBorrow=new Set(),_selInv=new Set(),_selCash=new Set();
+var _charts={};
+
+// ── HELPERS ──────────────────────────────────────────────────
 async function api(ep,opts={}){
   const tok=sessionStorage.getItem('FM_token');
   const isForm=opts.body instanceof FormData;
@@ -450,488 +455,471 @@ async function apiForm(ep,fd){
 }
 const $=id=>document.getElementById(id);
 const fN=n=>n==null||isNaN(n)?'0.00':Number(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmt=n=>{const v=Number(n)||0;if(Math.abs(v)>=1e9)return'₦'+(v/1e9).toFixed(2)+'B';if(Math.abs(v)>=1e6)return'₦'+(v/1e6).toFixed(2)+'M';if(Math.abs(v)>=1e3)return'₦'+(v/1e3).toFixed(1)+'K';return'₦'+v.toFixed(2);};
-const pct=n=>(Number(n)||0).toFixed(2)+'%';
-const fD=d=>!d?'—':new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+const fmt=n=>{const v=Number(n)||0;if(v>=1e9)return'\u20a6'+(v/1e9).toFixed(2)+'B';if(v>=1e6)return'\u20a6'+(v/1e6).toFixed(2)+'M';if(v>=1e3)return'\u20a6'+(v/1e3).toFixed(1)+'K';return'\u20a6'+v.toFixed(2);};
+const pct=n=>Number(n).toFixed(2)+'%';
+const fD=d=>!d?'\u2014':new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 const ts=()=>new Date().toISOString().slice(0,10);
 const PAL=['#00c9a7','#63b3ed','#a78bfa','#f5a623','#22c55e','#e05252'];
 
+function bulkBar(module,selSet,total){
+  if(!selSet.size)return'';
+  return'<div style="display:flex;align-items:center;gap:10px;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:8px 14px;margin-bottom:.75rem;flex-wrap:wrap">'+
+    '<span style="font-size:12px;font-family:var(--mo);color:var(--rd)">'+selSet.size+' of '+total+' selected</span>'+
+    '<button class="bsm bd" data-action="bulkdelete" data-module="'+module+'" style="padding:5px 12px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg> Delete selected</button>'+
+    '<button class="bsm" data-action="clearsel" data-module="'+module+'" style="padding:5px 12px">Clear</button>'+
+  '</div>';
+}
+function toggleSel(module,id){
+  const m={loans:_selLoans,borrowings:_selBorrow,investments:_selInv,cash:_selCash}[module];
+  if(!m)return;if(m.has(id))m.delete(id);else m.add(id);
+  ({loans:renderLoanTable,borrowings:renderBorrowings,investments:renderInvestments,cash:renderCash}[module]||function(){})();
+}
+function clearSel(module){
+  const m={loans:_selLoans,borrowings:_selBorrow,investments:_selInv,cash:_selCash}[module];
+  if(m)m.clear();
+  ({loans:renderLoanTable,borrowings:renderBorrowings,investments:renderInvestments,cash:renderCash}[module]||function(){})();
+}
+function toggleAllSel(module,ids){
+  const m={loans:_selLoans,borrowings:_selBorrow,investments:_selInv,cash:_selCash}[module];
+  if(!m)return;
+  const realIds=(ids||[]).filter(id=>!isSampleId(id));
+  const allSel=realIds.length>0&&realIds.every(id=>m.has(id));
+  if(allSel)realIds.forEach(id=>m.delete(id));else realIds.forEach(id=>m.add(id));
+  ({loans:renderLoanTable,borrowings:renderBorrowings,investments:renderInvestments,cash:renderCash}[module]||function(){})();
+}
+async function bulkDelete(module){
+  if(!fmCanEdit(module)){toast('You have view-only access to this module.','err');return;}
+  const m={loans:_selLoans,borrowings:_selBorrow,investments:_selInv,cash:_selCash}[module];
+  if(!m||!m.size)return;
+  const count=m.size;
+  if(!confirm('Permanently delete '+count+' selected item'+(count>1?'s':'')+' ?'))return;
+  const ep={loans:'/treasury/loans',borrowings:'/treasury/borrowings',investments:'/treasury/investments',cash:'/treasury/cash'}[module];
+  const ids=[...m];let done=0,failed=0;
+  for(const id of ids){try{await api(ep+'/'+id,{method:'DELETE'});done++;m.delete(id);}catch(e){failed++;}}
+  toast(done+' deleted'+(failed?' · '+failed+' failed':'')+'.',failed?'err':'ok');
+  ({loans:loadLoans,borrowings:loadBorrowings,investments:loadInvestments,cash:loadCash}[module]||function(){})();
+}
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('[data-action]');if(!btn)return;
+  if(btn.dataset.action==='bulkdelete')bulkDelete(btn.dataset.module);
+  else if(btn.dataset.action==='clearsel')clearSel(btn.dataset.module);
+});
+document.addEventListener('change',function(e){
+  const cb=e.target.closest('[data-selmodule]');if(!cb)return;
+  if(cb.dataset.selall)try{toggleAllSel(cb.dataset.selmodule,JSON.parse(decodeURIComponent(cb.dataset.selall)));}catch(ex){}
+  else if(cb.dataset.selid)toggleSel(cb.dataset.selmodule,cb.dataset.selid);
+});
+function isSampleId(id){
+  return !id||id==='undefined'||id==='null'||!/^[a-f\d]{24}$/i.test(id);
+}
+
 function toast(msg,type='ok'){
-  const el=$('toast');el.textContent=(type==='ok'?'✓  ':'⚠  ')+msg;
-  el.className='on '+type;setTimeout(()=>el.className='',4500);
+  const el=$('toast');el.textContent=(type==='ok'?'\u2713  ':'\u26a0  ')+msg;
+  el.className='on '+type;setTimeout(()=>el.className='',4000);
 }
 function openModal(title,body,foot,wide=false){
-  $('modal-title').textContent=title;$('modal-body').innerHTML=body;
+  $('modal-title').textContent=title;
+  $('modal-body').innerHTML=body;
   $('modal-foot').innerHTML=foot||'<button onclick="closeModal()">Close</button>';
-  $('modal-box').className='modal'+(wide?' wide':'');$('modal-bg').classList.add('on');
+  $('modal-box').className='modal'+(wide?' wide':'');
+  $('modal-bg').classList.add('on');
 }
 function closeModal(){$('modal-bg').classList.remove('on');}
-function empty(msg){return '<div class="ep"><div class="ei">📦</div>'+msg+'</div>';}
+function empty(msg){return '<div class="ep"><div class="ei">\ud83d\udce6</div>'+msg+'</div>';}
 function mkChart(id,cfg){
   if(_charts[id])_charts[id].destroy();
-  const c=$(id);if(!c)return;_charts[id]=new Chart(c,cfg);
+  const c=$(id);if(!c)return;
+  _charts[id]=new Chart(c,cfg);
 }
-Chart.defaults.color='#8fa3bf';Chart.defaults.borderColor='rgba(255,255,255,.07)';
-Chart.defaults.font.family="'IBM Plex Mono',monospace";Chart.defaults.font.size=10;
+Chart.defaults.color='#8fa3bf';
+Chart.defaults.borderColor='rgba(255,255,255,.07)';
+Chart.defaults.font.family="'IBM Plex Mono',monospace";
+Chart.defaults.font.size=10;
 
-// ── NAV ──────────────────────────────────────────────────────
+// ── NAVIGATION ────────────────────────────────────────────────
 function switchView(view){
+  if(view!=='settings'&&view!=='team'&&!fmCanView(view)){toast('You do not have access to this module.','err');view='dashboard';}
   document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
   document.querySelector('[data-view="'+view+'"]')?.classList.add('active');
   $('view-'+view)?.classList.add('on');
-  ({dashboard:loadDashboard,loans:loadLoans,borrowings:loadBorrowings,investments:loadInvestments,
-    cash:loadCash,equity:loadEquity,liquidity:loadLiquidity,team:loadTeam,settings:loadSettings}[view]||function(){})();
+  const fn={dashboard:loadDashboard,loans:loadLoans,ecl:loadLoans,borrowings:loadBorrowings,investments:loadInvestments,cash:loadCash,liquidity:loadLiquidity,team:loadTeam,settings:loadSettings};
+  fn[view]?.();
 }
-document.getElementById('layout').addEventListener('click',e=>{
-  const ni=e.target.closest('.nav-item');if(ni&&ni.dataset.view)switchView(ni.dataset.view);
+document.getElementById('layout').addEventListener('click',function(e){
+  const ni=e.target.closest('.nav-item');
+  if(ni&&ni.dataset.view)switchView(ni.dataset.view);
 });
 $('modal-bg').addEventListener('click',e=>{if(e.target===$('modal-bg'))closeModal();});
-$('logout-btn').addEventListener('click',()=>{
+$('logout-btn').addEventListener('click',function(){
   if(!confirm('Sign out?'))return;
   sessionStorage.removeItem('FM_token');window.location.href='../portal/';
 });
+// ── SAMPLE DATA ───────────────────────────────────────────────
+const SL=[
+  {_id:'s1',loanId:'LN-001',customer:'Dangote Industries Ltd',product:'Invoice Discounting',principal:450000000,outstanding:420000000,interestRate:22,startDate:'2024-01-15',maturityDate:'2024-07-15',daysPastDue:0,stage:1,creditRating:'A',status:'active'},
+  {_id:'s2',loanId:'LN-002',customer:'Flour Mills Nigeria Plc',product:'Supply Chain Finance',principal:320000000,outstanding:310000000,interestRate:20,startDate:'2024-02-01',maturityDate:'2024-08-01',daysPastDue:18,stage:1,creditRating:'A-',status:'active'},
+  {_id:'s3',loanId:'LN-003',customer:'MTN Nigeria Comms',product:'Factoring',principal:280000000,outstanding:280000000,interestRate:21,startDate:'2024-03-10',maturityDate:'2024-09-10',daysPastDue:0,stage:1,creditRating:'AA',status:'active'},
+  {_id:'s4',loanId:'LN-004',customer:'Zenith Bank Plc',product:'Reverse Factoring',principal:500000000,outstanding:480000000,interestRate:19,startDate:'2023-11-01',maturityDate:'2024-05-01',daysPastDue:45,stage:2,creditRating:'BBB+',status:'active'},
+  {_id:'s5',loanId:'LN-005',customer:'BUA Foods Plc',product:'Invoice Discounting',principal:190000000,outstanding:190000000,interestRate:23,startDate:'2024-04-05',maturityDate:'2024-10-05',daysPastDue:0,stage:1,creditRating:'A',status:'active'},
+  {_id:'s6',loanId:'LN-006',customer:'Unilever Nigeria Plc',product:'Supply Chain Finance',principal:150000000,outstanding:145000000,interestRate:21,startDate:'2023-10-15',maturityDate:'2024-04-15',daysPastDue:62,stage:2,creditRating:'BB+',status:'active'},
+  {_id:'s7',loanId:'LN-007',customer:'Nigerian Breweries Plc',product:'Factoring',principal:220000000,outstanding:215000000,interestRate:22,startDate:'2024-03-20',maturityDate:'2024-09-20',daysPastDue:5,stage:1,creditRating:'A-',status:'active'},
+  {_id:'s8',loanId:'LN-008',customer:'Cadbury Nigeria Plc',product:'Invoice Discounting',principal:85000000,outstanding:82000000,interestRate:24,startDate:'2023-08-01',maturityDate:'2024-02-01',daysPastDue:120,stage:3,creditRating:'CCC',status:'active'},
+  {_id:'s9',loanId:'LN-009',customer:'PZ Cussons Nigeria',product:'Factoring',principal:110000000,outstanding:108000000,interestRate:22,startDate:'2023-09-10',maturityDate:'2024-03-10',daysPastDue:95,stage:3,creditRating:'B-',status:'active'},
+  {_id:'s10',loanId:'LN-010',customer:'Nestle Nigeria Plc',product:'Supply Chain Finance',principal:340000000,outstanding:340000000,interestRate:20,startDate:'2024-04-01',maturityDate:'2024-10-01',daysPastDue:0,stage:1,creditRating:'AA-',status:'active'},
+  {_id:'s11',loanId:'LN-011',customer:'NNPC Gas & Power Ltd',product:'Reverse Factoring',principal:600000000,outstanding:580000000,interestRate:18,startDate:'2024-01-20',maturityDate:'2024-07-20',daysPastDue:30,stage:1,creditRating:'A+',status:'active'},
+  {_id:'s12',loanId:'LN-012',customer:'Access Bank Plc',product:'Invoice Discounting',principal:250000000,outstanding:250000000,interestRate:20,startDate:'2024-02-15',maturityDate:'2024-08-15',daysPastDue:0,stage:1,creditRating:'AA',status:'active'},
+  {_id:'s13',loanId:'LN-013',customer:'Total Energies Nigeria',product:'Supply Chain Finance',principal:180000000,outstanding:172000000,interestRate:21,startDate:'2023-12-01',maturityDate:'2024-06-01',daysPastDue:75,stage:2,creditRating:'BB',status:'active'},
+  {_id:'s14',loanId:'LN-014',customer:'Lafarge Africa Plc',product:'Factoring',principal:130000000,outstanding:130000000,interestRate:23,startDate:'2024-03-01',maturityDate:'2024-09-01',daysPastDue:0,stage:1,creditRating:'A-',status:'active'},
+  {_id:'s15',loanId:'LN-015',customer:'Julius Berger Nigeria',product:'Invoice Discounting',principal:200000000,outstanding:195000000,interestRate:22,startDate:'2023-06-15',maturityDate:'2023-12-15',daysPastDue:155,stage:3,creditRating:'D',status:'active'},
+];
+const SB=[
+  {_id:'b1',borrowingId:'BW-001',lender:'FCMB Ltd',type:'Term Loan',principal:500000000,outstanding:420000000,interestRate:19.5,tenorMonths:24,repayment:'Monthly',maturityDate:'2025-06-30'},
+  {_id:'b2',borrowingId:'BW-002',lender:'Stanbic IBTC Bank',type:'Overdraft Facility',principal:200000000,outstanding:150000000,interestRate:23,tenorMonths:12,repayment:'Revolving',maturityDate:'2024-12-31'},
+  {_id:'b3',borrowingId:'BW-003',lender:'DBN Nigeria',type:'On-lending Facility',principal:800000000,outstanding:720000000,interestRate:14,tenorMonths:36,repayment:'Quarterly',maturityDate:'2026-09-30'},
+  {_id:'b4',borrowingId:'BW-004',lender:'Bank of Industry',type:'SME Fund',principal:300000000,outstanding:280000000,interestRate:12,tenorMonths:48,repayment:'Monthly',maturityDate:'2027-03-31'},
+  {_id:'b5',borrowingId:'BW-005',lender:'LAPO MfB',type:'Wholesale Borrowing',principal:150000000,outstanding:100000000,interestRate:21,tenorMonths:12,repayment:'Monthly',maturityDate:'2024-10-31'},
+  {_id:'b6',borrowingId:'BW-006',lender:'Pan-African Holdings',type:'Intercompany Loan',principal:1000000000,outstanding:1000000000,interestRate:16,tenorMonths:60,repayment:'Bullet',maturityDate:'2028-01-31'},
+];
+const SI=[
+  {_id:'i1',investmentId:'INV-001',counterparty:'Access Bank Plc',type:'Fixed Deposit',principal:300000000,interestRate:22,dateInvested:'2024-03-01',tenorDays:180,maturityDate:'2024-08-28'},
+  {_id:'i2',investmentId:'INV-002',counterparty:'GTBank Ltd',type:'Fixed Deposit',principal:200000000,interestRate:21.5,dateInvested:'2024-02-15',tenorDays:91,maturityDate:'2024-05-17'},
+  {_id:'i3',investmentId:'INV-003',counterparty:'FGN Bond (10yr)',type:'Government Security',principal:500000000,interestRate:17.5,dateInvested:'2023-10-01',tenorDays:365,maturityDate:'2033-10-01'},
+  {_id:'i4',investmentId:'INV-004',counterparty:'NTB (91-day)',type:'Treasury Bills',principal:250000000,interestRate:20.5,dateInvested:'2024-04-01',tenorDays:91,maturityDate:'2024-07-01'},
+  {_id:'i5',investmentId:'INV-005',counterparty:'Zenith Bank Plc',type:'Fixed Deposit',principal:150000000,interestRate:22,dateInvested:'2024-04-10',tenorDays:60,maturityDate:'2024-06-09'},
+  {_id:'i6',investmentId:'INV-006',counterparty:'NTB (182-day)',type:'Treasury Bills',principal:400000000,interestRate:21,dateInvested:'2024-01-15',tenorDays:182,maturityDate:'2024-07-15'},
+];
+const SC=[
+  {_id:'c1',accountId:'CA-001',bank:'Access Bank Plc',accountNo:'001-234567-001',type:'Current',currency:'NGN',balance:124500000,restricted:false},
+  {_id:'c2',accountId:'CA-002',bank:'GTBank Ltd',accountNo:'0123456789',type:'Current',currency:'NGN',balance:87300000,restricted:false},
+  {_id:'c3',accountId:'CA-003',bank:'First Bank Nigeria',accountNo:'2012345678',type:'Current',currency:'NGN',balance:43800000,restricted:true},
+  {_id:'c4',accountId:'CA-004',bank:'Zenith Bank Plc',accountNo:'1012345678',type:'Savings',currency:'NGN',balance:210000000,restricted:false},
+  {_id:'c5',accountId:'CA-005',bank:'UBA Plc',accountNo:'2012398765',type:'Current',currency:'NGN',balance:32100000,restricted:false},
+  {_id:'c6',accountId:'CA-006',bank:'Access Bank Plc',accountNo:'001-234567-002',type:'Dom (USD)',currency:'USD',balance:18400000,restricted:false},
+];
 
-// ── TENOR BUCKET HELPERS ──────────────────────────────────────
-const TENOR_CAPS=[30,60,90,180,270,365];
-const TENOR_LBLS=['30 Days','60 Days','90 Days','180 Days','270 Days','365 Days & Above'];
-function daysBetween(a,b){if(!b)return 999;return Math.max(0,Math.floor((new Date(b)-new Date(a))/86400000));}
-function tenorIdx(days){for(let i=0;i<TENOR_CAPS.length;i++){if(days<=TENOR_CAPS[i])return i;}return TENOR_CAPS.length-1;}
-function buildRow(items,getAmt,getMat,today){
-  const b=new Array(TENOR_CAPS.length).fill(0);let total=0;
-  for(const x of items){const d=daysBetween(today,getMat(x));b[tenorIdx(d)]+=(getAmt(x)||0);total+=(getAmt(x)||0);}
-  return{b,total};
+// ── ECL ENGINE ────────────────────────────────────────────────
+const EP={1:{pd12:.02,pdL:.05,lgd:.45},2:{pd12:.15,pdL:.35,lgd:.55},3:{pd12:.75,pdL:.90,lgd:.65}};
+function calcECL(loans,mult=1){
+  let total=0;
+  const rows=loans.map(l=>{
+    const p=EP[l.stage]||EP[1];
+    const pd=(l.stage===1?p.pd12:p.pdL)*mult;
+    const ecl=pd*p.lgd*l.outstanding;
+    total+=ecl;
+    return{...l,pd:+pd.toFixed(4),lgd:p.lgd,ead:l.outstanding,ecl:+ecl.toFixed(2),eclRate:+(ecl/l.outstanding*100).toFixed(2)};
+  });
+  const ead=loans.reduce((a,b)=>a+b.outstanding,0);
+  return{rows,total:+total.toFixed(2),ead:+ead.toFixed(2),coverage:+(total/ead*100).toFixed(2)};
 }
-
-// ── FETCH RECEIVABLES DATA ────────────────────────────────────
-async function fetchReceivables(){
-  try{
-    const [rd,rp]=await Promise.all([api('/debtors'),api('/ecl/portfolio')]);
-    _debtorCache=rd.debtors||[];_portfolioCache=rp.rows||[];
-  }catch(e){console.warn('Receivables fetch:',e.message);_debtorCache=[];_portfolioCache=[];}
-}
-function getStage(debtorId){
-  const rows=_portfolioCache.filter(r=>r._debtorId===debtorId);
-  return rows.length?Math.max(...rows.map(r=>r.stage||1)):1;
-}
-function avgDebtorEIR(){
-  if(!_portfolioCache.length)return 20;
-  return _portfolioCache.reduce((s,r)=>s+(r.eir||20),0)/_portfolioCache.length;
-}
-
 // ── DASHBOARD ─────────────────────────────────────────────────
 async function loadDashboard(){
-  $('dash-ts').textContent='Loading…';
-  $('dash-kpis').innerHTML='<div class="loading-row">Loading…</div>';
-  $('advisory-content').innerHTML='<div class="loading-row">Analysing…</div>';
-  await Promise.all([
-    fetchReceivables(),
-    api('/treasury/borrowings').then(d=>{if(d.borrowings?.length)_borrowCache=d.borrowings;}).catch(()=>{}),
-    api('/treasury/investments').then(d=>{if(d.investments?.length)_invCache=d.investments;}).catch(()=>{}),
-    api('/treasury/cash').then(d=>{if(d.accounts?.length)_cashCache=d.accounts;}).catch(()=>{}),
-  ]);
-
-  const today=new Date();
-  const totalDebtors=_debtorCache.reduce((s,d)=>s+d.totalOutstanding,0);
-  const totalInv=_invCache.reduce((s,i)=>s+i.principal,0);
-  const totalCash=_cashCache.filter(a=>a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
-  const totalDebt=_borrowCache.reduce((s,b)=>s+b.outstanding,0);
-  const eq=_equityData;
-  const totalEquity=eq.shareCapital+eq.retainedEarnings+eq.otherReserves;
-  const totalAssets=totalDebtors+totalInv+totalCash;
-
-  // Rates
-  const wacd=totalDebt>0?_borrowCache.reduce((a,b)=>a+(b.outstanding/totalDebt)*b.interestRate,0):0;
-  const avgIY=totalInv>0?_invCache.reduce((a,i)=>a+(i.principal/totalInv)*i.interestRate,0):0;
-  const avgDR=avgDebtorEIR();
-  const wara=totalAssets>0?(totalDebtors*avgDR+totalInv*avgIY)/(totalAssets):0;
-  const V=totalEquity+totalDebt;
-  const wacc=V>0?((totalEquity/V)*eq.costOfEquity+(totalDebt/V)*wacd*0.7):0; // tax shield 30%
-  const spread=wara-wacd;
-  const lever=totalEquity>0?(totalDebt/totalEquity):0;
-
-  $('dash-ts').textContent='As at '+new Date().toLocaleString('en-GB');
-  $('dash-kpis').innerHTML=[
-    {l:'Total Financial Assets',v:fmt(totalAssets),c:'tl',ac:true,sub:'Debtors + Inv + Cash'},
-    {l:'Total Borrowings',v:fmt(totalDebt),c:'rd',sub:_borrowCache.length+' facilities'},
-    {l:'Equity & Reserves',v:fmt(totalEquity),c:'pu',sub:'Capital + Retained Earnings'},
-    {l:'Net Asset Cover',v:fmt(totalAssets-totalDebt),c:totalAssets>totalDebt?'gr':'rd',sub:'Assets − Liabilities'},
-    {l:'WARA (Return on Assets)',v:pct(wara),c:'am',sub:'Weighted avg asset return'},
-    {l:'WACD (Cost of Debt)',v:pct(wacd),c:'bl',sub:'Weighted avg cost of debt'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
-
-  $('dash-wacc').innerHTML=[
-    {l:'WACC',v:pct(wacc),c:'tl',sub:'Weighted avg cost of capital'},
-    {l:'Net Interest Spread',v:(spread>=0?'+':'')+pct(spread),c:spread>=0?'gr':'rd',sub:'WARA − WACD'},
-    {l:'Debt / Equity Ratio',v:lever.toFixed(2)+'×',c:lever>3?'rd':lever>1.5?'am':'gr',sub:'Financial leverage'},
-    {l:'Debtor Yield',v:pct(avgDR),c:'am',sub:'Avg implied rate on debtors'},
-    {l:'Investment Yield',v:pct(avgIY),c:'gr',sub:'Weighted avg investment return'},
-    {l:'Cost of Equity (Ke)',v:pct(eq.costOfEquity),c:'pu',sub:'Required shareholder return'},
-  ].map(k=>'<div class="wacc-card '+k.c+'"><div class="wc-lbl">'+k.l+'</div><div class="wc-val">'+k.v+'</div><div class="wc-sub">'+k.sub+'</div></div>').join('');
-
-  renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara);
-  renderDashCharts(totalDebtors,totalInv,totalCash,totalDebt,totalEquity,avgDR,avgIY,wacd,eq.costOfEquity);
-  renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever});
-}
-
-// ── MATURITY TABLE ────────────────────────────────────────────
-function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara){
-  const tbl=$('maturity-tbl');if(!tbl)return;
-  const N=v=>v>0?'₦'+fN(v):'—';
-  const P=v=>v!=null&&v>0?v.toFixed(2)+'%':'—';
-  const cc=v=>v>0?'style="color:var(--gr)"':v<0?'style="color:var(--rd)"':'';
-
-  // Build rows from real data
-  const rD=buildRow(_portfolioCache,r=>r.balance,r=>r.dueDate,today);
-  const rI=buildRow(_invCache,i=>i.principal,i=>i.maturityDate,today);
-  // Cash: unrestricted → bucket 0 (30d), restricted → last bucket
-  const cashUnres=_cashCache.filter(a=>a.currency==='NGN'&&!a.restricted).reduce((s,a)=>s+a.balance,0);
-  const cashRes  =_cashCache.filter(a=>a.currency==='NGN'&& a.restricted).reduce((s,a)=>s+a.balance,0);
-  const rC={b:[cashUnres,0,0,0,0,0],total:cashUnres};
-  const rCR={b:[0,0,0,0,0,cashRes],total:cashRes};
-  const rB=buildRow(_borrowCache,b=>b.outstanding,b=>b.maturityDate,today);
-
-  const aBkts=TENOR_CAPS.map((_,i)=>rD.b[i]+rI.b[i]+rC.b[i]+rCR.b[i]);
-  const aTotal=rD.total+rI.total+rC.total+rCR.total;
-  const lBkts=rB.b.slice();const lTotal=rB.total;
-  const gBkts=aBkts.map((v,i)=>v-lBkts[i]);const gTotal=aTotal-lTotal;
-
-  // WARA per bucket
-  const waraBkts=aBkts.map((v,i)=>{
-    const da=rD.b[i],ia=rI.b[i],tot=da+ia;
-    return tot>0?(da*avgDR+ia*avgIY)/tot:null;
-  });
-  // WACF per bucket
-  const wacfBkts=lBkts.map((v,i)=>{
-    if(!v)return null;
-    const items=_borrowCache.filter(b=>tenorIdx(daysBetween(today,b.maturityDate))===i);
-    const tot=items.reduce((s,b)=>s+b.outstanding,0);
-    return tot>0?items.reduce((s,b)=>s+(b.outstanding/tot)*b.interestRate,0):null;
-  });
-  const spreadBkts=waraBkts.map((w,i)=>w!=null&&wacfBkts[i]!=null?w-wacfBkts[i]:null);
-
-  const TH='<th>'+TENOR_LBLS.join('</th><th>')+'</th>';
-  tbl.innerHTML=`<thead><tr><th>TENOR</th>${TH}<th>TOTAL</th></tr></thead><tbody>
-    <tr class="sec-hdr"><td colspan="9">FINANCIAL ASSETS</td></tr>
-    <tr class="sub"><td>Risk Assets (Debtors)</td>${rD.b.map(v=>'<td style="color:var(--t)">'+N(v)+'</td>').join('')}<td style="color:var(--t);font-weight:600">${N(rD.total)}</td></tr>
-    <tr class="sub"><td>Investments</td>${rI.b.map(v=>'<td style="color:var(--bl)">'+N(v)+'</td>').join('')}<td style="color:var(--bl);font-weight:600">${N(rI.total)}</td></tr>
-    <tr class="sub"><td>Cash &amp; Cash Equivalents</td>${rC.b.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(rC.total)}</td></tr>
-    <tr class="sub"><td>Other Account Receivables/Prepayments</td>${rCR.b.map(v=>'<td style="color:var(--tx3)">'+N(v)+'</td>').join('')}<td style="color:var(--tx3)">${N(rCR.total)}</td></tr>
-    <tr class="tot-a"><td>TOTAL FINANCIAL ASSETS</td>${aBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(aTotal)}</td></tr>
-    <tr class="sec-hdr rd"><td colspan="9">FINANCIAL LIABILITIES</td></tr>
-    <tr class="sub"><td>Borrowings from Customers / Lenders</td>${rB.b.map(v=>'<td style="color:var(--rd)">'+N(v)+'</td>').join('')}<td style="color:var(--rd);font-weight:600">${N(rB.total)}</td></tr>
-    <tr class="tot-l"><td>TOTAL FINANCIAL LIABILITIES</td>${lBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(lTotal)}</td></tr>
-    <tr class="gap-row"><td>LEADING / (GAP)</td>${gBkts.map(v=>`<td ${cc(v)}>${N(v)}</td>`).join('')}<td ${cc(gTotal)}>${N(gTotal)}</td></tr>
-    <tr class="sec-hdr dim"><td colspan="9">PERIOD'S CONTRIBUTION AS A PERCENTAGE OF TOTAL</td></tr>
-    <tr class="pct-row"><td>Financial Assets %</td>${aBkts.map(v=>'<td>'+(aTotal>0?(v/aTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>100%</td></tr>
-    <tr class="pct-row"><td>Financial Liabilities %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
-    <tr class="sec-hdr dim"><td colspan="9">WEIGHTED AVERAGE COST OF FUNDS</td></tr>
-    <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(wara)}</td></tr>
-    <tr class="wacf-row"><td>WACF (Liabilities) %</td>${wacfBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(wacd)}</td></tr>
-    <tr class="spread-row gap-row"><td>Surplus / (Deficit) %</td>${spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('')}<td ${cc(wara-wacd)}>${(wara-wacd>=0?'+':'')+pct(wara-wacd)}</td></tr>
-  </tbody>`;
-}
-
-// ── DASHBOARD CHARTS ──────────────────────────────────────────
-function renderDashCharts(totalDebtors,totalInv,totalCash,totalDebt,totalEquity,avgDR,avgIY,wacd,ke){
-  $('dash-charts').innerHTML='<div class="chart-box"><div class="card-label">Asset Composition</div><canvas id="ch-ac" height="195"></canvas></div>'+
-    '<div class="chart-box"><div class="card-label">Funding Structure — Debt vs Equity</div><canvas id="ch-fs" height="195"></canvas></div>';
-  $('dash-charts2').innerHTML='<div class="chart-box"><div class="card-label">Rate Comparison — Cost vs Return by Source (%)</div><canvas id="ch-rc" height="195"></canvas></div>'+
-    '<div class="chart-box"><div class="card-label">Debtor Ageing Distribution (₦)</div><canvas id="ch-ag" height="195"></canvas></div>';
-  const ag={current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'180_plus':0};
-  _debtorCache.forEach(d=>Object.keys(ag).forEach(k=>{ag[k]+=(d.ageing[k]||0);}));
+  $('dash-ts').textContent='Loading...';
+  $('dash-kpis').innerHTML='<div class="loading-row">Loading...</div>';
+  let loans=SL,borr=SB,inv=SI,cash=SC,isDemo=true;
+  try{
+    const [dl,db,di,dc]=await Promise.all([api('/treasury/loans'),api('/treasury/borrowings'),api('/treasury/investments'),api('/treasury/cash')]);
+    if(dl.loans?.length){loans=dl.loans;isDemo=false;}
+    if(db.borrowings?.length)borr=db.borrowings;
+    if(di.investments?.length)inv=di.investments;
+    if(dc.accounts?.length)cash=dc.accounts;
+    _loansCache=loans;_borrowCache=borr;_invCache=inv;_cashCache=cash;
+  }catch(e){}
+  const eclR=calcECL(loans);
+  const totalCash=cash.filter(a=>a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
+  const totalLoans=loans.reduce((s,l)=>s+l.outstanding,0);
+  const totalDebt=borr.reduce((s,b)=>s+b.outstanding,0);
+  const totalInv=inv.reduce((s,i)=>s+i.principal,0);
+  const s1=loans.filter(l=>l.stage===1),s2=loans.filter(l=>l.stage===2),s3=loans.filter(l=>l.stage===3);
+  $('dash-ts').textContent=(isDemo?'Sample data  \u2014  ':'As at ')+new Date().toLocaleString('en-GB');
+  $('dash-kpis').innerHTML=(isDemo?'<div class="nt-info" style="grid-column:1/-1">Showing sample data. Upload real data in Loans, Borrowings, Investments and Cash modules.</div>':'')+
+  [{l:'Total Cash',v:fmt(totalCash),c:'tl',ac:true,sub:'NGN accounts'},
+   {l:'Net Liquidity',v:fmt(totalCash+totalInv-totalDebt*.1),c:'bl',sub:'Cash + Inv \u2212 Obligations'},
+   {l:'Loan Book',v:fmt(totalLoans),c:'gr',sub:loans.length+' facilities'},
+   {l:'ECL Provision',v:fmt(eclR.total),c:'am',sub:'Coverage: '+pct(eclR.coverage)},
+   {l:'Total Borrowings',v:fmt(totalDebt),c:'pu',sub:borr.length+' facilities'},
+   {l:'Investment Portfolio',v:fmt(totalInv),c:'bl',sub:'Avg yield 20.9%'},
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  $('dash-charts').innerHTML='<div class="chart-box"><div class="card-label">Loan Stage Distribution (EAD)</div><canvas id="ch-ds" height="180"></canvas></div><div class="chart-box"><div class="card-label">Portfolio by Product (\u20a6M)</div><canvas id="ch-dp" height="180"></canvas></div>';
+  $('dash-charts2').innerHTML='<div class="chart-box"><div class="card-label">Loan Maturity Ladder (\u20a6M)</div><canvas id="ch-dm" height="180"></canvas></div><div class="chart-box"><div class="card-label">EAD vs ECL by Stage (\u20a6M)</div><canvas id="ch-de" height="180"></canvas></div>';
+  const stageD=[{s:'Stage 1',v:s1.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s1).total,c:'#22c55e'},{s:'Stage 2',v:s2.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s2).total,c:'#f5a623'},{s:'Stage 3',v:s3.reduce((a,l)=>a+l.outstanding,0),e:calcECL(s3).total,c:'#e05252'}];
+  const prodMap={};loans.forEach(l=>{prodMap[l.product]=(prodMap[l.product]||0)+l.outstanding;});
+  const now=new Date('2024-06-01');
+  const mb={'0-30d':0,'31-60d':0,'61-90d':0,'91-180d':0,'>180d':0};
+  loans.forEach(l=>{const d=Math.max(0,(new Date(l.maturityDate)-now)/86400000);if(d<=30)mb['0-30d']+=l.outstanding;else if(d<=60)mb['31-60d']+=l.outstanding;else if(d<=90)mb['61-90d']+=l.outstanding;else if(d<=180)mb['91-180d']+=l.outstanding;else mb['>180d']+=l.outstanding;});
   setTimeout(()=>{
-    mkChart('ch-ac',{type:'doughnut',data:{labels:['Debtors','Investments','Cash & Equivalents'],datasets:[{data:[totalDebtors,totalInv,totalCash],backgroundColor:['#00c9a7','#63b3ed','#a78bfa'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-    mkChart('ch-fs',{type:'doughnut',data:{labels:['Borrowings','Equity & Reserves'],datasets:[{data:[totalDebt,totalEquity||0.01],backgroundColor:['#e05252','#22c55e'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-    mkChart('ch-rc',{type:'bar',data:{labels:['Debtor Yield','Investment Yield','Cash Yield','Cost of Debt (WACD)','Cost of Equity (Ke)'],datasets:[{label:'Rate (%)',data:[+avgDR.toFixed(2),+avgIY.toFixed(2),0,+wacd.toFixed(2),ke],backgroundColor:['#00c9a7','#63b3ed','#4a6080','#e05252','#a78bfa'],borderRadius:5}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'},ticks:{callback:v=>v+'%'}}}}});
-    mkChart('ch-ag',{type:'bar',data:{labels:['Current','1–30d','31–60d','61–90d','91–180d','180+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#84cc16','#f59e0b','#ef4444','#dc2626','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-  },80);
+    mkChart('ch-ds',{type:'doughnut',data:{labels:stageD.map(s=>s.s),datasets:[{data:stageD.map(s=>s.v),backgroundColor:stageD.map(s=>s.c),borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'62%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+    mkChart('ch-dp',{type:'bar',data:{labels:Object.keys(prodMap),datasets:[{data:Object.values(prodMap),backgroundColor:PAL,borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{display:false}}}}});
+    mkChart('ch-dm',{type:'bar',data:{labels:Object.keys(mb),datasets:[{data:Object.values(mb),backgroundColor:PAL,borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-de',{type:'bar',data:{labels:stageD.map(s=>s.s),datasets:[{label:'EAD',data:stageD.map(s=>s.v),backgroundColor:'rgba(99,179,237,.5)',borderRadius:2},{label:'ECL',data:stageD.map(s=>s.e),backgroundColor:'#f5a623',borderRadius:2}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+  },60);
 }
 
-// ── ADVISORY PANEL ────────────────────────────────────────────
-function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever}){
-  const el=$('advisory-content');if(!el)return;
-  const pts=[],recs=[];
-  const debtorPct=totalAssets>0?totalDebtors/totalAssets*100:0;
-  const invPct=totalAssets>0?totalInv/totalAssets*100:0;
-  const cashPct=totalAssets>0?totalCash/totalAssets*100:0;
-
-  // 1. Net interest spread
-  if(spread>5)pts.push({c:'gr',t:'Strong net interest spread of '+spread.toFixed(2)+'% — the entity earns comfortably above its cost of funds. Sustain asset quality and maintain current pricing.'});
-  else if(spread>0&&spread<=5)pts.push({c:'am',t:'Net interest spread of '+spread.toFixed(2)+'% is thin. Consider repricing assets or securing cheaper long-term funding to protect profitability margins.'});
-  else pts.push({c:'rd',t:'Negative net interest spread ('+spread.toFixed(2)+'%) is a critical signal — the entity is paying more on liabilities than it earns on assets. Immediate corrective action is required.'});
-
-  // 2. WACC vs WARA (economic value creation)
-  if(wacc>0){
-    if(wara>=wacc+2)pts.push({c:'gr',t:'WARA ('+pct(wara)+') exceeds WACC ('+pct(wacc)+') by '+(wara-wacc).toFixed(2)+'pp, indicating positive Economic Value Added (EVA). The entity creates shareholder value.'});
-    else if(wara<wacc)pts.push({c:'rd',t:'WARA ('+pct(wara)+') is below WACC ('+pct(wacc)+') — the entity is destroying economic value. Returns on assets do not cover the combined cost of debt and equity.'});
-    else pts.push({c:'am',t:'WARA ('+pct(wara)+') is marginally above WACC ('+pct(wacc)+'). The entity is at break-even on economic value creation; improving asset yields will strengthen EVA.'});
-  }
-
-  // 3. Asset concentration
-  if(debtorPct>70)pts.push({c:'am',t:debtorPct.toFixed(0)+'% of assets are in debtors — high concentration. Rebalance into short investments to reduce credit risk and earn certain yields alongside uncertain debtor collections.'});
-  else if(debtorPct>50)pts.push({c:'bl',t:'Debtor book ('+debtorPct.toFixed(0)+'% of assets) is primary earning asset — appropriate for trade finance. Ensure the Receivables ECL model is kept current for accurate provisioning.'});
-
-  // 4. Investment yield vs WACD
-  if(totalInv>0){
-    if(avgIY>wacd+2)pts.push({c:'gr',t:'Investment yield ('+pct(avgIY)+') comfortably exceeds WACD ('+pct(wacd)+') by '+(avgIY-wacd).toFixed(2)+'pp. Surplus liquidity is being deployed at attractive positive spreads.'});
-    else if(avgIY<wacd)pts.push({c:'am',t:'Investment yield ('+pct(avgIY)+') is below WACD ('+pct(wacd)+') — idle liquidity is earning less than the cost of funding it. Redeploy into higher-yield instruments or use to reduce expensive borrowings.'});
-  }
-
-  // 5. Idle cash
-  if(cashPct>25)pts.push({c:'am',t:cashPct.toFixed(0)+'% of assets ('+fmt(totalCash)+') sit as idle cash. Unless ring-fenced for near-term obligations, deploy excess into T-Bills or short FDs to earn additional yield above 0%.'});
-
-  // 6. Leverage
-  if(lever>3)pts.push({c:'rd',t:'Debt/Equity of '+lever.toFixed(2)+'× is elevated — high financial risk. Prioritise equity injection or profit retention to deleverage and reduce reliance on external funding.'});
-  else if(lever>1.5)pts.push({c:'am',t:'Debt/Equity of '+lever.toFixed(2)+'× is moderate. Monitor covenant headroom and ensure adequate interest coverage (EBIT/Interest ≥ 2×).'});
-  else if(lever<0.5&&totalDebt>0)pts.push({c:'bl',t:'Low leverage ('+lever.toFixed(2)+'×) suggests under-utilisation of debt capacity. Selective borrowing at rates below WARA could enhance returns to equity without undue risk.'});
-
-  // 7. Capital
-  if(totalEquity===0){pts.push({c:'rd',t:'No equity data entered. Go to Equity & Capital to enter share capital and retained earnings — essential for WACC computation and board reporting.'});}
-  else{const cr=totalAssets>0?totalEquity/totalAssets*100:0;
-    if(cr<10)pts.push({c:'rd',t:'Capital ratio of '+cr.toFixed(1)+'% (equity/assets) is thin. Strengthen through retained earnings or equity raise — target ≥ 20% for financial sustainability.'});
-    else pts.push({c:'gr',t:'Capital ratio of '+cr.toFixed(1)+'% indicates an adequately capitalised entity. Strong equity buffer supports growth and maintains creditor confidence.'});}
-
-  // 8. NPS/NPL alerts from receivables
-  const s3=_debtorCache.filter(d=>getStage(d._id)===3);
-  if(s3.length>0){
-    const s3amt=s3.reduce((s,d)=>s+d.totalOutstanding,0);
-    pts.push({c:'rd',t:s3.length+' debtor'+(s3.length>1?'s':'')+' ('+fmt(s3amt)+') are classified Stage 3 (non-performing). Ensure adequate ECL provisions are set in the Receivables module and escalate recovery efforts.'});
-  }
-
-  // Recommendations
-  if(spread<2)recs.push('Reprice debtor facilities upward — target minimum debtor yield of WACD + 5% to ensure viability after ECL charges and operating costs.');
-  if(cashPct>25)recs.push('Deploy idle cash into 91-day Treasury Bills (current yield ~'+Math.min(avgIY||20,21).toFixed(1)+'%) to immediately improve WARA without increasing credit risk.');
-  if(lever>2.5)recs.push('Consider a rights issue or preference share offer to reduce leverage below 2× and improve debt capacity for future growth funding.');
-  if(invPct<10&&totalAssets>0)recs.push('Maintain a minimum investment portfolio of 10–15% of total assets to ensure yield certainty and serve as a liquidity buffer.');
-  if(wara<wacc&&wacc>0)recs.push('To restore positive EVA, target WARA ≥ '+Math.ceil(wacc+1)+'% — achievable by increasing debtor pricing or shifting mix toward higher-yield assets.');
-  if(s3.length>0)recs.push('Accelerate collections on Stage 3 debtors — consider engaging a collections agency or commencing legal recovery proceedings where necessary.');
-
-  let html='';
-  if(pts.length){
-    html+='<div class="advisory-section"><div class="advisory-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Financial Optimisation Assessment</div>';
-    html+=pts.map(p=>'<div class="advisory-item"><div class="adot '+p.c+'"></div><span>'+p.t+'</span></div>').join('');
-    html+='</div>';
-  }
-  if(recs.length){
-    html+='<div class="advisory-section"><div class="advisory-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--am)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Board Recommendations</div>';
-    html+=recs.map(r=>'<div class="advisory-item"><div class="adot am"></div><span>'+r+'</span></div>').join('');
-    html+='</div>';
-  }
-  if(!html)html='<div class="ep" style="padding:1rem"><div class="ei">📊</div>Enter borrowings, investments, cash and equity data to generate the board advisory.</div>';
-  el.innerHTML=html;
-}
-
-// ── DEBTOR BOOK (from Receivables) ───────────────────────────
+// ── LOANS ─────────────────────────────────────────────────────
 async function loadLoans(){
-  $('loans-kpis').innerHTML='<div class="loading-row">Loading from Receivables…</div>';
-  await fetchReceivables();
+  _selLoans.clear();
+  $('loans-kpis').innerHTML='<div class="loading-row">Loading...</div>';
+  $('loans-view-banner').innerHTML=fmViewOnlyBanner('loans','Loan Portfolio');
+  try{const d=await api('/treasury/loans');if(d.loans?.length)_loansCache=d.loans;}
+  catch(e){if(!_loansCache.length)_loansCache=SL;}
+  if(!_loansCache.length)_loansCache=SL;
   renderLoanKPIs();renderLoanChart();renderLoanTable();
 }
 function renderLoanKPIs(){
-  const d=_debtorCache,total=d.reduce((s,x)=>s+x.totalOutstanding,0);
-  const s1=d.filter(x=>getStage(x._id)===1),s2=d.filter(x=>getStage(x._id)===2),s3=d.filter(x=>getStage(x._id)===3);
+  const loans=_loansCache,total=loans.reduce((s,l)=>s+l.outstanding,0);
+  const npl=loans.filter(l=>l.stage===3);
   $('loans-kpis').innerHTML=[
-    {l:'Total Debtor Book',v:fmt(total),c:'tl',ac:true,sub:d.length+' debtors'},
-    {l:'Stage 1 — Performing',v:fmt(s1.reduce((s,x)=>s+x.totalOutstanding,0)),c:'gr',sub:s1.length+' debtors'},
-    {l:'Stage 2 — Watchlist',v:fmt(s2.reduce((s,x)=>s+x.totalOutstanding,0)),c:'am',sub:s2.length+' debtors'},
-    {l:'Stage 3 — Non-Performing',v:fmt(s3.reduce((s,x)=>s+x.totalOutstanding,0)),c:'rd',sub:s3.length+' debtors'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
+    {l:'Total Exposure',v:fmt(total),c:'tl',ac:true},
+    {l:'Performing',v:fmt(loans.filter(l=>l.stage<3).reduce((s,l)=>s+l.outstanding,0)),c:'gr',sub:loans.filter(l=>l.stage<3).length+' loans'},
+    {l:'Non-Performing',v:fmt(npl.reduce((s,l)=>s+l.outstanding,0)),c:'rd',sub:npl.length+' loans'},
+    {l:'NPL Ratio',v:pct(npl.reduce((s,l)=>s+l.outstanding,0)/total*100),c:'am'},
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
 }
 function renderLoanChart(){
-  const ag={current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'180_plus':0};
-  _debtorCache.forEach(d=>Object.keys(ag).forEach(k=>{ag[k]+=(d.ageing[k]||0);}));
-  setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:['Current','1–30d','31–60d','61–90d','91–180d','180+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#00c9a7','#63b3ed','#f5a623','#e05252','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}}}),60);
+  const ag=[{b:'Current',v:_loansCache.filter(l=>l.daysPastDue===0).reduce((s,l)=>s+l.outstanding,0)},{b:'1-30d',v:_loansCache.filter(l=>l.daysPastDue>0&&l.daysPastDue<=30).reduce((s,l)=>s+l.outstanding,0)},{b:'31-60d',v:_loansCache.filter(l=>l.daysPastDue>30&&l.daysPastDue<=60).reduce((s,l)=>s+l.outstanding,0)},{b:'61-90d',v:_loansCache.filter(l=>l.daysPastDue>60&&l.daysPastDue<=90).reduce((s,l)=>s+l.outstanding,0)},{b:'91-180d',v:_loansCache.filter(l=>l.daysPastDue>90&&l.daysPastDue<=180).reduce((s,l)=>s+l.outstanding,0)},{b:'>180d',v:_loansCache.filter(l=>l.daysPastDue>180).reduce((s,l)=>s+l.outstanding,0)}];
+  setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:ag.map(a=>a.b),datasets:[{data:ag.map(a=>a.v),backgroundColor:['#22c55e','#00c9a7','#63b3ed','#f5a623','#e05252','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}}),60);
 }
 function setLoanFilter(btn,stage){
-  document.querySelectorAll('#loan-filters button').forEach(b=>b.style.cssText='');
+  document.querySelectorAll('#loan-filters button').forEach(b=>{b.style.cssText='';});
   btn.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';
   _loanFilter=stage;renderLoanTable();
 }
-const BCLS={current:'pg','1_30':'pg','31_60':'pa','61_90':'pr','91_180':'pr','180_plus':'pdark'};
-const BLBL={current:'Current','1_30':'1–30d','31_60':'31–60d','61_90':'61–90d','91_180':'91–180d','180_plus':'180+d'};
 function renderLoanTable(){
-  let data=_debtorCache;
-  if(_loanFilter!=='all')data=data.filter(d=>getStage(d._id)===+_loanFilter);
-  const q=($('loan-search')?.value||'').toLowerCase();
-  if(q)data=data.filter(d=>d.name.toLowerCase().includes(q)||(d.email||'').toLowerCase().includes(q));
-  if(!data.length){$('loans-table').innerHTML=empty('No debtors match the current filter.');return;}
+  let loans=_loansCache;
+  if(_loanFilter!=='all')loans=loans.filter(l=>l.stage===+_loanFilter);
+  const q=$('loan-search')?.value?.toLowerCase()||'';
+  if(q)loans=loans.filter(l=>l.customer.toLowerCase().includes(q)||(l.loanId||'').toLowerCase().includes(q));
+  if(!loans.length){$('loans-table').innerHTML=empty('No loans match the current filter.');return;}
   const sc=s=>s===1?'ps1':s===2?'ps2':'ps3';
-  $('loans-table').innerHTML='<div class="tw"><table>'+
-    '<thead><tr><th>Debtor</th><th>Email</th><th class="nm">Outstanding (₦)</th><th>Oldest Bucket</th><th>Stage</th><th>Invoices</th><th>Risk</th></tr></thead>'+
-    '<tbody>'+data.map(d=>{
-      const stage=getStage(d._id);
-      const hb=['180_plus','91_180','61_90','31_60','1_30','current'].find(k=>(d.ageing[k]||0)>0)||'current';
-      const rs=d.collectionScore||0;
-      return'<tr>'+
-        '<td><strong>'+d.name+'</strong>'+(d.contactPerson?'<div style="font-size:10px;color:var(--tx3)">'+d.contactPerson+'</div>':'')+' </td>'+
-        '<td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">'+(d.email||'—')+'</td>'+
-        '<td class="nm">₦'+fN(d.totalOutstanding)+'</td>'+
-        '<td><span class="pl '+(BCLS[hb]||'pa')+'">'+BLBL[hb]+'</span></td>'+
-        '<td><span class="pl '+sc(stage)+'">Stage '+stage+'</span></td>'+
-        '<td class="nm">'+d.invoiceCount+'</td>'+
-        '<td><span class="pl '+(rs>5000?'pr':rs>1000?'pa':'pg')+'">'+(rs>5000?'High':rs>1000?'Medium':'Low')+'</span></td>'+
-      '</tr>';
-    }).join('')+'</tbody>'+
-    '<tr class="trt"><td colspan="2">TOTAL</td><td class="nm">₦'+fN(data.reduce((s,d)=>s+d.totalOutstanding,0))+'</td><td colspan="4"></td></tr>'+
-    '</table></div>'+
-    '<div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">'+data.length+' debtors shown</div>';
+  const rc=r=>(r||'').startsWith('A')?'#22c55e':(r||'').startsWith('B')?'#f5a623':'#e05252';
+  const canEdit=fmCanEdit('loans');
+  $('loans-table').innerHTML=(canEdit?bulkBar('loans',_selLoans,loans.length):'')+'<div class="tw"><table>'+
+    '<thead><tr>'+(canEdit&&!_selLoans.size&&loans.some(l=>!isSampleId(l._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="loans" data-selall="'+encodeURIComponent(JSON.stringify(loans.filter(l=>!isSampleId(l._id)).map(l=>l._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>Loan ID</th><th>Customer</th><th>Product</th><th class="nm">Outstanding</th><th class="nm">Rate</th><th class="nm">DPD</th><th>Stage</th><th>Rating</th><th>Maturity</th><th></th></tr></thead>'+
+    '<tbody>'+loans.map(l=>
+      (_selLoans.has(l._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(!canEdit||isSampleId(l._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="loans" data-selid="'+l._id+'" '+ (_selLoans.has(l._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+l.loanId+'</td><td><strong>'+l.customer+'</strong></td>'+
+      '<td style="color:var(--tx2)">'+l.product+'</td>'+
+      '<td class="nm">\u20a6'+fN(l.outstanding)+'M</td>'+
+      '<td class="nm" style="font-family:var(--mo)">'+l.interestRate+'%</td>'+
+      '<td class="nm" style="font-family:var(--mo);color:'+(l.daysPastDue>=90?'#e05252':l.daysPastDue>=30?'#f5a623':'#22c55e')+'">'+l.daysPastDue+'</td>'+
+      '<td><span class="pl '+sc(l.stage)+'">Stage '+l.stage+'</span></td>'+
+      '<td style="font-family:var(--mo);color:'+rc(l.creditRating)+'">'+l.creditRating+'</td>'+
+      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(l.maturityDate)+'</td>'+
+      '<td><div style="display:flex;gap:4px">'+
+        (canEdit?('<button class="bsm" onclick="openLoanModal(\''+l._id+'\')" style="padding:4px 8px" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteLoan(\''+l._id+'\')" style="padding:4px 8px" title="Delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'):'<span style="color:var(--tx3);font-family:var(--mo);font-size:10px">view only</span>')+
+      '</div></td></tr>').join('')+'</tbody></table></div>'+
+    '<div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">Showing '+loans.length+' of '+_loansCache.length+' \u00b7 Total: \u20a6'+fN(loans.reduce((s,l)=>s+l.outstanding,0))+'M</div>';
 }
-
-// ── EQUITY & CAPITAL ──────────────────────────────────────────
-function loadEquity(){
-  const e=_equityData;
-  const totalEquity=e.shareCapital+e.retainedEarnings+e.otherReserves;
-  const totalDebt=_borrowCache.reduce((s,b)=>s+b.outstanding,0);
-  const totalAssets=_debtorCache.reduce((s,d)=>s+d.totalOutstanding,0)+_invCache.reduce((s,i)=>s+i.principal,0)+_cashCache.filter(a=>a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
-  const cr=totalAssets>0?totalEquity/totalAssets*100:0;
-  const de=totalEquity>0?totalDebt/totalEquity:0;
-  const V=totalEquity+totalDebt;
-  const wacd=totalDebt>0?_borrowCache.reduce((a,b)=>a+(b.outstanding/totalDebt)*b.interestRate,0):0;
-  const wacc=V>0?((totalEquity/V)*e.costOfEquity+(totalDebt/V)*wacd*0.7):0;
-  $('equity-kpis').innerHTML=[
-    {l:'Total Equity & Reserves',v:fmt(totalEquity),c:'pu',ac:true,sub:'Capital base'},
-    {l:'Share Capital',v:fmt(e.shareCapital),c:'bl',sub:'Paid-up capital'},
-    {l:'Retained Earnings',v:fmt(e.retainedEarnings),c:'gr',sub:'Accumulated profits'},
-    {l:'Other Reserves',v:fmt(e.otherReserves),c:'am',sub:'Statutory / fair value'},
-    {l:'Capital Ratio',v:cr.toFixed(1)+'%',c:cr<10?'rd':cr>30?'gr':'am',sub:'Equity / Total Assets'},
-    {l:'Debt / Equity Ratio',v:de.toFixed(2)+'×',c:de>3?'rd':de>1.5?'am':'gr',sub:'Financial leverage'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
-  $('equity-charts').innerHTML='<div class="chart-box"><div class="card-label">Equity Composition</div><canvas id="ch-eq1" height="200"></canvas></div><div class="chart-box"><div class="card-label">Capital Structure — Debt vs Equity</div><canvas id="ch-eq2" height="200"></canvas></div>';
+function openLoanModal(id){
+  if(!fmCanEdit('loans')){toast('You have view-only access to Loans.','err');return;}
+  const realId=isSampleId(id)?null:id;
+  const l=realId?_loansCache.find(x=>x._id===realId):null;
+  openModal(l?'Edit Loan':'Add Loan Facility',
+    '<div class="merr" id="loan-err"></div>'+
+    '<div class="fg"><div class="fld"><label>Loan ID *</label><input class="finput" id="fl-id" value="'+(l?.loanId||'')+'" placeholder="e.g. LN-001"></div>'+
+    '<div class="fld"><label>Customer Name *</label><input class="finput" id="fl-cust" value="'+(l?.customer||'')+'" placeholder="e.g. Dangote Industries Ltd"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Loan Product *</label><select class="finput" id="fl-prod">'+
+    ['Invoice Discounting','Supply Chain Finance','Factoring','Reverse Factoring','Term Loan'].map(p=>'<option value="'+p+'" '+(l?.product===p?'selected':'')+'>'+p+'</option>').join('')+'</select></div>'+
+    '<div class="fld"><label>Credit Rating</label><input class="finput" id="fl-rating" value="'+(l?.creditRating||'')+'" placeholder="e.g. A, BBB+"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Principal (&#8358;) *</label><input class="finput" type="number" id="fl-principal" value="'+(l?.principal||'')+'" min="0" step="0.01"></div>'+
+    '<div class="fld"><label>Outstanding (&#8358;) *</label><input class="finput" type="number" id="fl-outstanding" value="'+(l?.outstanding||'')+'" min="0" step="0.01"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="fl-rate" value="'+(l?.interestRate||'')+'" min="0" step="0.01"></div>'+
+    '<div class="fld"><label>Days Past Due</label><input class="finput" type="number" id="fl-dpd" value="'+(l?.daysPastDue||0)+'" min="0"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Start Date *</label><input class="finput" type="date" id="fl-start" value="'+(l?.startDate?.slice(0,10)||'')+'"></div>'+
+    '<div class="fld"><label>Maturity Date *</label><input class="finput" type="date" id="fl-mat" value="'+(l?.maturityDate?.slice(0,10)||'')+'"></div></div>',
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveLoan(\''+realId+'\')"><span id="loan-save-txt">'+(l?'Save Changes':'Add Loan')+'</span></button>');
+}
+async function saveLoan(id){
+  const err=$('loan-err');err.classList.remove('on');
+  const p={loanId:$('fl-id').value.trim(),customer:$('fl-cust').value.trim(),product:$('fl-prod').value,creditRating:$('fl-rating').value.trim(),principal:+$('fl-principal').value,outstanding:+$('fl-outstanding').value,interestRate:+$('fl-rate').value,daysPastDue:+$('fl-dpd').value,startDate:$('fl-start').value,maturityDate:$('fl-mat').value};
+  if(!p.loanId||!p.customer||!p.principal){err.textContent='Loan ID, customer and principal required.';err.classList.add('on');return;}
+  const isEdit=!isSampleId(id);
+  $('loan-save-txt').textContent='Saving...';
+  try{
+    if(isEdit)await api('/treasury/loans/'+id,{method:'PUT',body:JSON.stringify(p)});
+    else await api('/treasury/loans',{method:'POST',body:JSON.stringify(p)});
+    closeModal();toast(isEdit?'Loan updated.':'Loan added.');loadLoans();
+  }catch(e){err.textContent=e.message;err.classList.add('on');$('loan-save-txt').textContent=isEdit?'Save Changes':'Add Loan';}
+}
+async function deleteLoan(id){
+  if(!fmCanEdit('loans')){toast('You have view-only access to Loans.','err');return;}
+  if(isSampleId(id)){toast('Sample data cannot be deleted. Add real loans via the form or CSV upload.','err');return;}
+  if(!confirm('Delete this loan facility? This cannot be undone.'))return;
+  try{await api('/treasury/loans/'+id,{method:'DELETE'});toast('Loan deleted.');loadLoans();}catch(e){toast(e.message,'err');}
+}
+// ── ECL ───────────────────────────────────────────────────────
+function computeECL(){
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
+  const loans=_loansCache.length?_loansCache:SL;
+  if(!loans.length){toast('Load the loan portfolio first.','err');return;}
+  const ecl=calcECL(loans,_eclMult);
+  _eclResults=ecl.rows;
+  const s1=ecl.rows.filter(r=>r.stage===1),s2=ecl.rows.filter(r=>r.stage===2),s3=ecl.rows.filter(r=>r.stage===3);
+  $('ecl-kpis').innerHTML=[
+    {l:'Total Exposure (EAD)',v:fmt(ecl.ead),c:'tl',ac:true},
+    {l:'Weighted ECL',v:fmt(ecl.total),c:'rd'},
+    {l:'Coverage Ratio',v:pct(ecl.coverage),c:'am'},
+    {l:'Stage 1',v:fmt(s1.reduce((a,r)=>a+r.ead,0)),c:'gr',sub:s1.length+' loans'},
+    {l:'Stage 2',v:fmt(s2.reduce((a,r)=>a+r.ead,0)),c:'am',sub:s2.length+' loans'},
+    {l:'Stage 3',v:fmt(s3.reduce((a,r)=>a+r.ead,0)),c:'rd',sub:s3.length+' loans'},
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  $('ecl-banner').style.display='block';
+  $('ecl-banner').innerHTML='<div class="nt-info" style="display:flex;gap:2rem;flex-wrap:wrap">'+
+    '<div><div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Probability-Weighted ECL</div><div style="font-family:var(--di);font-size:22px;font-weight:700;color:var(--t)">\u20a6'+fN(ecl.total)+'M</div></div>'+
+    '<div><div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Coverage Ratio</div><div style="font-family:var(--di);font-size:22px;font-weight:700;color:var(--am)">'+pct(ecl.coverage)+'</div></div>'+
+    '<div><div style="font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Total EAD</div><div style="font-family:var(--di);font-size:22px;font-weight:700;color:var(--bl)">\u20a6'+fN(ecl.ead)+'M</div></div></div>';
+  $('ecl-charts').innerHTML='<div class="chart-box"><div class="card-label">Stage Distribution (EAD)</div><canvas id="ch-ecl-stage" height="170"></canvas></div><div class="chart-box"><div class="card-label">EAD vs ECL by Facility (top 12)</div><canvas id="ch-ecl-heat" height="170"></canvas></div>';
   setTimeout(()=>{
-    mkChart('ch-eq1',{type:'doughnut',data:{labels:['Share Capital','Retained Earnings','Other Reserves'],datasets:[{data:[e.shareCapital,e.retainedEarnings,e.otherReserves],backgroundColor:['#00c9a7','#22c55e','#a78bfa'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-    mkChart('ch-eq2',{type:'bar',data:{labels:['Share Capital','Retained Earnings','Other Reserves','Total Debt'],datasets:[{data:[e.shareCapital,e.retainedEarnings,e.otherReserves,totalDebt],backgroundColor:['#00c9a7','#22c55e','#a78bfa','#e05252'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-ecl-stage',{type:'doughnut',data:{labels:['Stage 1','Stage 2','Stage 3'],datasets:[{data:[s1,s2,s3].map(x=>x.reduce((a,r)=>a+r.ead,0)),backgroundColor:['#22c55e','#f5a623','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'62%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+    const top=ecl.rows.slice(0,12);
+    mkChart('ch-ecl-heat',{type:'bar',data:{labels:top.map(r=>r.customer.split(' ')[0]),datasets:[{label:'EAD',data:top.map(r=>r.ead),backgroundColor:'rgba(99,179,237,.5)',borderRadius:2},{label:'ECL',data:top.map(r=>r.ecl),backgroundColor:'#f5a623',borderRadius:2}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
   },60);
-  $('equity-detail').innerHTML=`<div class="card"><div class="section-ttl" style="font-size:13px;margin-bottom:1rem">Capital Structure Detail</div>
-    <div class="tw"><table><thead><tr><th>Component</th><th class="nm">Amount (₦)</th><th class="nm">% of Funding</th><th>Rate / Target</th><th>Notes</th></tr></thead><tbody>
-      <tr><td>Share Capital (Paid-up)</td><td class="nm" style="color:var(--t)">₦${fN(e.shareCapital)}</td><td class="nm">${V>0?(e.shareCapital/V*100).toFixed(1)+'%':'—'}</td><td style="color:var(--pu)">Ke = ${e.costOfEquity}%</td><td style="color:var(--tx3);font-size:11px">Equity capital injected</td></tr>
-      <tr><td>Retained Earnings</td><td class="nm" style="color:var(--gr)">₦${fN(e.retainedEarnings)}</td><td class="nm">${V>0?(e.retainedEarnings/V*100).toFixed(1)+'%':'—'}</td><td style="color:var(--pu)">Ke = ${e.costOfEquity}%</td><td style="color:var(--tx3);font-size:11px">Cumulative retained profits</td></tr>
-      <tr><td>Other Reserves</td><td class="nm" style="color:var(--am)">₦${fN(e.otherReserves)}</td><td class="nm">${V>0?(e.otherReserves/V*100).toFixed(1)+'%':'—'}</td><td style="color:var(--pu)">Ke = ${e.costOfEquity}%</td><td style="color:var(--tx3);font-size:11px">Statutory / fair value reserves</td></tr>
-      <tr><td>Total Borrowings</td><td class="nm" style="color:var(--rd)">₦${fN(totalDebt)}</td><td class="nm">${V>0?(totalDebt/V*100).toFixed(1)+'%':'—'}</td><td style="color:var(--bl)">Kd = ${pct(wacd)}</td><td style="color:var(--tx3);font-size:11px">${_borrowCache.length} facilities</td></tr>
-      <tr class="trt"><td>Total Funding Base</td><td class="nm">₦${fN(V)}</td><td class="nm">100%</td><td style="color:var(--t)">WACC = ${pct(wacc)}</td><td style="color:var(--t);font-size:11px">After 30% tax shield on Kd</td></tr>
-    </tbody></table></div></div>`;
+  const sc=r=>r.stage===1?'ps1':r.stage===2?'ps2':'ps3';
+  $('ecl-table').innerHTML='<div class="tw"><table>'+
+    '<thead><tr>'+(!_selLoans.size&&loans.some(l=>!isSampleId(l._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="loans" data-selall="'+encodeURIComponent(JSON.stringify(loans.filter(l=>!isSampleId(l._id)).map(l=>l._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>Loan ID</th><th>Customer</th><th>Stage</th><th class="nm">EAD (&#8358;)</th><th class="nm">PD</th><th class="nm">LGD</th><th class="nm">ECL (&#8358;)</th><th class="nm">ECL Rate</th></tr></thead>'+
+    '<tbody>'+ecl.rows.map(r=>'<tr>'+
+      '<td style="font-family:var(--mo);color:var(--t)">'+r.loanId+'</td><td>'+r.customer+'</td>'+
+      '<td><span class="pl '+sc(r)+'">Stage '+r.stage+'</span></td>'+
+      '<td class="nm">'+fmt(r.ead)+'</td>'+
+      '<td class="nm" style="color:'+(r.pd>.5?'#e05252':r.pd>.1?'#f5a623':'#22c55e')+'">'+pct(r.pd*100)+'</td>'+
+      '<td class="nm">'+pct(r.lgd*100)+'</td>'+
+      '<td class="nm" style="color:'+(r.ecl>50?'#e05252':r.ecl>20?'#f5a623':'#22c55e')+'">'+fN(r.ecl)+'</td>'+
+      '<td class="nm" style="color:'+(r.eclRate>50?'#e05252':r.eclRate>15?'#f5a623':'#00c9a7')+'">'+r.eclRate.toFixed(2)+'%</td>'+
+    '</tr>').join('')+
+    '<tr class="trt"><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">'+fN(ecl.ead)+'</td><td></td><td></td><td class="nm">'+fN(ecl.total)+'</td><td class="nm">'+pct(ecl.coverage)+'</td></tr>'+
+    '</tbody></table></div>';
+  $('ecl-export-btn').disabled=false;
+  toast('ECL computed \u2014 '+fmt(ecl.total)+' across '+ecl.rows.length+' loans.');
 }
-function openEquityModal(){
-  const e=_equityData;
-  openModal('Update Equity & Capital Data',
-    '<div class="merr" id="eq-err"></div>'+
-    '<div class="nt-info" style="margin-bottom:1rem">Stored locally in your browser. Used for WACC computation and board advisory. Enter all figures in Naira (₦).</div>'+
-    '<div class="fg"><div class="fld"><label>Share Capital — Paid-up (₦) *</label><input class="finput" type="number" id="eq-cap" value="'+e.shareCapital+'" min="0" step="1000000" placeholder="e.g. 500000000"></div>'+
-    '<div class="fld"><label>Retained Earnings (₦)</label><input class="finput" type="number" id="eq-ret" value="'+e.retainedEarnings+'" min="0" step="1000000" placeholder="0"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Other Reserves (₦)</label><input class="finput" type="number" id="eq-res" value="'+e.otherReserves+'" min="0" step="1000000" placeholder="0"></div>'+
-    '<div class="fld"><label>Cost of Equity — Ke (%)</label><input class="finput" type="number" id="eq-ke" value="'+e.costOfEquity+'" min="0" max="100" step="0.5" placeholder="e.g. 20"></div></div>'+
-    '<div class="nt" style="font-size:11px"><strong>Cost of Equity guidance:</strong> For Nigerian entities, Ke is typically the risk-free rate (91-day T-Bill ~20%) plus an equity risk premium of 3–7%, giving a range of 23–27%. For microfinance or fintech, use 20–25%.</div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveEquity()"><span id="eq-save-txt">Save</span></button>');
+function updateStress(v){
+  if(!fmCanEdit('ecl'))return;
+  _eclMult=1+v/100;
+  const el=$('pd-val');if(el){el.textContent=(v>0?'+':'')+v+'%';el.style.color=v>0?'#e05252':'#22c55e';}
+  if(_eclResults.length){
+    const e=calcECL(_loansCache.length?_loansCache:SL,_eclMult);
+    $('stress-result').innerHTML='Stressed ECL: <span style="font-family:var(--mo);color:var(--am)">\u20a6'+fN(e.total)+'M</span> \u00b7 Coverage: <span style="font-family:var(--mo);color:var(--t)">'+pct(e.coverage)+'</span>';
+  }
 }
-function saveEquity(){
-  const err=$('eq-err');err.classList.remove('on');
-  const sc=parseFloat($('eq-cap').value)||0;
-  if(!sc){err.textContent='Share capital is required.';err.classList.add('on');return;}
-  _equityData={shareCapital:sc,retainedEarnings:parseFloat($('eq-ret').value)||0,otherReserves:parseFloat($('eq-res').value)||0,costOfEquity:parseFloat($('eq-ke').value)||20};
-  try{localStorage.setItem('fm_equity',JSON.stringify(_equityData));}catch(x){}
-  closeModal();toast('Capital data saved.');loadEquity();
+function exportECLExcel(){
+  if(!_eclResults.length){toast('Run Compute ECL first.','err');return;}
+  const wb=XLSX.utils.book_new();
+  const rows=_eclResults.map(r=>({'Loan ID':r.loanId,'Customer':r.customer,'Stage':'Stage '+r.stage,'EAD (NGN)':+r.ead.toFixed(2),'PD (%)':+(r.pd*100).toFixed(4),'LGD (%)':+(r.lgd*100).toFixed(2),'ECL (NGN)':+r.ecl.toFixed(2),'ECL Rate (%)':r.eclRate,'DPD':r.daysPastDue,'Maturity':fD(r.maturityDate)}));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws['!cols']=[10,28,8,12,10,8,12,10,6,12].map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb,ws,'ECL Results');
+  XLSX.writeFile(wb,'FM-IFRS9-ECL-'+ts()+'.xlsx');
+  toast('ECL Excel exported.');
 }
 
 // ── BORROWINGS ────────────────────────────────────────────────
 async function loadBorrowings(){
-  $('borrowings-kpis').innerHTML='<div class="loading-row">Loading…</div>';
+  _selBorrow.clear();
+  $('borrowings-kpis').innerHTML='<div class="loading-row">Loading...</div>';
+  $('borrowings-view-banner').innerHTML=fmViewOnlyBanner('borrowings','Borrowings');
   try{const d=await api('/treasury/borrowings');if(d.borrowings?.length)_borrowCache=d.borrowings;}catch(e){}
+  if(!_borrowCache.length)_borrowCache=SB;
   renderBorrowings();
 }
 function renderBorrowings(){
   const b=_borrowCache,total=b.reduce((s,x)=>s+x.outstanding,0);
-  const wacd=total>0?b.reduce((a,x)=>a+(x.outstanding/total)*x.interestRate,0):0;
-  const nearest=b.slice().sort((a,c)=>new Date(a.maturityDate)-new Date(c.maturityDate))[0];
+  const wacd=b.reduce((a,x)=>a+(x.outstanding/total)*x.interestRate,0);
   $('borrowings-kpis').innerHTML=[
-    {l:'Total Debt',v:fmt(total),c:'rd',sub:b.length+' facilities'},
+    {l:'Total Debt',v:fmt(total),c:'pu',ac:true},
     {l:'WACD',v:pct(wacd),c:'am',sub:'Weighted avg cost of debt'},
-    {l:'Next Maturity',v:nearest?fD(nearest.maturityDate):'—',c:'bl',sub:nearest?nearest.lender:''},
-    {l:'Bullet Facilities',v:b.filter(x=>x.repayment==='Bullet').length,c:'pu',sub:'Bullet repayment'},
-  ].map(k=>'<div class="kpi '+k.c+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
-  const now=new Date();
+    {l:'Facilities',v:b.length,c:'tl',sub:'Active borrowings'},
+    {l:'Interco. Debt',v:fmt(b.find(x=>x.type==='Intercompany Loan')?.outstanding||0),c:'bl',sub:'Intercompany'},
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  const now=new Date('2024-06-01');
+  const md=b.map(x=>({n:x.lender.split(' ')[0],v:x.outstanding,d:Math.max(0,(new Date(x.maturityDate)-now)/86400000)})).sort((a,b)=>a.d-b.d);
   const typeMap={};b.forEach(x=>{typeMap[x.type]=(typeMap[x.type]||0)+x.outstanding;});
-  $('borrowings-charts').innerHTML='<div class="chart-box"><div class="card-label">Debt Maturity Profile</div><canvas id="ch-bwm" height="170"></canvas></div><div class="chart-box"><div class="card-label">Debt by Facility Type</div><canvas id="ch-bwt" height="170"></canvas></div>';
+  $('borrowings-charts').innerHTML='<div class="chart-box"><div class="card-label">Debt Maturity Profile</div><canvas id="ch-bw-mat" height="170"></canvas></div><div class="chart-box"><div class="card-label">Debt by Facility Type</div><canvas id="ch-bw-type" height="170"></canvas></div>';
   setTimeout(()=>{
-    const md=b.map(x=>({n:x.lender.split(' ')[0],v:x.outstanding,d:Math.max(0,(new Date(x.maturityDate)-now)/86400000)})).sort((a,c)=>a.d-c.d);
-    mkChart('ch-bwm',{type:'bar',data:{labels:md.map(x=>x.n),datasets:[{data:md.map(x=>x.v),backgroundColor:md.map(x=>x.d<180?'#e05252':x.d<360?'#f5a623':'#00c9a7'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-bwt',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+    mkChart('ch-bw-mat',{type:'bar',data:{labels:md.map(x=>x.n),datasets:[{data:md.map(x=>x.v),backgroundColor:md.map(x=>x.d<180?'#e05252':x.d<360?'#f5a623':'#00c9a7'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-bw-type',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  $('borrowings-table-wrap').innerHTML='<div class="card-label">Borrowings Schedule</div><div class="tw"><table>'+
-    '<thead><tr><th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding (₦)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Repayment</th><th>Maturity</th><th></th></tr></thead>'+
-    '<tbody>'+b.map(x=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+x.borrowingId+'</td><td><strong>'+x.lender+'</strong></td>'+
+  const canEdit=fmCanEdit('borrowings');
+  $('borrowings-table-wrap').innerHTML=(canEdit?bulkBar('borrowings',_selBorrow,b.length):'')+'<div class="card-label">Borrowings Schedule</div><div class="tw"><table>'+
+    '<thead><tr>'+(canEdit&&!_selBorrow.size&&b.some(x=>!isSampleId(x._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="borrowings" data-selall="'+encodeURIComponent(JSON.stringify(b.filter(x=>!isSampleId(x._id)).map(x=>x._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding (&#8358;)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Repayment</th><th>Maturity</th><th></th></tr></thead>'+
+    '<tbody>'+b.map(x=>
+      (_selBorrow.has(x._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(!canEdit||isSampleId(x._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="borrowings" data-selid="'+x._id+'" '+(_selBorrow.has(x._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+x.borrowingId+'</td><td><strong>'+x.lender+'</strong></td>'+
       '<td style="color:var(--tx2)">'+x.type+'</td>'+
       '<td class="nm">'+fmt(x.outstanding)+'</td>'+
-      '<td class="nm" style="color:'+(x.interestRate>20?'#e05252':x.interestRate>16?'#f5a623':'#22c55e')+'">'+x.interestRate+'%</td>'+
+      '<td class="nm" style="font-family:var(--mo);color:'+(x.interestRate>20?'#e05252':x.interestRate>16?'#f5a623':'#22c55e')+'">'+x.interestRate+'%</td>'+
       '<td class="nm" style="font-family:var(--mo)">'+x.tenorMonths+'mo</td>'+
       '<td style="color:var(--tx2)">'+x.repayment+'</td>'+
       '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(x.maturityDate)+'</td>'+
       '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openBorrowingModal(\''+x._id+'\')" style="padding:4px 8px" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteBorrowing(\''+x._id+'\')" style="padding:4px 8px" title="Delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-      '</div></td></tr>').join('')+
-    '<tr class="trt"><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">'+fmt(total)+'</td><td class="nm">'+pct(wacd)+'</td><td colspan="4"></td></tr>'+
-    '</tbody></table></div>';
+        (canEdit?('<button class="bsm" onclick="openBorrowingModal(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteBorrowing(\''+x._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'):'<span style="color:var(--tx3);font-family:var(--mo);font-size:10px">view only</span>')+
+      '</div></td></tr>').join('')+'</tbody></table></div>';
 }
 function openBorrowingModal(id){
-  const x=id?_borrowCache.find(b=>b._id===id):null;
+  if(!fmCanEdit('borrowings')){toast('You have view-only access to Borrowings.','err');return;}
+  const realId=isSampleId(id)?null:id;
+  const x=realId?_borrowCache.find(b=>b._id===realId):null;
   openModal(x?'Edit Facility':'Add Borrowing Facility',
     '<div class="merr" id="bw-err"></div>'+
     '<div class="fg"><div class="fld"><label>Borrowing ID *</label><input class="finput" id="bw-id" value="'+(x?.borrowingId||'')+'"></div>'+
     '<div class="fld"><label>Lender *</label><input class="finput" id="bw-lender" value="'+(x?.lender||'')+'"></div></div>'+
-    '<div class="fg"><div class="fld"><label>Facility Type</label><select class="finput" id="bw-type">'+
+    '<div class="fg"><div class="fld"><label>Facility Type *</label><select class="finput" id="bw-type">'+
     ['Term Loan','Overdraft Facility','On-lending Facility','SME Fund','Wholesale Borrowing','Intercompany Loan'].map(t=>'<option '+(x?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
     '<div class="fld"><label>Repayment</label><select class="finput" id="bw-rep">'+
     ['Monthly','Quarterly','Bullet','Revolving','Semi-annual'].map(t=>'<option '+(x?.repayment===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (₦)</label><input class="finput" type="number" id="bw-prin" value="'+(x?.principal||'')+'"></div>'+
-    '<div class="fld"><label>Outstanding (₦)</label><input class="finput" type="number" id="bw-out" value="'+(x?.outstanding||'')+'"></div></div>'+
+    '<div class="fg"><div class="fld"><label>Principal (&#8358;)</label><input class="finput" type="number" id="bw-principal" value="'+(x?.principal||'')+'"></div>'+
+    '<div class="fld"><label>Outstanding (&#8358;)</label><input class="finput" type="number" id="bw-outstanding" value="'+(x?.outstanding||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="bw-rate" value="'+(x?.interestRate||'')+'"></div>'+
     '<div class="fld"><label>Tenor (months)</label><input class="finput" type="number" id="bw-tenor" value="'+(x?.tenorMonths||'')+'"></div></div>'+
     '<div class="fld"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="'+(x?.maturityDate?.slice(0,10)||'')+'"></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing(\''+( x?x._id:'')+'\')"><span id="bw-sv">'+(x?'Save Changes':'Add Facility')+'</span></button>');
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing(\''+realId+'\')"><span id="bw-save-txt">'+(x?'Save Changes':'Add Facility')+'</span></button>');
 }
 async function saveBorrowing(id){
   const err=$('bw-err');err.classList.remove('on');
-  const p={borrowingId:$('bw-id').value.trim(),lender:$('bw-lender').value.trim(),type:$('bw-type').value,repayment:$('bw-rep').value,principal:+$('bw-prin').value,outstanding:+$('bw-out').value,interestRate:+$('bw-rate').value,tenorMonths:+$('bw-tenor').value,maturityDate:$('bw-mat').value};
+  const p={borrowingId:$('bw-id').value.trim(),lender:$('bw-lender').value.trim(),type:$('bw-type').value,repayment:$('bw-rep').value,principal:+$('bw-principal').value,outstanding:+$('bw-outstanding').value,interestRate:+$('bw-rate').value,tenorMonths:+$('bw-tenor').value,maturityDate:$('bw-mat').value};
   if(!p.borrowingId||!p.lender){err.textContent='ID and lender required.';err.classList.add('on');return;}
-  $('bw-sv').textContent='Saving…';
+  const isEdit=!isSampleId(id);
+  $('bw-save-txt').textContent='Saving...';
   try{
-    if(id)await api('/treasury/borrowings/'+id,{method:'PUT',body:JSON.stringify(p)});
+    if(isEdit)await api('/treasury/borrowings/'+id,{method:'PUT',body:JSON.stringify(p)});
     else await api('/treasury/borrowings',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id?'Facility updated.':'Facility added.');loadBorrowings();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('bw-sv').textContent=id?'Save Changes':'Add Facility';}
+    closeModal();toast(isEdit?'Facility updated.':'Facility added.');loadBorrowings();
+  }catch(e){err.textContent=e.message;err.classList.add('on');$('bw-save-txt').textContent=isEdit?'Save Changes':'Add Facility';}
 }
 async function deleteBorrowing(id){
-  if(!confirm('Delete this facility? This cannot be undone.'))return;
+  if(!fmCanEdit('borrowings')){toast('You have view-only access to Borrowings.','err');return;}
+  if(isSampleId(id)){toast('Sample data cannot be deleted. Add real facilities via the form or CSV upload.','err');return;}
+  if(!confirm('Delete this facility?'))return;
   try{await api('/treasury/borrowings/'+id,{method:'DELETE'});toast('Deleted.');loadBorrowings();}catch(e){toast(e.message,'err');}
 }
-
 // ── INVESTMENTS ───────────────────────────────────────────────
 async function loadInvestments(){
-  $('investments-kpis').innerHTML='<div class="loading-row">Loading…</div>';
+  _selInv.clear();
+  $('investments-kpis').innerHTML='<div class="loading-row">Loading...</div>';
+  $('investments-view-banner').innerHTML=fmViewOnlyBanner('investments','Investments');
   try{const d=await api('/treasury/investments');if(d.investments?.length)_invCache=d.investments;}catch(e){}
+  if(!_invCache.length)_invCache=SI;
   renderInvestments();
 }
 function renderInvestments(){
   const inv=_invCache,total=inv.reduce((s,i)=>s+i.principal,0);
   const interest=inv.reduce((a,i)=>a+i.principal*(i.interestRate/100)*(i.tenorDays/365),0);
-  const avgY=total>0?inv.reduce((a,i)=>a+(i.principal/total)*i.interestRate,0):0;
+  const avgY=inv.reduce((a,i)=>a+(i.principal/total)*i.interestRate,0);
   $('investments-kpis').innerHTML=[
-    {l:'Portfolio Value',v:fmt(total),c:'tl',ac:true,sub:inv.length+' instruments'},
-    {l:'Projected Interest',v:fmt(interest),c:'am',sub:'Estimated full-tenor yield'},
-    {l:'Weighted Avg Yield',v:pct(avgY),c:'gr',sub:'WARA on investments'},
-    {l:'Short-tenor (<90d)',v:fmt(inv.filter(i=>i.tenorDays<=90).reduce((s,i)=>s+i.principal,0)),c:'bl',sub:'Liquid within 90 days'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
+    {l:'Portfolio Value',v:fmt(total),c:'tl',ac:true},
+    {l:'Projected Interest',v:fmt(interest),c:'am',sub:'Full tenor'},
+    {l:'Avg. Yield',v:pct(avgY),c:'gr',sub:'Weighted avg.'},
+    {l:'Instruments',v:inv.length,c:'bl',sub:'Active placements'},
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
   const typeMap={};inv.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
-  $('investments-charts').innerHTML='<div class="chart-box"><div class="card-label">Maturity Ladder — Principal + Interest</div><canvas id="ch-ivl" height="170"></canvas></div><div class="chart-box"><div class="card-label">Portfolio Mix</div><canvas id="ch-ivm" height="170"></canvas></div>';
+  $('investments-charts').innerHTML='<div class="chart-box"><div class="card-label">Maturity Ladder \u2014 Principal + Interest (\u20a6M)</div><canvas id="ch-inv-ladder" height="170"></canvas></div><div class="chart-box"><div class="card-label">Portfolio Mix</div><canvas id="ch-inv-mix" height="170"></canvas></div>';
   setTimeout(()=>{
-    mkChart('ch-ivl',{type:'bar',data:{labels:inv.map(i=>i.counterparty.split(' ')[0]),datasets:[{label:'Principal',data:inv.map(i=>i.principal),backgroundColor:'#00c9a7',stack:'a'},{label:'Interest',data:inv.map(i=>+(i.principal*(i.interestRate/100)*(i.tenorDays/365)).toFixed(2)),backgroundColor:'#f5a623',borderRadius:4,stack:'a'}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}},y:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-ivm',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+    mkChart('ch-inv-ladder',{type:'bar',data:{labels:inv.map(i=>i.counterparty.split(' ')[0]),datasets:[{label:'Principal',data:inv.map(i=>i.principal),backgroundColor:'#00c9a7',stack:'a'},{label:'Interest',data:inv.map(i=>+(i.principal*(i.interestRate/100)*(i.tenorDays/365)).toFixed(2)),backgroundColor:'#f5a623',borderRadius:4,stack:'a'}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}},y:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-inv-mix',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  $('investments-table-wrap').innerHTML='<div class="card-label">Investment Schedule</div><div class="tw"><table>'+
-    '<thead><tr><th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal (₦)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest (₦)</th><th></th></tr></thead>'+
-    '<tbody>'+inv.map(i=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+i.investmentId+'</td><td><strong>'+i.counterparty+'</strong></td>'+
+  const canEdit=fmCanEdit('investments');
+  $('investments-table-wrap').innerHTML=(canEdit?bulkBar('investments',_selInv,inv.length):'')+'<div class="card-label">Investment Schedule</div><div class="tw"><table>'+
+    '<thead><tr>'+(canEdit&&!_selInv.size&&inv.some(i=>!isSampleId(i._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="investments" data-selall="'+encodeURIComponent(JSON.stringify(inv.filter(i=>!isSampleId(i._id)).map(i=>i._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal (&#8358;)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest (&#8358;)</th><th></th></tr></thead>'+
+    '<tbody>'+inv.map(i=>
+      (_selInv.has(i._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(!canEdit||isSampleId(i._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="investments" data-selid="'+i._id+'" '+(_selInv.has(i._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+i.investmentId+'</td><td><strong>'+i.counterparty+'</strong></td>'+
       '<td style="color:var(--tx2)">'+i.type+'</td>'+
       '<td class="nm">'+fmt(i.principal)+'</td>'+
       '<td class="nm" style="font-family:var(--mo);color:#22c55e">'+i.interestRate+'%</td>'+
@@ -940,198 +928,336 @@ function renderInvestments(){
       '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.maturityDate)+'</td>'+
       '<td class="nm" style="color:#f5a623">'+fmt(i.principal*(i.interestRate/100)*(i.tenorDays/365))+'</td>'+
       '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openInvestmentModal(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteInvestment(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-      '</div></td></tr>').join('')+
-    '<tr class="trt"><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">'+fmt(total)+'</td><td class="nm">'+pct(avgY)+'</td><td colspan="5"></td></tr>'+
-    '</tbody></table></div>';
+        (canEdit?('<button class="bsm" onclick="openInvestmentModal(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteInvestment(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'):'<span style="color:var(--tx3);font-family:var(--mo);font-size:10px">view only</span>')+
+      '</div></td></tr>').join('')+'</tbody></table></div>';
 }
 function openInvestmentModal(id){
-  const i=id?_invCache.find(x=>x._id===id):null;
+  if(!fmCanEdit('investments')){toast('You have view-only access to Investments.','err');return;}
+  const realId=isSampleId(id)?null:id;
+  const i=realId?_invCache.find(x=>x._id===realId):null;
   openModal(i?'Edit Investment':'Add Investment',
-    '<div class="merr" id="iv-err"></div>'+
+    '<div class="merr" id="inv2-err"></div>'+
     '<div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="'+(i?.investmentId||'')+'"></div>'+
     '<div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="'+(i?.counterparty||'')+'"></div></div>'+
     '<div class="fld"><label>Type</label><select class="finput" id="ii-type">'+
     ['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
-    '<div class="fg"><div class="fld"><label>Principal (₦) *</label><input class="finput" type="number" id="ii-prin" value="'+(i?.principal||'')+'"></div>'+
+    '<div class="fg"><div class="fld"><label>Principal (&#8358;) *</label><input class="finput" type="number" id="ii-principal" value="'+(i?.principal||'')+'"></div>'+
     '<div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="ii-rate" value="'+(i?.interestRate||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="'+(i?.dateInvested?.slice(0,10)||'')+'"></div>'+
     '<div class="fld"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="'+(i?.tenorDays||'')+'"></div></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment(\''+( i?i._id:'')+'\')"><span id="ii-sv">'+(i?'Save Changes':'Add Investment')+'</span></button>');
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment(\''+realId+'\')"><span id="ii-save-txt">'+(i?'Save Changes':'Add Investment')+'</span></button>');
 }
 async function saveInvestment(id){
-  const err=$('iv-err');err.classList.remove('on');
-  const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-prin').value,interestRate:+$('ii-rate').value,dateInvested:$('ii-date').value,tenorDays:+$('ii-days').value};
+  const err=$('inv2-err');err.classList.remove('on');
+  const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-principal').value,interestRate:+$('ii-rate').value,dateInvested:$('ii-date').value,tenorDays:+$('ii-days').value};
   if(!p.investmentId||!p.counterparty||!p.principal){err.textContent='ID, counterparty and principal required.';err.classList.add('on');return;}
-  $('ii-sv').textContent='Saving…';
+  const isEdit=!isSampleId(id);
+  $('ii-save-txt').textContent='Saving...';
   try{
-    if(id)await api('/treasury/investments/'+id,{method:'PUT',body:JSON.stringify(p)});
+    if(isEdit)await api('/treasury/investments/'+id,{method:'PUT',body:JSON.stringify(p)});
     else await api('/treasury/investments',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id?'Updated.':'Investment added.');loadInvestments();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('ii-sv').textContent=id?'Save Changes':'Add Investment';}
+    closeModal();toast(isEdit?'Updated.':'Investment added.');loadInvestments();
+  }catch(e){err.textContent=e.message;err.classList.add('on');$('ii-save-txt').textContent=isEdit?'Save Changes':'Add Investment';}
 }
 async function deleteInvestment(id){
+  if(!fmCanEdit('investments')){toast('You have view-only access to Investments.','err');return;}
+  if(isSampleId(id)){toast('Sample data cannot be deleted. Add real investments via the form or CSV upload.','err');return;}
   if(!confirm('Delete this investment?'))return;
   try{await api('/treasury/investments/'+id,{method:'DELETE'});toast('Deleted.');loadInvestments();}catch(e){toast(e.message,'err');}
 }
 
 // ── CASH ──────────────────────────────────────────────────────
 async function loadCash(){
-  $('cash-kpis').innerHTML='<div class="loading-row">Loading…</div>';
+  _selCash.clear();
+  $('cash-kpis').innerHTML='<div class="loading-row">Loading...</div>';
+  $('cash-view-banner').innerHTML=fmViewOnlyBanner('cash','Cash Position');
   try{const d=await api('/treasury/cash');if(d.accounts?.length)_cashCache=d.accounts;}catch(e){}
+  if(!_cashCache.length)_cashCache=SC;
   renderCash();
 }
 function renderCash(){
   const ca=_cashCache,ngn=ca.filter(a=>a.currency==='NGN'),usd=ca.filter(a=>a.currency==='USD');
   const totalNGN=ngn.reduce((s,a)=>s+a.balance,0),unres=ngn.filter(a=>!a.restricted).reduce((s,a)=>s+a.balance,0);
   $('cash-kpis').innerHTML=[
-    {l:'Total NGN Cash',v:fmt(totalNGN),c:'tl',ac:true,sub:'All NGN accounts'},
-    {l:'Unrestricted',v:fmt(unres),c:'gr',sub:'Available for deployment'},
-    {l:'Restricted',v:fmt(totalNGN-unres),c:'rd',sub:'Encumbered/pledged'},
-    {l:'FX Holdings (USD)',v:fmt(usd.reduce((s,a)=>s+a.balance,0)),c:'am',sub:'USD accounts'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
-  $('cash-charts').innerHTML='<div class="chart-box"><div class="card-label">Cash by Bank (NGN)</div><canvas id="ch-cbn" height="170"></canvas></div><div class="chart-box"><div class="card-label">Restricted vs Unrestricted</div><canvas id="ch-crs" height="170"></canvas></div>';
+    {l:'Total NGN Cash',v:fmt(totalNGN),c:'tl',ac:true},
+    {l:'Unrestricted',v:fmt(unres),c:'gr',sub:'Available for use'},
+    {l:'Restricted',v:fmt(totalNGN-unres),c:'rd',sub:'Encumbered'},
+    {l:'FX Holdings (USD)',v:fmt(usd.reduce((s,a)=>s+a.balance,0)),c:'am'},
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  $('cash-charts').innerHTML='<div class="chart-box"><div class="card-label">Cash by Bank (NGN, \u20a6M)</div><canvas id="ch-cash-bank" height="170"></canvas></div><div class="chart-box"><div class="card-label">Restricted vs Unrestricted</div><canvas id="ch-cash-rest" height="170"></canvas></div>';
   setTimeout(()=>{
-    mkChart('ch-cbn',{type:'bar',data:{labels:ngn.map(a=>a.bank.split(' ')[0]),datasets:[{data:ngn.map(a=>a.balance),backgroundColor:ngn.map((a,i)=>a.restricted?'#e05252':PAL[i%PAL.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-crs',{type:'doughnut',data:{labels:['Unrestricted','Restricted'],datasets:[{data:[unres||0.01,totalNGN-unres||0.01],backgroundColor:['#22c55e','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+    mkChart('ch-cash-bank',{type:'bar',data:{labels:ngn.map(a=>a.bank.split(' ')[0]),datasets:[{data:ngn.map(a=>a.balance),backgroundColor:ngn.map((a,i)=>a.restricted?'#e05252':PAL[i%PAL.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-cash-rest',{type:'doughnut',data:{labels:['Unrestricted','Restricted'],datasets:[{data:[unres,totalNGN-unres],backgroundColor:['#22c55e','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  $('cash-table-wrap').innerHTML='<div class="card-label">Bank Account Balances</div><div class="tw"><table>'+
-    '<thead><tr><th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance</th><th>Status</th><th></th></tr></thead>'+
-    '<tbody>'+ca.map(a=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+a.accountId+'</td><td><strong>'+a.bank+'</strong></td>'+
+  const canEdit=fmCanEdit('cash');
+  $('cash-table-wrap').innerHTML=(canEdit?bulkBar('cash',_selCash,ca.length):'')+'<div class="card-label">Bank Account Balances</div><div class="tw"><table>'+
+    '<thead><tr>'+(canEdit&&!_selCash.size&&ca.some(a=>!isSampleId(a._id))?'<th style="width:32px;text-align:center"><input type="checkbox" data-selmodule="cash" data-selall="'+encodeURIComponent(JSON.stringify(ca.filter(a=>!isSampleId(a._id)).map(a=>a._id)))+'" style="accent-color:var(--t);cursor:pointer"></th>':'<th style="width:32px"></th>')+'<th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance (&#8358;)</th><th>Status</th><th></th></tr></thead>'+
+    '<tbody>'+ca.map(a=>
+      (_selCash.has(a._id)?'<tr style="background:rgba(224,82,82,.07)">':'<tr>')+(!canEdit||isSampleId(a._id)?'<td style="width:32px"></td>':'<td style="text-align:center"><input type="checkbox" data-selmodule="cash" data-selid="'+a._id+'" '+(_selCash.has(a._id)?'checked ':'')+' style="accent-color:var(--t);cursor:pointer"></td>')+'<td style="font-family:var(--mo);color:var(--t)">'+a.accountId+'</td><td><strong>'+a.bank+'</strong></td>'+
       '<td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">'+a.accountNo+'</td>'+
       '<td style="color:var(--tx2)">'+a.type+'</td>'+
       '<td style="font-family:var(--mo);color:'+(a.currency==='USD'?'#f5a623':'inherit')+'">'+a.currency+'</td>'+
       '<td class="nm">'+fmt(a.balance)+'</td>'+
-      '<td><span class="pl '+(a.restricted?'pr':'pg')+'">'+(a.restricted?'🔒 Restricted':'✓ Available')+'</span></td>'+
+      '<td><span class="pl '+(a.restricted?'pr':'pg')+'">'+(a.restricted?'&#128274; Restricted':'&#10003; Available')+'</span></td>'+
       '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openCashModal(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteCash(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-      '</div></td></tr>').join('')+
-    '<tr class="trt"><td colspan="5" style="text-align:right">TOTAL NGN</td><td class="nm">'+fmt(totalNGN)+'</td><td colspan="2"></td></tr>'+
-    '</tbody></table></div>';
+        (canEdit?('<button class="bsm" onclick="openCashModal(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
+        '<button class="bsm bd" onclick="deleteCash(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'):'<span style="color:var(--tx3);font-family:var(--mo);font-size:10px">view only</span>')+
+      '</div></td></tr>').join('')+'</tbody></table></div>';
 }
 function openCashModal(id){
-  const a=id?_cashCache.find(x=>x._id===id):null;
+  if(!fmCanEdit('cash')){toast('You have view-only access to Cash Position.','err');return;}
+  const realId=isSampleId(id)?null:id;
+  const a=realId?_cashCache.find(x=>x._id===realId):null;
   openModal(a?'Edit Account':'Add Cash Account',
     '<div class="merr" id="ca-err"></div>'+
     '<div class="fg"><div class="fld"><label>Account ID *</label><input class="finput" id="ca-id" value="'+(a?.accountId||'')+'"></div>'+
     '<div class="fld"><label>Bank Name *</label><input class="finput" id="ca-bank" value="'+(a?.bank||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Account Number</label><input class="finput" id="ca-acct" value="'+(a?.accountNo||'')+'"></div>'+
-    '<div class="fld"><label>Account Type</label><select class="finput" id="ca-type">'+['Current','Savings','Dom (USD)','Dom (EUR)'].map(t=>'<option '+(a?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
-    '<div class="fg"><div class="fld"><label>Currency</label><select class="finput" id="ca-ccy">'+['NGN','USD','EUR','GBP'].map(t=>'<option '+(a?.currency===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
+    '<div class="fld"><label>Account Type</label><select class="finput" id="ca-type">'+
+    ['Current','Savings','Dom (USD)','Dom (EUR)'].map(t=>'<option '+(a?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
+    '<div class="fg"><div class="fld"><label>Currency</label><select class="finput" id="ca-ccy">'+
+    ['NGN','USD','EUR','GBP'].map(t=>'<option '+(a?.currency===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
     '<div class="fld"><label>Balance</label><input class="finput" type="number" id="ca-bal" value="'+(a?.balance||0)+'" min="0" step="0.01"></div></div>'+
-    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ca-rest" '+(a?.restricted?'checked':'')+' style="accent-color:var(--t)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo);text-transform:none;letter-spacing:0">Mark as Restricted</span></label></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash(\''+( a?a._id:'')+'\')"><span id="ca-sv">'+(a?'Save Changes':'Add Account')+'</span></button>');
+    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ca-rest" '+(a?.restricted?'checked':'')+' style="accent-color:var(--t)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo);text-transform:none;letter-spacing:0">Mark as Restricted (encumbered/pledged)</span></label></div>',
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash(\''+realId+'\')"><span id="ca-save-txt">'+(a?'Save Changes':'Add Account')+'</span></button>');
 }
 async function saveCash(id){
   const err=$('ca-err');err.classList.remove('on');
   const p={accountId:$('ca-id').value.trim(),bank:$('ca-bank').value.trim(),accountNo:$('ca-acct').value.trim(),type:$('ca-type').value,currency:$('ca-ccy').value,balance:+$('ca-bal').value,restricted:$('ca-rest').checked};
   if(!p.accountId||!p.bank){err.textContent='Account ID and bank required.';err.classList.add('on');return;}
-  $('ca-sv').textContent='Saving…';
+  const isEdit=!isSampleId(id);
+  $('ca-save-txt').textContent='Saving...';
   try{
-    if(id)await api('/treasury/cash/'+id,{method:'PUT',body:JSON.stringify(p)});
+    if(isEdit)await api('/treasury/cash/'+id,{method:'PUT',body:JSON.stringify(p)});
     else await api('/treasury/cash',{method:'POST',body:JSON.stringify(p)});
-    closeModal();toast(id?'Account updated.':'Account added.');loadCash();
-  }catch(e){err.textContent=e.message;err.classList.add('on');$('ca-sv').textContent=id?'Save Changes':'Add Account';}
+    closeModal();toast(isEdit?'Account updated.':'Account added.');loadCash();
+  }catch(e){err.textContent=e.message;err.classList.add('on');$('ca-save-txt').textContent=isEdit?'Save Changes':'Add Account';}
 }
 async function deleteCash(id){
+  if(!fmCanEdit('cash')){toast('You have view-only access to Cash Position.','err');return;}
+  if(isSampleId(id)){toast('Sample data cannot be deleted. Add real accounts via the form or CSV upload.','err');return;}
   if(!confirm('Delete this account?'))return;
   try{await api('/treasury/cash/'+id,{method:'DELETE'});toast('Deleted.');loadCash();}catch(e){toast(e.message,'err');}
 }
-
 // ── LIQUIDITY ─────────────────────────────────────────────────
 async function loadLiquidity(){
-  $('liq-kpis').innerHTML='<div class="loading-row">Computing…</div>';
-  if(!_debtorCache.length)await fetchReceivables();
-  await Promise.all([
-    _borrowCache.length?Promise.resolve():api('/treasury/borrowings').then(d=>{if(d.borrowings?.length)_borrowCache=d.borrowings;}).catch(()=>{}),
-    _invCache.length?Promise.resolve():api('/treasury/investments').then(d=>{if(d.investments?.length)_invCache=d.investments;}).catch(()=>{}),
-    _cashCache.length?Promise.resolve():api('/treasury/cash').then(d=>{if(d.accounts?.length)_cashCache=d.accounts;}).catch(()=>{}),
-  ]);
-  const totalCash=_cashCache.filter(a=>a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
-  const totalInv=_invCache.reduce((s,i)=>s+i.principal,0);
-  const totalDebt=_borrowCache.reduce((s,b)=>s+b.outstanding,0);
-  const totalDebtors=_debtorCache.reduce((s,d)=>s+d.totalOutstanding,0);
+  $('liq-kpis').innerHTML='<div class="loading-row">Computing...</div>';
+  const loans=_loansCache.length?_loansCache:SL;
+  const borr=_borrowCache.length?_borrowCache:SB;
+  const inv=_invCache.length?_invCache:SI;
+  const cash=_cashCache.length?_cashCache:SC;
+  const totalCash=cash.filter(a=>a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
+  const totalInv=inv.reduce((s,i)=>s+i.principal,0);
+  const totalDebt=borr.reduce((s,b)=>s+b.outstanding,0);
+  const totalLoans=loans.reduce((s,l)=>s+l.outstanding,0);
   const netLiq=totalCash+totalInv-totalDebt*.1;
-  const liqRatio=Math.max(totalDebt*.2+totalDebtors*.1,1);
-  const liqPct=(totalCash+totalInv)/liqRatio*100;
+  const liqRatio=(totalCash+totalInv)/(totalDebt*.2+totalLoans*.1)*100;
   $('liq-kpis').innerHTML=[
-    {l:'Net Liquidity',v:fmt(netLiq),c:'tl',ac:true,sub:'Cash+Inv−10% Debt'},
-    {l:'Liquidity Ratio',v:pct(liqPct),c:liqPct>100?'gr':'am',sub:'Liquid assets / Short obligations'},
-    {l:'30-Day Cash Forecast',v:fmt(totalCash+totalDebtors*.08-totalDebt*.02),c:'bl',sub:'Estimated 30d net cash'},
-    {l:'90-Day Gap',v:fmt(totalCash+totalDebtors*.14-totalDebt*.13),c:totalCash>totalDebt*.1?'gr':'rd',sub:'3-month liquidity position'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
-  const liqF=[{p:'Now',n:totalCash,c:totalCash},{p:'30d',n:totalDebtors*.08-totalDebt*.02,c:totalCash+totalDebtors*.08-totalDebt*.02},{p:'60d',n:totalDebtors*.06-totalDebt*.03,c:totalCash+totalDebtors*.14-totalDebt*.05},{p:'90d',n:-totalDebt*.08,c:totalCash+totalDebtors*.14-totalDebt*.13},{p:'120d',n:totalDebtors*.12,c:totalCash+totalDebtors*.26-totalDebt*.13},{p:'150d',n:totalInv*.15,c:totalCash+totalDebtors*.26+totalInv*.15-totalDebt*.13},{p:'180d',n:totalDebtors*.10,c:totalCash+totalDebtors*.36+totalInv*.15-totalDebt*.13}];
-  const gapD=['0-7d','8-30d','31-60d','61-90d','91-180d','181-365d'].map((p,i)=>({p,in:[totalDebtors*.04,totalDebtors*.08,totalDebtors*.12,totalDebtors*.05,totalDebtors*.15,totalDebtors*.20][i],out:[totalDebt*.02,totalDebt*.05,totalDebt*.04,totalDebt*.08,totalDebt*.03,totalDebt*.05][i]}));
-  $('liq-charts2').innerHTML='<div class="chart-box"><div class="card-label">Liquidity Gap — Inflows vs Outflows</div><canvas id="ch-lqg" height="170"></canvas></div><div class="chart-box"><div class="card-label">Liquidity Sources &amp; Obligations</div><div id="liq-src-inner" style="margin-top:.5rem"></div></div>';
+    {l:'Net Liquidity',v:fmt(netLiq),c:'tl',ac:true},
+    {l:'Liquidity Ratio',v:pct(liqRatio),c:'gr',sub:'Liquid / Obligations'},
+    {l:'30d Forecast',v:fmt(totalCash+totalLoans*.08-totalDebt*.02),c:'bl'},
+    {l:'90d Gap',v:fmt(totalCash+totalLoans*.14-totalDebt*.13),c:totalCash>totalDebt*.1?'gr':'rd'},
+  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div>'+(k.sub?'<div class="ks">'+k.sub+'</div>':'')+' </div>').join('');
+  const liqF=[
+    {p:'Now',n:totalCash,c:totalCash},
+    {p:'30d',n:totalLoans*.08-totalDebt*.02,c:totalCash+totalLoans*.08-totalDebt*.02},
+    {p:'60d',n:totalLoans*.06-totalDebt*.03,c:totalCash+totalLoans*.14-totalDebt*.05},
+    {p:'90d',n:-totalDebt*.08,c:totalCash+totalLoans*.14-totalDebt*.13},
+    {p:'120d',n:totalLoans*.12,c:totalCash+totalLoans*.26-totalDebt*.13},
+    {p:'150d',n:totalInv*.15,c:totalCash+totalLoans*.26+totalInv*.15-totalDebt*.13},
+    {p:'180d',n:totalLoans*.10,c:totalCash+totalLoans*.36+totalInv*.15-totalDebt*.13}
+  ];
+  const gapD=['0-7d','8-30d','31-60d','61-90d','91-180d','181-365d'].map((p,i)=>({
+    p,
+    in:[totalLoans*.04,totalLoans*.08,totalLoans*.12,totalLoans*.05,totalLoans*.15,totalLoans*.20][i],
+    out:[totalDebt*.02,totalDebt*.05,totalDebt*.04,totalDebt*.08,totalDebt*.03,totalDebt*.05][i]
+  }));
+  $('liq-charts2').innerHTML='<div class="chart-box"><div class="card-label">Liquidity Gap \u2014 Inflows vs Outflows (\u20a6M)</div><canvas id="ch-liq-gap" height="170"></canvas></div>'+
+    '<div class="chart-box"><div class="card-label">Liquidity Sources &amp; Obligations</div><div id="liq-src-inner" style="margin-top:.5rem"></div></div>';
+  const unres=cash.filter(a=>!a.restricted&&a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
+  const shortInv=inv.filter(i=>i.tenorDays<=90).reduce((s,i)=>s+i.principal,0);
   setTimeout(()=>{
-    mkChart('ch-liq-forecast',{type:'line',data:{labels:liqF.map(d=>d.p),datasets:[{label:'Net Flow',data:liqF.map(d=>d.n),borderColor:'#00c9a7',backgroundColor:'rgba(0,201,167,.08)',fill:true,tension:.4,pointBackgroundColor:'#00c9a7',pointRadius:3},{label:'Cumulative',data:liqF.map(d=>d.c),borderColor:'#63b3ed',fill:false,tension:.3,borderDash:[5,5],pointBackgroundColor:'#63b3ed',pointRadius:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-lqg',{type:'bar',data:{labels:gapD.map(d=>d.p),datasets:[{label:'Inflows',data:gapD.map(d=>d.in),backgroundColor:'#22c55e',borderRadius:4},{label:'Outflows',data:gapD.map(d=>d.out),backgroundColor:'#e05252',borderRadius:4}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    const unres=_cashCache.filter(a=>!a.restricted&&a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
-    const shortInv=_invCache.filter(i=>i.tenorDays<=90).reduce((s,i)=>s+i.principal,0);
-    const el=$('liq-src-inner');
-    if(el)el.innerHTML=[[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Short Investments (<90d)','#63b3ed'],[fmt(totalDebtors*.12),'Debtor Collections (est.)','#22c55e']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('')+
-      '<div style="font-size:11px;color:var(--tx3);font-family:var(--mo);padding:8px 0">Near-term Obligations:</div>'+
-      [[fmt(totalDebt*.12),'Debt Maturities (<90d)','#e05252'],[fmt(totalDebt*.05),'Estimated Interest (90d)','#f5a623']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('');
-  },80);
+    mkChart('ch-liq-forecast',{type:'line',data:{labels:liqF.map(d=>d.p),datasets:[{label:'Net Flow (\u20a6M)',data:liqF.map(d=>d.n),borderColor:'#00c9a7',backgroundColor:'rgba(0,201,167,.08)',fill:true,tension:.4,pointBackgroundColor:'#00c9a7',pointRadius:3},{label:'Cumulative (\u20a6M)',data:liqF.map(d=>d.c),borderColor:'#63b3ed',fill:false,tension:.3,borderDash:[5,5],pointBackgroundColor:'#63b3ed',pointRadius:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-liq-gap',{type:'bar',data:{labels:gapD.map(d=>d.p),datasets:[{label:'Inflows',data:gapD.map(d=>d.in),backgroundColor:'#22c55e',borderRadius:4},{label:'Outflows',data:gapD.map(d=>d.out),backgroundColor:'#e05252',borderRadius:4}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    const srcEl=$('liq-src-inner');
+    if(srcEl)srcEl.innerHTML=
+      [[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Short Investments (<90d)','#63b3ed'],[fmt(totalLoans*.12),'Loan Collections (est.)','#22c55e']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('')+
+      '<div style="font-size:11px;color:var(--tx3);font-family:var(--mo);padding:8px 0">Obligations:</div>'+
+      [[fmt(borr.filter(b=>b.type!=='Intercompany Loan').reduce((s,b)=>s+b.outstanding,0)*.12),'Debt Maturities (<90d)','#e05252'],[fmt(45),'Operational Expenses','#f5a623'],[fmt(120),'Funding Commitments','#a78bfa']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('');
+  },60);
 }
 
 // ── UPLOAD ────────────────────────────────────────────────────
-const UPLOAD_TPLS={
-  borrowings:{label:'Borrowings',filename:'FM_Borrowings_Template.xlsx',sheetName:'Borrowings',headers:['borrowing_id','lender_name','borrowing_type','principal','outstanding','interest_rate','tenor_months','repayment_schedule','maturity_date'],samples:[['BW-001','FCMB Ltd','Term Loan',500000000,420000000,19.5,24,'Monthly','2025-06-30']],notes:['borrowing_id: Unique (e.g. BW-001)','borrowing_type: Term Loan | Overdraft | On-lending | SME Fund | Wholesale | Intercompany','principal / outstanding: Naira numbers only','interest_rate: annual % as number','tenor_months: number','repayment_schedule: Monthly | Quarterly | Bullet | Revolving','maturity_date: YYYY-MM-DD']},
-  investments:{label:'Investments',filename:'FM_Investments_Template.xlsx',sheetName:'Investments',headers:['investment_id','company_name','investment_type','principal_amount','interest_rate','date_invested','number_of_days'],samples:[['INV-001','Access Bank Plc','Fixed Deposit',300000000,22,'2024-03-01',180]],notes:['investment_id: Unique (e.g. INV-001)','investment_type: Fixed Deposit | Treasury Bills | Government Security | Commercial Paper','principal_amount: Naira numbers only','interest_rate: annual % as number','date_invested: YYYY-MM-DD','number_of_days: tenor in calendar days']},
-  cash:{label:'Cash Balances',filename:'FM_Cash_Template.xlsx',sheetName:'Cash',headers:['account_id','bank','account_number','type','currency','balance','restricted'],samples:[['CA-001','Access Bank Plc','001-234567-001','Current','NGN',124500000,false]],notes:['account_id: Unique (e.g. CA-001)','type: Current | Savings | Dom (USD) | Dom (EUR)','currency: NGN | USD | EUR | GBP','balance: number only','restricted: true | false']},
+const UPLOAD_TEMPLATES = {
+  loans: {
+    label: 'Loan Portfolio',
+    filename: 'FM_Loans_Template.xlsx',
+    sheetName: 'Loans',
+    headers: ['loan_id','customer_name','loan_product_type','principal_amount','outstanding','interest_rate','start_date','maturity_date','days_past_due','credit_rating'],
+    samples: [
+      ['LN-001','Dangote Industries Ltd','Invoice Discounting',450000000,420000000,22,'2024-01-15','2024-07-15',0,'A'],
+      ['LN-002','Flour Mills Nigeria Plc','Supply Chain Finance',320000000,310000000,20,'2024-02-01','2024-08-01',18,'A-'],
+    ],
+    notes: [
+      'loan_id: Unique loan identifier (e.g. LN-001)',
+      'loan_product_type: Invoice Discounting | Supply Chain Finance | Factoring | Reverse Factoring | Term Loan',
+      'principal_amount / outstanding: in Naira (numbers only, no ₦ symbol)',
+      'interest_rate: annual rate as a number (e.g. 22 for 22%)',
+      'start_date / maturity_date: YYYY-MM-DD format',
+      'days_past_due: number of days overdue (0 if current)',
+      'credit_rating: e.g. A, A-, BBB+, BB, CCC, D',
+    ]
+  },
+  borrowings: {
+    label: 'Borrowings',
+    filename: 'FM_Borrowings_Template.xlsx',
+    sheetName: 'Borrowings',
+    headers: ['borrowing_id','lender_name','borrowing_type','principal','outstanding','interest_rate','tenor_months','repayment_schedule','maturity_date'],
+    samples: [
+      ['BW-001','FCMB Ltd','Term Loan',500000000,420000000,19.5,24,'Monthly','2025-06-30'],
+      ['BW-002','DBN Nigeria','On-lending Facility',800000000,720000000,14,36,'Quarterly','2026-09-30'],
+    ],
+    notes: [
+      'borrowing_id: Unique identifier (e.g. BW-001)',
+      'borrowing_type: Term Loan | Overdraft Facility | On-lending Facility | SME Fund | Wholesale Borrowing | Intercompany Loan',
+      'principal / outstanding: in Naira (numbers only)',
+      'interest_rate: annual rate as a number (e.g. 19.5)',
+      'tenor_months: loan tenor in months (e.g. 24)',
+      'repayment_schedule: Monthly | Quarterly | Bullet | Revolving | Semi-annual',
+      'maturity_date: YYYY-MM-DD format',
+    ]
+  },
+  investments: {
+    label: 'Investments',
+    filename: 'FM_Investments_Template.xlsx',
+    sheetName: 'Investments',
+    headers: ['investment_id','company_name','investment_type','principal_amount','interest_rate','date_invested','number_of_days'],
+    samples: [
+      ['INV-001','Access Bank Plc','Fixed Deposit',300000000,22,'2024-03-01',180],
+      ['INV-002','NTB (91-day)','Treasury Bills',250000000,20.5,'2024-04-01',91],
+    ],
+    notes: [
+      'investment_id: Unique identifier (e.g. INV-001)',
+      'investment_type: Fixed Deposit | Treasury Bills | Government Security | Commercial Paper',
+      'principal_amount: in Naira (numbers only)',
+      'interest_rate: annual rate as a number (e.g. 22)',
+      'date_invested: YYYY-MM-DD format',
+      'number_of_days: tenor/duration in calendar days',
+    ]
+  },
+  cash: {
+    label: 'Cash Balances',
+    filename: 'FM_CashBalances_Template.xlsx',
+    sheetName: 'Cash',
+    headers: ['account_id','bank','account_number','type','currency','balance','restricted'],
+    samples: [
+      ['CA-001','Access Bank Plc','001-234567-001','Current','NGN',124500000,false],
+      ['CA-002','GTBank Ltd','0123456789','Current','NGN',87300000,false],
+      ['CA-003','First Bank Nigeria','2012345678','Savings','NGN',43800000,true],
+    ],
+    notes: [
+      'account_id: Unique identifier (e.g. CA-001)',
+      'type: Current | Savings | Dom (USD) | Dom (EUR)',
+      'currency: NGN | USD | EUR | GBP',
+      'balance: account balance as a number (no ₦ symbol)',
+      'restricted: true if encumbered/pledged, false if freely available',
+    ]
+  }
 };
+
 function downloadSampleTemplate(module){
-  const tpl=UPLOAD_TPLS[module];if(!tpl)return;
-  const wb=XLSX.utils.book_new();
-  const ws=XLSX.utils.aoa_to_sheet([tpl.headers,...tpl.samples]);
-  ws['!cols']=tpl.headers.map(h=>({wch:Math.max(h.length+4,16)}));
-  XLSX.utils.book_append_sheet(wb,ws,tpl.sheetName);
-  const wi=XLSX.utils.aoa_to_sheet([['FM Treasury — '+tpl.label+' Upload Template'],[''],['COLUMN GUIDE'],...tpl.notes.map(n=>['  • '+n])]);
-  wi['!cols']=[{wch:70}];XLSX.utils.book_append_sheet(wb,wi,'Instructions');
-  XLSX.writeFile(wb,tpl.filename);toast('Template downloaded — '+tpl.filename);
+  const tpl = UPLOAD_TEMPLATES[module];
+  if(!tpl) return;
+  const wb  = XLSX.utils.book_new();
+  const wsData = [tpl.headers, ...tpl.samples];
+  const ws     = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols'] = tpl.headers.map(h => ({ wch: Math.max(h.length + 4, 16) }));
+  ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+  XLSX.utils.book_append_sheet(wb, ws, tpl.sheetName);
+  const instrRows = [
+    ['FM Treasury Intelligence — ' + tpl.label + ' Upload Template'],
+    [''],
+    ['INSTRUCTIONS'],
+    ['1. Do not rename or reorder the column headers in the ' + tpl.sheetName + ' sheet.'],
+    ['2. Delete the sample rows before uploading — they are for illustration only.'],
+    ['3. Save the file as .xlsx, .xls, or .csv before uploading.'],
+    ['4. Maximum file size: 5MB.'],
+    [''],
+    ['COLUMN GUIDE'],
+    ...tpl.notes.map(n => ['  • ' + n]),
+    [''],
+    ['Generated by FM Treasury Intelligence · ' + new Date().toLocaleDateString('en-GB')],
+  ];
+  const wsInstr = XLSX.utils.aoa_to_sheet(instrRows);
+  wsInstr['!cols'] = [{ wch: 80 }];
+  XLSX.utils.book_append_sheet(wb, wsInstr, 'Instructions');
+  XLSX.writeFile(wb, tpl.filename);
+  toast('Template downloaded — ' + tpl.filename);
 }
+
 function openUploadModal(module){
-  const tpl=UPLOAD_TPLS[module];
-  openModal('Upload '+tpl.label,
+  if(!fmCanEdit(module)){toast('You have view-only access to this module.','err');return;}
+  const tpl = UPLOAD_TEMPLATES[module];
+  openModal('Upload ' + tpl.label,
     '<div style="background:var(--td);border:1px solid rgba(0,201,167,.25);border-radius:var(--r);padding:14px 16px;margin-bottom:1.25rem">'+
-    '<div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:8px">Step 1 — Download the template</div>'+
-    '<button onclick="downloadSampleTemplate(\''+module+'\')" style="background:var(--t);border-color:var(--t);color:var(--n);font-weight:600;padding:7px 16px;font-size:12px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download '+tpl.filename+'</button></div>'+
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'+
+        '<div style="width:24px;height:24px;background:var(--t);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--n)">1</div>'+
+        '<span style="font-size:13px;font-weight:600;color:var(--tx)">Download the template</span>'+
+      '</div>'+
+      '<p style="font-size:12px;color:var(--tx2);margin:0 0 10px;line-height:1.5">Get the official Excel template with the correct column headers and sample data. Fill it in, then upload below.</p>'+
+      '<button onclick="downloadSampleTemplate(\''+module+'\')" style="background:var(--t);border-color:var(--t);color:var(--n);font-weight:600;padding:7px 16px;font-size:12px">'+
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'+
+        'Download '+tpl.filename+
+      '</button>'+
+    '</div>'+
     '<div style="background:var(--sf);border:1px solid var(--b2);border-radius:var(--r);padding:14px 16px;margin-bottom:1rem">'+
-    '<div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:10px">Step 2 — Upload your file</div>'+
-    '<label class="drop-zone" onclick="$(\'upload-file\').click()" style="cursor:pointer"><div style="font-size:2rem;margin-bottom:8px">📂</div><div style="font-size:13px;font-weight:500;margin-bottom:4px">Click to browse or drag &amp; drop</div><div style="font-size:11px;color:var(--tx3)" id="upload-fname">Accepts .xlsx, .xls, .csv</div><input type="file" accept=".csv,.xlsx,.xls" id="upload-file" style="display:none" onchange="handleUploadFile(this)"></label></div>'+
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'+
+        '<div style="width:24px;height:24px;background:var(--n3);border:1px solid var(--b2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--tx2)">2</div>'+
+        '<span style="font-size:13px;font-weight:600;color:var(--tx)">Upload your completed file</span>'+
+      '</div>'+
+      '<label class="drop-zone" id="drop-zone" onclick="$(\'upload-file\').click()" style="cursor:pointer">'+
+        '<div style="font-size:2rem;margin-bottom:8px">\ud83d\udcc2</div>'+
+        '<div style="font-size:13px;font-weight:500;margin-bottom:4px">Click to browse or drag &amp; drop</div>'+
+        '<div style="font-size:11px;color:var(--tx3)" id="upload-fname">Accepts .xlsx, .xls, .csv \u00b7 Max 5MB</div>'+
+        '<input type="file" accept=".csv,.xlsx,.xls" id="upload-file" style="display:none" onchange="handleUploadFile(this)">'+
+      '</label>'+
+    '</div>'+
     '<div id="upload-log" style="display:none;margin-top:1rem"></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" id="upload-submit" onclick="doUpload(\''+module+'\')" disabled><span id="upload-txt">Import</span></button>');
+    '<button onclick="closeModal()">Cancel</button><button class="bp" id="upload-submit" onclick="doUpload(\''+module+'\')" disabled><span id="upload-txt">Import</span></button>'
+  );
 }
-function handleUploadFile(inp){if(!inp.files[0])return;$('upload-fname').textContent=inp.files[0].name;$('upload-submit').disabled=false;}
+function handleUploadFile(inp){
+  if(!inp.files[0])return;
+  $('upload-fname').textContent=inp.files[0].name;
+  $('upload-submit').disabled=false;
+}
 async function doUpload(module){
   const file=$('upload-file')?.files[0];if(!file)return;
-  $('upload-txt').textContent='Uploading…';$('upload-submit').disabled=true;
+  $('upload-txt').textContent='Uploading...';$('upload-submit').disabled=true;
   $('upload-log').style.display='block';
-  $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:var(--t)">→</span><span style="color:var(--tx2)">Parsing '+file.name+'…</span></div></div>';
+  $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:var(--t);font-family:var(--mo)">\u2192</span><span style="color:var(--tx2)">Parsing '+file.name+'...</span></div></div>';
   try{
     const fd=new FormData();fd.append('file',file);
     const d=await apiForm('/treasury/'+module+'/upload',fd);
-    $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:#22c55e">✓</span><span style="color:var(--tx2)">'+d.inserted+' records imported.</span></div>'+
-      (d.errors?.length?d.errors.slice(0,5).map(e=>'<div class="ulog-row"><span style="color:#f5a623">⚠</span><span style="color:var(--tx2)">'+e.error+'</span></div>').join(''):'')+'</div>'+
+    $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:#22c55e;font-family:var(--mo)">\u2713</span><span style="color:var(--tx2)">'+d.inserted+' records imported successfully.</span></div>'+
+      (d.errors?.length?d.errors.slice(0,5).map(e=>'<div class="ulog-row"><span style="color:#f5a623;font-family:var(--mo)">\u26a0</span><span style="color:var(--tx2)">'+e.error+'</span></div>').join(''):'')+'</div>'+
       '<button class="bp" style="margin-top:.75rem;width:100%" onclick="closeModal()">Done</button>';
     toast(d.inserted+' records imported.');
-    ({borrowings:loadBorrowings,investments:loadInvestments,cash:loadCash}[module]||function(){})();
+    const reload={loans:loadLoans,borrowings:loadBorrowings,investments:loadInvestments,cash:loadCash};
+    reload[module]?.();
   }catch(e){
-    $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:#e05252">✗</span><span style="color:var(--tx2)">'+e.message+'</span></div></div>';
+    $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:#e05252;font-family:var(--mo)">\u2717</span><span style="color:var(--tx2)">'+e.message+'</span></div></div>';
     $('upload-txt').textContent='Import';$('upload-submit').disabled=false;
   }
 }
 
 // ── TEAM ──────────────────────────────────────────────────────
 async function loadTeam(){
-  $('team-table').innerHTML='<div class="loading-row">Loading team…</div>';
+  $('team-table').innerHTML='<div class="loading-row">Loading team members...</div>';
   try{
     const d=await api('/org/team');
-    if(!d.members?.length){$('team-table').innerHTML=empty('No team members yet.');return;}
+    if(!d.members?.length){$('team-table').innerHTML=empty('No team members yet. Add members to share treasury access with your team.');return;}
     $('team-table').innerHTML='<div class="tw"><table>'+
       '<thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th></th></tr></thead>'+
       '<tbody>'+d.members.map(m=>'<tr>'+
@@ -1141,26 +1267,29 @@ async function loadTeam(){
         '<td><span class="team-role-badge '+(m.orgRole==='admin'?'team-role-admin':'team-role-member')+'">'+m.orgRole+'</span></td>'+
         '<td style="font-size:12px"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:'+(m.active?'#22c55e':'#e05252')+'"></span>'+(m.active?'Active':'Inactive')+'</span></td>'+
         '<td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">'+(m.lastLogin?fD(m.lastLogin):'Never')+'</td>'+
-        '<td><button class="bsm bd" onclick="removeTeamMember(\''+m._id+'\')" style="padding:4px 10px">Remove</button></td>'+
+        '<td><button class="bsm bd" onclick="removeTeamMember(\''+m._id+'\')" style="padding:4px 10px" title="Remove member">Remove</button></td>'+
       '</tr>').join('')+'</tbody></table></div>';
-  }catch(e){$('team-table').innerHTML='<div class="nt">⚠ '+e.message+'</div>';}
+  }catch(e){$('team-table').innerHTML='<div class="nt">&#9888; '+e.message+'<br><span style="font-size:11px;color:var(--tx3)">Team management requires an Organisation account. Go to Settings to check your account type.</span></div>';}
 }
 function openTeamMemberModal(){
   openModal('Add Team Member',
     '<div class="merr" id="tm-err"></div>'+
-    '<div class="nt-info" style="margin-bottom:1rem">The new member will receive a confirmation email to set their password.</div>'+
-    '<div class="fg"><div class="fld"><label>Full Name *</label><input class="finput" id="tm-name" placeholder="e.g. Adaeze Obi"></div>'+
-    '<div class="fld"><label>Email *</label><input class="finput" type="email" id="tm-email" placeholder="adaeze@company.com"></div></div>'+
-    '<div class="fld"><label>Role</label><select class="finput" id="tm-role"><option value="member">Member</option><option value="admin">Admin</option></select></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveTeamMember()"><span id="tm-sv">Send Invitation</span></button>');
+    '<div class="nt-info" style="margin-bottom:1rem">The new member will receive a confirmation email to set their password and join your organisation\u2019s treasury workspace. Use the Portal\u2019s Team &amp; Permissions panel to control which modules they can access.</div>'+
+    '<div class="fg"><div class="fld"><label>Full Name *</label><input class="finput" id="tm-name" placeholder="e.g. Juliet Nancy"></div>'+
+    '<div class="fld"><label>Email Address *</label><input class="finput" type="email" id="tm-email" placeholder="e.g. Juliet@company.com"></div></div>'+
+    '<div class="fld"><label>Role</label><select class="finput" id="tm-role"><option value="member">Member \u2014 access set per-module via Portal</option><option value="admin">Admin \u2014 full access</option></select></div>',
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveTeamMember()"><span id="tm-save-txt">Send Invitation</span></button>'
+  );
 }
 async function saveTeamMember(){
   const err=$('tm-err');err.classList.remove('on');
   const p={name:$('tm-name').value.trim(),email:$('tm-email').value.trim(),orgRole:$('tm-role').value};
   if(!p.name||!p.email){err.textContent='Name and email are required.';err.classList.add('on');return;}
-  $('tm-sv').textContent='Sending…';
-  try{await api('/org/team',{method:'POST',body:JSON.stringify(p)});closeModal();toast('Invitation sent to '+p.email);loadTeam();}
-  catch(e){err.textContent=e.message;err.classList.add('on');$('tm-sv').textContent='Send Invitation';}
+  $('tm-save-txt').textContent='Sending...';
+  try{
+    await api('/org/team',{method:'POST',body:JSON.stringify(p)});
+    closeModal();toast('Invitation sent to '+p.email+'. Set their module access in the Portal\u2019s Team & Permissions panel.');loadTeam();
+  }catch(e){err.textContent=e.message;err.classList.add('on');$('tm-save-txt').textContent='Send Invitation';}
 }
 async function removeTeamMember(id){
   if(!confirm('Remove this member from your organisation?'))return;
@@ -1169,7 +1298,7 @@ async function removeTeamMember(id){
 
 // ── SETTINGS ──────────────────────────────────────────────────
 async function loadSettings(){
-  $('settings-form').innerHTML='<div class="loading-row">Loading…</div>';
+  $('settings-form').innerHTML='<div class="loading-row">Loading settings...</div>';
   try{
     const d=await api('/org/profile');
     const u=d.user||{},org=d.org||{};
@@ -1179,35 +1308,43 @@ async function loadSettings(){
       '<div class="merr" id="set-err"></div><div class="mok" id="set-ok"></div>'+
       '<div class="fg"><div class="fld"><label>Full Name</label><input class="finput" id="s-name" value="'+(u.name||'')+'"></div>'+
       '<div class="fld"><label>Email</label><input class="finput" value="'+(u.email||'')+'" disabled style="opacity:.5"></div></div>'+
-      '<div class="fld"><label>Account Type</label><div style="font-family:var(--mo);font-size:12px;color:var(--t);padding:8px 12px;background:var(--n3);border:1px solid var(--b);border-radius:var(--r)">'+(isOrg?'🏢 Organisation Account':'👤 Individual Account')+'</div></div></div>'+
-      (isOrg?'<div class="card" style="margin-bottom:1rem"><div class="section-ttl">Organisation Profile</div>'+
+      '<div class="fld"><label>Account Type</label><div style="font-family:var(--mo);font-size:12px;color:var(--t);padding:8px 12px;background:var(--n3);border:1px solid var(--b);border-radius:var(--r)">'+(isOrg?'\ud83c\udfe2 Organisation Account':'\ud83d\udc64 Individual Account')+'</div></div></div>'+
+      (isOrg?
+        '<div class="card" style="margin-bottom:1rem"><div class="section-ttl">Organisation Profile</div>'+
         '<div class="fg"><div class="fld"><label>Organisation Name</label><input class="finput" id="s-orgname" value="'+(org.name||'')+'"></div>'+
-        '<div class="fld"><label>Domain</label><input class="finput" id="s-domain" value="'+(org.domain||'')+'"></div></div></div>':'')+
-      '<div style="display:flex;justify-content:flex-end"><button class="bp" onclick="saveSettings()"><span id="set-sv">Save Settings</span></button></div>';
-  }catch(e){$('settings-form').innerHTML='<div class="nt">⚠ '+e.message+'</div>';}
+        '<div class="fld"><label>Domain (e.g. company.com)</label><input class="finput" id="s-domain" value="'+(org.domain||'')+'" placeholder="yourcompany.com"></div></div>'+
+        '<div class="fg"><div class="fld"><label>Description</label><input class="finput" id="s-desc" value="'+(org.description||'')+'"></div>'+
+        '<div class="fld"><label>Organisation Size</label><select class="finput" id="s-size">'+
+        ['1-10','11-50','51-200','201-500','500+'].map(s=>'<option '+(org.size===s?'selected':'')+'>'+s+'</option>').join('')+'</select></div></div></div>':'')+
+      '<div style="display:flex;justify-content:flex-end"><button class="bp" onclick="saveSettings()"><span id="set-save-txt">Save Settings</span></button></div>';
+  }catch(e){$('settings-form').innerHTML='<div class="nt">\u26a0 '+e.message+'</div>';}
 }
 async function saveSettings(){
   const err=$('set-err'),ok=$('set-ok');
   if(err)err.classList.remove('on');if(ok)ok.classList.remove('on');
-  $('set-sv').textContent='Saving…';
+  $('set-save-txt').textContent='Saving...';
   try{
     const p={name:$('s-name')?.value.trim()};
     if($('s-orgname'))p.orgName=$('s-orgname').value.trim();
     if($('s-domain'))p.orgDomain=$('s-domain').value.trim();
+    if($('s-desc'))p.orgDescription=$('s-desc').value.trim();
+    if($('s-size'))p.orgSize=$('s-size').value;
     await api('/org/profile',{method:'PUT',body:JSON.stringify(p)});
-    if(ok){ok.textContent='✓ Settings saved.';ok.classList.add('on');}toast('Settings saved.');
+    if(ok){ok.textContent='\u2713 Settings saved.';ok.classList.add('on');}
+    toast('Settings saved.');
   }catch(e){if(err){err.textContent=e.message;err.classList.add('on');}}
-  finally{if($('set-sv'))$('set-sv').textContent='Save Settings';}
+  finally{if($('set-save-txt'))$('set-save-txt').textContent='Save Settings';}
 }
 
 // ── INIT ──────────────────────────────────────────────────────
 (function(){
   const fb=$('f-all');if(fb)fb.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';
-  if(CSS.supports('padding-bottom','env(safe-area-inset-bottom)')){
-    document.getElementById('sidebar').style.paddingBottom='env(safe-area-inset-bottom)';
-    document.getElementById('content').style.paddingBottom='calc(80px + env(safe-area-inset-bottom))';
-  }
 })();
+if(CSS.supports('padding-bottom','env(safe-area-inset-bottom)')){
+  document.getElementById('sidebar').style.paddingBottom='env(safe-area-inset-bottom)';
+  document.getElementById('content').style.paddingBottom='calc(80px + env(safe-area-inset-bottom))';
+}
+document.getElementById('modal-bg').addEventListener('click',function(e){if(e.target===this)closeModal();});
 </script>
 </body>
 </html>
