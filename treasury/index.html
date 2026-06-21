@@ -644,7 +644,7 @@ function renderDashCharts(totalDebtors,totalInv,totalCash,totalDebt,totalEquity,
     mkChart('ch-ac',{type:'doughnut',data:{labels:['Debtors','Investments','Cash & Equivalents'],datasets:[{data:[totalDebtors,totalInv,totalCash],backgroundColor:['#00c9a7','#63b3ed','#a78bfa'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
     mkChart('ch-fs',{type:'doughnut',data:{labels:['Borrowings','Equity & Reserves'],datasets:[{data:[totalDebt,totalEquity||0.01],backgroundColor:['#e05252','#22c55e'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
     mkChart('ch-rc',{type:'bar',data:{labels:['Debtor Yield','Investment Yield','Cash Yield','Cost of Debt (WACD)','Cost of Equity (Ke)'],datasets:[{label:'Rate (%)',data:[+avgDR.toFixed(2),+avgIY.toFixed(2),0,+wacd.toFixed(2),ke],backgroundColor:['#00c9a7','#63b3ed','#4a6080','#e05252','#a78bfa'],borderRadius:5}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'},ticks:{callback:v=>v+'%'}}}}});
-    mkChart('ch-ag',{type:'bar',data:{labels:['Current','1–30d','31–60d','61–90d','91–180d','180+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#84cc16','#f59e0b','#ef4444','#dc2626','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-ag',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','180+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#84cc16','#f59e0b','#ef4444','#dc2626','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
   },80);
 }
 
@@ -703,7 +703,7 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
   if(spread<2)recs.push('Reprice debtor facilities upward — target minimum debtor yield of WACD + 5% to ensure viability after ECL charges and operating costs.');
   if(cashPct>25)recs.push('Deploy idle cash into 91-day Treasury Bills (current yield ~'+Math.min(avgIY||20,21).toFixed(1)+'%) to immediately improve WARA without increasing credit risk.');
   if(lever>2.5)recs.push('Consider a rights issue or preference share offer to reduce leverage below 2× and improve debt capacity for future growth funding.');
-  if(invPct<10&&totalAssets>0)recs.push('Maintain a minimum investment portfolio of 10–15% of total assets to ensure yield certainty and serve as a liquidity buffer.');
+  if(invPct<10&&totalAssets>0)recs.push('Maintain a minimum investment portfolio of 10-15% of total assets to ensure yield certainty and serve as a liquidity buffer.');
   if(wara<wacc&&wacc>0)recs.push('To restore positive EVA, target WARA ≥ '+Math.ceil(wacc+1)+'% — achievable by increasing debtor pricing or shifting mix toward higher-yield assets.');
   if(s3.length>0)recs.push('Accelerate collections on Stage 3 debtors — consider engaging a collections agency or commencing legal recovery proceedings where necessary.');
 
@@ -741,7 +741,7 @@ function renderLoanKPIs(){
 function renderLoanChart(){
   const ag={current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'180_plus':0};
   _debtorCache.forEach(d=>Object.keys(ag).forEach(k=>{ag[k]+=(d.ageing[k]||0);}));
-  setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:['Current','1–30d','31–60d','61–90d','91–180d','180+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#00c9a7','#63b3ed','#f5a623','#e05252','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}}}),60);
+  setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','180+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#00c9a7','#63b3ed','#f5a623','#e05252','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}}),60);
 }
 function setLoanFilter(btn,stage){
   document.querySelectorAll('#loan-filters button').forEach(b=>b.style.cssText='');
@@ -749,7 +749,7 @@ function setLoanFilter(btn,stage){
   _loanFilter=stage;renderLoanTable();
 }
 const BCLS={current:'pg','1_30':'pg','31_60':'pa','61_90':'pr','91_180':'pr','180_plus':'pdark'};
-const BLBL={current:'Current','1_30':'1–30d','31_60':'31–60d','61_90':'61–90d','91_180':'91–180d','180_plus':'180+d'};
+const BLBL={current:'Current','1_30':'1-30d','31_60':'31-60d','61_90':'61-90d','91_180':'91-180d','180_plus':'180+d'};
 function renderLoanTable(){
   let data=_debtorCache;
   if(_loanFilter!=='all')data=data.filter(d=>getStage(d._id)===+_loanFilter);
@@ -820,7 +820,7 @@ function openEquityModal(){
     '<div class="fld"><label>Retained Earnings (₦)</label><input class="finput" type="number" id="eq-ret" value="'+e.retainedEarnings+'" min="0" step="1000000" placeholder="0"></div></div>'+
     '<div class="fg"><div class="fld"><label>Other Reserves (₦)</label><input class="finput" type="number" id="eq-res" value="'+e.otherReserves+'" min="0" step="1000000" placeholder="0"></div>'+
     '<div class="fld"><label>Cost of Equity — Ke (%)</label><input class="finput" type="number" id="eq-ke" value="'+e.costOfEquity+'" min="0" max="100" step="0.5" placeholder="e.g. 20"></div></div>'+
-    '<div class="nt" style="font-size:11px"><strong>Cost of Equity guidance:</strong> For Nigerian entities, Ke is typically the risk-free rate (91-day T-Bill ~20%) plus an equity risk premium of 3–7%, giving a range of 23–27%. For microfinance or fintech, use 20–25%.</div>',
+    '<div class="nt" style="font-size:11px"><strong>Cost of Equity guidance:</strong> For Nigerian entities, Ke is typically the risk-free rate (91-day T-Bill ~20%) plus an equity risk premium of 3-7%, giving a range of 23-27%. For microfinance or fintech, use 20-25%.</div>',
     '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveEquity()"><span id="eq-save-txt">Save</span></button>');
 }
 function saveEquity(){
