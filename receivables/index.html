@@ -33,6 +33,7 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .logo{font-family:var(--di);font-weight:700;font-size:17px;letter-spacing:-.03em;color:var(--tx);display:flex;align-items:center;gap:9px}
 .lm{width:30px;height:30px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--n);font-weight:700}
 .la{color:var(--t)}
+.org-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2);border-radius:20px;padding:2px 10px;font-size:10px;font-family:var(--mo);color:var(--t);margin-left:8px}
 .tbr{display:flex;align-items:center;gap:8px}
 .nav-btn-link{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--b2);border-radius:10px;padding:6px 12px;font-size:11.5px;font-family:var(--mo);color:var(--tx3);cursor:pointer;transition:all .2s;text-decoration:none}
 .nav-btn-link:hover{background:var(--sf2);color:var(--tx)}
@@ -241,6 +242,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 .cb{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--tx2)}
 .cb input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--t)}
 .cb:hover{color:var(--tx)}
+.fm-view-only-banner{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:var(--r);padding:9px 14px;font-size:12px;color:var(--am);font-family:var(--mo);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
 /* ═══════════════════════════════════════
    MOBILE OPTIMISATION
 ═══════════════════════════════════════ */
@@ -333,7 +335,12 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 <body>
 <div id="app">
   <div id="topbar">
-    <div class="logo"><div class="lm">FM</div>FM <span class="la">&nbsp;Receivables</span></div>
+    <div class="logo"><div class="lm">FM</div>FM <span class="la">&nbsp;Receivables</span>
+      <span class="org-badge" id="org-badge" style="display:none">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span id="org-name-badge"></span>
+      </span>
+    </div>
     <div class="tbr">
       <div class="user-chip-top">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -351,24 +358,28 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 
   <div id="layout">
     <nav id="sidebar">
-      <div class="nav-item active" data-view="dashboard">
+      <div class="nav-item active" data-view="dashboard" data-fm-module="dashboard">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
       </div>
-      <div class="nav-item" data-view="debtors">
+      <div class="nav-item" data-view="debtors" data-fm-module="debtors">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Debtors
       </div>
-      <div class="nav-item" data-view="ageing">
+      <div class="nav-item" data-view="ageing" data-fm-module="ageing">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Ageing Report
       </div>
-      <div class="nav-item" data-view="reminders">
+      <div class="nav-item" data-view="reminders" data-fm-module="reminders">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 15a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 4.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 11.7a16 16 0 0 0 6 6l.91-1.01a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Send Reminders
       </div>
-      <div class="nav-item" data-view="logs">
+      <div class="nav-item" data-view="logs" data-fm-module="logs">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Email Logs
       </div>
       <div class="nav-section">Analysis</div>
-      <div class="nav-item" data-view="ecl">
+      <div class="nav-item" data-view="ecl" data-fm-module="ecl">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>IFRS 9 ECL Model
+      </div>
+      <div class="nav-section">Organisation</div>
+      <div class="nav-item" id="nav-team" style="display:none" data-view="team">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Team Management
       </div>
       <div class="nav-section">Config</div>
       <div class="nav-item" data-view="settings">
@@ -397,14 +408,15 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div class="vhdr">
           <div><div class="vttl">Debtors</div><div class="vsub">Manage debtor accounts and invoices</div></div>
           <div class="vacts">
-            <button onclick="openImportModal()">
+            <button onclick="openImportModal()" data-fm-edit-only="debtors">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import Excel
             </button>
-            <button class="bp" onclick="openDebtorModal()">
+            <button class="bp" onclick="openDebtorModal()" data-fm-edit-only="debtors">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Debtor
             </button>
           </div>
         </div>
+        <div id="debtors-view-banner"></div>
         <div id="debtors-list"></div>
       </div>
 
@@ -429,6 +441,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div class="vhdr">
           <div><div class="vttl">Send Reminders</div><div class="vsub">Select debtors and dispatch collection emails</div></div>
         </div>
+        <div id="reminders-view-banner"></div>
         <div class="nt">Emails are sent using your configured templates. The system picks the appropriate template (First/Second/Final) based on how overdue each debtor is.</div>
         <div class="card" style="margin-bottom:1rem">
           <div class="fg" style="align-items:flex-end">
@@ -444,7 +457,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
             <div style="display:flex;gap:.5rem;padding-bottom:1rem">
               <button onclick="selectAllDebtors(true)">Select All</button>
               <button onclick="selectAllDebtors(false)">Clear</button>
-              <button class="bp" id="send-btn" onclick="sendReminders()" disabled>
+              <button class="bp" id="send-btn" onclick="sendReminders()" disabled data-fm-edit-only="reminders">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Send Selected
               </button>
             </div>
@@ -478,7 +491,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
             <button onclick="fetchEclMacro()" id="ecl-macro-btn">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Fetch Macro
             </button>
-            <button class="bpu" onclick="computeECL()" id="ecl-compute-btn">
+            <button class="bpu" onclick="computeECL()" id="ecl-compute-btn" data-fm-edit-only="ecl">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Compute ECL
             </button>
             <button onclick="exportEclXLSX()" id="ecl-export-btn" disabled>
@@ -486,6 +499,8 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
             </button>
           </div>
         </div>
+
+        <div id="ecl-view-banner"></div>
 
      
         <div class="ecl-tab-bar">
@@ -602,7 +617,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
               <div class="ecl-provision-fld"><label>180+ Days</label><input type="number" id="pm-180plus" min="0" max="100" step="0.1" value="75.0"><span style="font-size:10px;color:var(--tx3);font-family:var(--mo)">% of balance</span></div>
             </div>
             <div style="display:flex;gap:.75rem;align-items:center;margin-top:.75rem">
-              <button class="bp" onclick="saveProvisionMatrix()"><span id="pm-save-txt">Save Matrix</span></button>
+              <button class="bp" onclick="saveProvisionMatrix()" data-fm-edit-only="ecl"><span id="pm-save-txt">Save Matrix</span></button>
               <span style="font-size:11px;color:var(--tx3);font-family:var(--mo)" id="pm-status"></span>
             </div>
           </div>
@@ -641,7 +656,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
               </div>
             </div>
             <div style="display:flex;gap:.75rem;align-items:center">
-              <button class="bp" onclick="saveScenarios()"><span id="sc-save-txt">Save Scenarios</span></button>
+              <button class="bp" onclick="saveScenarios()" data-fm-edit-only="ecl"><span id="sc-save-txt">Save Scenarios</span></button>
               <span style="font-size:11px;color:var(--tx3);font-family:var(--mo)" id="sc-status"></span>
             </div>
           </div>
@@ -683,7 +698,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
               <div class="section-ttl" style="font-size:13px;margin-bottom:.75rem">Apply Calibrated Rates to Provision Matrix</div>
               <p style="font-size:12px;color:var(--tx2);margin-bottom:1rem">The table above shows historically implied rates from your write-off data. Click below to apply them directly to your Provision Matrix, replacing the current rates. Buckets with no write-off history will retain their existing rates.</p>
               <div style="display:flex;gap:.75rem;align-items:center">
-                <button class="bp" onclick="applyCalibrationToMatrix()" id="calib-apply-btn">
+                <button class="bp" onclick="applyCalibrationToMatrix()" id="calib-apply-btn" data-fm-edit-only="ecl">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                   Apply Calibrated Rates to Provision Matrix
                 </button>
@@ -723,6 +738,14 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
       </div>
 
     
+      <div class="view" id="view-team">
+        <div class="vhdr">
+          <div><div class="vttl">Team Management</div><div class="vsub" id="team-vsub">Manage your organisation&#8217;s receivables users</div></div>
+        </div>
+        <div class="nt-info" id="team-info">App and module-level permissions for your team are managed from the Portal&#8217;s Team &amp; Permissions panel.</div>
+        <a href="../portal/" class="bp" style="text-decoration:none;display:inline-flex">Go to Team &amp; Permissions →</a>
+      </div>
+
       <div class="view" id="view-settings">
         <div class="vhdr">
           <div><div class="vttl">Settings</div><div class="vsub">Email configuration, templates and auto-reminders</div></div>
@@ -749,9 +772,64 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 </div>
 <div id="toast"></div>
 
-
 <script>
 'use strict';
+// ════════════════════════════════════════════════════════════
+// FM MODULE-PERMISSION BLOCK (reusable — same as treasury.html,
+// copy this whole block to any app with the same data-fm-module
+// / data-fm-edit-only markup convention; only _FM_APP_KEY changes).
+// ════════════════════════════════════════════════════════════
+const _FM_APP_KEY='receivables';
+var _fmModulePerms={};
+function fmCanView(moduleKey){
+  const lvl=_fmModulePerms[moduleKey];
+  return lvl==='view'||lvl==='edit';
+}
+function fmCanEdit(moduleKey){
+  return _fmModulePerms[moduleKey]==='edit';
+}
+function applyModulePermissions(user){
+  _fmModulePerms=(user.modulePermissions&&user.modulePermissions[_FM_APP_KEY])||{};
+  document.querySelectorAll('[data-fm-module]').forEach(function(el){
+    const mk=el.dataset.fmModule;
+    el.style.display=fmCanView(mk)?'':'none';
+  });
+  document.querySelectorAll('[data-fm-edit-only]').forEach(function(el){
+    const mk=el.dataset.fmEditOnly;
+    if(!fmCanEdit(mk)){el.disabled=true;el.style.display='none';}
+  });
+  const activeNav=document.querySelector('.nav-item.active[data-fm-module]');
+  if(activeNav&&activeNav.style.display==='none'){
+    fmSwitchToView('dashboard');
+  }
+  if(user.orgId||user.orgName){
+    var ob=document.getElementById('org-badge'); if(ob) ob.style.display='inline-flex';
+    var on=document.getElementById('org-name-badge'); if(on) on.textContent=user.orgName||'Organisation';
+  }
+  if(user.orgRole==='admin'||user.accountType==='organisation'){
+    var nt=document.getElementById('nav-team'); if(nt) nt.style.display='flex';
+  }
+}
+function fmViewOnlyBanner(moduleKey,label){
+  if(fmCanEdit(moduleKey))return'';
+  return '<div class="fm-view-only-banner">&#128065; You have view-only access to '+label+'. Ask your organisation admin for edit access to add, upload, or delete records here.</div>';
+}
+// Helper used by applyModulePermissions() to fall back to a safe view if the
+// user's previously-active nav item got hidden. Mirrors the nav-click logic
+// already wired up at the bottom of this file.
+function fmSwitchToView(view){
+  document.querySelectorAll('.nav-item').forEach(function(i){i.classList.remove('active');});
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on');});
+  var navEl=document.querySelector('[data-view="'+view+'"]');
+  if(navEl) navEl.classList.add('active');
+  var viewEl=document.getElementById('view-'+view);
+  if(viewEl) viewEl.classList.add('on');
+  if(view==='dashboard') loadDashboard();
+}
+// ════════════════════════════════════════════════════════════
+// END FM MODULE-PERMISSION BLOCK
+// ════════════════════════════════════════════════════════════
+
 (function(){
   var tok = sessionStorage.getItem('FM_token');
   if (!tok) { window.location.href = '../portal/'; return; }
@@ -765,6 +843,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
       if (obj.status === 200 && obj.data.success && obj.data.user) {
         var el = document.getElementById('user-name');
         if (el) el.textContent = obj.data.user.name;
+        applyModulePermissions(obj.data.user);
       } else if (obj.status === 401) {
         sessionStorage.removeItem('FM_token');
         window.location.href = '../portal/';
@@ -781,7 +860,6 @@ if (CSS.supports('padding-bottom', 'env(safe-area-inset-bottom)')) {
   document.getElementById('content').style.paddingBottom = 'calc(80px + env(safe-area-inset-bottom))';
 }
 </script>
-
 
 <script>
 'use strict';
@@ -887,6 +965,7 @@ async function loadDashboard() {
 let debtorsCache = [];
 async function loadDebtors() {
   $('debtors-list').innerHTML = '<div class="loading-row">Loading debtors…</div>';
+  $('debtors-view-banner').innerHTML = fmViewOnlyBanner('debtors','Debtors');
   try {
     const d = await api('/debtors');
     debtorsCache = d.debtors;
@@ -895,6 +974,7 @@ async function loadDebtors() {
 }
 function renderDebtors(debtors) {
   if (!debtors.length) { $('debtors-list').innerHTML = empty('No debtors yet. Add one or import from Excel.'); return; }
+  const canEdit = fmCanEdit('debtors');
   const rows = debtors.map(d => {
     const highBucket = ['180_plus','91_180','61_90','31_60','1_30','current'].find(k => (d.ageing[k]||0) > 0) || 'current';
     const score = d.collectionScore;
@@ -910,12 +990,12 @@ function renderDebtors(debtors) {
         <button class="bsm" title="View invoices" onclick="viewInvoices('${d._id}','${d.name.replace(/'/g,'\\\'')}')" style="padding:4px 10px">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
-        <button class="bsm" title="Edit debtor" onclick="openDebtorModal('${d._id}')" style="padding:4px 10px">
+        ${canEdit?`<button class="bsm" title="Edit debtor" onclick="openDebtorModal('${d._id}')" style="padding:4px 10px">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         </button>
         <button class="bsm bd" title="Delete debtor" onclick="deleteDebtor('${d._id}','${d.name.replace(/'/g,'\\\'')}')" style="padding:4px 10px">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
-        </button>
+        </button>`:''}
       </div></td>
     </tr>`;
   }).join('');
@@ -925,6 +1005,7 @@ function renderDebtors(debtors) {
   </table></div>`;
 }
 function openDebtorModal(id) {
+  if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
   const deb = id ? debtorsCache.find(d => d._id === id) : null;
   const title = deb ? 'Edit Debtor' : 'Add New Debtor';
   const body = `
@@ -961,14 +1042,16 @@ async function saveDebtor(id) {
   } catch(e) { errEl.textContent = e.message; errEl.classList.add('on'); saveTxt.textContent = id?'Save Changes':'Add Debtor'; }
 }
 async function deleteDebtor(id, name) {
+  if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
   if (!confirm(`Delete "${name}" and ALL their invoices?\n\nThis cannot be undone.`)) return;
   try { await api('/debtors/'+id, { method:'DELETE' }); toast('Debtor deleted.'); loadDebtors(); }
   catch(e) { toast(e.message,'err'); }
 }
 async function viewInvoices(debtorId, debtorName) {
+  const canEdit = fmCanEdit('debtors');
   openModal(`Invoices — ${debtorName}`,
     '<div class="loading-row">Loading invoices…</div>',
-    `<button onclick="openInvoiceModal('${debtorId}','${debtorName.replace(/'/g,"\\'")}')" class="bp">+ Add Invoice</button><button onclick="closeModal()">Close</button>`, true);
+    (canEdit?`<button onclick="openInvoiceModal('${debtorId}','${debtorName.replace(/'/g,"\\'")}')" class="bp">+ Add Invoice</button>`:'')+`<button onclick="closeModal()">Close</button>`, true);
   try {
     const d = await api('/invoices?debtorId='+debtorId);
     const invs = d.invoices;
@@ -981,12 +1064,12 @@ async function viewInvoices(debtorId, debtorName) {
       <td class="nm" style="color:var(--rd);font-weight:600">₦${fN(i.balance)}</td>
       <td>${bucketPill(i.ageingBucket, i.daysOverdue)}</td>
       <td class="nr">${i.description||'—'}</td>
-      <td><div style="display:flex;gap:4px">
+      <td>${canEdit?`<div style="display:flex;gap:4px">
         <button class="bsm" onclick="openPaymentModal('${i._id}','${i.invoiceNumber}',${i.balance})" title="Record payment" style="padding:4px 8px">₦</button>
         <button class="bsm bd" onclick="deleteInvoice('${i._id}','${i.invoiceNumber}')" style="padding:4px 8px" title="Delete">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
         </button>
-      </div></td>
+      </div>`:''}</td>
     </tr>`).join('');
     $('modal-body').innerHTML = `<div class="tw"><table>
       <thead><tr><th>Invoice #</th><th>Issued</th><th>Due</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Status</th><th>Description</th><th></th></tr></thead>
@@ -995,6 +1078,7 @@ async function viewInvoices(debtorId, debtorName) {
   } catch(e) { $('modal-body').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
 }
 function openInvoiceModal(debtorId, debtorName) {
+  if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
   openModal(`Add Invoice — ${debtorName}`, `
     <div class="merr" id="inv-err"></div>
     <div class="fg">
@@ -1023,6 +1107,7 @@ async function saveInvoice(debtorId, debtorName) {
   } catch(e) { err.textContent=e.message; err.classList.add('on'); $('inv-save-txt').textContent='Add Invoice'; }
 }
 function openPaymentModal(invId, invNo, balance) {
+  if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
   openModal('Record Payment — ' + invNo, `
     <div class="merr" id="pay-err"></div>
     <p style="font-size:13px;color:var(--tx2);margin-bottom:1rem">Current outstanding balance: <strong style="color:var(--rd)">₦${fN(balance)}</strong></p>
@@ -1042,11 +1127,13 @@ async function recordPayment(invId, currentBalance) {
   } catch(e) { err.textContent=e.message; err.classList.add('on'); $('pay-save-txt').textContent='Record Payment'; }
 }
 async function deleteInvoice(id, no) {
+  if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
   if (!confirm(`Delete invoice ${no}? This cannot be undone.`)) return;
   try { await api('/invoices/'+id, { method:'DELETE' }); toast('Invoice deleted.'); }
   catch(e) { toast(e.message,'err'); }
 }
 function openImportModal() {
+  if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
   openModal('Import from Excel / CSV', `
     <div class="merr" id="imp-err"></div>
     <div class="mok"  id="imp-ok"></div>
@@ -1120,16 +1207,18 @@ function renderAgeingTable(report) {
 let remindersCache = [];
 async function loadReminders() {
   $('reminders-list').innerHTML = '<div class="loading-row">Loading overdue debtors…</div>';
+  $('reminders-view-banner').innerHTML = fmViewOnlyBanner('reminders','Send Reminders');
   try {
     const d = await api('/debtors');
     const overdue = d.debtors.filter(deb => deb.totalOutstanding > 0);
     remindersCache = overdue;
     if (!overdue.length) { $('reminders-list').innerHTML = empty('No debtors with outstanding invoices.'); return; }
+    const canEdit = fmCanEdit('reminders');
     const rows = overdue.map(deb => {
       const highBucket = ['180_plus','91_180','61_90','31_60','1_30','current'].find(k => (deb.ageing[k]||0) > 0) || 'current';
       const tpl = deb.ageing['180_plus']>0 ? 'Final Notice' : deb.ageing['91_180']>0||deb.ageing['61_90']>0 ? 'Second Reminder' : deb.ageing['31_60']>0 ? 'Second Reminder' : 'First Reminder';
       return `<tr id="rem-row-${deb._id}">
-        <td><label class="cb"><input type="checkbox" id="chk-${deb._id}" onchange="updateSendBtn()" ${!deb.email?'disabled title="No email address"':''}><span>${deb.name}${!deb.email?'<span style="color:var(--rd);font-size:10px;margin-left:6px">no email</span>':''}</span></label></td>
+        <td><label class="cb"><input type="checkbox" id="chk-${deb._id}" onchange="updateSendBtn()" ${!deb.email||!canEdit?'disabled title="'+(!deb.email?'No email address':'View-only access')+'"':''}><span>${deb.name}${!deb.email?'<span style="color:var(--rd);font-size:10px;margin-left:6px">no email</span>':''}</span></label></td>
         <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${deb.email||'—'}</td>
         <td class="nm" style="font-weight:600;color:var(--rd)">₦${fN(deb.totalOutstanding)}</td>
         <td><span class="pl ${BUCKET_CLASSES[highBucket]}">${BUCKET_LABELS[highBucket]}</span></td>
@@ -1143,14 +1232,16 @@ async function loadReminders() {
   } catch(e) { $('reminders-list').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
 }
 function updateSendBtn() {
-  const any = remindersCache.some(d => d.email && $('chk-'+d._id)?.checked);
+  const any = fmCanEdit('reminders') && remindersCache.some(d => d.email && $('chk-'+d._id)?.checked);
   $('send-btn').disabled = !any;
 }
 function selectAllDebtors(select) {
+  if(select && !fmCanEdit('reminders')){toast('You have view-only access to Send Reminders.','err');return;}
   remindersCache.forEach(d => { const el = $('chk-'+d._id); if(el && !el.disabled) el.checked = select; });
   updateSendBtn();
 }
 async function sendReminders() {
+  if(!fmCanEdit('reminders')){toast('You have view-only access to Send Reminders.','err');return;}
   const ids = remindersCache.filter(d => d.email && $('chk-'+d._id)?.checked).map(d => d._id);
   if (!ids.length) { toast('Select at least one debtor.','err'); return; }
   const tpl = $('tpl-override').value || '';
@@ -1236,14 +1327,13 @@ function eclHaircut(type){
   return ECL_COLLATERAL_HAIRCUTS.find(([k]) => n.includes(k))?.[1] ?? 0;
 }
 function eclMacroMult(inflPct, gdpPct){
-  // inflPct and gdpPct already as percentage numbers (e.g. 10, 3)
   return eclClamp(1 + ((inflPct - 10) * .025) - ((gdpPct - 3) * .04), .7, 1.8);
 }
 
 
 function pmRate(bk, matrix) {
   const map = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '180_plus':'days180plus' };
-  return (matrix[map[bk]] ?? 5) / 100;  // convert % to decimal
+  return (matrix[map[bk]] ?? 5) / 100;
 }
 
 
@@ -1254,11 +1344,9 @@ function eclComputeRow(row, settings, inflOverride, gdpOverride) {
   const matrix = eclModelSettings.provisionMatrix || {};
 
   
-  let stage = row.stage;  // explicit DB override
+  let stage = row.stage;
   if (!stage) {
-    // Credit-impaired debtor → always Stage 3
     if (row.creditImpaired) { stage = 3; }
-    // SICR qualitative indicators → at least Stage 2
     else if (row.sicrIndicators && (row.sicrIndicators.restructured || row.sicrIndicators.financialDifficulty || row.sicrIndicators.breachedCovenants || row.sicrIndicators.sectorStress)) {
       stage = dpd > settings.stage3Dpd ? 3 : 2;
     }
@@ -1283,7 +1371,7 @@ function eclComputeRow(row, settings, inflOverride, gdpOverride) {
     const baseRate = pmRate(bk, matrix);
   
     pd12       = eclClamp(baseRate * macroMult, .001, .99);
-    lifetimePd = pd12;  // simplified approach uses lifetime horizon
+    lifetimePd = pd12;
     pdBasis    = `Provision matrix (${(baseRate*100).toFixed(1)}%) × macro (${macroMult.toFixed(2)})`;
   } else {
    
@@ -1358,7 +1446,6 @@ async function loadEclModelSettings() {
   try {
     const d = await api('/ecl/model-settings');
     eclModelSettings = d;
-    // Populate provision matrix inputs
     const pm = d.provisionMatrix || {};
     if($('pm-current'))  $('pm-current').value  = pm.current   ?? 0.5;
     if($('pm-1_30'))     $('pm-1_30').value      = pm.days1_30  ?? 2.0;
@@ -1379,6 +1466,7 @@ async function loadEclModelSettings() {
 }
 
 async function saveProvisionMatrix() {
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   $('pm-save-txt').textContent = 'Saving…';
   try {
     await api('/ecl/model-settings', { method:'PUT', body:JSON.stringify({ provisionMatrix:{
@@ -1397,6 +1485,7 @@ async function saveProvisionMatrix() {
 }
 
 async function saveScenarios() {
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   $('sc-save-txt').textContent = 'Saving…';
   const sc = eclReadScenarios();
   const total = sc.baseWeight + sc.upsideWeight + sc.downWeight;
@@ -1417,6 +1506,7 @@ async function saveScenarios() {
 
 async function loadEclPortfolio() {
   $('ecl-portfolio-table').innerHTML = '<div class="loading-row">Loading portfolio from database…</div>';
+  $('ecl-view-banner').innerHTML = fmViewOnlyBanner('ecl','the IFRS 9 ECL Model');
   $('ecl-kpis').innerHTML = '';
   $('ecl-stages').style.display = 'none';
   $('ecl-results-section').style.display = 'none';
@@ -1435,6 +1525,7 @@ async function loadEclPortfolio() {
 
 function renderEclPortfolioTable() {
   if(!eclPortfolioRows.length) return;
+  const canEdit = fmCanEdit('ecl');
   const makeSourceBadge = src => `<span class="ecl-source-badge ${src}">${src}</span>`;
 
   const rows = eclPortfolioRows.map((r, idx) => {
@@ -1443,9 +1534,12 @@ function renderEclPortfolioTable() {
     const sicrAny = r.sicrIndicators && (r.sicrIndicators.restructured||r.sicrIndicators.financialDifficulty||r.sicrIndicators.breachedCovenants||r.sicrIndicators.sectorStress);
     const sicrBadge = sicrAny ? `<span class="sicr-badge">SICR</span>` : '';
     const impBadge  = r.creditImpaired ? `<span class="sicr-badge impaired-badge">Impaired</span>` : '';
+    const nameCell = canEdit
+      ? `<div style="font-weight:500;font-size:12px;cursor:pointer;color:var(--t);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px" onclick="openDebtorEclModal('${r._debtorId}','${r.customerName.replace(/'/g,"\\'")}')" title="Edit ECL defaults + SICR for ${r.customerName}">${r.customerName} ${sicrBadge}${impBadge}</div>`
+      : `<div style="font-weight:500;font-size:12px">${r.customerName} ${sicrBadge}${impBadge}</div>`;
     return `<tr id="ecl-row-${idx}">
       <td>
-        <div style="font-weight:500;font-size:12px;cursor:pointer;color:var(--t);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px" onclick="openDebtorEclModal('${r._debtorId}','${r.customerName.replace(/'/g,"\\'")}')" title="Edit ECL defaults + SICR for ${r.customerName}">${r.customerName} ${sicrBadge}${impBadge}</div>
+        ${nameCell}
         <div style="font-size:10px;font-family:var(--mo);color:var(--tx3)">${r.invoiceNumber}</div>
       </td>
       <td>${fD(r.dueDate)}</td>
@@ -1453,31 +1547,31 @@ function renderEclPortfolioTable() {
       <td><span class="pl ${BUCKET_CLASSES[bk]||'pa'}">${r.daysPastDue<=0?'Current':r.daysPastDue+' days'}</span></td>
       <td>
         <div class="ecl-inline-edit">
-          <select class="ecl-inline-select" id="cls-${idx}" onchange="eclFieldChanged(${idx},'loanClassification',this.value)">
+          <select class="ecl-inline-select" id="cls-${idx}" onchange="eclFieldChanged(${idx},'loanClassification',this.value)" ${canEdit?'':'disabled'}>
             ${ECL_LOAN_CLASSIFICATIONS.map(c=>`<option value="${c}" ${c===r.loanClassification?'selected':''}>${c}</option>`).join('')}
           </select>${makeSourceBadge(src.loanClassification||'default')}
         </div>
       </td>
       <td>
         <div class="ecl-inline-edit" style="gap:4px">
-          <select class="ecl-inline-select" id="colt-${idx}" onchange="eclFieldChanged(${idx},'collateralType',this.value)">
+          <select class="ecl-inline-select" id="colt-${idx}" onchange="eclFieldChanged(${idx},'collateralType',this.value)" ${canEdit?'':'disabled'}>
             ${ECL_COLLATERAL_TYPES.map(c=>`<option value="${c}" ${c===r.collateralType?'selected':''}>${c}</option>`).join('')}
           </select>${makeSourceBadge(src.collateralType||'default')}
         </div>
       </td>
       <td>
         <div class="ecl-inline-edit">
-          <input class="ecl-inline-num" type="number" id="colv-${idx}" value="${r.collateralValue||0}" min="0" step="1000" onblur="eclFieldChanged(${idx},'collateralValue',this.value)">${makeSourceBadge(src.collateralValue||'default')}
+          <input class="ecl-inline-num" type="number" id="colv-${idx}" value="${r.collateralValue||0}" min="0" step="1000" onblur="eclFieldChanged(${idx},'collateralValue',this.value)" ${canEdit?'':'disabled'}>${makeSourceBadge(src.collateralValue||'default')}
         </div>
       </td>
       <td>
         <div class="ecl-inline-edit">
-          <input class="ecl-inline-num" type="number" id="eir-${idx}" value="${r.eir||''}" min="0" step="0.5" placeholder="—" onblur="eclFieldChanged(${idx},'eir',this.value)" style="width:60px">${makeSourceBadge(src.eir||'default')}
+          <input class="ecl-inline-num" type="number" id="eir-${idx}" value="${r.eir||''}" min="0" step="0.5" placeholder="—" onblur="eclFieldChanged(${idx},'eir',this.value)" style="width:60px" ${canEdit?'':'disabled'}>${makeSourceBadge(src.eir||'default')}
         </div>
       </td>
       <td>
         <div class="ecl-inline-edit">
-          <select class="ecl-inline-select" id="stg-${idx}" onchange="eclFieldChanged(${idx},'stage',this.value)">
+          <select class="ecl-inline-select" id="stg-${idx}" onchange="eclFieldChanged(${idx},'stage',this.value)" ${canEdit?'':'disabled'}>
             <option value="">Auto</option>
             <option value="1" ${r.stage===1?'selected':''}>Stage 1</option>
             <option value="2" ${r.stage===2?'selected':''}>Stage 2</option>
@@ -1486,10 +1580,10 @@ function renderEclPortfolioTable() {
         </div>
       </td>
       <td>
-        <div style="display:flex;gap:4px">
+        ${canEdit?`<div style="display:flex;gap:4px">
           <button class="bsm save-ecl-btn" id="save-ecl-${idx}" onclick="saveEclRow(${idx})" style="opacity:.5;font-size:10px;padding:3px 9px;border-radius:6px">Save</button>
           <button class="bsm bd" onclick="writeOffInvoice('${r._invoiceId}','${r.invoiceNumber}')" title="Write off" style="padding:3px 7px;font-size:10px">W/O</button>
-        </div>
+        </div>`:'<span style="color:var(--tx3);font-family:var(--mo);font-size:10px">view only</span>'}
       </td>
     </tr>`;
   }).join('');
@@ -1508,6 +1602,7 @@ function renderEclPortfolioTable() {
 
 const eclDirty = {};
 function eclFieldChanged(idx, field, value) {
+  if(!fmCanEdit('ecl'))return;
   if(!eclDirty[idx]) eclDirty[idx] = {};
   eclDirty[idx][field] = value;
   eclPortfolioRows[idx][field] = field==='collateralValue'||field==='eir' ? parseFloat(value)||0 : (field==='stage'?(value?parseInt(value):null):value);
@@ -1516,6 +1611,7 @@ function eclFieldChanged(idx, field, value) {
 }
 
 async function saveEclRow(idx) {
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   const row = eclPortfolioRows[idx]; if(!row) return;
   const btn = $('save-ecl-' + idx);
   if(btn) btn.textContent = '…';
@@ -1536,6 +1632,7 @@ async function saveEclRow(idx) {
 }
 
 async function openDebtorEclModal(debtorId, debtorName) {
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   openModal(`ECL Defaults & SICR — ${debtorName}`, `
     <div class="merr" id="decl-err"></div>
     <div class="nt-info" style="margin-bottom:1rem">ECL defaults apply to all invoices for this debtor unless a specific invoice has its own override. SICR indicators and Credit-Impaired status apply immediately in staging.</div>
@@ -1630,8 +1727,9 @@ async function saveDebtorEcl(debtorId, debtorName) {
 
 
 async function writeOffInvoice(invoiceId, invoiceNumber) {
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   const reason = prompt(`Write off invoice ${invoiceNumber}?\n\nEnter reason (e.g. "No reasonable expectation of recovery after 180+ days"):`);
-  if(reason === null) return; // cancelled
+  if(reason === null) return;
   try {
     await api('/ecl/invoice/' + invoiceId + '/writeoff', { method:'PUT', body:JSON.stringify({ reason: reason || 'No reasonable expectation of recovery' }) });
     toast(`Invoice ${invoiceNumber} written off.`);
@@ -1646,6 +1744,7 @@ async function loadWriteoffs() {
   try {
     const d = await api('/ecl/writeoffs');
     if(!d.invoices.length) { el.innerHTML = empty('No written-off invoices yet. Write-offs are recorded here for audit trail and provision matrix calibration.'); return; }
+    const canEdit = fmCanEdit('ecl');
     const rows = d.invoices.map(i => `<tr>
       <td>${fD(i.writtenOffDate)}</td>
       <td style="font-family:var(--mo);font-size:11px">${i.invoiceNumber}</td>
@@ -1654,7 +1753,7 @@ async function loadWriteoffs() {
       <td class="nm">₦${fN(i.amount)}</td>
       <td class="nr">${i.writtenOffReason||'—'}</td>
       <td>
-        <button class="bsm" onclick="restoreInvoice('${i._id}','${i.invoiceNumber}')" style="font-size:10px;padding:3px 9px">Restore</button>
+        ${canEdit?`<button class="bsm" onclick="restoreInvoice('${i._id}','${i.invoiceNumber}')" style="font-size:10px;padding:3px 9px">Restore</button>`:''}
       </td>
     </tr>`).join('');
     el.innerHTML = `<div class="tw"><table>
@@ -1665,6 +1764,7 @@ async function loadWriteoffs() {
 }
 
 async function restoreInvoice(id, no) {
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   if(!confirm(`Restore invoice ${no} back to outstanding?`)) return;
   try { await api('/ecl/invoice/' + id + '/restore', { method:'PUT' }); toast('Invoice restored.'); loadWriteoffs(); }
   catch(e) { toast(e.message, 'err'); }
@@ -1695,6 +1795,7 @@ async function fetchEclMacro() {
 
 
 function computeECL() {
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   if(!eclPortfolioRows.length) { toast('Load portfolio first.','err'); return; }
   const settings  = eclReadSettings();
   const scenarios = eclReadScenarios();
@@ -1816,6 +1917,7 @@ function computeECL() {
 
 
 async function saveEclSnapshot() {
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   if(!eclResults.length) { toast('Compute ECL first.','err'); return; }
   const settings  = eclReadSettings();
   const scenarios = eclReadScenarios();
@@ -1839,6 +1941,7 @@ async function loadEclSnapshots() {
     const d = await api('/ecl/snapshots');
     if(!d.snapshots.length) { el.innerHTML = `<div class="ep" style="padding:1.5rem"><div style="font-size:1.2rem;margin-bottom:8px">📸</div>No snapshots saved yet. Run Compute ECL and save a snapshot.</div>`; return; }
     const fPct = v => v!=null?(v*100).toFixed(2)+'%':'—';
+    const canEdit = fmCanEdit('ecl');
     el.innerHTML = d.snapshots.map(s=>`<div class="ecl-snap-row">
       <div>
         <div style="font-size:13px;font-weight:500">${s.label||'Unlabelled snapshot'}</div>
@@ -1849,14 +1952,15 @@ async function loadEclSnapshots() {
           <span class="pl pr">S3: ${s.summary?.stage3Count||0}</span>
         </div>
       </div>
-      <button class="bsm bd" onclick="deleteEclSnapshot('${s._id}')" style="padding:4px 10px;flex-shrink:0" title="Delete snapshot">
+      ${canEdit?`<button class="bsm bd" onclick="deleteEclSnapshot('${s._id}')" style="padding:4px 10px;flex-shrink:0" title="Delete snapshot">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
-      </button>
+      </button>`:''}
     </div>`).join('');
   } catch(e) { el.innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
 }
 
 async function deleteEclSnapshot(id) {
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   if(!confirm('Delete this ECL snapshot?')) return;
   try { await api('/ecl/snapshots/'+id,{method:'DELETE'}); toast('Snapshot deleted.'); loadEclSnapshots(); }
   catch(e) { toast(e.message,'err'); }
@@ -2027,12 +2131,13 @@ async function loadCalibrationData() {
         <strong>Audit note:</strong> These rates are derived from ${d.totalWrittenOff} written-off invoice(s) across your portfolio. For rates to be statistically reliable, IFRS 9 guidance suggests a minimum observation period of 2–3 years with sufficient write-off events per bucket. Buckets showing "No data" will retain their existing provision matrix rates if you apply calibration.
       </div>`;
 
-    $('calib-apply-section').style.display = 'block';
+    if(fmCanEdit('ecl')) $('calib-apply-section').style.display = 'block';
 
   } catch(e) { el.innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
 }
 
 async function applyCalibrationToMatrix() {
+  if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
   if(!calibrationData || !calibrationData.hasData) return;
   const btn = $('calib-apply-btn');
   btn.disabled = true; btn.textContent = 'Applying…';
@@ -2545,6 +2650,13 @@ window.addEventListener('load', () => {
   document.querySelectorAll('.nav-item').forEach(function(item) {
     item.addEventListener('click', function() {
       const view = item.getAttribute('data-view');
+      // Block navigation into a module the user doesn't at least have 'view' on.
+      // 'team' and 'settings' have no module key (same as treasury's pattern),
+      // so they're always reachable once the nav item itself isn't hidden.
+      if (item.hasAttribute('data-fm-module') && !fmCanView(view)) {
+        toast('You do not have access to this module.', 'err');
+        return;
+      }
       document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
       document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
       item.classList.add('active');
