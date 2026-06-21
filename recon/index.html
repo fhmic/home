@@ -401,36 +401,35 @@ document.getElementById('logout-btn').addEventListener('click',function(){
   window.location.href='../portal/';
 });
 
-  document.getElementById('downloadTemplate').addEventListener('click', function(e){
-  e.preventDefault();
+document.addEventListener('DOMContentLoaded', function(){
+  const btn = document.getElementById('downloadTemplate');
+  if(!btn) return; // safety check
 
-  // Sample structure
-  const sampleData = [
-    ['Date','Narration','DR Amount','CR Amount','Balance Amount'],
-    ['01/01/2026','Opening Balance',0,0,500000],
-    ['02/01/2026','POS Purchase',15000,0,485000],
-    ['03/01/2026','Customer Deposit',0,250000,735000],
-    ['05/01/2026','Transfer to Vendor',50000,0,685000],
-    ['07/01/2026','Bank Charges',1500,0,683500]
-  ];
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
 
-  const ws = XLSX.utils.aoa_to_sheet(sampleData);
+    const sampleData = [
+      ['Date','Narration','DR Amount','CR Amount','Balance Amount'],
+      ['01/01/2026','Opening Balance',0,0,500000],
+      ['02/01/2026','POS Purchase',15000,0,485000],
+      ['03/01/2026','Customer Deposit',0,250000,735000],
+      ['05/01/2026','Transfer to Vendor',50000,0,685000],
+      ['07/01/2026','Bank Charges',1500,0,683500]
+    ];
 
-  // Optional: set column widths for better UX
-  ws['!cols']=[
-    {wch:14},
-    {wch:40},
-    {wch:16},
-    {wch:16},
-    {wch:18}
-  ];
+    const ws = XLSX.utils.aoa_to_sheet(sampleData);
 
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Template');
+    ws['!cols']=[
+      {wch:14},{wch:40},{wch:16},{wch:16},{wch:18}
+    ];
 
-  const filename = 'FM-BankRecon-Template.xlsx';
-  XLSX.writeFile(wb, filename);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Template');
+
+    XLSX.writeFile(wb, 'FM-BankRecon-Template.xlsx');
+  });
 });
+
 
 </script>
 <script>
