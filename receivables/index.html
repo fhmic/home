@@ -1136,23 +1136,88 @@ async function deleteInvoice(id, no) {
   catch(e) { toast(e.message,'err'); }
 }
 function openImportModal() {
-  if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
+  if(!fmCanEdit('debtors')){
+    toast('You have view-only access to Debtors.','err');
+    return;
+  }
+
   openModal('Import from Excel / CSV', `
     <div class="merr" id="imp-err"></div>
     <div class="mok"  id="imp-ok"></div>
-    <div class="nt">File must have columns: <strong>Debtor Name, Email, Invoice Number, Invoice Date, Due Date, Amount, Amount Paid</strong><br>Optional: Phone, Credit Limit, Description/Narration</div>
+
+    <div class="nt">
+      File must have columns:
+      <strong>Debtor Name, Email, Invoice Number, Invoice Date, Due Date, Amount, Amount Paid</strong><br>
+      Optional: Phone, Credit Limit, Description/Narration
+    </div>
+
+    <div style="margin:10px 0;">
+      <button class="bp" onclick="downloadSampleFile()">⬇ Download Sample Template</button>
+    </div>
+
     <div style="border:1.5px dashed var(--b2);border-radius:var(--r);padding:2rem;text-align:center;cursor:pointer;background:var(--tg);position:relative" id="imp-drop">
       <input type="file" accept=".csv,.xlsx,.xls" id="imp-file" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
       <div style="font-size:1.5rem;margin-bottom:8px">📂</div>
       <div style="font-size:13px;font-weight:500">Click or drop your Excel/CSV file</div>
       <div style="font-size:11px;color:var(--tx3);margin-top:4px" id="imp-fname">Accepts .xlsx, .xls, .csv</div>
     </div>`,
+
     `<button onclick="closeModal()">Cancel</button>
-     <button class="bp" id="imp-btn" onclick="doImport()" disabled><span id="imp-txt">Import</span></button>`);
+     <button class="bp" id="imp-btn" onclick="doImport()" disabled>
+       <span id="imp-txt">Import</span>
+     </button>`
+  );
+
   $('imp-file').addEventListener('change', e => {
-    if (e.target.files[0]) { $('imp-fname').textContent = e.target.files[0].name; $('imp-btn').disabled = false; }
+    if (e.target.files[0]) {
+      $('imp-fname').textContent = e.target.files[0].name;
+      $('imp-btn').disabled = false;
+    }
   });
 }
+
+function downloadSampleFile() {
+  const headers = [
+    "Debtor Name",
+    "Email",
+    "Invoice Number",
+    "Invoice Date",
+    "Due Date",
+    "Amount",
+    "Amount Paid",
+    "Phone",
+    "Credit Limit",
+    "Description/Narration"
+  ];
+
+  const sampleRow = [
+    "ABC Ltd",
+    "abc@email.com",
+    "INV-001",
+    "2026-01-01",
+    "2026-01-31",
+    "50000",
+    "20000",
+    "08012345678",
+    "100000",
+    "Sample invoice narration"
+  ];
+
+  let csvContent = headers.join(",") + "\n" + sampleRow.join(",");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "Debtors_Import_Template.csv";
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+  
 async function doImport() {
   const file = $('imp-file').files[0]; if (!file) return;
   const errEl = $('imp-err'), okEl = $('imp-ok');
