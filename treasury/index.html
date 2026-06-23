@@ -515,8 +515,21 @@ var _user=null,_borrowCache=[],_invCache=[],_cashCache=[],_debtorCache=[],_portf
 var _equityData={shareCapital:0,retainedEarnings:0,otherReserves:0,costOfEquity:20};
 var _loanFilter='all';
 var _charts={};
-// Persist equity locally
+// Persist equity locally and attempt backend sync
 (function(){try{const e=localStorage.getItem('fm_equity');if(e)_equityData=JSON.parse(e);}catch(x){}})();
+async function _syncEquityFromBackend(){
+  const tok=sessionStorage.getItem('FM_token');
+  if(!tok)return;
+  try{
+    const d=await api('/settings/equity');
+    if(d.equity&&d.equity.shareCapital!=null){_equityData=d.equity;localStorage.setItem('fm_equity',JSON.stringify(_equityData));}
+  }catch(e){}
+}
+async function _syncEquityToBackend(){
+  const tok=sessionStorage.getItem('FM_token');
+  if(!tok)return;
+  try{await api('/settings/equity',{method:'POST',body:JSON.stringify(_equityData)});}catch(e){}
+}
 
 (function(){
   var tok=sessionStorage.getItem('FM_token');
@@ -533,6 +546,7 @@ var _charts={};
       }
       if(_user.orgRole==='admin'||_user.accountType==='organisation')
         document.getElementById('nav-team').style.display='flex';
+      _syncEquityFromBackend();
       loadDashboard();
     }else if(obj.s===401){sessionStorage.removeItem('FM_token');window.location.href='../portal/';}
     else loadDashboard();
@@ -781,7 +795,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,tot
 
   // Expose latest maturity arrays for export/reporting
   const contribs2 = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
-  window.latestMaturity = { aBkts, lBkts, waraBkts, wacfBkts, spreadBkts, contribs: contribs2, aTotal, lTotal, gBkts, gTotal };
+  window.latestMaturity = { aBkts, lBkts, waraBkts, wacfBkts, spreadBkts, contribs: contribs2, aTotal, lTotal, gBkts, gTotal, rDBkts: rD.b, rIBkts: rI.b, rCBkts: rC.b, rBBkts: rB.b };
 
   const TH='<th>'+TENOR_LBLS.join('</th><th>')+'</th>';
   tbl.innerHTML=`<thead><tr><th>TENOR</th>${TH}<th>TOTAL</th></tr></thead><tbody>
@@ -1003,6 +1017,7 @@ function saveEquity(){
   if(!sc){err.textContent='Share capital is required.';err.classList.add('on');return;}
   _equityData={shareCapital:sc,retainedEarnings:parseFloat($('eq-ret').value)||0,otherReserves:parseFloat($('eq-res').value)||0,costOfEquity:parseFloat($('eq-ke').value)||20};
   try{localStorage.setItem('fm_equity',JSON.stringify(_equityData));}catch(x){}
+  _syncEquityToBackend();
   closeModal();toast('Capital data saved.');loadEquity();
 }
 
@@ -1740,24 +1755,27 @@ async function saveSettings(){
       s3.addText('Cumulative tenor gap analysis (₦)', { x:0.5, y:0.75, w:8, h:0.3, fontSize:11, fontFace:'IBM Plex Mono', color:C.tx3 });
 
       const matHeaders = ['Category'].concat(TENOR_LBLS).concat(['TOTAL']);
-      const N6 = () => new Array(6).fill('—');
-      const PLACEHOLDER_ROW = (label, total) => [label].concat(N6()).concat([fmtNum(total)]);
       const aBkts = mm.aBkts || [];
       const lBkts = mm.lBkts || [];
       const gBkts = mm.gBkts || [];
+      const FMT = (v) => typeof v === 'number' ? (v>0?'₦'+v.toLocaleString('en-NG',{minimumFractionDigits:2}):'—') : v;
+      const rDB = (mm.rDBkts||[]).map(v=>FMT(v));
+      const rIB = (mm.rIBkts||[]).map(v=>FMT(v));
+      const rCB = (mm.rCBkts||[]).map(v=>FMT(v));
+      const rBB = (mm.rBBkts||[]).map(v=>FMT(v));
       const rDTotal = _debtorCache.reduce((s,d)=>s+d.totalOutstanding,0);
       const rITotal = _invCache.reduce((s,i)=>s+i.principal,0);
       const rCTotal = _cashCache.filter(a=>a.currency==='NGN'&&!a.restricted).reduce((s,a)=>s+a.balance,0);
       const rBTotal = _borrowCache.reduce((s,b)=>s+b.outstanding,0);
 
       const matRows = [
-        PLACEHOLDER_ROW('Risk Assets (Debtors)', rDTotal),
-        PLACEHOLDER_ROW('Investments', rITotal),
-        PLACEHOLDER_ROW('Cash & Equivalents', rCTotal),
-        ['TOTAL ASSETS'].concat(aBkts.map(v=>fmtNum(v))).concat([fmtNum(mm.aTotal||0)]),
-        PLACEHOLDER_ROW('Borrowings', rBTotal),
-        ['TOTAL LIABILITIES'].concat(lBkts.map(v=>fmtNum(v))).concat([fmtNum(mm.lTotal||0)]),
-        ['LEADING / (GAP)'].concat(gBkts.map(v=>fmtNum(v))).concat([fmtNum(mm.gTotal||0)]),
+        ['Risk Assets (Debtors)'].concat(rDB).concat([FMT(rDTotal)]),
+        ['Investments'].concat(rIB).concat([FMT(rITotal)]),
+        ['Cash & Equivalents'].concat(rCB).concat([FMT(rCTotal)]),
+        ['TOTAL ASSETS'].concat(aBkts.map(v=>FMT(v))).concat([FMT(mm.aTotal||0)]),
+        ['Borrowings'].concat(rBB).concat([FMT(rBTotal)]),
+        ['TOTAL LIABILITIES'].concat(lBkts.map(v=>FMT(v))).concat([FMT(mm.lTotal||0)]),
+        ['LEADING / (GAP)'].concat(gBkts.map(v=>FMT(v))).concat([FMT(mm.gTotal||0)]),
       ];
 
       s3.addTable([matHeaders, ...matRows], {
