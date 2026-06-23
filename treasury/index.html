@@ -691,7 +691,8 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     <tr class="sec-hdr dim"><td colspan="9">WEIGHTED AVERAGE COST OF FUNDS</td></tr>
     <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWARA)}</td></tr>
     <tr class="wacf-row"><td>WACF (Liabilities) %</td>${wacfBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
-    <tr class="spread-row gap-row"><td>Surplus / (Deficit) %</td>${spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('')}<td ${cc(localWARA-localWACD)}>${(localWARA-localWACD>=0?'+':'')+pct(localWARA-localWACD)}</td></tr>
+    <!-- Compute total surplus in currency as sum(asset * spread%) then express as % of total assets -->
+    ${(() => { const contribs = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; }); const totalContrib = contribs.reduce((s,v)=>s+(v||0),0); const surplusPct = aTotal>0 ? (totalContrib / aTotal * 100) : 0; return `<tr class="spread-row gap-row"><td>Surplus / (Deficit) %</td>${spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('')}<td ${cc(surplusPct)}>${(surplusPct>=0?'+':'')+surplusPct.toFixed(2)+'%'}</td></tr>`; })()}
   </tbody>`;
 }
 
