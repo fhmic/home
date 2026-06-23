@@ -10,6 +10,9 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.10.0/pptxgen.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -218,6 +221,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span id="user-name">Loading...</span>
       </div>
+      <button id="btn-export-report" class="bp" title="Export Dashboard Report">Export Report</button>
       <a href="../portal/" class="nav-btn-link">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Portal
       </a>
@@ -674,6 +678,10 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     console.groupEnd();
   } catch(e){ console.warn('per-bucket diagnostics failed',e); }
 
+  // Expose latest maturity arrays for export/reporting
+  const contribs2 = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
+  window.latestMaturity = { aBkts, lBkts, waraBkts, wacfBkts, spreadBkts, contribs: contribs2, aTotal, lTotal, gBkts, gTotal };
+
   const TH='<th>'+TENOR_LBLS.join('</th><th>')+'</th>';
   tbl.innerHTML=`<thead><tr><th>TENOR</th>${TH}<th>TOTAL</th></tr></thead><tbody>
     <tr class="sec-hdr"><td colspan="9">FINANCIAL ASSETS</td></tr>
@@ -784,6 +792,8 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
   }
   if(!html)html='<div class="ep" style="padding:1rem"><div class="ei">📊</div>Enter borrowings, investments, cash and equity data to generate the board advisory.</div>';
   el.innerHTML=html;
+  // Expose latest assessment/recommendations for export
+  window.latestAssessment = { pts, recs, metrics: { totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever } };
 }
 
 // ── DEBTOR BOOK (from Receivables) ───────────────────────────
@@ -1392,5 +1402,115 @@ async function saveSettings(){
   }
 })();
 </script>
+
+<!-- Export Report Modal -->
+<div id="export-modal" style="display:none;position:fixed;inset:0;z-index:650;align-items:center;justify-content:center;padding:1rem;background:rgba(5,12,24,.75);backdrop-filter:blur(3px)">
+  <div class="modal" style="max-width:860px;width:100%">
+    <div class="mhdr"><div class="mttl">Export Dashboard Report</div><button class="mclose" id="export-modal-close">×</button></div>
+    <div class="mbody">
+      <p style="color:var(--tx2)">Choose format to download the current dashboard report. Generated from the latest metrics and advisory content.</p>
+      <div style="display:flex;gap:8px;margin-top:1rem">
+        <button id="exp-xls" class="bp">Download Excel</button>
+        <button id="exp-ppt" class="bp">Download PowerPoint</button>
+        <button id="exp-pdf" class="bp">Download PDF</button>
+      </div>
+      <div id="export-status" style="margin-top:1rem;color:var(--tx3);font-size:13px"></div>
+    </div>
+    <div class="mfoot"><button id="export-cancel" class="bsm">Close</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function fmtNum(v){return typeof v==='number'?v.toLocaleString(undefined,{maximumFractionDigits:2}):v}
+  function safe(obj,path,def){try{return path.split('.').reduce((s,k)=>s[k],obj)||def}catch(e){return def}}
+  function closeModal(){document.getElementById('export-modal').style.display='none'}
+  function showModal(){document.getElementById('export-modal').style.display='flex'}
+  function setStatus(txt,ok){const el=document.getElementById('export-status');if(!el)return;el.textContent=txt;el.style.color=ok?getComputedStyle(document.documentElement).getPropertyValue('--gr'):'#f59e0b'}
+
+  async function exportExcel(){
+    try{
+      setStatus('Preparing Excel…');
+      const wb = XLSX.utils.book_new();
+      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
+      const dash = [ ['Metric','Value'], ['Total Assets',fmtNum(m.totalAssets)], ['Total Debt',fmtNum(m.totalDebt)], ['Total Equity',fmtNum(m.totalEquity)], ['Total Debtors',fmtNum(m.totalDebtors)], ['Investments',fmtNum(m.totalInv)], ['Cash',fmtNum(m.totalCash)], ['WACC', (m.wacc||0)], ['WACD', (m.wacd||0)], ['WARA', (m.wara||0)], ['Spread', (m.spread||0)] ];
+      const ws1 = XLSX.utils.aoa_to_sheet(dash); XLSX.utils.book_append_sheet(wb, ws1, 'Dashboard Summary');
+      // Maturity sheet
+      const headers = ['Row'].concat(TENOR_LBLS).concat(['TOTAL']);
+      const rows = [];
+      rows.push(['Total Financial Assets'].concat((mm.aBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.aTotal)]));
+      rows.push(['Total Financial Liabilities'].concat((mm.lBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.lTotal)]));
+      rows.push(['WARA (Assets) %'].concat((mm.waraBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat([mm.aTotal? ( (mm.contribs||[]).reduce((s,v)=>s+(v||0),0) / mm.aTotal *100).toFixed(2):'-']));
+      rows.push(['WACF (Liabilities) %'].concat((mm.wacfBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
+      rows.push(['Spread %'].concat((mm.spreadBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
+      const ws2 = XLSX.utils.aoa_to_sheet([headers].concat(rows)); XLSX.utils.book_append_sheet(wb, ws2, 'Maturity Profile');
+      XLSX.writeFile(wb,'FM_Dashboard_Report.xlsx');
+      setStatus('Excel downloaded',true);
+    }catch(e){console.error(e);setStatus('Excel export failed');}
+  }
+
+  async function exportPpt(){
+    try{
+      setStatus('Preparing PowerPoint…');
+      const pptx = new PptxGenJS();
+      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
+      const slide = pptx.addSlide();
+      slide.addText('FM Dashboard Report',{x:0.5,y:0.5,fontSize:24,color:'363636',bold:true});
+      slide.addText('Summary',{x:0.5,y:1.2,fontSize:14,color:'666666'});
+      const lines = [ 'Total Assets: '+fmtNum(m.totalAssets), 'Total Debt: '+fmtNum(m.totalDebt), 'Total Equity: '+fmtNum(m.totalEquity), 'WARA: '+(m.wara||0)+'%', 'WACD: '+(m.wacd||0)+'%', 'Spread: '+(m.spread||0)+'%' ];
+      slide.addText(lines,{x:0.5,y:1.6,fontSize:12,color:'444444',bullet:true});
+      // Assessment slide
+      const s2 = pptx.addSlide(); s2.addText('Financial Optimisation Assessment',{x:0.5,y:0.5,fontSize:18});
+      const bullets = (a.pts||[]).map(p=>p.t);
+      if(bullets.length) s2.addText(bullets,{x:0.5,y:1.1,fontSize:12,bullet:true}); else s2.addText(['No assessment generated'],{x:0.5,y:1.1,fontSize:12});
+      // Recommendations slide
+      const s3 = pptx.addSlide(); s3.addText('Board Recommendations',{x:0.5,y:0.5,fontSize:18});
+      const recs = (a.recs||[]);
+      if(recs.length) s3.addText(recs,{x:0.5,y:1.1,fontSize:12,bullet:true}); else s3.addText(['No recommendations generated'],{x:0.5,y:1.1,fontSize:12});
+      await pptx.writeFile({fileName:'FM_Dashboard_Report.pptx'});
+      setStatus('PowerPoint downloaded',true);
+    }catch(e){console.error(e);setStatus('PowerPoint export failed');}
+  }
+
+  async function exportPdf(){
+    try{
+      setStatus('Preparing PDF…');
+      // Build a printable snapshot
+      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
+      const tmp = document.createElement('div'); tmp.style.position='fixed'; tmp.style.left='20px'; tmp.style.top='20px'; tmp.style.width='800px'; tmp.style.padding='20px'; tmp.style.background='#fff'; tmp.style.color='#000'; tmp.style.zIndex=9999;
+      tmp.innerHTML = '<h2>FM Dashboard Report</h2>' +
+        '<h3>Summary</h3><table>' + ['Total Assets','Total Debt','Total Equity','Total Debtors','Investments','Cash','WARA','WACD','Spread'].map(k=>'<tr><td style="padding:4px 8px;font-weight:600">'+k+'</td><td style="padding:4px 8px">'+ (k==='Total Assets'?fmtNum(m.totalAssets): k==='Total Debt'?fmtNum(m.totalDebt): k==='Total Equity'?fmtNum(m.totalEquity): k==='Total Debtors'?fmtNum(m.totalDebtors): k==='Investments'?fmtNum(m.totalInv): k==='Cash'?fmtNum(m.totalCash): k==='WARA'? (m.wara||0)+'%': k==='WACD'? (m.wacd||0)+'%': (m.spread||0)+'%') +'</td></tr>').join('') + '</table>';
+      tmp.innerHTML += '<h3>Assessment</h3>' + ((a.pts||[]).map(p=>'<p style="margin:6px 0">• '+p.t+'</p>').join('')||'<p>No assessment</p>');
+      tmp.innerHTML += '<h3>Recommendations</h3>' + ((a.recs||[]).map(r=>'<p style="margin:6px 0">• '+r+'</p>').join('')||'<p>No recommendations</p>');
+      document.body.appendChild(tmp);
+      // render
+      const canvas = await html2canvas(tmp,{scale:2});
+      const img = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p','pt','a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgProps = pdf.getImageProperties(img);
+      const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+      pdf.addImage(img,'PNG',0,0,pageWidth,pdfHeight);
+      pdf.save('FM_Dashboard_Report.pdf');
+      tmp.remove();
+      setStatus('PDF downloaded',true);
+    }catch(e){console.error(e);setStatus('PDF export failed');}
+  }
+
+  function attach(){
+    const b=document.getElementById('btn-export-report'); if(b) b.addEventListener('click',showModal);
+    const c=document.getElementById('export-modal-close'); if(c) c.addEventListener('click',closeModal);
+    const x=document.getElementById('export-cancel'); if(x) x.addEventListener('click',closeModal);
+    const ex=document.getElementById('exp-xls'); if(ex) ex.addEventListener('click',exportExcel);
+    const ep=document.getElementById('exp-ppt'); if(ep) ep.addEventListener('click',exportPpt);
+    const epp=document.getElementById('exp-pdf'); if(epp) epp.addEventListener('click',exportPdf);
+  }
+
+  if(document.readyState==='complete')setTimeout(attach,200);else window.addEventListener('load',()=>setTimeout(attach,200));
+})();
+</script>
+
 </body>
 </html>
