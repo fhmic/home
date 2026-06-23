@@ -1123,7 +1123,7 @@ function openInvoiceModal(debtorId, debtorName) {
       <div class="fld"><label>Description</label><input class="finput" id="inv-desc" placeholder="Goods/services supplied"></div>
     </div>
     <div class="fg">
-      <div class="fld"><label>Invoice Date *</label><input class="finput" type="date" id="inv-date"></div>
+      <div class="fld"><label>Value Date *</label><input class="finput" type="date" id="inv-value"></div>
       <div class="fld"><label>Due Date *</label><input class="finput" type="date" id="inv-due"></div>
     </div>
     <div class="fg">
@@ -1135,7 +1135,7 @@ function openInvoiceModal(debtorId, debtorName) {
 }
 async function saveInvoice(debtorId, debtorName) {
   const err = $('inv-err'); err.classList.remove('on');
-  const no=($('inv-no').value.trim()), date=$('inv-date').value, due=$('inv-due').value, amt=parseFloat($('inv-amt').value);
+  const no=($('inv-no').value.trim()), date=$('inv-value').value, due=$('inv-due').value, amt=parseFloat($('inv-amt').value);
   if (!no||!date||!due||!amt) { err.textContent='Invoice number, dates and amount are required.'; err.classList.add('on'); return; }
   $('inv-save-txt').textContent = 'Saving…';
   try {
@@ -1181,12 +1181,14 @@ function openImportModal() {
 
     <div class="nt">
       File must have columns:
-      <strong>Debtor Name, Email, Invoice Number, Invoice Date, Due Date, Amount, Amount Paid</strong><br>
-      Optional: Phone, Credit Limit, Description/Narration
+      <strong>Debtor Name, Email, Invoice Number, Value Date, Due Date (or Maturity Date), Amount, Amount Paid or Balance</strong><br>
+      Optional: Phone, Credit Limit, Description/Narration, Stage (1|2|3)
     </div>
 
-    <div style="margin:10px 0;">
+    <div style="margin:10px 0;display:flex;gap:10px;align-items:center">
       <button class="bp" onclick="downloadSampleFile()">⬇ Download Sample Template</button>
+      <label class="cb" style="font-size:12px;margin-left:6px"><input type="checkbox" id="imp-use-balance"><span>Use Balance to recompute Amount Paid</span></label>
+      <label class="cb" style="font-size:12px;margin-left:6px"><input type="checkbox" id="imp-use-maturity"><span>Use Maturity Date to compute past-due if Due Date missing</span></label>
     </div>
 
     <div style="border:1.5px dashed var(--b2);border-radius:var(--r);padding:2rem;text-align:center;cursor:pointer;background:var(--tg);position:relative" id="imp-drop">
@@ -1215,10 +1217,13 @@ function downloadSampleFile() {
     "Debtor Name",
     "Email",
     "Invoice Number",
-    "Invoice Date",
+    "Value Date",
     "Due Date",
+    "Maturity Date",
     "Amount",
     "Amount Paid",
+    "Balance",
+    "Stage",
     "Phone",
     "Credit Limit",
     "Description/Narration"
@@ -1230,8 +1235,11 @@ function downloadSampleFile() {
     "INV-001",
     "2026-01-01",
     "2026-01-31",
+    "2026-12-31",
     "50000",
     "20000",
+    "30000",
+    "2",
     "08012345678",
     "100000",
     "Sample invoice narration"
