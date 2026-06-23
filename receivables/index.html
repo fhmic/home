@@ -907,9 +907,9 @@ function openModal(title, bodyHTML, footHTML, wide=false, xl=false) {
 }
 function closeModal() { $('modal-bg').classList.remove('on'); }
 
-const BUCKET_LABELS = { current:'Current', '1_30':'1–30 days', '31_60':'31–60 days', '61_90':'61–90 days', '91_180':'91–180 days', '180_plus':'180+ days' };
-const BUCKET_COLORS = { current:'#22c55e', '1_30':'#84cc16', '31_60':'#f59e0b', '61_90':'#ef4444', '91_180':'#dc2626', '180_plus':'#991b1b' };
-const BUCKET_CLASSES= { current:'pg', '1_30':'pg', '31_60':'pa', '61_90':'pr', '91_180':'pr', '180_plus':'pdark' };
+const BUCKET_LABELS = { current:'Current', '1_30':'1–30 days', '31_60':'31–60 days', '61_90':'61–90 days', '91_180':'91–180 days', '181_270':'181–270 days', '271_365':'271–365 days', '365_plus':'365+ days' };
+const BUCKET_COLORS = { current:'#22c55e', '1_30':'#84cc16', '31_60':'#f59e0b', '61_90':'#ef4444', '91_180':'#dc2626', '181_270':'#b91c1c', '271_365':'#7f1d1d', '365_plus':'#3b0000' };
+const BUCKET_CLASSES= { current:'pg', '1_30':'pg', '31_60':'pa', '61_90':'pr', '91_180':'pr', '181_270':'pdark', '271_365':'pdark', '365_plus':'pdark' };
 
 function bucketPill(key, days) {
   const cls  = BUCKET_CLASSES[key] || 'pa';
@@ -984,7 +984,7 @@ function renderDebtors(debtors) {
   selectedDebtors = new Set([...selectedDebtors].filter(id => currentIds.has(id)));
   const allSelected = debtors.length && debtors.every(d => selectedDebtors.has(d._id));
   const rows = debtors.map(d => {
-    const highBucket = ['180_plus','91_180','61_90','31_60','1_30','current'].find(k => (d.ageing[k]||0) > 0) || 'current';
+    const highBucket = ['365_plus','271_365','181_270','91_180','61_90','31_60','1_30','current'].find(k => (d.ageing[k]||0) > 0) || 'current';
     const score = d.collectionScore;
     const scoreCls = score > 5000 ? 'pr' : score > 1000 ? 'pa' : 'pg';
     return `<tr>
@@ -1212,6 +1212,26 @@ function openImportModal() {
   });
 }
 
+async function doImport() {
+  const file = $('imp-file').files[0]; if (!file) return;
+  const errEl = $('imp-err'), okEl = $('imp-ok');
+  errEl.classList.remove('on'); okEl.classList.remove('on');
+  $('imp-txt').textContent = 'Importing…'; $('imp-btn').disabled = true;
+  try {
+    const useBalance = $('imp-use-balance').checked;
+    const useMaturity = $('imp-use-maturity').checked;
+    const fd = new FormData(); 
+    fd.append('file', file);
+    fd.append('useBalance', useBalance);
+    fd.append('useMaturity', useMaturity);
+    const d = await apiForm('/debtors/import', fd);
+    okEl.textContent = d.message; okEl.classList.add('on');
+    if (d.errors?.length) { errEl.textContent = 'Some rows had issues: ' + d.errors.slice(0,3).join('; '); errEl.classList.add('on'); }
+    loadDebtors();
+  } catch(e) { errEl.textContent = e.message; errEl.classList.add('on'); }
+  finally { $('imp-txt').textContent = 'Import'; $('imp-btn').disabled = false; }
+}
+
 function downloadSampleFile() {
   const headers = [
   "Debtor Name",
@@ -1222,6 +1242,9 @@ function downloadSampleFile() {
   "Amount",
   "Amount Paid",
   "Balance",
+  "Classification",
+  "Collateral Type",
+  "Collateral Value",
   "Stage",
   "Phone",
   "Credit Limit",
@@ -1237,6 +1260,9 @@ function downloadSampleFile() {
     "50000",
     "20000",
     "30000",
+    "",  // Classification (optional)
+    "",  // Collateral Type (optional)
+    "",  // Collateral Value (optional)
     "2",
     "08012345678",
     "100000",
@@ -1250,7 +1276,7 @@ function downloadSampleFile() {
 
   const link = document.createElement("a");
   link.href = url;
-  link.download = "Debtors_Import_Template.csv";
+  link.download = "FM_Debtors_Template.csv";
   document.body.appendChild(link);
   link.click();
 
@@ -1286,21 +1312,21 @@ async function loadAgeing() {
 }
 function renderAgeingTable(report) {
   if (!report.length) { $('ageing-table').innerHTML = empty('No outstanding invoices to report.'); return; }
-  const totals = { current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'180_plus':0,total:0 };
+  const totals = { current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'181_270':0,'271_365':0,'365_plus':0,total:0 };
   const rows = report.map(r => {
     const ag = r.ageing;
     Object.keys(totals).forEach(k => { if(k!=='total') totals[k] += ag[k]||0; });
     totals.total += r.totalOutstanding;
     return `<tr>
       <td style="font-weight:500">${r.debtor.name}</td>
-      ${['current','1_30','31_60','61_90','91_180','180_plus'].map(k =>
+      ${['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'].map(k =>
         `<td class="nm" style="color:${(ag[k]||0)>0?BUCKET_COLORS[k]:'var(--tx3)'}">${(ag[k]||0)>0?'₦'+fN(ag[k]):'—'}</td>`
       ).join('')}
       <td class="nm" style="font-weight:700">₦${fN(r.totalOutstanding)}</td>
     </tr>`;
   }).join('');
   const totalRow = `<tr class="trt"><td>TOTAL</td>
-    ${['current','1_30','31_60','61_90','91_180','180_plus'].map(k=>`<td class="nm">₦${fN(totals[k])}</td>`).join('')}
+    ${['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'].map(k=>`<td class="nm">₦${fN(totals[k])}</td>`).join('')}
     <td class="nm">₦${fN(totals.total)}</td>
   </tr>`;
   $('ageing-table').innerHTML = `<div class="tw"><table>
@@ -1323,8 +1349,8 @@ async function loadReminders() {
     if (!overdue.length) { $('reminders-list').innerHTML = empty('No debtors with outstanding invoices.'); return; }
     const canEdit = fmCanEdit('reminders');
     const rows = overdue.map(deb => {
-      const highBucket = ['180_plus','91_180','61_90','31_60','1_30','current'].find(k => (deb.ageing[k]||0) > 0) || 'current';
-      const tpl = deb.ageing['180_plus']>0 ? 'Final Notice' : deb.ageing['91_180']>0||deb.ageing['61_90']>0 ? 'Second Reminder' : deb.ageing['31_60']>0 ? 'Second Reminder' : 'First Reminder';
+      const highBucket = ['365_plus','271_365','181_270','91_180','61_90','31_60','1_30','current'].find(k => (deb.ageing[k]||0) > 0) || 'current';
+      const tpl = deb.ageing['365_plus']>0 ? 'Final Notice' : (deb.ageing['271_365']>0||deb.ageing['181_270']>0||deb.ageing['91_180']>0||deb.ageing['61_90']>0) ? 'Second Reminder' : deb.ageing['31_60']>0 ? 'Second Reminder' : 'First Reminder';
       return `<tr id="rem-row-${deb._id}">
         <td><label class="cb"><input type="checkbox" id="chk-${deb._id}" onchange="updateSendBtn()" ${!deb.email||!canEdit?'disabled title="'+(!deb.email?'No email address':'View-only access')+'"':''}><span>${deb.name}${!deb.email?'<span style="color:var(--rd);font-size:10px;margin-left:6px">no email</span>':''}</span></label></td>
         <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${deb.email||'—'}</td>
@@ -1414,10 +1440,53 @@ const ECL_COLLATERAL_HAIRCUTS = [
   ['real estate',.7],['property',.7],['vehicle',.55],['equipment',.5],
   ['inventory',.45],['receivable',.45],['guarantee',.35],['unsecured',0]
 ];
-const ECL_LOAN_CLASSIFICATIONS = [
+const ECL_LOAN_CLASSIFICATIONS = (JSON.parse(localStorage.getItem('ecl_loan_classifications')) || [
   'Trade Receivable','Performing','Standard','Watchlist','Special Mention',
   'Substandard','Doubtful','Non Performing','Lost','Overdraft','LPO','Staff','Default'
-];
+]);
+
+function registerEclClassification(v){
+  if(!v) return;
+  v = String(v).trim();
+  if(!v) return;
+  if(!ECL_LOAN_CLASSIFICATIONS.includes(v)){
+    ECL_LOAN_CLASSIFICATIONS.push(v);
+    try{ localStorage.setItem('ecl_loan_classifications', JSON.stringify(ECL_LOAN_CLASSIFICATIONS)); }catch(e){}
+    // best-effort server save (ignore errors)
+    (async()=>{ try{ await api('/ecl/classifications', { method:'POST', body:JSON.stringify({classification:v}) }); }catch(e){} })();
+  }
+}
+
+function handleEclClassificationChange(sel, idx){
+  const val = sel.value;
+  if(val === '__new__'){
+    const v = prompt('Enter new classification');
+    if(v){ registerEclClassification(v); // add option to all selects
+      document.querySelectorAll('select[data-ecl-cls]').forEach(s=>{
+        if(!Array.from(s.options).some(o=>o.value===v)){
+          const opt = document.createElement('option'); opt.value = v; opt.textContent = v; s.insertBefore(opt, s.querySelector('option[value="__new__"]'));
+        }
+      });
+      sel.value = v;
+      eclFieldChanged(idx,'loanClassification',v);
+    } else { sel.value = ''; }
+  } else {
+    eclFieldChanged(idx,'loanClassification',val);
+  }
+}
+
+function handleDeclClsChange(sel){
+  const val = sel.value;
+  if(val === '__new__'){
+    const v = prompt('Enter new classification');
+    if(v){ registerEclClassification(v); document.querySelectorAll('select[data-ecl-cls]').forEach(s=>{
+      if(!Array.from(s.options).some(o=>o.value===v)){
+        const opt = document.createElement('option'); opt.value = v; opt.textContent = v; s.insertBefore(opt, s.querySelector('option[value="__new__"]'));
+      }
+    });
+    sel.value = v; }
+  }
+}
 const ECL_COLLATERAL_TYPES = [
   'Unsecured','Real Estate','Cash','Deposit','Treasury','Government Bond',
   'Vehicle','Equipment','Inventory','Receivable','Guarantee'
@@ -1440,7 +1509,7 @@ function eclMacroMult(inflPct, gdpPct){
 
 
 function pmRate(bk, matrix) {
-  const map = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '180_plus':'days180plus' };
+  const map = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '181_270':'days181_270', '271_365':'days271_365', '365_plus':'days365plus' };
   return (matrix[map[bk]] ?? 5) / 100;
 }
 
@@ -1470,7 +1539,7 @@ function eclComputeRow(row, settings, inflOverride, gdpOverride) {
   const macroMult = eclMacroMult(infl, gdp);
 
   let pd12, lifetimePd, pdBasis;
-  const bk = dpd<=0?'current':dpd<=30?'1_30':dpd<=60?'31_60':dpd<=90?'61_90':dpd<=180?'91_180':'180_plus';
+  const bk = dpd<=0?'current':dpd<=30?'1_30':dpd<=60?'31_60':dpd<=90?'61_90':dpd<=180?'91_180':dpd<=270?'181_270':dpd<=365?'271_365':'365_plus';
 
   if (stage === 3) {
     pd12 = 1; lifetimePd = 1; pdBasis = 'Stage 3 default — PD = 100%';
@@ -1637,7 +1706,7 @@ function renderEclPortfolioTable() {
   const makeSourceBadge = src => `<span class="ecl-source-badge ${src}">${src}</span>`;
 
   const rows = eclPortfolioRows.map((r, idx) => {
-    const bk  = r.daysPastDue<=0?'current':r.daysPastDue<=30?'1_30':r.daysPastDue<=60?'31_60':r.daysPastDue<=90?'61_90':r.daysPastDue<=180?'91_180':'180_plus';
+    const bk  = r.daysPastDue<=0?'current':r.daysPastDue<=30?'1_30':r.daysPastDue<=60?'31_60':r.daysPastDue<=90?'61_90':r.daysPastDue<=180?'91_180':r.daysPastDue<=270?'181_270':r.daysPastDue<=365?'271_365':'365_plus';
     const src = r._eclSource || {};
     const sicrAny = r.sicrIndicators && (r.sicrIndicators.restructured||r.sicrIndicators.financialDifficulty||r.sicrIndicators.breachedCovenants||r.sicrIndicators.sectorStress);
     const sicrBadge = sicrAny ? `<span class="sicr-badge">SICR</span>` : '';
@@ -1655,9 +1724,10 @@ function renderEclPortfolioTable() {
       <td><span class="pl ${BUCKET_CLASSES[bk]||'pa'}">${r.daysPastDue<=0?'Current':r.daysPastDue+' days'}</span></td>
       <td>
         <div class="ecl-inline-edit">
-          <select class="ecl-inline-select" id="cls-${idx}" onchange="eclFieldChanged(${idx},'loanClassification',this.value)" ${canEdit?'':'disabled'}>
+          <select class="ecl-inline-select" id="cls-${idx}" data-ecl-cls onchange="handleEclClassificationChange(this,${idx})" ${canEdit?'':'disabled'}>
             ${ECL_LOAN_CLASSIFICATIONS.map(c=>`<option value="${c}" ${c===r.loanClassification?'selected':''}>${c}</option>`).join('')}
-          </select>${makeSourceBadge(src.loanClassification||'default')}
+                      <option value="__new__">Add new…</option>
+                    </select>${makeSourceBadge(src.loanClassification||'default') }
         </div>
       </td>
       <td>
@@ -1700,7 +1770,7 @@ function renderEclPortfolioTable() {
     <thead><tr>
       <th>Debtor / Invoice</th><th>Due Date</th>
       <th style="text-align:right">Balance</th><th>Ageing</th>
-      <th>Loan Classification</th><th>Collateral Type</th>
+      <th>Classification</th><th>Collateral Type</th>
       <th>Collateral Value</th><th>EIR (%)</th><th>Stage Override</th><th></th>
     </tr></thead>
     <tbody>${rows}</tbody>
@@ -1748,8 +1818,10 @@ async function openDebtorEclModal(debtorId, debtorName) {
     <div class="section-ttl" style="font-size:13px;margin-bottom:.75rem">ECL Parameter Defaults</div>
     <div class="fg">
       <div class="fld">
-        <label>Loan Classification</label>
-        <select class="finput" id="decl-cls">${ECL_LOAN_CLASSIFICATIONS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+        <label>Classification</label>
+        <select class="finput" id="decl-cls" data-ecl-cls onchange="handleDeclClsChange(this)">${ECL_LOAN_CLASSIFICATIONS.map(c=>`<option value="${c}">${c}</option>`).join('')}
+          <option value="__new__">Add new…</option>
+        </select>
       </div>
       <div class="fld">
         <label>Collateral Type</label>
@@ -2085,7 +2157,7 @@ function exportEclXLSX() {
   const summaryRows = eclResults.map(r=>({
     'Debtor':             r.customerName,
     'Invoice #':          r.invoiceNumber,
-    'Loan Classification':r.loanClassification,
+    'Classification':r.loanClassification,
     'Stage':              'Stage ' + r.stage,
     'Credit Impaired':    r.creditImpaired ? 'Yes' : 'No',
     'SICR Flags':         [r.sicrIndicators?.restructured?'Restructured':'', r.sicrIndicators?.financialDifficulty?'Fin.Difficulty':'', r.sicrIndicators?.breachedCovenants?'Covenants':'', r.sicrIndicators?.sectorStress?'Sector Stress':''].filter(Boolean).join(', ')||'None',
@@ -2154,7 +2226,9 @@ const BUCKET_LABELS_FULL = {
   '31_60':   '31–60 Days',
   '61_90':   '61–90 Days',
   '91_180':  '91–180 Days',
-  '180_plus':'180+ Days'
+  '181_270': '181–270 Days',
+  '271_365': '271–365 Days',
+  '365_plus':'365+ Days'
 };
 
 async function loadCalibrationData() {
@@ -2178,10 +2252,10 @@ async function loadCalibrationData() {
       return;
     }
 
-    const BUCKETS = ['current','1_30','31_60','61_90','91_180','180_plus'];
+    const BUCKETS = ['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'];
     const settings = await api('/ecl/model-settings');
     const pm = settings.provisionMatrix || {};
-    const pmMap = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '180_plus':'days180plus' };
+    const pmMap = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '181_270':'days181_270', '271_365':'days271_365', '365_plus':'days365plus' };
 
     const rows = BUCKETS.map(bk => {
       const s   = d.stats[bk];
@@ -2253,10 +2327,10 @@ async function applyCalibrationToMatrix() {
    
     const settings = await api('/ecl/model-settings');
     const pm = settings.provisionMatrix || {};
-    const pmMap = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '180_plus':'days180plus' };
+    const pmMap = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '181_270':'days181_270', '271_365':'days271_365', '365_plus':'days365plus' };
     const newMatrix = { ...pm };
 
-    const BUCKETS = ['current','1_30','31_60','61_90','91_180','180_plus'];
+    const BUCKETS = ['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'];
     let updated = 0;
     BUCKETS.forEach(bk => {
       const imp = calibrationData.stats[bk]?.impliedRate;
@@ -2329,7 +2403,9 @@ async function generateAssumptionLog() {
     {bk:'31_60',    lbl:'31–60 Days',       key:'days31_60'},
     {bk:'61_90',    lbl:'61–90 Days',       key:'days61_90'},
     {bk:'91_180',   lbl:'91–180 Days',      key:'days91_180'},
-    {bk:'180_plus', lbl:'180+ Days',        key:'days180plus'},
+    {bk:'181_270',  lbl:'181–270 Days',     key:'days181_270'},
+    {bk:'271_365',  lbl:'271–365 Days',     key:'days271_365'},
+    {bk:'365_plus', lbl:'365+ Days',        key:'days365plus'},
   ];
 
   lastAssumptionLog = { settings, scenarios, pm, sensData, totalEAD, totalECL, coverage, s1:s1.length, s2:s2.length, s3:s3.length, userName, computedAt:new Date() };
@@ -2611,8 +2687,8 @@ async function loadSettings() {
       <div class="merr" id="set-err"></div>
       <div class="mok"  id="set-ok"></div>
       <div class="fg">
-        <div class="fld"><label>Company Name *</label><input class="finput" id="s-cname" value="${s.companyName||''}"></div>
-        <div class="fld"><label>Company Email</label><input class="finput" type="email" id="s-cemail" value="${s.companyEmail||''}"></div>
+        <div class="fld"><label>Company Name *</label><input class="finput" id="s-cname" value="${s.companyName || meRes.user?.companyName || meRes.user?.name || ''}"></div>
+                <div class="fld"><label>Company Email</label><input class="finput" type="email" id="s-cemail" value="${s.companyEmail || meRes.user?.email || ''}"></div>
       </div>
       <div class="fld"><label>Company Address</label><input class="finput" id="s-caddr" value="${s.companyAddress||''}"></div>
     </div>
@@ -2711,10 +2787,10 @@ async function exportAgeingXLSX() {
   const wb = XLSX.utils.book_new();
   const N  = n => +n || 0;
   const fmtD = d => !d ? '' : new Date(d).toLocaleDateString('en-GB');
-  const BUCKETS = ['current','1_30','31_60','61_90','91_180','180_plus'];
-  const rows = ageingCache.report.map(r => ({ 'Debtor':r.debtor.name, 'Current':N(r.ageing.current), '1-30 Days':N(r.ageing['1_30']), '31-60 Days':N(r.ageing['31_60']), '61-90 Days':N(r.ageing['61_90']), '91-180 Days':N(r.ageing['91_180']), '180+ Days':N(r.ageing['180_plus']), 'Total Outstanding':N(r.totalOutstanding) }));
+  const BUCKETS = ['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'];
+    const rows = ageingCache.report.map(r => ({ 'Debtor':r.debtor.name, 'Current':N(r.ageing.current), '1-30 Days':N(r.ageing['1_30']), '31-60 Days':N(r.ageing['31_60']), '61-90 Days':N(r.ageing['61_90']), '91-180 Days':N(r.ageing['91_180']), '181-270 Days':N(r.ageing['181_270']), '271-365 Days':N(r.ageing['271_365']), '365+ Days':N(r.ageing['365_plus']), 'Total Outstanding':N(r.totalOutstanding) }));
   const totals = BUCKETS.reduce((a,k)=>{ a[k]=ageingCache.report.reduce((s,r)=>s+N(r.ageing[k]),0); return a;},{});
-  rows.push({ 'Debtor':'TOTAL','Current':totals.current,'1-30 Days':totals['1_30'],'31-60 Days':totals['31_60'],'61-90 Days':totals['61_90'],'91-180 Days':totals['91_180'],'180+ Days':totals['180_plus'],'Total Outstanding':Object.values(totals).reduce((s,v)=>s+v,0) });
+  rows.push({ 'Debtor':'TOTAL','Current':totals.current,'1-30 Days':totals['1_30'],'31-60 Days':totals['31_60'],'61-90 Days':totals['61_90'],'91-180 Days':totals['91_180'],'181-270 Days':totals['181_270'],'271-365 Days':totals['271_365'],'365+ Days':totals['365_plus'],'Total Outstanding':Object.values(totals).reduce((s,v)=>s+v,0) });
   const ws = XLSX.utils.json_to_sheet(rows);
   ws['!cols'] = [40,14,14,14,14,14,14,18].map(w=>({wch:w}));
   XLSX.utils.book_append_sheet(wb, ws, 'Ageing Report');
@@ -2740,7 +2816,7 @@ async function exportAgeingPDF() {
   doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(143,163,191);
   doc.text('Receivables Ageing Report',22,43);
   doc.setFontSize(9); doc.text(`Generated: ${ts()}`,W-20,30,{align:'right'});
-  const COLS=['current','1_30','31_60','61_90','91_180','180_plus'];
+  const COLS=['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'];
   const totals=COLS.reduce((a,k)=>{ a[k]=ageingCache.report.reduce((s,r)=>s+(r.ageing[k]||0),0); return a;},{});
   const grandTotal=Object.values(totals).reduce((s,v)=>s+v,0);
   const body=[...ageingCache.report.map(r=>[r.debtor.name,...COLS.map(k=>(r.ageing[k]||0)>0?'₦'+N(r.ageing[k]):'—'),'₦'+N(r.totalOutstanding)]),['TOTAL',...COLS.map(k=>'₦'+N(totals[k])),'₦'+N(grandTotal)]];
