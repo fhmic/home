@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.10.0/pptxgen.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -1829,7 +1829,7 @@ async function saveSettings(){
     try{
       setStatus('Preparing PDF report…', false);
       await new Promise(r=>setTimeout(r,60));
-      const { a, m, mm, orgName, reportDate } = getExportData();
+      const { a, m, mm, orgName, userName, reportDate } = getExportData();
       const tmp = document.createElement('div');
       tmp.style.cssText = 'position:fixed;left:10px;top:10px;width:780px;padding:28px;background:#fff;color:#111;z-index:9999;font-family:Arial,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.35);border-radius:6px;';
       tmp.innerHTML = `
