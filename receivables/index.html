@@ -966,6 +966,7 @@ async function loadDashboard() {
 
 
 let debtorsCache = [];
+let selectedDebtors = new Set();
 async function loadDebtors() {
   $('debtors-list').innerHTML = '<div class="loading-row">Loading debtors…</div>';
   $('debtors-view-banner').innerHTML = fmViewOnlyBanner('debtors','Debtors');
@@ -978,11 +979,16 @@ async function loadDebtors() {
 function renderDebtors(debtors) {
   if (!debtors.length) { $('debtors-list').innerHTML = empty('No debtors yet. Add one or import from Excel.'); return; }
   const canEdit = fmCanEdit('debtors');
+  // prune selection to current list
+  const currentIds = new Set(debtors.map(d => d._id));
+  selectedDebtors = new Set([...selectedDebtors].filter(id => currentIds.has(id)));
+  const allSelected = debtors.length && debtors.every(d => selectedDebtors.has(d._id));
   const rows = debtors.map(d => {
     const highBucket = ['180_plus','91_180','61_90','31_60','1_30','current'].find(k => (d.ageing[k]||0) > 0) || 'current';
     const score = d.collectionScore;
     const scoreCls = score > 5000 ? 'pr' : score > 1000 ? 'pa' : 'pg';
     return `<tr>
+      <td style="width:36px"><input type="checkbox" class="deb-select" onchange="toggleDebtorSelection('${d._id}', this.checked)" ${selectedDebtors.has(d._id)?'checked':''}></td>
       <td><strong>${d.name}</strong>${d.contactPerson?`<div style="font-size:11px;color:var(--tx3)">${d.contactPerson}</div>`:''}</td>
       <td style="font-family:var(--mo);font-size:11px">${d.email||'—'}</td>
       <td class="nm">₦${fN(d.totalOutstanding)}</td>
@@ -1002,11 +1008,39 @@ function renderDebtors(debtors) {
       </div></td>
     </tr>`;
   }).join('');
-  $('debtors-list').innerHTML = `<div class="tw"><table>
-    <thead><tr><th>Debtor</th><th>Email</th><th>Outstanding</th><th>Oldest Bucket</th><th>Invoices</th><th>Risk</th><th>Actions</th></tr></thead>
+  const toolbar = `${canEdit?`<div style="display:flex;gap:8px;margin-bottom:8px"><button onclick="toggleSelectAllDebtors(true)">Select All</button><button onclick="toggleSelectAllDebtors(false)">Clear</button><button id="delete-selected-debtors" class="bd" onclick="deleteSelectedDebtors()" ${selectedDebtors.size?'':'disabled'}>Delete Selected (${selectedDebtors.size})</button></div>`:''}`;
+  $('debtors-list').innerHTML = `<div class="tw">${toolbar}<table>
+    <thead><tr><th style="width:36px"><input type="checkbox" id="debtors-select-all" onclick="toggleSelectAllDebtors(this.checked)" ${allSelected?'checked':''}></th><th>Debtor</th><th>Email</th><th>Outstanding</th><th>Oldest Bucket</th><th>Invoices</th><th>Risk</th><th>Actions</th></tr></thead>
     <tbody>${rows}</tbody>
   </table></div>`;
 }
+function toggleDebtorSelection(id, checked) {
+  if (checked) selectedDebtors.add(id); else selectedDebtors.delete(id);
+  const btn = $('delete-selected-debtors'); if (btn) { btn.disabled = selectedDebtors.size === 0; btn.textContent = `Delete Selected (${selectedDebtors.size})`; }
+  const allChk = $('debtors-select-all'); if (allChk) { allChk.checked = (debtorsCache.length && debtorsCache.every(d => selectedDebtors.has(d._id))); }
+}
+
+function toggleSelectAllDebtors(select) {
+  if (select) {
+    debtorsCache.forEach(d => selectedDebtors.add(d._id));
+  } else {
+    selectedDebtors.clear();
+  }
+  renderDebtors(debtorsCache);
+}
+
+async function deleteSelectedDebtors() {
+  if (!selectedDebtors.size) { toast('Select at least one debtor.','err'); return; }
+  if (!confirm(`Delete ${selectedDebtors.size} selected debtor(s)? This cannot be undone.`)) return;
+  try {
+    const ids = [...selectedDebtors];
+    await Promise.all(ids.map(id => api('/debtors/'+id, { method:'DELETE' })));
+    toast('Selected debtors deleted.');
+    selectedDebtors.clear();
+    loadDebtors();
+  } catch(e) { toast(e.message,'err'); }
+}
+
 function openDebtorModal(id) {
   if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
   const deb = id ? debtorsCache.find(d => d._id === id) : null;
