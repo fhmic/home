@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.10.0/pptxgen.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -708,11 +708,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,tot
       const liabCurrency = aTotal * (liabPct/100);
       const perBucket = spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('');
       const emptyCols = TENOR_CAPS.map(()=>'<td>—</td>').join('');
-<<<<<<< HEAD
       return `<tr class="spread-row dim"><td>Surplus / (Deficit) — WARA − WACC</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
-=======
-      return `<tr class="spread-row dim"><td>WACC: Surplus / (Deficit) WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
->>>>>>> ef496d35727b502322c96ababeee0a43e30e8ba0
     })()}
   </tbody>`;
 }
@@ -1409,16 +1405,36 @@ async function saveSettings(){
 
 <!-- Export Report Modal -->
 <div id="export-modal" style="display:none;position:fixed;inset:0;z-index:650;align-items:center;justify-content:center;padding:1rem;background:rgba(5,12,24,.75);backdrop-filter:blur(3px)">
-  <div class="modal" style="max-width:860px;width:100%">
-    <div class="mhdr"><div class="mttl">Export Dashboard Report</div><button class="mclose" id="export-modal-close">×</button></div>
-    <div class="mbody">
-      <p style="color:var(--tx2)">Choose format to download the current dashboard report. Generated from the latest metrics and advisory content.</p>
-      <div style="display:flex;gap:8px;margin-top:1rem">
-        <button id="exp-xls" class="bp">Download Excel</button>
-        <button id="exp-ppt" class="bp">Download PowerPoint</button>
-        <button id="exp-pdf" class="bp">Download PDF</button>
+  <div class="modal" style="max-width:720px;width:100%">
+    <div class="mhdr">
+      <div>
+        <div class="mttl">Export Executive Dashboard Report</div>
+        <div style="font-size:11px;color:var(--tx3);font-family:var(--mo);margin-top:3px">Board-ready · Includes KPIs, maturity profile, charts, insights & recommendations</div>
       </div>
-      <div id="export-status" style="margin-top:1rem;color:var(--tx3);font-size:13px"></div>
+      <button class="mclose" id="export-modal-close">×</button>
+    </div>
+    <div class="mbody">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem">
+        <div style="background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">📊</div>
+          <div style="font-size:12px;font-weight:600;color:var(--tx);margin-bottom:4px">Excel Workbook</div>
+          <div style="font-size:10px;color:var(--tx3);font-family:var(--mo)">Summary + Maturity Profile + Advisory</div>
+          <button id="exp-xls" class="bp bsm" style="width:100%;margin-top:10px;justify-content:center">Download .xlsx</button>
+        </div>
+        <div style="background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">📑</div>
+          <div style="font-size:12px;font-weight:600;color:var(--tx);margin-bottom:4px">PowerPoint Deck</div>
+          <div style="font-size:10px;color:var(--tx3);font-family:var(--mo)">Cover + 6 board-ready slides</div>
+          <button id="exp-ppt" class="bp bsm" style="width:100%;margin-top:10px;justify-content:center">Download .pptx</button>
+        </div>
+        <div style="background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">📕</div>
+          <div style="font-size:12px;font-weight:600;color:var(--tx);margin-bottom:4px">PDF Report</div>
+          <div style="font-size:10px;color:var(--tx3);font-family:var(--mo)">Full dashboard snapshot</div>
+          <button id="exp-pdf" class="bp bsm" style="width:100%;margin-top:10px;justify-content:center">Download .pdf</button>
+        </div>
+      </div>
+      <div id="export-status" style="padding:10px 12px;border-radius:var(--r);font-size:12px;font-family:var(--mo);color:var(--tx3);background:var(--sf);border:1px solid var(--b);display:none"></div>
     </div>
     <div class="mfoot"><button id="export-cancel" class="bsm">Close</button></div>
   </div>
@@ -1426,69 +1442,427 @@ async function saveSettings(){
 
 <script>
 (function(){
-  function fmtNum(v){return typeof v==='number'?v.toLocaleString(undefined,{maximumFractionDigits:2}):v}
-  function safe(obj,path,def){try{return path.split('.').reduce((s,k)=>s[k],obj)||def}catch(e){return def}}
+  function fmtNum(v){return typeof v==='number'?v.toLocaleString('en-NG',{maximumFractionDigits:2}):(v||'—')}
+  function pctNum(v){return typeof v==='number'?v.toFixed(2)+'%':'—'}
   function closeModal(){document.getElementById('export-modal').style.display='none'}
   function showModal(){document.getElementById('export-modal').style.display='flex'}
-  function setStatus(txt,ok){const el=document.getElementById('export-status');if(!el)return;el.textContent=txt;el.style.color=ok?getComputedStyle(document.documentElement).getPropertyValue('--gr'):'#f59e0b'}
+  function setStatus(txt,ok){const el=document.getElementById('export-status');if(!el)return;el.style.display='block';el.textContent=(ok?'✓ ':'⚠ ')+txt;el.style.color=ok?'var(--gr)':'var(--am)';el.style.borderColor=ok?'rgba(34,197,94,.3)':'rgba(245,166,35,.3)';el.style.background=ok?'rgba(34,197,94,.06)':'rgba(245,166,35,.06)';}
+  function hideStatus(){const el=document.getElementById('export-status');if(el)el.style.display='none';}
+
+  function getExportData(){
+    const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
+    const orgName = (document.getElementById('org-name-badge')?.textContent || 'Organisation').trim();
+    const userName = (document.getElementById('user-name')?.textContent || 'User').trim();
+    const reportDate = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+    return { a, m, mm, orgName, userName, reportDate };
+  }
 
   async function exportExcel(){
     try{
-      setStatus('Preparing Excel…');
+      setStatus('Preparing Excel workbook…',false);
+      await new Promise(r=>setTimeout(r,60));
       const wb = XLSX.utils.book_new();
-      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
-      const dash = [ ['Metric','Value'], ['Total Assets',fmtNum(m.totalAssets)], ['Total Debt',fmtNum(m.totalDebt)], ['Total Equity',fmtNum(m.totalEquity)], ['Total Debtors',fmtNum(m.totalDebtors)], ['Investments',fmtNum(m.totalInv)], ['Cash',fmtNum(m.totalCash)], ['WACC', (m.wacc||0)], ['WACD', (m.wacd||0)], ['WARA', (m.wara||0)], ['Spread', (m.spread||0)] ];
-      const ws1 = XLSX.utils.aoa_to_sheet(dash); XLSX.utils.book_append_sheet(wb, ws1, 'Dashboard Summary');
-      // Maturity sheet
+      const { a, m, mm, orgName, reportDate } = getExportData();
+
+      // ── Sheet 1: Executive Summary ──
+      const summary = [
+        ['FM Treasury — Executive Dashboard Report'],
+        ['Organisation', orgName],
+        ['Report Date', reportDate],
+        [''],
+        ['METRIC','VALUE','NOTES'],
+        ['Total Financial Assets', fmtNum(m.totalAssets), 'Debtors + Investments + Cash'],
+        ['Total Borrowings', fmtNum(m.totalDebt), _borrowCache.length + ' facilities'],
+        ['Total Equity & Reserves', fmtNum(m.totalEquity), 'Share capital + retained earnings'],
+        ['Net Asset Cover', fmtNum((m.totalAssets||0) - (m.totalDebt||0)), 'Assets − Liabilities'],
+        ['WACC', pctNum(m.wacc), 'Weighted average cost of capital'],
+        ['WACD', pctNum(m.wacd), 'Weighted average cost of debt'],
+        ['WARA', pctNum(m.wara), 'Weighted average return on assets'],
+        ['Net Interest Spread', pctNum(m.spread), 'WARA − WACD'],
+        ['Debt / Equity Ratio', (m.lever||0).toFixed(2)+'×', 'Financial leverage'],
+        ['Debtor Yield', pctNum(m.avgDR), 'Average implied rate on debtors'],
+        ['Investment Yield', pctNum(m.avgIY), 'Weighted avg investment return'],
+        ['Cost of Equity (Ke)', pctNum(m.costOfEquity), 'Required shareholder return'],
+      ];
+      const ws1 = XLSX.utils.aoa_to_sheet(summary);
+      ws1['!cols'] = [{wch:28},{wch:22},{wch:40}];
+      ws1['!merges'] = [{s:{r:0,c:0},e:{r:0,c:2}}];
+      XLSX.utils.book_append_sheet(wb, ws1, 'Executive Summary');
+
+      // ── Sheet 2: Maturity Profile ──
       const headers = ['Row'].concat(TENOR_LBLS).concat(['TOTAL']);
       const rows = [];
       rows.push(['Total Financial Assets'].concat((mm.aBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.aTotal)]));
+      rows.push(['  Risk Assets (Debtors)'].concat((_debtorCache||[]).reduce((s,d)=>s+d.totalOutstanding,0) ? (mm.aBkts||[]).map((_,i)=>{ const rows=_portfolioCache.filter(r=>{ const d=daysBetween(new Date(),r.dueDate,'demand'); return tenorIdx(d)===i; }); return fmtNum(rows.reduce((s,r)=>s+r.balance,0)); }).concat([fmtNum(_debtorCache.reduce((s,d)=>s+d.totalOutstanding,0))]) : (mm.aBkts||[]).map(()=>'—').concat(['—'])));
+      rows.push(['  Investments'].concat((mm.aBkts||[]).map((_,i)=>{ const items=_invCache.filter(x=>{ const d=daysBetween(new Date(),x.noMaturity?null:x.maturityDate,'liquid'); return tenorIdx(d)===i; }); return fmtNum(items.reduce((s,x)=>s+x.principal,0)); }).concat([fmtNum(_invCache.reduce((s,i)=>s+i.principal,0))])));
+      rows.push(['  Cash & Equivalents'].concat((mm.aBkts||[]).map((_,i)=> i===0 ? fmtNum((_cashCache||[]).filter(a=>a.currency==='NGN'&&!a.restricted).reduce((s,a)=>s+a.balance,0)) : '0.00').concat([fmtNum((_cashCache||[]).filter(a=>a.currency==='NGN'&&!a.restricted).reduce((s,a)=>s+a.balance,0))])));
       rows.push(['Total Financial Liabilities'].concat((mm.lBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.lTotal)]));
-      rows.push(['WARA (Assets) %'].concat((mm.waraBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat([mm.aTotal? ( (mm.contribs||[]).reduce((s,v)=>s+(v||0),0) / mm.aTotal *100).toFixed(2):'-']));
-      rows.push(['WACD (Liabilities) %'].concat((mm.wacfBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
-      rows.push(['Spread %'].concat((mm.spreadBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
-      const ws2 = XLSX.utils.aoa_to_sheet([headers].concat(rows)); XLSX.utils.book_append_sheet(wb, ws2, 'Maturity Profile');
-      XLSX.writeFile(wb,'FM_Dashboard_Report.xlsx');
-      setStatus('Excel downloaded',true);
-    }catch(e){console.error(e);setStatus('Excel export failed');}
+      rows.push(['  Borrowings'].concat((mm.lBkts||[]).map((_,i)=>{ const items=_borrowCache.filter(b=>{ const d=daysBetween(new Date(),b.noMaturity?null:b.maturityDate,'demand'); return tenorIdx(d)===i; }); return fmtNum(items.reduce((s,b)=>s+b.outstanding,0)); }).concat([fmtNum(_borrowCache.reduce((s,b)=>s+b.outstanding,0))])));
+      rows.push(['LEADING / (GAP) — Cumulative'].concat((mm.gBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.gTotal)]));
+      rows.push(['']);
+      rows.push(['Financial Assets %'].concat((mm.aBkts||[]).map(v=> mm.aTotal>0 ? (v/mm.aTotal*100).toFixed(2)+'%' : '—')).concat(['100%']));
+      rows.push(['Financial Liabilities %'].concat((mm.lBkts||[]).map(v=> mm.lTotal>0 ? (v/mm.lTotal*100).toFixed(2)+'%' : '—')).concat([mm.lTotal>0?'100%':'—']));
+      rows.push(['']);
+      rows.push(['WARA (Assets) %'].concat((mm.waraBkts||[]).map(v=>v==null?'—':v.toFixed(2)+'%')).concat([pctNum((mm.aTotal||0)>0 ? ((mm.contribs||[]).reduce((s,v)=>s+(v||0),0) / mm.aTotal *100) : 0)]));
+      rows.push(['WACD (Liabilities) %'].concat((mm.wacfBkts||[]).map(v=>v==null?'—':v.toFixed(2)+'%')).concat(['—']));
+      rows.push(['Spread % (WARA − WACD)'].concat((mm.spreadBkts||[]).map(v=>v==null?'—':v.toFixed(2)+'%')).concat(['—']));
+      const ws2 = XLSX.utils.aoa_to_sheet([headers].concat(rows));
+      ws2['!cols'] = [{wch:32},...TENOR_LBLS.map(()=>({wch:18})),{wch:18}];
+      XLSX.utils.book_append_sheet(wb, ws2, 'Maturity Profile');
+
+      // ── Sheet 3: Advisory & Recommendations ──
+      const adv = [
+        ['BOARD ADVISORY — Financial Optimisation Analysis'],
+        ['Report Date', reportDate],
+        [''],
+        ['ASSESSMENT FINDINGS'],
+        ...(a.pts||[]).map((p,i)=>[i+1+'. '+p.t]),
+        [''],
+        ['BOARD RECOMMENDATIONS'],
+        ...(a.recs||[]).map((r,i)=>[i+1+'. '+r]),
+      ];
+      const ws3 = XLSX.utils.aoa_to_sheet(adv);
+      ws3['!cols'] = [{wch:100}];
+      ws3['!merges'] = [{s:{r:0,c:0},e:{r:0,c:0}}];
+      XLSX.utils.book_append_sheet(wb, ws3, 'Board Advisory');
+
+      XLSX.writeFile(wb,'FM_Executive_Dashboard_Report.xlsx');
+      setStatus('Excel workbook downloaded successfully.',true);
+    }catch(e){console.error(e);setStatus('Excel export failed: '+(e.message||e),false);}
   }
 
   async function exportPpt(){
     try{
-      setStatus('Preparing PowerPoint…');
+      setStatus('Preparing PowerPoint deck…',false);
+      await new Promise(r=>setTimeout(r,80));
       const pptx = new PptxGenJS();
-      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
-      const slide = pptx.addSlide();
-      slide.addText('FM Dashboard Report',{x:0.5,y:0.5,fontSize:24,color:'363636',bold:true});
-      slide.addText('Summary',{x:0.5,y:1.2,fontSize:14,color:'666666'});
-      const lines = [ 'Total Assets: '+fmtNum(m.totalAssets), 'Total Debt: '+fmtNum(m.totalDebt), 'Total Equity: '+fmtNum(m.totalEquity), 'WARA: '+(m.wara||0)+'%', 'WACD: '+(m.wacd||0)+'%', 'Spread: '+(m.spread||0)+'%' ];
-      slide.addText(lines,{x:0.5,y:1.6,fontSize:12,color:'444444',bullet:true});
-      // Assessment slide
-      const s2 = pptx.addSlide(); s2.addText('Financial Optimisation Assessment',{x:0.5,y:0.5,fontSize:18});
-      const bullets = (a.pts||[]).map(p=>p.t);
-      if(bullets.length) s2.addText(bullets,{x:0.5,y:1.1,fontSize:12,bullet:true}); else s2.addText(['No assessment generated'],{x:0.5,y:1.1,fontSize:12});
-      // Recommendations slide
-      const s3 = pptx.addSlide(); s3.addText('Board Recommendations',{x:0.5,y:0.5,fontSize:18});
-      const recs = (a.recs||[]);
-      if(recs.length) s3.addText(recs,{x:0.5,y:1.1,fontSize:12,bullet:true}); else s3.addText(['No recommendations generated'],{x:0.5,y:1.1,fontSize:12});
-      await pptx.writeFile({fileName:'FM_Dashboard_Report.pptx'});
-      setStatus('PowerPoint downloaded',true);
-    }catch(e){console.error(e);setStatus('PowerPoint export failed');}
+      const { a, m, mm, orgName, userName, reportDate } = getExportData();
+      pptx.layout = 'LAYOUT_WIDE';
+      pptx.author = userName;
+      pptx.title = 'FM Treasury — Executive Dashboard Report';
+      pptx.subject = 'Financial Optimisation Analysis · ' + reportDate;
+
+      const C = {
+        bg: '0A1628', bg2: '0F1F3D', bg3: '162747',
+        t: '00C9A7', t2: '00A98E',
+        am: 'F5A623', rd: 'E05252', gr: '22C55E', bl: '63B3ED', pu: 'A78BFA',
+        tx: 'E8EDF5', tx2: '8FA3BF', tx3: '4A6080',
+        b: 'FFFFFF', b2: '8FA3BF',
+      };
+
+      // ═══════════════════════════════════════════
+      // SLIDE 1: COVER PAGE
+      // ═══════════════════════════════════════════
+      const s1 = pptx.addSlide();
+      s1.background = { color: C.bg };
+      // Accent bar top
+      s1.addShape(pptx.ShapeType.rect, { x:0, y:0, w:'100%', h:0.08, fill:{color:C.t} });
+      // FM logo box
+      s1.addShape(pptx.ShapeType.rect, { x:0.6, y:0.5, w:1.1, h:1.1, fill:{color:C.t}, rectRadius:0.1 });
+      s1.addText('FM', { x:0.6, y:0.5, w:1.1, h:1.1, fontSize:28, fontFace:'Syne', bold:true, color:C.bg, align:'center', valign:'middle' });
+      // Title
+      s1.addText('Treasury Intelligence', { x:0.6, y:1.85, w:8.5, h:0.7, fontSize:32, fontFace:'Syne', bold:true, color:C.tx, charSpace:2 });
+      s1.addText('Executive Dashboard Report', { x:0.6, y:2.55, w:8.5, h:0.5, fontSize:20, fontFace:'Syne', color:C.tx2 });
+      // Organisation badge
+      s1.addShape(pptx.ShapeType.rect, { x:0.6, y:3.2, w:3.2, h:0.45, fill:{color:C.bg2}, rectRadius:0.15, line:{color:C.t, width:1} });
+      s1.addText(orgName, { x:0.6, y:3.2, w:3.2, h:0.45, fontSize:11, fontFace:'IBM Plex Mono', color:C.t, align:'center', valign:'middle' });
+      // Date and user
+      s1.addText(reportDate + '  ·  Prepared by ' + userName, { x:0.6, y:3.85, w:8.5, h:0.35, fontSize:11, fontFace:'IBM Plex Mono', color:C.tx3 });
+      // Divider
+      s1.addShape(pptx.ShapeType.rect, { x:0.6, y:4.35, w:8.5, h:0.015, fill:{color:C.b} });
+      // Key metrics strip
+      const kpiStrip = [
+        ['Total Assets', fmtNum(m.totalAssets)],
+        ['Total Debt', fmtNum(m.totalDebt)],
+        ['Equity', fmtNum(m.totalEquity)],
+        ['WACC', pctNum(m.wacc)],
+        ['WARA', pctNum(m.wara)],
+        ['Spread', pctNum(m.spread)],
+      ];
+      kpiStrip.forEach(([label, value], i) => {
+        const xPos = 0.6 + i * 1.45;
+        s1.addShape(pptx.ShapeType.rect, { x:xPos, y:4.6, w:1.35, h:1.3, fill:{color:C.bg2}, rectRadius:0.08, line:{color:C.b, width:0.5} });
+        s1.addText(value, { x:xPos, y:4.7, w:1.35, h:0.55, fontSize:15, fontFace:'Syne', bold:true, color:C.t, align:'center' });
+        s1.addText(label, { x:xPos, y:5.25, w:1.35, h:0.5, fontSize:8, fontFace:'IBM Plex Mono', color:C.tx3, align:'center' });
+      });
+      // Footer
+      s1.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.t} });
+      s1.addText('CONFIDENTIAL — Board Use Only', { x:0.6, y:6.15, w:8.5, h:0.3, fontSize:9, fontFace:'IBM Plex Mono', color:C.tx3, italic:true });
+
+      // ═══════════════════════════════════════════
+      // SLIDE 2: FINANCIAL SUMMARY
+      // ═══════════════════════════════════════════
+      const s2 = pptx.addSlide();
+      s2.background = { color: C.bg };
+      s2.addShape(pptx.ShapeType.rect, { x:0, y:0, w:'100%', h:0.06, fill:{color:C.t} });
+      s2.addText('Financial Summary', { x:0.5, y:0.2, w:8, h:0.55, fontSize:22, fontFace:'Syne', bold:true, color:C.tx });
+      s2.addText('Key financial position as at ' + reportDate, { x:0.5, y:0.75, w:8, h:0.3, fontSize:11, fontFace:'IBM Plex Mono', color:C.tx3 });
+
+      // Summary table
+      const sumRows = [
+        ['Metric', 'Value', 'Interpretation'],
+        ['Total Financial Assets', fmtNum(m.totalAssets), 'Debtors + Investments + Cash'],
+        ['Total Borrowings', fmtNum(m.totalDebt), (_borrowCache||[]).length + ' facilities'],
+        ['Equity & Reserves', fmtNum(m.totalEquity), 'Capital base'],
+        ['Net Asset Cover', fmtNum((m.totalAssets||0)-(m.totalDebt||0)), (m.totalAssets>m.totalDebt?'Adequate cover':'Cover gap — review')],
+        ['WACC', pctNum(m.wacc), 'Blended cost of debt + equity'],
+        ['WACD', pctNum(m.wacd), 'Weighted avg cost of debt'],
+        ['WARA', pctNum(m.wara), 'Weighted avg return on assets'],
+        ['Net Interest Spread', pctNum(m.spread), (m.spread>=0?'Positive spread':'Negative spread — action required')],
+        ['Debt / Equity', (m.lever||0).toFixed(2)+'×', (m.lever>3?'High leverage':m.lever>1.5?'Moderate':'Low leverage')],
+        ['Debtor Yield', pctNum(m.avgDR), 'Average implied rate on debtors'],
+        ['Investment Yield', pctNum(m.avgIY), 'Weighted avg investment return'],
+        ['Cost of Equity (Ke)', pctNum(m.costOfEquity), 'Required shareholder return'],
+      ];
+      s2.addTable(sumRows, {
+        x:0.5, y:1.2, w:8.5,
+        fontSize:11, fontFace:'DM Sans',
+        color:C.tx, border:{type:'solid', pt:0.5, color:C.b},
+        colW:[3.2, 2.0, 3.3],
+        rowH:[0.4, ...sumRows.slice(1).map(()=>0.38)],
+        autoPage:false,
+      });
+      // Header row style
+      s2.addShape(pptx.ShapeType.rect, { x:0.5, y:1.2, w:8.5, h:0.4, fill:{color:C.bg3} });
+      s2.addText('Metric', { x:0.55, y:1.2, w:3.0, h:0.4, fontSize:10, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'left', valign:'middle' });
+      s2.addText('Value', { x:3.8, y:1.2, w:1.8, h:0.4, fontSize:10, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'right', valign:'middle' });
+      s2.addText('Notes', { x:5.8, y:1.2, w:3.0, h:0.4, fontSize:10, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'left', valign:'middle' });
+
+      s2.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.t} });
+      s2.addText('CONFIDENTIAL — Board Use Only', { x:0.5, y:6.15, w:8.5, h:0.3, fontSize:9, fontFace:'IBM Plex Mono', color:C.tx3, italic:true });
+
+      // ═══════════════════════════════════════════
+      // SLIDE 3: MATURITY PROFILE TABLE
+      // ═══════════════════════════════════════════
+      const s3 = pptx.addSlide();
+      s3.background = { color: C.bg };
+      s3.addShape(pptx.ShapeType.rect, { x:0, y:0, w:'100%', h:0.06, fill:{color:C.t} });
+      s3.addText('Asset & Liability Maturity Profile', { x:0.5, y:0.2, w:8, h:0.55, fontSize:20, fontFace:'Syne', bold:true, color:C.tx });
+      s3.addText('Cumulative tenor gap analysis (₦)', { x:0.5, y:0.75, w:8, h:0.3, fontSize:11, fontFace:'IBM Plex Mono', color:C.tx3 });
+
+      const matHeaders = ['Category'].concat(TENOR_LBLS).concat(['TOTAL']);
+      const matRows = [
+        ['Risk Assets (Debtors)'],
+        ['Investments'],
+        ['Cash & Equivalents'],
+        ['TOTAL ASSETS'],
+        ['Borrowings'],
+        ['TOTAL LIABILITIES'],
+        ['LEADING / (GAP)'],
+      ];
+      const aBkts = mm.aBkts || [];
+      const lBkts = mm.lBkts || [];
+      const gBkts = mm.gBkts || [];
+      const rDTotal = _debtorCache.reduce((s,d)=>s+d.totalOutstanding,0);
+      const rITotal = _invCache.reduce((s,i)=>s+i.principal,0);
+      const rCTotal = _cashCache.filter(a=>a.currency==='NGN'&&!a.restricted).reduce((s,a)=>s+a.balance,0);
+      const rBTotal = _borrowCache.reduce((s,b)=>s+b.outstanding,0);
+      const assetValues = [rDTotal, rITotal, rCTotal, mm.aTotal||0];
+      const liabValues = [rBTotal, mm.lTotal||0];
+      const gapValues = [mm.gTotal||0];
+
+      matRows[0].push(...aBkts.slice(0,3).map(()=>'—'), fmtNum(rDTotal));
+      matRows[1].push(...aBkts.slice(0,3).map(()=>'—'), fmtNum(rITotal));
+      matRows[2].push(...aBkts.slice(0,3).map(()=>'—'), fmtNum(rCTotal));
+      matRows[3].push(...aBkts.map(v=>fmtNum(v)), fmtNum(mm.aTotal));
+      matRows[4].push(...lBkts.slice(0,3).map(()=>'—'), fmtNum(rBTotal));
+      matRows[5].push(...lBkts.map(v=>fmtNum(v)), fmtNum(mm.lTotal));
+      matRows[6].push(...gBkts.map(v=>fmtNum(v)), fmtNum(mm.gTotal));
+
+      s3.addTable([matHeaders, ...matRows], {
+        x:0.4, y:1.15, w:9.0,
+        fontSize:10, fontFace:'IBM Plex Mono',
+        color:C.tx2, border:{type:'solid', pt:0.5, color:C.b},
+        colW:[2.6, 1.35, 1.35, 1.35, 1.35, 1.35, 1.35, 1.35],
+        rowH:0.34,
+        autoPage:false,
+      });
+      // Style header
+      s3.addShape(pptx.ShapeType.rect, { x:0.4, y:1.15, w:9.0, h:0.34, fill:{color:C.bg3} });
+      matHeaders.forEach((h, i) => {
+        const colX = [0.4, 3.0, 4.35, 5.7, 7.05, 8.4][i] || 0.4;
+        const colW = [2.6, 1.35, 1.35, 1.35, 1.35, 1.35][i] || 1.35;
+        s3.addText(h, { x:colX+0.05, y:1.15, w:colW-0.1, h:0.34, fontSize:9, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'center', valign:'middle' });
+      });
+
+      s3.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.t} });
+      s3.addText('CONFIDENTIAL — Board Use Only', { x:0.5, y:6.15, w:8.5, h:0.3, fontSize:9, fontFace:'IBM Plex Mono', color:C.tx3, italic:true });
+
+      // ═══════════════════════════════════════════
+      // SLIDE 4: WACC & COST OF FUNDS
+      // ═══════════════════════════════════════════
+      const s4 = pptx.addSlide();
+      s4.background = { color: C.bg };
+      s4.addShape(pptx.ShapeType.rect, { x:0, y:0, w:'100%', h:0.06, fill:{color:C.t} });
+      s4.addText('WACC & Cost of Funds Analysis', { x:0.5, y:0.2, w:8, h:0.55, fontSize:20, fontFace:'Syne', bold:true, color:C.tx });
+      s4.addText('Weighted average cost of capital and component rates', { x:0.5, y:0.75, w:8, h:0.3, fontSize:11, fontFace:'IBM Plex Mono', color:C.tx3 });
+
+      const waccRows = [
+        ['Component', 'Rate (%)', 'Weight', 'Contribution', 'Notes'],
+        ['Cost of Equity (Ke)', pctNum(m.costOfEquity), ((m.totalEquity||0)/((m.totalEquity||0)+(m.totalDebt||0)||1)*100).toFixed(1)+'%', pctNum((m.totalEquity||0)/((m.totalEquity||0)+(m.totalDebt||0)||1) * (m.costOfEquity||0) * 0.01), 'Shareholder required return'],
+        ['Cost of Debt (Kd)', pctNum(m.wacd), ((m.totalDebt||0)/((m.totalEquity||0)+(m.totalDebt||0)||1)*100).toFixed(1)+'%', pctNum((m.totalDebt||0)/((m.totalEquity||0)+(m.totalDebt||0)||1) * (m.wacd||0) * 0.01 * 0.7), 'After 30% tax shield'],
+        ['WACC (Blended)', pctNum(m.wacc), '100%', pctNum(m.wacc), 'Overall cost of capital'],
+        [''],
+        ['WARA (Asset Return)', pctNum(m.wara), '—', '—', 'Weighted avg return on assets'],
+        ['Net Interest Spread', pctNum(m.spread), '—', '—', (m.spread>=0?'Positive — value creating':'Negative — review required')],
+        ['Debtor Yield', pctNum(m.avgDR), '—', '—', 'Average implied rate on debtors'],
+        ['Investment Yield', pctNum(m.avgIY), '—', '—', 'Weighted avg investment return'],
+      ];
+      s4.addTable(waccRows, {
+        x:0.5, y:1.15, w:8.5,
+        fontSize:11, fontFace:'DM Sans',
+        color:C.tx2, border:{type:'solid', pt:0.5, color:C.b},
+        colW:[2.8, 1.6, 1.4, 1.8, 2.0],
+        rowH:[0.38, ...waccRows.slice(1).map(()=>0.36)],
+        autoPage:false,
+      });
+      s4.addShape(pptx.ShapeType.rect, { x:0.5, y:1.15, w:8.5, h:0.38, fill:{color:C.bg3} });
+      ['Component','Rate (%)','Weight','Contribution','Notes'].forEach((h,i)=>{
+        const xs = [0.55, 3.45, 5.1, 6.55, 8.4];
+        s4.addText(h, { x:xs[i], y:1.15, w:1.6, h:0.38, fontSize:9, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'center', valign:'middle' });
+      });
+
+      s4.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.t} });
+      s4.addText('CONFIDENTIAL — Board Use Only', { x:0.5, y:6.15, w:8.5, h:0.3, fontSize:9, fontFace:'IBM Plex Mono', color:C.tx3, italic:true });
+
+      // ═══════════════════════════════════════════
+      // SLIDE 5: FINANCIAL OPTIMISATION ASSESSMENT
+      // ═══════════════════════════════════════════
+      const s5 = pptx.addSlide();
+      s5.background = { color: C.bg };
+      s5.addShape(pptx.ShapeType.rect, { x:0, y:0, w:'100%', h:0.06, fill:{color:C.t} });
+      s5.addText('Financial Optimisation Assessment', { x:0.5, y:0.2, w:8, h:0.55, fontSize:20, fontFace:'Syne', bold:true, color:C.tx });
+      s5.addText('Automated analysis of financial position and performance', { x:0.5, y:0.75, w:8, h:0.3, fontSize:11, fontFace:'IBM Plex Mono', color:C.tx3 });
+
+      const pts = a.pts || [];
+      const dotColors = { gr:C.gr, rd:C.rd, am:C.am, bl:C.bl, pu:C.pu };
+      pts.forEach((p, i) => {
+        const yPos = 1.15 + i * 0.72;
+        if (yPos > 5.6) return;
+        s5.addShape(pptx.ShapeType.ellipse, { x:0.6, y:yPos+0.08, w:0.12, h:0.12, fill:{color: dotColors[p.c] || C.tx2} });
+        s5.addText(p.t, {
+          x:0.9, y:yPos, w:8.2, h:0.65,
+          fontSize:12, fontFace:'DM Sans', color:C.tx2,
+          valign:'top', lineSpacingMultiple:1.4,
+          wrap:true,
+        });
+      });
+
+      s5.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.t} });
+      s5.addText('CONFIDENTIAL — Board Use Only', { x:0.5, y:6.15, w:8.5, h:0.3, fontSize:9, fontFace:'IBM Plex Mono', color:C.tx3, italic:true });
+
+      // ═══════════════════════════════════════════
+      // SLIDE 6: BOARD RECOMMENDATIONS
+      // ═══════════════════════════════════════════
+      const s6 = pptx.addSlide();
+      s6.background = { color: C.bg };
+      s6.addShape(pptx.ShapeType.rect, { x:0, y:0, w:'100%', h:0.06, fill:{color:C.am} });
+      s6.addText('Board Recommendations', { x:0.5, y:0.2, w:8, h:0.55, fontSize:20, fontFace:'Syne', bold:true, color:C.tx });
+      s6.addText('Priority actions for treasury optimisation', { x:0.5, y:0.75, w:8, h:0.3, fontSize:11, fontFace:'IBM Plex Mono', color:C.tx3 });
+
+      const recs = a.recs || [];
+      recs.forEach((r, i) => {
+        const yPos = 1.15 + i * 0.78;
+        if (yPos > 5.5) return;
+        s6.addShape(pptx.ShapeType.rect, { x:0.5, y:yPos+0.05, w:0.06, h:0.5, fill:{color:C.am} });
+        s6.addText((i+1)+'.  '+r, {
+          x:0.75, y:yPos, w:8.1, h:0.7,
+          fontSize:12, fontFace:'DM Sans', color:C.tx2,
+          valign:'top', lineSpacingMultiple:1.4,
+          wrap:true,
+        });
+      });
+
+      s6.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.am} });
+      s6.addText('CONFIDENTIAL — Board Use Only', { x:0.5, y:6.15, w:8.5, h:0.3, fontSize:9, fontFace:'IBM Plex Mono', color:C.tx3, italic:true });
+
+      // ═══════════════════════════════════════════
+      // SLIDE 7: DATA APPENDIX
+      // ═══════════════════════════════════════════
+      const s7 = pptx.addSlide();
+      s7.background = { color: C.bg };
+      s7.addShape(pptx.ShapeType.rect, { x:0, y:0, w:'100%', h:0.06, fill:{color:C.t} });
+      s7.addText('Data Appendix', { x:0.5, y:0.2, w:8, h:0.55, fontSize:20, fontFace:'Syne', bold:true, color:C.tx });
+      s7.addText('Underlying data sources and portfolio composition', { x:0.5, y:0.75, w:8, h:0.3, fontSize:11, fontFace:'IBM Plex Mono', color:C.tx3 });
+
+      const appendixRows = [
+        ['Data Source', 'Count', 'Value (₦)', 'Share of Assets'],
+        ['Debtors (Receivables)', _debtorCache.length, fmtNum(m.totalDebtors), ((m.totalDebtors||0)/(m.totalAssets||1)*100).toFixed(1)+'%'],
+        ['Investments', _invCache.length, fmtNum(m.totalInv), ((m.totalInv||0)/(m.totalAssets||1)*100).toFixed(1)+'%'],
+        ['Cash (NGN)', _cashCache.filter(a=>a.currency==='NGN').length, fmtNum(m.totalCash), ((m.totalCash||0)/(m.totalAssets||1)*100).toFixed(1)+'%'],
+        ['Borrowings', _borrowCache.length, fmtNum(m.totalDebt), '—'],
+        [''],
+        ['WACC Components', '', '', ''],
+        ['Equity (E)', '', fmtNum(m.totalEquity), ((m.totalEquity||0)/((m.totalEquity||0)+(m.totalDebt||0)||1)*100).toFixed(1)+'%'],
+        ['Debt (D)', '', fmtNum(m.totalDebt), ((m.totalDebt||0)/((m.totalEquity||0)+(m.totalDebt||0)||1)*100).toFixed(1)+'%'],
+        ['Total Capital (V)', '', fmtNum((m.totalEquity||0)+(m.totalDebt||0)), '100%'],
+      ];
+      s7.addTable(appendixRows, {
+        x:0.5, y:1.15, w:8.5,
+        fontSize:11, fontFace:'DM Sans',
+        color:C.tx2, border:{type:'solid', pt:0.5, color:C.b},
+        colW:[3.0, 1.5, 2.5, 2.0],
+        rowH:[0.38, ...appendixRows.slice(1).map(()=>0.36)],
+        autoPage:false,
+      });
+      s7.addShape(pptx.ShapeType.rect, { x:0.5, y:1.15, w:8.5, h:0.38, fill:{color:C.bg3} });
+      ['Data Source','Count','Value (₦)','Share'].forEach((h,i)=>{
+        const xs = [0.55, 3.6, 5.15, 7.7];
+        s7.addText(h, { x:xs[i], y:1.15, w:1.5, h:0.38, fontSize:9, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'center', valign:'middle' });
+      });
+
+      s7.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.t} });
+      s7.addText('CONFIDENTIAL — Board Use Only', { x:0.5, y:6.15, w:8.5, h:0.3, fontSize:9, fontFace:'IBM Plex Mono', color:C.tx3, italic:true });
+
+      await pptx.writeFile({ fileName:'FM_Executive_Dashboard_Report.pptx' });
+      setStatus('PowerPoint deck downloaded — 7 slides including cover page.', true);
+    }catch(e){
+      console.error('PPT export error:', e);
+      setStatus('PowerPoint export failed: ' + (e.message || e), false);
+    }
   }
 
   async function exportPdf(){
     try{
-      setStatus('Preparing PDF…');
-      // Build a printable snapshot
-      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
-      const tmp = document.createElement('div'); tmp.style.position='fixed'; tmp.style.left='20px'; tmp.style.top='20px'; tmp.style.width='800px'; tmp.style.padding='20px'; tmp.style.background='#fff'; tmp.style.color='#000'; tmp.style.zIndex=9999;
-      tmp.innerHTML = '<h2>FM Dashboard Report</h2>' +
-        '<h3>Summary</h3><table>' + ['Total Assets','Total Debt','Total Equity','Total Debtors','Investments','Cash','WARA','WACD','Spread'].map(k=>'<tr><td style="padding:4px 8px;font-weight:600">'+k+'</td><td style="padding:4px 8px">'+ (k==='Total Assets'?fmtNum(m.totalAssets): k==='Total Debt'?fmtNum(m.totalDebt): k==='Total Equity'?fmtNum(m.totalEquity): k==='Total Debtors'?fmtNum(m.totalDebtors): k==='Investments'?fmtNum(m.totalInv): k==='Cash'?fmtNum(m.totalCash): k==='WARA'? (m.wara||0)+'%': k==='WACD'? (m.wacd||0)+'%': (m.spread||0)+'%') +'</td></tr>').join('') + '</table>';
-      tmp.innerHTML += '<h3>Assessment</h3>' + ((a.pts||[]).map(p=>'<p style="margin:6px 0">• '+p.t+'</p>').join('')||'<p>No assessment</p>');
-      tmp.innerHTML += '<h3>Recommendations</h3>' + ((a.recs||[]).map(r=>'<p style="margin:6px 0">• '+r+'</p>').join('')||'<p>No recommendations</p>');
+      setStatus('Preparing PDF report…', false);
+      await new Promise(r=>setTimeout(r,60));
+      const { a, m, mm, orgName, reportDate } = getExportData();
+      const tmp = document.createElement('div');
+      tmp.style.cssText = 'position:fixed;left:10px;top:10px;width:780px;padding:28px;background:#fff;color:#111;z-index:9999;font-family:Arial,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.35);border-radius:6px;';
+      tmp.innerHTML = `
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:14px;border-bottom:3px solid #00c9a7">
+          <div style="width:48px;height:48px;background:#00c9a7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0a1628;font-size:16px;flex-shrink:0">FM</div>
+          <div>
+            <div style="font-size:18px;font-weight:700;color:#0a1628;letter-spacing:-.02em">Treasury Intelligence</div>
+            <div style="font-size:11px;color:#666;margin-top:2px">Executive Dashboard Report · ${reportDate}</div>
+          </div>
+          <div style="margin-left:auto;text-align:right;font-size:10px;color:#888">${orgName}</div>
+        </div>
+        <h2 style="font-size:15px;color:#0a1628;margin:16px 0 8px;border-bottom:1px solid #e5e7eb;padding-bottom:6px">Financial Summary</h2>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px">
+          <thead><tr style="background:#f3f4f6"><th style="padding:7px 10px;text-align:left;color:#4a6080;font-size:10px;text-transform:uppercase;letter-spacing:.05em">Metric</th><th style="padding:7px 10px;text-align:right;color:#4a6080;font-size:10px;text-transform:uppercase;letter-spacing:.05em">Value</th><th style="padding:7px 10px;text-align:left;color:#4a6080;font-size:10px;text-transform:uppercase;letter-spacing:.05em">Notes</th></tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:6px 10px;font-weight:600">Total Financial Assets</td><td style="padding:6px 10px;text-align:right;font-family:monospace;color:#00c9a7;font-weight:600">${fmtNum(m.totalAssets)}</td><td style="padding:6px 10px;color:#666;font-size:11px">Debtors + Investments + Cash</td></tr>
+            <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:6px 10px;font-weight:600">Total Borrowings</td><td style="padding:6px 10px;text-align:right;font-family:monospace;color:#e05252;font-weight:600">${fmtNum(m.totalDebt)}</td><td style="padding:6px 10px;color:#666;font-size:11px">${_borrowCache.length} facilities</td></tr>
+            <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:6px 10px;font-weight:600">Equity & Reserves</td><td style="padding:6px 10px;text-align:right;font-family:monospace;color:#a78bfa;font-weight:600">${fmtNum(m.totalEquity)}</td><td style="padding:6px 10px;color:#666;font-size:11px">Capital base</td></tr>
+            <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:6px 10px;font-weight:600">Net Asset Cover</td><td style="padding:6px 10px;text-align:right;font-family:monospace;font-weight:600;color:${(m.totalAssets||0)>(m.totalDebt||0)?'#22c55e':'#e05252'}">${fmtNum((m.totalAssets||0)-(m.totalDebt||0))}</td><td style="padding:6px 10px;color:#666;font-size:11px">Assets − Liabilities</td></tr>
+            <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:6px 10px;font-weight:600">WACC</td><td style="padding:6px 10px;text-align:right;font-family:monospace;color:#00c9a7;font-weight:600">${pctNum(m.wacc)}</td><td style="padding:6px 10px;color:#666;font-size:11px">Blended cost of capital</td></tr>
+            <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:6px 10px;font-weight:600">WARA</td><td style="padding:6px 10px;text-align:right;font-family:monospace;color:#f5a623;font-weight:600">${pctNum(m.wara)}</td><td style="padding:6px 10px;color:#666;font-size:11px">Return on assets</td></tr>
+            <tr><td style="padding:6px 10px;font-weight:600">Net Interest Spread</td><td style="padding:6px 10px;text-align:right;font-family:monospace;font-weight:600;color:${(m.spread||0)>=0?'#22c55e':'#e05252'}">${pctNum(m.spread)}</td><td style="padding:6px 10px;color:#666;font-size:11px">WARA − WACD</td></tr>
+          </tbody>
+        </table>
+        <h2 style="font-size:15px;color:#0a1628;margin:16px 0 8px;border-bottom:1px solid #e5e7eb;padding-bottom:6px">Financial Optimisation Assessment</h2>
+        <div style="margin-bottom:14px">
+          ${(a.pts||[]).map(p=>`<div style="display:flex;gap:8px;margin-bottom:7px;font-size:12px;color:#374151;line-height:1.55"><span style="width:7px;height:7px;border-radius:50%;background:${p.c==='gr'?'#22c55e':p.c==='rd'?'#e05252':p.c==='am'?'#f5a623':p.c==='bl'?'#63b3ed':'#a78bfa'};flex-shrink:0;margin-top:5px"></span><span>${p.t}</span></div>`).join('')||'<p style="color:#999;font-size:12px">No assessment generated.</p>'}
+        </div>
+        <h2 style="font-size:15px;color:#0a1628;margin:16px 0 8px;border-bottom:1px solid #e5e7eb;padding-bottom:6px">Board Recommendations</h2>
+        <div style="margin-bottom:14px">
+          ${(a.recs||[]).map((r,i)=>`<div style="display:flex;gap:8px;margin-bottom:7px;font-size:12px;color:#374151;line-height:1.55"><span style="font-weight:700;color:#f5a623;flex-shrink:0;margin-top:1px">${i+1}.</span><span>${r}</span></div>`).join('')||'<p style="color:#999;font-size:12px">No recommendations generated.</p>'}
+        </div>
+        <div style="margin-top:18px;padding-top:10px;border-top:1px solid #e5e7eb;font-size:10px;color:#999;text-align:center">Generated by FM Treasury Intelligence · ${reportDate} · Prepared for ${userName} · ${orgName}</div>
+      `;
       document.body.appendChild(tmp);
-      // render
-      const canvas = await html2canvas(tmp,{scale:2});
+      const canvas = await html2canvas(tmp, { scale:2, useCORS:true, backgroundColor:'#ffffff' });
       const img = canvas.toDataURL('image/png');
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF('p','pt','a4');
@@ -1496,23 +1870,36 @@ async function saveSettings(){
       const pageHeight = pdf.internal.pageSize.getHeight();
       const imgProps = pdf.getImageProperties(img);
       const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-      pdf.addImage(img,'PNG',0,0,pageWidth,pdfHeight);
-      pdf.save('FM_Dashboard_Report.pdf');
+      let heightLeft = pdfHeight;
+      let position = 0;
+      pdf.addImage(img, 'PNG', 0, position, pageWidth, pdfHeight);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(img, 'PNG', 0, position, pageWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      pdf.save('FM_Executive_Dashboard_Report.pdf');
       tmp.remove();
-      setStatus('PDF downloaded',true);
-    }catch(e){console.error(e);setStatus('PDF export failed');}
+      setStatus('PDF report downloaded successfully.', true);
+    }catch(e){
+      console.error('PDF export error:', e);
+      setStatus('PDF export failed: ' + (e.message || e), false);
+    }
   }
 
   function attach(){
-    const b=document.getElementById('btn-export-report'); if(b) b.addEventListener('click',showModal);
-    const c=document.getElementById('export-modal-close'); if(c) c.addEventListener('click',closeModal);
-    const x=document.getElementById('export-cancel'); if(x) x.addEventListener('click',closeModal);
-    const ex=document.getElementById('exp-xls'); if(ex) ex.addEventListener('click',exportExcel);
-    const ep=document.getElementById('exp-ppt'); if(ep) ep.addEventListener('click',exportPpt);
-    const epp=document.getElementById('exp-pdf'); if(epp) epp.addEventListener('click',exportPdf);
+    const b=document.getElementById('btn-export-report'); if(b) b.addEventListener('click', showModal);
+    const c=document.getElementById('export-modal-close'); if(c) c.addEventListener('click', ()=>{ closeModal(); hideStatus(); });
+    const x=document.getElementById('export-cancel'); if(x) x.addEventListener('click', ()=>{ closeModal(); hideStatus(); });
+    const ex=document.getElementById('exp-xls'); if(ex) ex.addEventListener('click', exportExcel);
+    const ep=document.getElementById('exp-ppt'); if(ep) ep.addEventListener('click', exportPpt);
+    const epp=document.getElementById('exp-pdf'); if(epp) epp.addEventListener('click', exportPdf);
   }
 
-  if(document.readyState==='complete')setTimeout(attach,200);else window.addEventListener('load',()=>setTimeout(attach,200));
+  if(document.readyState==='complete') setTimeout(attach, 250);
+  else window.addEventListener('load', ()=>setTimeout(attach, 250));
 })();
 </script>
 
