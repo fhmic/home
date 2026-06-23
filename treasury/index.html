@@ -707,7 +707,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
       const liabCurrency = aTotal * (liabPct/100);
       const perBucket = spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('');
       const emptyCols = TENOR_CAPS.map(()=>'<td>—</td>').join('');
-      return `<tr class="spread-row dim"><td>Surplus / (Deficit) — WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
+      return `<tr class="spread-row dim"><td>WACC: Surplus / (Deficit) WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
     })()}
   </tbody>`;
 }
@@ -1440,7 +1440,7 @@ async function saveSettings(){
       rows.push(['Total Financial Assets'].concat((mm.aBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.aTotal)]));
       rows.push(['Total Financial Liabilities'].concat((mm.lBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.lTotal)]));
       rows.push(['WARA (Assets) %'].concat((mm.waraBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat([mm.aTotal? ( (mm.contribs||[]).reduce((s,v)=>s+(v||0),0) / mm.aTotal *100).toFixed(2):'-']));
-      rows.push(['WACF (Liabilities) %'].concat((mm.wacfBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
+      rows.push(['WACD (Liabilities) %'].concat((mm.wacfBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
       rows.push(['Spread %'].concat((mm.spreadBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
       const ws2 = XLSX.utils.aoa_to_sheet([headers].concat(rows)); XLSX.utils.book_append_sheet(wb, ws2, 'Maturity Profile');
       XLSX.writeFile(wb,'FM_Dashboard_Report.xlsx');
