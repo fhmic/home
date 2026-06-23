@@ -1109,7 +1109,7 @@ async function viewInvoices(debtorId, debtorName) {
       </div>`:''}</td>
     </tr>`).join('');
     $('modal-body').innerHTML = `<div class="tw"><table>
-      <thead><tr><th>Invoice #</th><th>Issued</th><th>Due</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Status</th><th>Description</th><th></th></tr></thead>
+      <thead><tr><th>Invoice #</th><th>Value Date</th><th>Due</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Status</th><th>Description</th><th></th></tr></thead>
       <tbody>${rows}</tbody>
     </table></div>`;
   } catch(e) { $('modal-body').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
@@ -1181,13 +1181,13 @@ function openImportModal() {
 
     <div class="nt">
       File must have columns:
-      <strong>Debtor Name, Email, Invoice Number, Value Date, Due Date (or Maturity Date), Amount, Amount Paid or Balance</strong><br>
+      <strong>Debtor Name, Email, Invoice Number, Value Date, Maturity Date (Due Date), Amount, Amount Paid or Balance</strong><br>
       Optional: Phone, Credit Limit, Description/Narration, Stage (1|2|3)
     </div>
 
     <div style="margin:10px 0;display:flex;gap:10px;align-items:center">
       <button class="bp" onclick="downloadSampleFile()">⬇ Download Sample Template</button>
-      <label class="cb" style="font-size:12px;margin-left:6px"><input type="checkbox" id="imp-use-balance"><span>Use Balance to recompute Amount Paid</span></label>
+      <label class="cb" style="font-size:12px;margin-left:6px"><input type="checkbox" id="imp-use-balance"><span>Use Debtor Outstanding Balance to recompute Amount Paid</span></label>
       <label class="cb" style="font-size:12px;margin-left:6px"><input type="checkbox" id="imp-use-maturity"><span>Use Maturity Date to compute past-due if Due Date missing</span></label>
     </div>
 
@@ -1214,19 +1214,18 @@ function openImportModal() {
 
 function downloadSampleFile() {
   const headers = [
-    "Debtor Name",
-    "Email",
-    "Invoice Number",
-    "Value Date",
-    "Due Date",
-    "Maturity Date",
-    "Amount",
-    "Amount Paid",
-    "Balance",
-    "Stage",
-    "Phone",
-    "Credit Limit",
-    "Description/Narration"
+  "Debtor Name",
+  "Email",
+  "Invoice Number",
+  "Value Date",
+  "Maturity Date",
+  "Amount",
+  "Amount Paid",
+  "Balance",
+  "Stage",
+  "Phone",
+  "Credit Limit",
+  "Description/Narration"
   ];
 
   const sampleRow = [
@@ -1234,7 +1233,6 @@ function downloadSampleFile() {
     "abc@email.com",
     "INV-001",
     "2026-01-01",
-    "2026-01-31",
     "2026-12-31",
     "50000",
     "20000",
@@ -2721,7 +2719,11 @@ async function exportAgeingXLSX() {
   ws['!cols'] = [40,14,14,14,14,14,14,18].map(w=>({wch:w}));
   XLSX.utils.book_append_sheet(wb, ws, 'Ageing Report');
   const detail = [];
-  ageingCache.report.forEach(r => r.invoices.forEach(i => detail.push({ 'Debtor':r.debtor.name,'Invoice #':i.invoiceNumber,'Invoice Date':fmtD(i.invoiceDate),'Due Date':fmtD(i.dueDate),'Amount':N(i.amount),'Paid':N(i.amountPaid),'Balance':N(i.balance),'Days Overdue':i.daysOverdue,'Ageing Bucket':BUCKET_LABELS[i.ageingBucket]||i.ageingBucket })));
+  ageingCache.report.forEach(r => r.invoices.forEach(i => {
+    const msDay = 24*60*60*1000;
+    const daysOverdue = i.daysOverdue ?? i.daysPastDue ?? (i.maturityDate && i.valueDate ? Math.max(0, Math.round((new Date(i.maturityDate) - new Date(i.valueDate)) / msDay)) : (i.dueDate && i.valueDate ? Math.max(0, Math.round((new Date(i.dueDate) - new Date(i.valueDate)) / msDay)) : 0));
+    detail.push({ 'Debtor': r.debtor.name, 'Invoice #': i.invoiceNumber, 'Value Date': fmtD(i.invoiceDate || i.valueDate), 'Due Date': fmtD(i.dueDate || i.maturityDate), 'Amount': N(i.amount), 'Paid': N(i.amountPaid), 'Balance': N(i.balance), 'Days Overdue': daysOverdue, 'Ageing Bucket': BUCKET_LABELS[i.ageingBucket]||i.ageingBucket });
+  }));
   if (detail.length) { const ws2 = XLSX.utils.json_to_sheet(detail); ws2['!cols']=[28,14,12,12,14,14,14,12,14].map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb, ws2, 'Invoice Detail'); }
   XLSX.writeFile(wb, `FM-Ageing-${ts()}.xlsx`); toast('Excel export downloaded.');
 }
