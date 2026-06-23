@@ -584,7 +584,7 @@ async function loadDashboard(){
     {l:'Cost of Equity (Ke)',v:pct(eq.costOfEquity),c:'pu',sub:'Required shareholder return'},
   ].map(k=>'<div class="wacc-card '+k.c+'"><div class="wc-lbl">'+k.l+'</div><div class="wc-val">'+k.v+'</div><div class="wc-sub">'+k.sub+'</div></div>').join('');
 
-  renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara);
+  renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,totalEquity,wacd,avgIY,avgDR,wara,eq.costOfEquity);
   renderDashCharts(totalDebtors,totalInv,totalCash,totalDebt,totalEquity,avgDR,avgIY,wacd,eq.costOfEquity);
   renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever});
 }
@@ -593,7 +593,7 @@ async function loadDashboard(){
 // FIX [A]: Gap row is now CUMULATIVE — each column shows the running
 // leading/(gap) position as at end of that tenor bucket.
 // e.g. 60-day column = (assets maturing ≤60d) − (liabilities maturing ≤60d)
-function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara){
+function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,totalEquity,wacd,avgIY,avgDR,wara,ke){
   const tbl=$('maturity-tbl');if(!tbl)return;
   const N=v=>v>0?'₦'+fN(v):'—';
   // P(): null → '—' (empty bucket); 0 → '0.00%' (assets present, no liability cost); >0 → normal rate
@@ -627,7 +627,8 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
 
   // Recompute total WARA & WACD locally from the same rows used in this table
   const localWARA = aTotal>0 ? ((rD.total || 0) * avgDR + (rI.total || 0) * avgIY) / aTotal : 0;
-  const localWACD = lTotal>0 ? (_borrowCache.reduce((a,b)=>a+(b.outstanding/lTotal)*b.interestRate,0)) : 0;
+  const totalDebtAndEquity = totalDebt + totalEquity;
+  const localWACD = totalDebtAndEquity>0 ? ((totalDebt/totalDebtAndEquity) * (lTotal>0 ? _borrowCache.reduce((a,b)=>a+(b.outstanding/lTotal)*b.interestRate,0) : 0) + (totalEquity/totalDebtAndEquity) * ke) : 0;
 
   // Diagnostics: log bucket sums and totals used for WARA/WACD so mismatches can be investigated
   try {
@@ -698,7 +699,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     <tr class="pct-row"><td>Financial Liabilities %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">WEIGHTED AVERAGE COST OF FUNDS</td></tr>
     <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWARA)}</td></tr>
-    <tr class="wacf-row"><td>WACF (Liabilities) %</td>${wacfBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
+    <tr class="wacf-row"><td>WACC (Debt & Equity) %</td>${wacfBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
     ${(() => {
       const contribs = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
       const totalContrib = contribs.reduce((s,v)=>s+(v||0),0);
@@ -707,7 +708,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
       const liabCurrency = aTotal * (liabPct/100);
       const perBucket = spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('');
       const emptyCols = TENOR_CAPS.map(()=>'<td>—</td>').join('');
-      return `<tr class="spread-row dim"><td>Surplus / (Deficit) — WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
+      return `<tr class="spread-row dim"><td>Surplus / (Deficit) — WARA − WACC</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
     })()}
   </tbody>`;
 }
