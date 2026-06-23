@@ -707,8 +707,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
       const liabCurrency = aTotal * (liabPct/100);
       const perBucket = spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('');
       const emptyCols = TENOR_CAPS.map(()=>'<td>—</td>').join('');
-      return `<tr class="spread-row gap-row"><td>Surplus / (Deficit) — Asset-weighted</td>${perBucket}<td ${cc(surplusPct)}>${(surplusPct>=0?'+':'')+surplusPct.toFixed(2)+'%'} (${surplusPct>=0?'+':''}₦${fN(totalContrib)})</td></tr>` +
-             `<tr class="spread-row dim"><td>Surplus / (Deficit) — WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
+      return `<tr class="spread-row dim"><td>Surplus / (Deficit) — WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
     })()}
   </tbody>`;
 }
