@@ -621,8 +621,11 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
   const gTotal=aTotal-lTotal; // grand total gap (non-cumulative for total column)
 
   // WARA per bucket
+  // WARA per bucket: include ALL assets (debtors + investments + cash) in denominator
+  // so per-bucket rates are consistent with portfolio-wide WARA in Total column.
+  // Cash earns 0% — large idle cash correctly drags WARA down, signalling idle-liquidity cost.
   const waraBkts=aBkts.map((v,i)=>{
-    const da=rD.b[i],ia=rI.b[i],tot=da+ia;
+    const da=rD.b[i],ia=rI.b[i],ca=rC.b[i],tot=da+ia+ca;
     return tot>0?(da*avgDR+ia*avgIY)/tot:null;
   });
   // WACF per bucket
