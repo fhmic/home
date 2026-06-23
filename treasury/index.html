@@ -592,7 +592,8 @@ async function loadDashboard(){
 function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara){
   const tbl=$('maturity-tbl');if(!tbl)return;
   const N=v=>v>0?'₦'+fN(v):'—';
-  const P=v=>v!=null&&v>0?v.toFixed(2)+'%':'—';
+  // P(): null → '—' (empty bucket); 0 → '0.00%' (assets present, no liability cost); >0 → normal rate
+  const P=v=>v!=null?v.toFixed(2)+'%':'—';
   const cc=v=>v>0?'style="color:var(--gr)"':v<0?'style="color:var(--rd)"':'';
 
   const rD=buildRow(_portfolioCache,r=>r.balance,r=>r.dueDate,today,'demand');
@@ -629,13 +630,20 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     return tot>0?(da*avgDR+ia*avgIY)/tot:null;
   });
   // WACF per bucket
-  const wacfBkts=lBkts.map((v,i)=>{
-    if(!v)return null;
+  // WACF per bucket: return 0 (not null) when a bucket has assets but no liabilities.
+  // A bucket with assets and zero liabilities has a funding cost of 0% in that tenor —
+  // the spread is WARA − 0 = WARA, which correctly shows the full yield advantage.
+  // null is only returned when the bucket has NO assets either (nothing to show).
+  const wacfBkts=waraBkts.map((w,i)=>{
+    // If there are no assets in this bucket, nothing to display — return null
+    if(w==null) return null;
     const items=_borrowCache.filter(b=>tenorIdx(daysBetween(today,b.noMaturity?null:b.maturityDate,'demand'))===i);
     const tot=items.reduce((s,b)=>s+b.outstanding,0);
-    return tot>0?items.reduce((s,b)=>s+(b.outstanding/tot)*b.interestRate,0):null;
+    // Assets exist: if no liabilities, WACF = 0% (funded at no cost in this tenor)
+    return tot>0?items.reduce((s,b)=>s+(b.outstanding/tot)*b.interestRate,0):0;
   });
-  const spreadBkts=waraBkts.map((w,i)=>w!=null&&wacfBkts[i]!=null?w-wacfBkts[i]:null);
+  // Spread: compute whenever WARA is known; WACF of 0 means full WARA is the surplus
+  const spreadBkts=waraBkts.map((w,i)=>w!=null?w-(wacfBkts[i]??0):null);
 
   const TH='<th>'+TENOR_LBLS.join('</th><th>')+'</th>';
   tbl.innerHTML=`<thead><tr><th>TENOR</th>${TH}<th>TOTAL</th></tr></thead><tbody>
