@@ -500,11 +500,18 @@ $('logout-btn').addEventListener('click',()=>{
 // ── TENOR BUCKET HELPERS ──────────────────────────────────────
 const TENOR_CAPS=[30,60,90,180,270,365];
 const TENOR_LBLS=['30 Days','60 Days','90 Days','180 Days','270 Days','365 Days & Above'];
-function daysBetween(a,b){if(!b)return 999;return Math.max(0,Math.floor((new Date(b)-new Date(a))/86400000));}
+// daysBetween: nullAs controls what a null maturity date means:
+//   'liquid' → 0 days  (open-ended ASSET e.g. MMF — redeemable on demand, show in ≤30d bucket)
+//   'demand' → 999 days (open-ended LIABILITY e.g. target plan — worst-case demand, show in 365d+ bucket)
+function daysBetween(a,b,nullAs='demand'){
+  if(!b)return nullAs==='liquid'?0:999;
+  return Math.max(0,Math.floor((new Date(b)-new Date(a))/86400000));
+}
 function tenorIdx(days){for(let i=0;i<TENOR_CAPS.length;i++){if(days<=TENOR_CAPS[i])return i;}return TENOR_CAPS.length-1;}
-function buildRow(items,getAmt,getMat,today){
+// buildRow: nullAs passed through to daysBetween so caller controls open-ended bucket placement
+function buildRow(items,getAmt,getMat,today,nullAs='demand'){
   const b=new Array(TENOR_CAPS.length).fill(0);let total=0;
-  for(const x of items){const d=daysBetween(today,getMat(x));b[tenorIdx(d)]+=(getAmt(x)||0);total+=(getAmt(x)||0);}
+  for(const x of items){const d=daysBetween(today,getMat(x),nullAs);b[tenorIdx(d)]+=(getAmt(x)||0);total+=(getAmt(x)||0);}
   return{b,total};
 }
 
@@ -588,14 +595,16 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
   const P=v=>v!=null&&v>0?v.toFixed(2)+'%':'—';
   const cc=v=>v>0?'style="color:var(--gr)"':v<0?'style="color:var(--rd)"':'';
 
-  const rD=buildRow(_portfolioCache,r=>r.balance,r=>r.dueDate,today);
-  const rI=buildRow(_invCache,i=>i.principal,i=>i.maturityDate,today);
-  // Cash unrestricted → on-demand (30d bucket); open-ended investments without maturity → last bucket
+  const rD=buildRow(_portfolioCache,r=>r.balance,r=>r.dueDate,today,'demand');
+  // Investments: open-ended (MMF, Notice Deposit) → 'liquid' = ≤30d bucket (redeemable on demand)
+  // Fixed instruments use their actual maturityDate
+  const rI=buildRow(_invCache,i=>i.principal,i=>i.noMaturity?null:i.maturityDate,today,'liquid');
+  // Cash unrestricted → on-demand (30d bucket)
   const cashUnres=_cashCache.filter(a=>a.currency==='NGN'&&!a.restricted).reduce((s,a)=>s+a.balance,0);
   const rC={b:[cashUnres,0,0,0,0,0],total:cashUnres};
 
-  // Borrowings: open-ended (noMaturity) go into last bucket as demand liability
-  const rB=buildRow(_borrowCache,b=>b.outstanding,b=>b.noMaturity?null:b.maturityDate,today);
+  // Borrowings: open-ended (noMaturity) → 'demand' = 365d+ bucket (worst-case demand liability)
+  const rB=buildRow(_borrowCache,b=>b.outstanding,b=>b.noMaturity?null:b.maturityDate,today,'demand');
 
   const aBkts=TENOR_CAPS.map((_,i)=>rD.b[i]+rI.b[i]+rC.b[i]);
   const aTotal=rD.total+rI.total+rC.total;
@@ -619,7 +628,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
   // WACF per bucket
   const wacfBkts=lBkts.map((v,i)=>{
     if(!v)return null;
-    const items=_borrowCache.filter(b=>tenorIdx(daysBetween(today,b.noMaturity?null:b.maturityDate))===i);
+    const items=_borrowCache.filter(b=>tenorIdx(daysBetween(today,b.noMaturity?null:b.maturityDate,'demand'))===i);
     const tot=items.reduce((s,b)=>s+b.outstanding,0);
     return tot>0?items.reduce((s,b)=>s+(b.outstanding/tot)*b.interestRate,0):null;
   });
@@ -949,7 +958,7 @@ function openBorrowingModal(id){
     '<div class="fg"><div class="fld"><label>Value Date</label><input class="finput" type="date" id="bw-vdate" value="'+(x?.valueDate?.slice(0,10)||'')+'"></div>'+
     '<div class="fld"><label>Accrued Interest to Date (₦)</label><input class="finput" type="number" id="bw-accrued" value="'+(x?.accruedInterest||0)+'" min="0" placeholder="e.g. system-computed accrual"></div></div>'+
     '<div class="fld" id="bw-mat-wrap" style="'+(isOE?'display:none':'')+'"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="'+(x?.maturityDate?.slice(0,10)||'')+'"></div>'+
-    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="bw-nomat" '+(isOE?'checked':'')+' style="accent-color:var(--pu)" onchange="toggleBwMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended / No fixed maturity date</span></label><div style="font-size:11px;color:var(--tx3);margin-top:4px;font-family:var(--mo)">e.g. target plan, savings deposit, demand facility — will be placed in the 365-day+ maturity bucket on the profile table.</div></div>',
+    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="bw-nomat" '+(isOE?'checked':'')+' style="accent-color:var(--pu)" onchange="toggleBwMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended / No fixed maturity date</span></label><div style="font-size:11px;color:var(--tx3);margin-top:4px;font-family:var(--mo)">e.g. target plan, savings deposit, demand facility — treated as worst-case demand liability, placed in 365-day+ bucket on the profile table.</div></div>',
     '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing(\''+(x?x._id:'')+'\')"><span id="bw-sv">'+(x?'Save Changes':'Add Facility')+'</span></button>');
 }
 function toggleBwMat(cb){
@@ -1047,7 +1056,7 @@ function openInvestmentModal(id){
     '<div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="'+(i?.dateInvested?.slice(0,10)||'')+'"></div>'+
     '<div class="fld" id="ii-days-wrap"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="'+(i?.tenorDays||'')+'"></div></div>'+
     '<div class="fld" id="ii-mat-wrap" style="'+(isOE?'display:none':'')+'"><label>Maturity Date (auto-computed from tenor, or override)</label><input class="finput" type="date" id="ii-matdate" value="'+(i?.maturityDate?.slice(0,10)||'')+'"><div style="font-size:11px;color:var(--tx3);margin-top:4px;font-family:var(--mo)">Leave blank to auto-compute from Date Invested + Tenor days.</div></div>'+
-    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="ii-nomat" '+(isOE?'checked':'')+' style="accent-color:var(--pu)" onchange="toggleInvMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended — no fixed maturity (e.g. Money Market Fund)</span></label><div style="font-size:11px;color:var(--tx3);margin-top:4px;font-family:var(--mo)">Rate shown as indicative; interest projected as variable. Placed in 365-day+ bucket on maturity profile.</div></div>',
+    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="ii-nomat" '+(isOE?'checked':'')+' style="accent-color:var(--pu)" onchange="toggleInvMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended — no fixed maturity (e.g. Money Market Fund)</span></label><div style="font-size:11px;color:var(--tx3);margin-top:4px;font-family:var(--mo)">Rate shown as indicative; interest projected as variable. Treated as liquid asset — placed in ≤30-day bucket on maturity profile (redeemable on demand).</div></div>',
     '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment(\''+(i?i._id:'')+'\')"><span id="ii-sv">'+(i?'Save Changes':'Add Investment')+'</span></button>');
 
   // Auto-select open-ended for MMF types
@@ -1193,9 +1202,10 @@ async function loadLiquidity(){
     mkChart('ch-liq-forecast',{type:'line',data:{labels:liqF.map(d=>d.p),datasets:[{label:'Net Flow',data:liqF.map(d=>d.n),borderColor:'#00c9a7',backgroundColor:'rgba(0,201,167,.08)',fill:true,tension:.4,pointBackgroundColor:'#00c9a7',pointRadius:3},{label:'Cumulative',data:liqF.map(d=>d.c),borderColor:'#63b3ed',fill:false,tension:.3,borderDash:[5,5],pointBackgroundColor:'#63b3ed',pointRadius:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-lqg',{type:'bar',data:{labels:gapD.map(d=>d.p),datasets:[{label:'Inflows',data:gapD.map(d=>d.in),backgroundColor:'#22c55e',borderRadius:4},{label:'Outflows',data:gapD.map(d=>d.out),backgroundColor:'#e05252',borderRadius:4}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     const unres=_cashCache.filter(a=>!a.restricted&&a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
-    const shortInv=_invCache.filter(i=>!i.noMaturity&&i.tenorDays<=90).reduce((s,i)=>s+i.principal,0);
+    // Open-ended investments (MMF etc.) count as liquid alongside fixed instruments ≤90d
+    const shortInv=_invCache.filter(i=>i.noMaturity||(i.tenorDays>0&&i.tenorDays<=90)).reduce((s,i)=>s+i.principal,0);
     const el=$('liq-src-inner');
-    if(el)el.innerHTML=[[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Short Investments (<90d, dated)','#63b3ed'],[fmt(totalDebtors*.12),'Debtor Collections (est.)','#22c55e']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('')+
+    if(el)el.innerHTML=[[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Liquid Investments (MMF + <90d)','#63b3ed'],[fmt(totalDebtors*.12),'Debtor Collections (est.)','#22c55e']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('')+
       '<div style="font-size:11px;color:var(--tx3);font-family:var(--mo);padding:8px 0">Near-term Obligations:</div>'+
       [[fmt(totalDebt*.12),'Debt Maturities (<90d)','#e05252'],[fmt(totalDebt*.05),'Estimated Interest (90d)','#f5a623']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('');
   },80);
