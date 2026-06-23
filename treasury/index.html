@@ -166,6 +166,11 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 .advisory-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:.6rem;font-size:12px;color:var(--tx2);line-height:1.65}
 .adot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
 .adot.gr{background:var(--gr)}.adot.rd{background:var(--rd)}.adot.am{background:var(--am)}.adot.bl{background:var(--bl)}.adot.pu{background:var(--pu)}
+/* Bulk actions bar */
+.bulk-bar{display:none;align-items:center;gap:10px;background:rgba(224,82,82,.08);border:1px solid rgba(224,82,82,.2);border-radius:var(--r);padding:8px 14px;margin-bottom:.75rem;font-size:12px;font-family:var(--mo);color:var(--tx2)}
+.bulk-bar.on{display:flex}
+/* Checkbox styling */
+input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor:pointer}
 @media(max-width:640px){
   #topbar{padding:0 1rem;height:52px}.logo{font-size:15px}.lm{width:26px;height:26px;font-size:8px}
   .org-badge{display:none}.user-chip-top{display:none}.nav-btn-link{padding:5px 9px;font-size:10.5px}
@@ -268,7 +273,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div class="kpi-grid" id="dash-kpis"></div>
         <div class="wacc-grid" id="dash-wacc"></div>
         <div class="card" style="margin-bottom:1.25rem">
-          <div class="card-label">Asset &amp; Liability Maturity Profile (₦) — Tenor Gap Analysis</div>
+          <div class="card-label">Asset &amp; Liability Maturity Profile (₦) — Cumulative Tenor Gap Analysis</div>
           <div class="tw"><table class="mat-tbl" id="maturity-tbl"><tr><td colspan="9" class="loading-row">Loading…</td></tr></table></div>
         </div>
         <div class="chart-2" id="dash-charts"></div>
@@ -540,13 +545,12 @@ async function loadDashboard(){
   const totalEquity=eq.shareCapital+eq.retainedEarnings+eq.otherReserves;
   const totalAssets=totalDebtors+totalInv+totalCash;
 
-  // Rates
   const wacd=totalDebt>0?_borrowCache.reduce((a,b)=>a+(b.outstanding/totalDebt)*b.interestRate,0):0;
   const avgIY=totalInv>0?_invCache.reduce((a,i)=>a+(i.principal/totalInv)*i.interestRate,0):0;
   const avgDR=avgDebtorEIR();
   const wara=totalAssets>0?(totalDebtors*avgDR+totalInv*avgIY)/(totalAssets):0;
   const V=totalEquity+totalDebt;
-  const wacc=V>0?((totalEquity/V)*eq.costOfEquity+(totalDebt/V)*wacd*0.7):0; // tax shield 30%
+  const wacc=V>0?((totalEquity/V)*eq.costOfEquity+(totalDebt/V)*wacd*0.7):0;
   const spread=wara-wacd;
   const lever=totalEquity>0?(totalDebt/totalEquity):0;
 
@@ -574,25 +578,38 @@ async function loadDashboard(){
   renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever});
 }
 
-// ── MATURITY TABLE ────────────────────────────────────────────
+// ── MATURITY TABLE ─────────────────────────────────────────────
+// FIX [A]: Gap row is now CUMULATIVE — each column shows the running
+// leading/(gap) position as at end of that tenor bucket.
+// e.g. 60-day column = (assets maturing ≤60d) − (liabilities maturing ≤60d)
 function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara){
   const tbl=$('maturity-tbl');if(!tbl)return;
   const N=v=>v>0?'₦'+fN(v):'—';
   const P=v=>v!=null&&v>0?v.toFixed(2)+'%':'—';
   const cc=v=>v>0?'style="color:var(--gr)"':v<0?'style="color:var(--rd)"':'';
 
-  // Build rows from real data
   const rD=buildRow(_portfolioCache,r=>r.balance,r=>r.dueDate,today);
   const rI=buildRow(_invCache,i=>i.principal,i=>i.maturityDate,today);
-  // Cash: unrestricted → bucket 0 (30d), restricted → last bucket
+  // Cash unrestricted → on-demand (30d bucket); open-ended investments without maturity → last bucket
   const cashUnres=_cashCache.filter(a=>a.currency==='NGN'&&!a.restricted).reduce((s,a)=>s+a.balance,0);
   const rC={b:[cashUnres,0,0,0,0,0],total:cashUnres};
-  const rB=buildRow(_borrowCache,b=>b.outstanding,b=>b.maturityDate,today);
+
+  // Borrowings: open-ended (noMaturity) go into last bucket as demand liability
+  const rB=buildRow(_borrowCache,b=>b.outstanding,b=>b.noMaturity?null:b.maturityDate,today);
 
   const aBkts=TENOR_CAPS.map((_,i)=>rD.b[i]+rI.b[i]+rC.b[i]);
   const aTotal=rD.total+rI.total+rC.total;
-  const lBkts=rB.b.slice();const lTotal=rB.total;
-  const gBkts=aBkts.map((v,i)=>v-lBkts[i]);const gTotal=aTotal-lTotal;
+  const lBkts=rB.b.slice();
+  const lTotal=rB.total;
+
+  // ── FIX [A]: Cumulative gap ───────────────────────────────
+  // Each column = running surplus/(deficit) up to and including that tenor
+  const gBkts=[];let _cumGap=0;
+  for(let i=0;i<TENOR_CAPS.length;i++){
+    _cumGap+=(aBkts[i]-lBkts[i]);
+    gBkts.push(_cumGap);
+  }
+  const gTotal=aTotal-lTotal; // grand total gap (non-cumulative for total column)
 
   // WARA per bucket
   const waraBkts=aBkts.map((v,i)=>{
@@ -602,7 +619,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
   // WACF per bucket
   const wacfBkts=lBkts.map((v,i)=>{
     if(!v)return null;
-    const items=_borrowCache.filter(b=>tenorIdx(daysBetween(today,b.maturityDate))===i);
+    const items=_borrowCache.filter(b=>tenorIdx(daysBetween(today,b.noMaturity?null:b.maturityDate))===i);
     const tot=items.reduce((s,b)=>s+b.outstanding,0);
     return tot>0?items.reduce((s,b)=>s+(b.outstanding/tot)*b.interestRate,0):null;
   });
@@ -618,7 +635,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     <tr class="sec-hdr rd"><td colspan="9">FINANCIAL LIABILITIES</td></tr>
     <tr class="sub"><td>Borrowings from Customers / Lenders</td>${rB.b.map(v=>'<td style="color:var(--rd)">'+N(v)+'</td>').join('')}<td style="color:var(--rd);font-weight:600">${N(rB.total)}</td></tr>
     <tr class="tot-l"><td>TOTAL FINANCIAL LIABILITIES</td>${lBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(lTotal)}</td></tr>
-    <tr class="gap-row"><td>LEADING / (GAP)</td>${gBkts.map(v=>`<td ${cc(v)}>${N(v)}</td>`).join('')}<td ${cc(gTotal)}>${N(gTotal)}</td></tr>
+    <tr class="gap-row"><td>LEADING / (GAP) — Cumulative</td>${gBkts.map(v=>`<td ${cc(v)}>${v!==0?'₦'+fN(v):'—'}</td>`).join('')}<td ${cc(gTotal)}>${'₦'+fN(gTotal)}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">PERIOD'S CONTRIBUTION AS A PERCENTAGE OF TOTAL</td></tr>
     <tr class="pct-row"><td>Financial Assets %</td>${aBkts.map(v=>'<td>'+(aTotal>0?(v/aTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>100%</td></tr>
     <tr class="pct-row"><td>Financial Liabilities %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
@@ -653,50 +670,41 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
   const invPct=totalAssets>0?totalInv/totalAssets*100:0;
   const cashPct=totalAssets>0?totalCash/totalAssets*100:0;
 
-  // 1. Net interest spread
   if(spread>5)pts.push({c:'gr',t:'Strong net interest spread of '+spread.toFixed(2)+'% — the entity earns comfortably above its cost of funds. Sustain asset quality and maintain current pricing.'});
   else if(spread>0&&spread<=5)pts.push({c:'am',t:'Net interest spread of '+spread.toFixed(2)+'% is thin. Consider repricing assets or securing cheaper long-term funding to protect profitability margins.'});
   else pts.push({c:'rd',t:'Negative net interest spread ('+spread.toFixed(2)+'%) is a critical signal — the entity is paying more on liabilities than it earns on assets. Immediate corrective action is required.'});
 
-  // 2. WACC vs WARA (economic value creation)
   if(wacc>0){
     if(wara>=wacc+2)pts.push({c:'gr',t:'WARA ('+pct(wara)+') exceeds WACC ('+pct(wacc)+') by '+(wara-wacc).toFixed(2)+'pp, indicating positive Economic Value Added (EVA). The entity creates shareholder value.'});
     else if(wara<wacc)pts.push({c:'rd',t:'WARA ('+pct(wara)+') is below WACC ('+pct(wacc)+') — the entity is destroying economic value. Returns on assets do not cover the combined cost of debt and equity.'});
     else pts.push({c:'am',t:'WARA ('+pct(wara)+') is marginally above WACC ('+pct(wacc)+'). The entity is at break-even on economic value creation; improving asset yields will strengthen EVA.'});
   }
 
-  // 3. Asset concentration
-  if(debtorPct>70)pts.push({c:'am',t:debtorPct.toFixed(0)+'% of assets are in debtors — high concentration. Rebalance into short investments to reduce credit risk and earn certain yields alongside uncertain debtor collections.'});
+  if(debtorPct>70)pts.push({c:'am',t:debtorPct.toFixed(0)+'% of assets are in debtors — high concentration. Rebalance into short investments to reduce credit risk and earn certain yields.'});
   else if(debtorPct>50)pts.push({c:'bl',t:'Debtor book ('+debtorPct.toFixed(0)+'% of assets) is primary earning asset — appropriate for trade finance. Ensure the Receivables ECL model is kept current for accurate provisioning.'});
 
-  // 4. Investment yield vs WACD
   if(totalInv>0){
     if(avgIY>wacd+2)pts.push({c:'gr',t:'Investment yield ('+pct(avgIY)+') comfortably exceeds WACD ('+pct(wacd)+') by '+(avgIY-wacd).toFixed(2)+'pp. Surplus liquidity is being deployed at attractive positive spreads.'});
     else if(avgIY<wacd)pts.push({c:'am',t:'Investment yield ('+pct(avgIY)+') is below WACD ('+pct(wacd)+') — idle liquidity is earning less than the cost of funding it. Redeploy into higher-yield instruments or use to reduce expensive borrowings.'});
   }
 
-  // 5. Idle cash
   if(cashPct>25)pts.push({c:'am',t:cashPct.toFixed(0)+'% of assets ('+fmt(totalCash)+') sit as idle cash. Unless ring-fenced for near-term obligations, deploy excess into T-Bills or short FDs to earn additional yield above 0%.'});
 
-  // 6. Leverage
-  if(lever>3)pts.push({c:'rd',t:'Debt/Equity of '+lever.toFixed(2)+'× is elevated — high financial risk. Prioritise equity injection or profit retention to deleverage and reduce reliance on external funding.'});
+  if(lever>3)pts.push({c:'rd',t:'Debt/Equity of '+lever.toFixed(2)+'× is elevated — high financial risk. Prioritise equity injection or profit retention to deleverage.'});
   else if(lever>1.5)pts.push({c:'am',t:'Debt/Equity of '+lever.toFixed(2)+'× is moderate. Monitor covenant headroom and ensure adequate interest coverage (EBIT/Interest ≥ 2×).'});
   else if(lever<0.5&&totalDebt>0)pts.push({c:'bl',t:'Low leverage ('+lever.toFixed(2)+'×) suggests under-utilisation of debt capacity. Selective borrowing at rates below WARA could enhance returns to equity without undue risk.'});
 
-  // 7. Capital
   if(totalEquity===0){pts.push({c:'rd',t:'No equity data entered. Go to Equity & Capital to enter share capital and retained earnings — essential for WACC computation and board reporting.'});}
   else{const cr=totalAssets>0?totalEquity/totalAssets*100:0;
     if(cr<10)pts.push({c:'rd',t:'Capital ratio of '+cr.toFixed(1)+'% (equity/assets) is thin. Strengthen through retained earnings or equity raise — target ≥ 20% for financial sustainability.'});
     else pts.push({c:'gr',t:'Capital ratio of '+cr.toFixed(1)+'% indicates an adequately capitalised entity. Strong equity buffer supports growth and maintains creditor confidence.'});}
 
-  // 8. NPS/NPL alerts from receivables
   const s3=_debtorCache.filter(d=>getStage(d._id)===3);
   if(s3.length>0){
     const s3amt=s3.reduce((s,d)=>s+d.totalOutstanding,0);
     pts.push({c:'rd',t:s3.length+' debtor'+(s3.length>1?'s':'')+' ('+fmt(s3amt)+') are classified Stage 3 (non-performing). Ensure adequate ECL provisions are set in the Receivables module and escalate recovery efforts.'});
   }
 
-  // Recommendations
   if(spread<2)recs.push('Reprice debtor facilities upward — target minimum debtor yield of WACD + 5% to ensure viability after ECL charges and operating costs.');
   if(cashPct>25)recs.push('Deploy idle cash into 91-day Treasury Bills (current yield ~'+Math.min(avgIY||20,21).toFixed(1)+'%) to immediately improve WARA without increasing credit risk.');
   if(lever>2.5)recs.push('Consider a rights issue or preference share offer to reduce leverage below 2× and improve debt capacity for future growth funding.');
@@ -838,58 +846,120 @@ async function loadBorrowings(){
 function renderBorrowings(){
   const b=_borrowCache,total=b.reduce((s,x)=>s+x.outstanding,0);
   const wacd=total>0?b.reduce((a,x)=>a+(x.outstanding/total)*x.interestRate,0):0;
-  const nearest=b.slice().sort((a,c)=>new Date(a.maturityDate)-new Date(c.maturityDate))[0];
+  const nearest=b.filter(x=>!x.noMaturity).slice().sort((a,c)=>new Date(a.maturityDate)-new Date(c.maturityDate))[0];
   $('borrowings-kpis').innerHTML=[
     {l:'Total Debt',v:fmt(total),c:'rd',sub:b.length+' facilities'},
     {l:'WACD',v:pct(wacd),c:'am',sub:'Weighted avg cost of debt'},
-    {l:'Next Maturity',v:nearest?fD(nearest.maturityDate):'—',c:'bl',sub:nearest?nearest.lender:''},
-    {l:'Bullet Facilities',v:b.filter(x=>x.repayment==='Bullet').length,c:'pu',sub:'Bullet repayment'},
+    {l:'Next Maturity',v:nearest?fD(nearest.maturityDate):'—',c:'bl',sub:nearest?nearest.lender:'No dated maturity'},
+    {l:'Open-ended Facilities',v:b.filter(x=>x.noMaturity).length,c:'pu',sub:'Demand / no fixed maturity'},
   ].map(k=>'<div class="kpi '+k.c+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
   const now=new Date();
   const typeMap={};b.forEach(x=>{typeMap[x.type]=(typeMap[x.type]||0)+x.outstanding;});
   $('borrowings-charts').innerHTML='<div class="chart-box"><div class="card-label">Debt Maturity Profile</div><canvas id="ch-bwm" height="170"></canvas></div><div class="chart-box"><div class="card-label">Debt by Facility Type</div><canvas id="ch-bwt" height="170"></canvas></div>';
   setTimeout(()=>{
-    const md=b.map(x=>({n:x.lender.split(' ')[0],v:x.outstanding,d:Math.max(0,(new Date(x.maturityDate)-now)/86400000)})).sort((a,c)=>a.d-c.d);
-    mkChart('ch-bwm',{type:'bar',data:{labels:md.map(x=>x.n),datasets:[{data:md.map(x=>x.v),backgroundColor:md.map(x=>x.d<180?'#e05252':x.d<360?'#f5a623':'#00c9a7'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    const md=b.map(x=>({n:x.lender.split(' ')[0],v:x.outstanding,d:x.noMaturity?0:Math.max(0,(new Date(x.maturityDate)-now)/86400000)})).sort((a,c)=>a.d-c.d);
+    mkChart('ch-bwm',{type:'bar',data:{labels:md.map(x=>x.n),datasets:[{data:md.map(x=>x.v),backgroundColor:md.map(x=>x.noMaturity?'#a78bfa':x.d<180?'#e05252':x.d<360?'#f5a623':'#00c9a7'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-bwt',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  $('borrowings-table-wrap').innerHTML='<div class="card-label">Borrowings Schedule</div><div class="tw"><table>'+
-    '<thead><tr><th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding (₦)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Repayment</th><th>Maturity</th><th></th></tr></thead>'+
-    '<tbody>'+b.map(x=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+x.borrowingId+'</td><td><strong>'+x.lender+'</strong></td>'+
-      '<td style="color:var(--tx2)">'+x.type+'</td>'+
-      '<td class="nm">'+fmt(x.outstanding)+'</td>'+
-      '<td class="nm" style="color:'+(x.interestRate>20?'#e05252':x.interestRate>16?'#f5a623':'#22c55e')+'">'+x.interestRate+'%</td>'+
-      '<td class="nm" style="font-family:var(--mo)">'+x.tenorMonths+'mo</td>'+
-      '<td style="color:var(--tx2)">'+x.repayment+'</td>'+
-      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(x.maturityDate)+'</td>'+
-      '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openBorrowingModal(\''+x._id+'\')" style="padding:4px 8px" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteBorrowing(\''+x._id+'\')" style="padding:4px 8px" title="Delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-      '</div></td></tr>').join('')+
-    '<tr class="trt"><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">'+fmt(total)+'</td><td class="nm">'+pct(wacd)+'</td><td colspan="4"></td></tr>'+
+
+  // ── FIX [E]: Bulk select/delete for Borrowings ───────────
+  const rows=b.map(x=>`<tr>
+    <td style="width:32px"><input type="checkbox" class="row-chk bw-chk" value="${x._id}"></td>
+    <td style="font-family:var(--mo);color:var(--t)">${x.borrowingId}</td>
+    <td><strong>${x.lender}</strong>${x.noMaturity?'<div style="font-size:9px;font-family:var(--mo);color:var(--pu)">OPEN-ENDED</div>':''}</td>
+    <td style="color:var(--tx2)">${x.type}</td>
+    <td class="nm">${fmt(x.outstanding)}</td>
+    <td class="nm" style="color:${x.interestRate>20?'#e05252':x.interestRate>16?'#f5a623':'#22c55e'}">${x.interestRate}%</td>
+    <td class="nm" style="font-family:var(--mo)">${x.noMaturity?'Open-ended':x.tenorMonths+'mo'}</td>
+    <td style="color:var(--tx2)">${x.repayment}</td>
+    <td style="font-family:var(--mo);color:${x.noMaturity?'var(--pu)':'var(--tx2)'}">${x.noMaturity?'On demand':fD(x.maturityDate)}</td>
+    ${x.accruedInterest>0?`<td class="nm" style="color:var(--am)">${fmt(x.accruedInterest)}</td>`:'<td class="nm" style="color:var(--tx3)">—</td>'}
+    <td><div style="display:flex;gap:4px">
+      <button class="bsm" onclick="openBorrowingModal('${x._id}')" style="padding:4px 8px" title="Edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+      <button class="bsm bd" onclick="deleteBorrowing('${x._id}')" style="padding:4px 8px" title="Delete"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+    </div></td></tr>`).join('');
+
+  $('borrowings-table-wrap').innerHTML=
+    '<div class="bulk-bar" id="bw-bulk"><span id="bw-bulk-cnt">0 selected</span><button class="bd bsm" onclick="bulkDeleteBorrowings()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Delete Selected</button><button class="bsm" onclick="clearBulkBw()">Clear</button></div>'+
+    '<div class="card-label">Borrowings Schedule</div><div class="tw"><table>'+
+    '<thead><tr><th style="width:32px"><input type="checkbox" class="row-chk" id="bw-chk-all" onchange="toggleAllChk(this,\'.bw-chk\',\'bw-bulk\',\'bw-bulk-cnt\')"></th><th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding (₦)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Repayment</th><th>Maturity</th><th class="nm">Accrued Int.</th><th></th></tr></thead>'+
+    '<tbody>'+rows+
+    '<tr class="trt"><td></td><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">'+fmt(total)+'</td><td class="nm">'+pct(wacd)+'</td><td colspan="5"></td></tr>'+
     '</tbody></table></div>';
+
+  // wire per-row checkboxes
+  document.querySelectorAll('.bw-chk').forEach(c=>c.addEventListener('change',()=>updateBulkBar('.bw-chk','bw-bulk','bw-bulk-cnt')));
 }
+
+function toggleAllChk(master,sel,barId,cntId){
+  document.querySelectorAll(sel).forEach(c=>{c.checked=master.checked;});
+  updateBulkBar(sel,barId,cntId);
+}
+function updateBulkBar(sel,barId,cntId){
+  const checked=document.querySelectorAll(sel+':checked').length;
+  const bar=$(barId),cnt=$(cntId);
+  if(bar)bar.classList.toggle('on',checked>0);
+  if(cnt)cnt.textContent=checked+' selected';
+}
+function clearBulkBw(){document.querySelectorAll('.bw-chk').forEach(c=>c.checked=false);const all=$('bw-chk-all');if(all)all.checked=false;updateBulkBar('.bw-chk','bw-bulk','bw-bulk-cnt');}
+function clearBulkInv(){document.querySelectorAll('.inv-chk').forEach(c=>c.checked=false);const all=$('inv-chk-all');if(all)all.checked=false;updateBulkBar('.inv-chk','inv-bulk','inv-bulk-cnt');}
+function clearBulkCash(){document.querySelectorAll('.cash-chk').forEach(c=>c.checked=false);const all=$('cash-chk-all');if(all)all.checked=false;updateBulkBar('.cash-chk','cash-bulk','cash-bulk-cnt');}
+
+async function bulkDeleteBorrowings(){
+  const ids=[...document.querySelectorAll('.bw-chk:checked')].map(c=>c.value);
+  if(!ids.length)return;
+  if(!confirm('Delete '+ids.length+' selected facilit'+(ids.length>1?'ies':'y')+'? This cannot be undone.'))return;
+  let ok=0;
+  for(const id of ids){try{await api('/treasury/borrowings/'+id,{method:'DELETE'});ok++;}catch(e){}}
+  toast(ok+' facilit'+(ok>1?'ies':'y')+' deleted.');loadBorrowings();
+}
+async function bulkDeleteInvestments(){
+  const ids=[...document.querySelectorAll('.inv-chk:checked')].map(c=>c.value);
+  if(!ids.length)return;
+  if(!confirm('Delete '+ids.length+' selected investment'+(ids.length>1?'s':'')+'? This cannot be undone.'))return;
+  let ok=0;
+  for(const id of ids){try{await api('/treasury/investments/'+id,{method:'DELETE'});ok++;}catch(e){}}
+  toast(ok+' investment'+(ok>1?'s':'')+' deleted.');loadInvestments();
+}
+async function bulkDeleteCash(){
+  const ids=[...document.querySelectorAll('.cash-chk:checked')].map(c=>c.value);
+  if(!ids.length)return;
+  if(!confirm('Delete '+ids.length+' selected account'+(ids.length>1?'s':'')+'? This cannot be undone.'))return;
+  let ok=0;
+  for(const id of ids){try{await api('/treasury/cash/'+id,{method:'DELETE'});ok++;}catch(e){}}
+  toast(ok+' account'+(ok>1?'s':'')+' deleted.');loadCash();
+}
+
+// ── FIX [D]: Borrowing modal — open-ended / accrued interest fields ──
 function openBorrowingModal(id){
   const x=id?_borrowCache.find(b=>b._id===id):null;
+  const isOE=x?.noMaturity||false;
   openModal(x?'Edit Facility':'Add Borrowing Facility',
     '<div class="merr" id="bw-err"></div>'+
     '<div class="fg"><div class="fld"><label>Borrowing ID *</label><input class="finput" id="bw-id" value="'+(x?.borrowingId||'')+'"></div>'+
     '<div class="fld"><label>Lender *</label><input class="finput" id="bw-lender" value="'+(x?.lender||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Facility Type</label><select class="finput" id="bw-type">'+
-    ['Term Loan','Overdraft Facility','On-lending Facility','SME Fund','Wholesale Borrowing','Intercompany Loan'].map(t=>'<option '+(x?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
+    ['Term Loan','Overdraft Facility','On-lending Facility','SME Fund','Wholesale Borrowing','Intercompany Loan','Target/Savings Plan','Demand Deposit'].map(t=>'<option '+(x?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
     '<div class="fld"><label>Repayment</label><select class="finput" id="bw-rep">'+
-    ['Monthly','Quarterly','Bullet','Revolving','Semi-annual'].map(t=>'<option '+(x?.repayment===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
+    ['Monthly','Quarterly','Bullet','Revolving','Semi-annual','On Demand','Flexible'].map(t=>'<option '+(x?.repayment===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div></div>'+
     '<div class="fg"><div class="fld"><label>Principal (₦)</label><input class="finput" type="number" id="bw-prin" value="'+(x?.principal||'')+'"></div>'+
     '<div class="fld"><label>Outstanding (₦)</label><input class="finput" type="number" id="bw-out" value="'+(x?.outstanding||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="bw-rate" value="'+(x?.interestRate||'')+'"></div>'+
     '<div class="fld"><label>Tenor (months)</label><input class="finput" type="number" id="bw-tenor" value="'+(x?.tenorMonths||'')+'"></div></div>'+
-    '<div class="fld"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="'+(x?.maturityDate?.slice(0,10)||'')+'"></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing(\''+( x?x._id:'')+'\')"><span id="bw-sv">'+(x?'Save Changes':'Add Facility')+'</span></button>');
+    '<div class="fg"><div class="fld"><label>Value Date</label><input class="finput" type="date" id="bw-vdate" value="'+(x?.valueDate?.slice(0,10)||'')+'"></div>'+
+    '<div class="fld"><label>Accrued Interest to Date (₦)</label><input class="finput" type="number" id="bw-accrued" value="'+(x?.accruedInterest||0)+'" min="0" placeholder="e.g. system-computed accrual"></div></div>'+
+    '<div class="fld" id="bw-mat-wrap" style="'+(isOE?'display:none':'')+'"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="'+(x?.maturityDate?.slice(0,10)||'')+'"></div>'+
+    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="bw-nomat" '+(isOE?'checked':'')+' style="accent-color:var(--pu)" onchange="toggleBwMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended / No fixed maturity date</span></label><div style="font-size:11px;color:var(--tx3);margin-top:4px;font-family:var(--mo)">e.g. target plan, savings deposit, demand facility — will be placed in the 365-day+ maturity bucket on the profile table.</div></div>',
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing(\''+(x?x._id:'')+'\')"><span id="bw-sv">'+(x?'Save Changes':'Add Facility')+'</span></button>');
+}
+function toggleBwMat(cb){
+  const wrap=$('bw-mat-wrap');
+  if(wrap)wrap.style.display=cb.checked?'none':'';
 }
 async function saveBorrowing(id){
   const err=$('bw-err');err.classList.remove('on');
-  const p={borrowingId:$('bw-id').value.trim(),lender:$('bw-lender').value.trim(),type:$('bw-type').value,repayment:$('bw-rep').value,principal:+$('bw-prin').value,outstanding:+$('bw-out').value,interestRate:+$('bw-rate').value,tenorMonths:+$('bw-tenor').value,maturityDate:$('bw-mat').value};
+  const noMat=$('bw-nomat')?.checked||false;
+  const p={borrowingId:$('bw-id').value.trim(),lender:$('bw-lender').value.trim(),type:$('bw-type').value,repayment:$('bw-rep').value,principal:+$('bw-prin').value,outstanding:+$('bw-out').value,interestRate:+$('bw-rate').value,tenorMonths:+$('bw-tenor').value,noMaturity:noMat,valueDate:$('bw-vdate').value||null,accruedInterest:+($('bw-accrued')?.value||0),maturityDate:noMat?null:($('bw-mat')?.value||null)};
   if(!p.borrowingId||!p.lender){err.textContent='ID and lender required.';err.classList.add('on');return;}
   $('bw-sv').textContent='Saving…';
   try{
@@ -911,55 +981,101 @@ async function loadInvestments(){
 }
 function renderInvestments(){
   const inv=_invCache,total=inv.reduce((s,i)=>s+i.principal,0);
-  const interest=inv.reduce((a,i)=>a+i.principal*(i.interestRate/100)*(i.tenorDays/365),0);
+  // FIX [C]: Only compute fixed interest for instruments with a known maturity date
+  const fixedInv=inv.filter(i=>!i.noMaturity&&i.maturityDate);
+  const interest=fixedInv.reduce((a,i)=>a+i.principal*(i.interestRate/100)*(i.tenorDays/365),0);
+  const openEndedInv=inv.filter(i=>i.noMaturity);
   const avgY=total>0?inv.reduce((a,i)=>a+(i.principal/total)*i.interestRate,0):0;
   $('investments-kpis').innerHTML=[
     {l:'Portfolio Value',v:fmt(total),c:'tl',ac:true,sub:inv.length+' instruments'},
-    {l:'Projected Interest',v:fmt(interest),c:'am',sub:'Estimated full-tenor yield'},
+    {l:'Projected Interest (Fixed)',v:fmt(interest),c:'am',sub:fixedInv.length+' dated instruments'},
     {l:'Weighted Avg Yield',v:pct(avgY),c:'gr',sub:'WARA on investments'},
-    {l:'Short-tenor (<90d)',v:fmt(inv.filter(i=>i.tenorDays<=90).reduce((s,i)=>s+i.principal,0)),c:'bl',sub:'Liquid within 90 days'},
+    {l:'Open-ended Holdings',v:fmt(openEndedInv.reduce((s,i)=>s+i.principal,0)),c:'pu',sub:openEndedInv.length+' (MMF / on-demand)'},
   ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
   const typeMap={};inv.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
-  $('investments-charts').innerHTML='<div class="chart-box"><div class="card-label">Maturity Ladder — Principal + Interest</div><canvas id="ch-ivl" height="170"></canvas></div><div class="chart-box"><div class="card-label">Portfolio Mix</div><canvas id="ch-ivm" height="170"></canvas></div>';
+  $('investments-charts').innerHTML='<div class="chart-box"><div class="card-label">Maturity Ladder — Fixed Instruments</div><canvas id="ch-ivl" height="170"></canvas></div><div class="chart-box"><div class="card-label">Portfolio Mix</div><canvas id="ch-ivm" height="170"></canvas></div>';
   setTimeout(()=>{
-    mkChart('ch-ivl',{type:'bar',data:{labels:inv.map(i=>i.counterparty.split(' ')[0]),datasets:[{label:'Principal',data:inv.map(i=>i.principal),backgroundColor:'#00c9a7',stack:'a'},{label:'Interest',data:inv.map(i=>+(i.principal*(i.interestRate/100)*(i.tenorDays/365)).toFixed(2)),backgroundColor:'#f5a623',borderRadius:4,stack:'a'}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}},y:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-ivl',{type:'bar',data:{labels:fixedInv.map(i=>i.counterparty.split(' ')[0]),datasets:[{label:'Principal',data:fixedInv.map(i=>i.principal),backgroundColor:'#00c9a7',stack:'a'},{label:'Interest',data:fixedInv.map(i=>+(i.principal*(i.interestRate/100)*(i.tenorDays/365)).toFixed(2)),backgroundColor:'#f5a623',borderRadius:4,stack:'a'}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}},y:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-ivm',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  $('investments-table-wrap').innerHTML='<div class="card-label">Investment Schedule</div><div class="tw"><table>'+
-    '<thead><tr><th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal (₦)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest (₦)</th><th></th></tr></thead>'+
-    '<tbody>'+inv.map(i=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+i.investmentId+'</td><td><strong>'+i.counterparty+'</strong></td>'+
-      '<td style="color:var(--tx2)">'+i.type+'</td>'+
-      '<td class="nm">'+fmt(i.principal)+'</td>'+
-      '<td class="nm" style="font-family:var(--mo);color:#22c55e">'+i.interestRate+'%</td>'+
-      '<td class="nm" style="font-family:var(--mo)">'+i.tenorDays+'d</td>'+
-      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.dateInvested)+'</td>'+
-      '<td style="font-family:var(--mo);color:var(--tx2)">'+fD(i.maturityDate)+'</td>'+
-      '<td class="nm" style="color:#f5a623">'+fmt(i.principal*(i.interestRate/100)*(i.tenorDays/365))+'</td>'+
-      '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openInvestmentModal(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteInvestment(\''+i._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-      '</div></td></tr>').join('')+
-    '<tr class="trt"><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">'+fmt(total)+'</td><td class="nm">'+pct(avgY)+'</td><td colspan="5"></td></tr>'+
+
+  // ── FIX [E]: Bulk select/delete for Investments ──────────
+  const rows=inv.map(i=>{
+    const isOE=i.noMaturity||!i.maturityDate;
+    const projInt=isOE?null:i.principal*(i.interestRate/100)*(i.tenorDays/365);
+    return`<tr>
+      <td style="width:32px"><input type="checkbox" class="row-chk inv-chk" value="${i._id}"></td>
+      <td style="font-family:var(--mo);color:var(--t)">${i.investmentId}</td>
+      <td><strong>${i.counterparty}</strong>${isOE?'<div style="font-size:9px;font-family:var(--mo);color:var(--pu)">OPEN-ENDED</div>':''}</td>
+      <td style="color:var(--tx2)">${i.type}</td>
+      <td class="nm">${fmt(i.principal)}</td>
+      <td class="nm" style="font-family:var(--mo);color:#22c55e">${i.interestRate}%</td>
+      <td class="nm" style="font-family:var(--mo)">${isOE?'Open-ended':i.tenorDays+'d'}</td>
+      <td style="font-family:var(--mo);color:var(--tx2)">${fD(i.dateInvested)}</td>
+      <td style="font-family:var(--mo);color:${isOE?'var(--pu)':'var(--tx2)'}">${isOE?'On demand':fD(i.maturityDate)}</td>
+      <td class="nm" style="color:${isOE?'var(--tx3)':'#f5a623'}">${isOE?'Variable':fmt(projInt)}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="bsm" onclick="openInvestmentModal('${i._id}')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+        <button class="bsm bd" onclick="deleteInvestment('${i._id}')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+      </div></td></tr>`;
+  }).join('');
+
+  $('investments-table-wrap').innerHTML=
+    '<div class="bulk-bar" id="inv-bulk"><span id="inv-bulk-cnt">0 selected</span><button class="bd bsm" onclick="bulkDeleteInvestments()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Delete Selected</button><button class="bsm" onclick="clearBulkInv()">Clear</button></div>'+
+    '<div class="nt-info" style="margin-bottom:.75rem;font-size:11px">💡 <strong>Open-ended instruments</strong> (Money Market Funds, Notice Deposits) show variable interest — their rate fluctuates daily with T-Bill yields. Only fixed-term instruments show projected interest amounts.</div>'+
+    '<div class="card-label">Investment Schedule</div><div class="tw"><table>'+
+    '<thead><tr><th style="width:32px"><input type="checkbox" class="row-chk" id="inv-chk-all" onchange="toggleAllChk(this,\'.inv-chk\',\'inv-bulk\',\'inv-bulk-cnt\')"></th><th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal (₦)</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest (₦)</th><th></th></tr></thead>'+
+    '<tbody>'+rows+
+    '<tr class="trt"><td></td><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">'+fmt(total)+'</td><td class="nm">'+pct(avgY)+'</td><td colspan="5"></td></tr>'+
     '</tbody></table></div>';
+
+  document.querySelectorAll('.inv-chk').forEach(c=>c.addEventListener('change',()=>updateBulkBar('.inv-chk','inv-bulk','inv-bulk-cnt')));
 }
+
+// ── FIX [C+B]: Investment modal — open-ended toggle + correct maturityDate sent ──
 function openInvestmentModal(id){
   const i=id?_invCache.find(x=>x._id===id):null;
+  const isOE=i?.noMaturity||false;
   openModal(i?'Edit Investment':'Add Investment',
     '<div class="merr" id="iv-err"></div>'+
     '<div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="'+(i?.investmentId||'')+'"></div>'+
     '<div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="'+(i?.counterparty||'')+'"></div></div>'+
-    '<div class="fld"><label>Type</label><select class="finput" id="ii-type">'+
-    ['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
+    '<div class="fld"><label>Type</label><select class="finput" id="ii-type" onchange="onInvTypeChange(this)">'+
+    ['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper','Money Market Fund','Notice Deposit','Other Open-ended'].map(t=>'<option '+(i?.type===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
     '<div class="fg"><div class="fld"><label>Principal (₦) *</label><input class="finput" type="number" id="ii-prin" value="'+(i?.principal||'')+'"></div>'+
-    '<div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="ii-rate" value="'+(i?.interestRate||'')+'"></div></div>'+
+    '<div class="fld"><label>Current Rate (%)</label><input class="finput" type="number" id="ii-rate" value="'+(i?.interestRate||'')+'"></div></div>'+
     '<div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="'+(i?.dateInvested?.slice(0,10)||'')+'"></div>'+
-    '<div class="fld"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="'+(i?.tenorDays||'')+'"></div></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment(\''+( i?i._id:'')+'\')"><span id="ii-sv">'+(i?'Save Changes':'Add Investment')+'</span></button>');
+    '<div class="fld" id="ii-days-wrap"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="'+(i?.tenorDays||'')+'"></div></div>'+
+    '<div class="fld" id="ii-mat-wrap" style="'+(isOE?'display:none':'')+'"><label>Maturity Date (auto-computed from tenor, or override)</label><input class="finput" type="date" id="ii-matdate" value="'+(i?.maturityDate?.slice(0,10)||'')+'"><div style="font-size:11px;color:var(--tx3);margin-top:4px;font-family:var(--mo)">Leave blank to auto-compute from Date Invested + Tenor days.</div></div>'+
+    '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="ii-nomat" '+(isOE?'checked':'')+' style="accent-color:var(--pu)" onchange="toggleInvMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended — no fixed maturity (e.g. Money Market Fund)</span></label><div style="font-size:11px;color:var(--tx3);margin-top:4px;font-family:var(--mo)">Rate shown as indicative; interest projected as variable. Placed in 365-day+ bucket on maturity profile.</div></div>',
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment(\''+(i?i._id:'')+'\')"><span id="ii-sv">'+(i?'Save Changes':'Add Investment')+'</span></button>');
+
+  // Auto-select open-ended for MMF types
+  if(i?.type==='Money Market Fund'||i?.type==='Notice Deposit'||i?.type==='Other Open-ended'){
+    const cb=$('ii-nomat');if(cb&&!cb.checked){cb.checked=true;toggleInvMat(cb);}
+  }
 }
+function toggleInvMat(cb){
+  const wrap=$('ii-mat-wrap');
+  if(wrap)wrap.style.display=cb.checked?'none':'';
+}
+function onInvTypeChange(sel){
+  const openEndedTypes=['Money Market Fund','Notice Deposit','Other Open-ended'];
+  const cb=$('ii-nomat');if(!cb)return;
+  if(openEndedTypes.includes(sel.value)){cb.checked=true;toggleInvMat(cb);}
+}
+// ── FIX [B]: Always send computed/explicit maturityDate to backend ──
 async function saveInvestment(id){
   const err=$('iv-err');err.classList.remove('on');
-  const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-prin').value,interestRate:+$('ii-rate').value,dateInvested:$('ii-date').value,tenorDays:+$('ii-days').value};
+  const noMat=$('ii-nomat')?.checked||false;
+  const dInv=$('ii-date').value;
+  const days=+($('ii-days')?.value||0);
+  // Prefer explicitly entered maturity date; fall back to auto-computation from tenor
+  const explicitMat=$('ii-matdate')?.value;
+  const computedMat=(dInv&&days)?new Date(new Date(dInv).getTime()+days*86400000).toISOString().slice(0,10):null;
+  const maturityDate=noMat?null:(explicitMat||computedMat);
+
+  const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-prin').value,interestRate:+$('ii-rate').value,dateInvested:dInv,tenorDays:days,noMaturity:noMat,maturityDate};
   if(!p.investmentId||!p.counterparty||!p.principal){err.textContent='ID, counterparty and principal required.';err.classList.add('on');return;}
   $('ii-sv').textContent='Saving…';
   try{
@@ -993,21 +1109,31 @@ function renderCash(){
     mkChart('ch-cbn',{type:'bar',data:{labels:ngn.map(a=>a.bank.split(' ')[0]),datasets:[{data:ngn.map(a=>a.balance),backgroundColor:ngn.map((a,i)=>a.restricted?'#e05252':PAL[i%PAL.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-crs',{type:'doughnut',data:{labels:['Unrestricted','Restricted'],datasets:[{data:[unres||0.01,totalNGN-unres||0.01],backgroundColor:['#22c55e','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
   },60);
-  $('cash-table-wrap').innerHTML='<div class="card-label">Bank Account Balances</div><div class="tw"><table>'+
-    '<thead><tr><th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance</th><th>Status</th><th></th></tr></thead>'+
-    '<tbody>'+ca.map(a=>'<tr>'+
-      '<td style="font-family:var(--mo);color:var(--t)">'+a.accountId+'</td><td><strong>'+a.bank+'</strong></td>'+
-      '<td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">'+a.accountNo+'</td>'+
-      '<td style="color:var(--tx2)">'+a.type+'</td>'+
-      '<td style="font-family:var(--mo);color:'+(a.currency==='USD'?'#f5a623':'inherit')+'">'+a.currency+'</td>'+
-      '<td class="nm">'+fmt(a.balance)+'</td>'+
-      '<td><span class="pl '+(a.restricted?'pr':'pg')+'">'+(a.restricted?'🔒 Restricted':'✓ Available')+'</span></td>'+
-      '<td><div style="display:flex;gap:4px">'+
-        '<button class="bsm" onclick="openCashModal(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>'+
-        '<button class="bsm bd" onclick="deleteCash(\''+a._id+'\')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>'+
-      '</div></td></tr>').join('')+
-    '<tr class="trt"><td colspan="5" style="text-align:right">TOTAL NGN</td><td class="nm">'+fmt(totalNGN)+'</td><td colspan="2"></td></tr>'+
+
+  // ── FIX [E]: Bulk select/delete for Cash ──────────────────
+  const rows=ca.map(a=>`<tr>
+    <td style="width:32px"><input type="checkbox" class="row-chk cash-chk" value="${a._id}"></td>
+    <td style="font-family:var(--mo);color:var(--t)">${a.accountId}</td>
+    <td><strong>${a.bank}</strong></td>
+    <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${a.accountNo}</td>
+    <td style="color:var(--tx2)">${a.type}</td>
+    <td style="font-family:var(--mo);color:${a.currency==='USD'?'#f5a623':'inherit'}">${a.currency}</td>
+    <td class="nm">${fmt(a.balance)}</td>
+    <td><span class="pl ${a.restricted?'pr':'pg'}">${a.restricted?'🔒 Restricted':'✓ Available'}</span></td>
+    <td><div style="display:flex;gap:4px">
+      <button class="bsm" onclick="openCashModal('${a._id}')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+      <button class="bsm bd" onclick="deleteCash('${a._id}')" style="padding:4px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+    </div></td></tr>`).join('');
+
+  $('cash-table-wrap').innerHTML=
+    '<div class="bulk-bar" id="cash-bulk"><span id="cash-bulk-cnt">0 selected</span><button class="bd bsm" onclick="bulkDeleteCash()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Delete Selected</button><button class="bsm" onclick="clearBulkCash()">Clear</button></div>'+
+    '<div class="card-label">Bank Account Balances</div><div class="tw"><table>'+
+    '<thead><tr><th style="width:32px"><input type="checkbox" class="row-chk" id="cash-chk-all" onchange="toggleAllChk(this,\'.cash-chk\',\'cash-bulk\',\'cash-bulk-cnt\')"></th><th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance</th><th>Status</th><th></th></tr></thead>'+
+    '<tbody>'+rows+
+    '<tr class="trt"><td></td><td colspan="5" style="text-align:right">TOTAL NGN</td><td class="nm">'+fmt(totalNGN)+'</td><td colspan="2"></td></tr>'+
     '</tbody></table></div>';
+
+  document.querySelectorAll('.cash-chk').forEach(c=>c.addEventListener('change',()=>updateBulkBar('.cash-chk','cash-bulk','cash-bulk-cnt')));
 }
 function openCashModal(id){
   const a=id?_cashCache.find(x=>x._id===id):null;
@@ -1020,7 +1146,7 @@ function openCashModal(id){
     '<div class="fg"><div class="fld"><label>Currency</label><select class="finput" id="ca-ccy">'+['NGN','USD','EUR','GBP'].map(t=>'<option '+(a?.currency===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>'+
     '<div class="fld"><label>Balance</label><input class="finput" type="number" id="ca-bal" value="'+(a?.balance||0)+'" min="0" step="0.01"></div></div>'+
     '<div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ca-rest" '+(a?.restricted?'checked':'')+' style="accent-color:var(--t)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo);text-transform:none;letter-spacing:0">Mark as Restricted</span></label></div>',
-    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash(\''+( a?a._id:'')+'\')"><span id="ca-sv">'+(a?'Save Changes':'Add Account')+'</span></button>');
+    '<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash(\''+(a?a._id:'')+'\')"><span id="ca-sv">'+(a?'Save Changes':'Add Account')+'</span></button>');
 }
 async function saveCash(id){
   const err=$('ca-err');err.classList.remove('on');
@@ -1067,9 +1193,9 @@ async function loadLiquidity(){
     mkChart('ch-liq-forecast',{type:'line',data:{labels:liqF.map(d=>d.p),datasets:[{label:'Net Flow',data:liqF.map(d=>d.n),borderColor:'#00c9a7',backgroundColor:'rgba(0,201,167,.08)',fill:true,tension:.4,pointBackgroundColor:'#00c9a7',pointRadius:3},{label:'Cumulative',data:liqF.map(d=>d.c),borderColor:'#63b3ed',fill:false,tension:.3,borderDash:[5,5],pointBackgroundColor:'#63b3ed',pointRadius:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     mkChart('ch-lqg',{type:'bar',data:{labels:gapD.map(d=>d.p),datasets:[{label:'Inflows',data:gapD.map(d=>d.in),backgroundColor:'#22c55e',borderRadius:4},{label:'Outflows',data:gapD.map(d=>d.out),backgroundColor:'#e05252',borderRadius:4}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
     const unres=_cashCache.filter(a=>!a.restricted&&a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
-    const shortInv=_invCache.filter(i=>i.tenorDays<=90).reduce((s,i)=>s+i.principal,0);
+    const shortInv=_invCache.filter(i=>!i.noMaturity&&i.tenorDays<=90).reduce((s,i)=>s+i.principal,0);
     const el=$('liq-src-inner');
-    if(el)el.innerHTML=[[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Short Investments (<90d)','#63b3ed'],[fmt(totalDebtors*.12),'Debtor Collections (est.)','#22c55e']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('')+
+    if(el)el.innerHTML=[[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Short Investments (<90d, dated)','#63b3ed'],[fmt(totalDebtors*.12),'Debtor Collections (est.)','#22c55e']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('')+
       '<div style="font-size:11px;color:var(--tx3);font-family:var(--mo);padding:8px 0">Near-term Obligations:</div>'+
       [[fmt(totalDebt*.12),'Debt Maturities (<90d)','#e05252'],[fmt(totalDebt*.05),'Estimated Interest (90d)','#f5a623']].map(([v,l,c])=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:14px;border-radius:2px;background:'+c+'"></div><span style="font-size:12px;color:var(--tx2)">'+l+'</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:'+c+'">'+v+'</span></div>').join('');
   },80);
@@ -1077,8 +1203,8 @@ async function loadLiquidity(){
 
 // ── UPLOAD ────────────────────────────────────────────────────
 const UPLOAD_TPLS={
-  borrowings:{label:'Borrowings',filename:'FM_Borrowings_Template.xlsx',sheetName:'Borrowings',headers:['borrowing_id','lender_name','borrowing_type','principal','outstanding','interest_rate','tenor_months','repayment_schedule','maturity_date'],samples:[['BW-001','FCMB Ltd','Term Loan',500000000,420000000,19.5,24,'Monthly','2025-06-30']],notes:['borrowing_id: Unique (e.g. BW-001)','borrowing_type: Term Loan | Overdraft | On-lending | SME Fund | Wholesale | Intercompany','principal / outstanding: Naira numbers only','interest_rate: annual % as number','tenor_months: number','repayment_schedule: Monthly | Quarterly | Bullet | Revolving','maturity_date: YYYY-MM-DD']},
-  investments:{label:'Investments',filename:'FM_Investments_Template.xlsx',sheetName:'Investments',headers:['investment_id','company_name','investment_type','principal_amount','interest_rate','date_invested','number_of_days'],samples:[['INV-001','Access Bank Plc','Fixed Deposit',300000000,22,'2024-03-01',180]],notes:['investment_id: Unique (e.g. INV-001)','investment_type: Fixed Deposit | Treasury Bills | Government Security | Commercial Paper','principal_amount: Naira numbers only','interest_rate: annual % as number','date_invested: YYYY-MM-DD','number_of_days: tenor in calendar days']},
+  borrowings:{label:'Borrowings',filename:'FM_Borrowings_Template.xlsx',sheetName:'Borrowings',headers:['borrowing_id','lender_name','borrowing_type','principal','outstanding','interest_rate','tenor_months','repayment_schedule','maturity_date','no_maturity','value_date','accrued_interest'],samples:[['BW-001','FCMB Ltd','Term Loan',500000000,420000000,19.5,24,'Monthly','2025-06-30',false,'2023-07-01',0]],notes:['borrowing_id: Unique (e.g. BW-001)','borrowing_type: Term Loan | Overdraft | On-lending | SME Fund | Wholesale | Target/Savings Plan | Demand Deposit','principal / outstanding: Naira numbers only','interest_rate: annual % as number','tenor_months: number','repayment_schedule: Monthly | Quarterly | Bullet | Revolving | On Demand | Flexible','maturity_date: YYYY-MM-DD (leave blank if no_maturity=true)','no_maturity: true | false (for demand/savings products with no fixed end date)','value_date: YYYY-MM-DD (origination date)','accrued_interest: core-banking system accrual to date (Naira)']},
+  investments:{label:'Investments',filename:'FM_Investments_Template.xlsx',sheetName:'Investments',headers:['investment_id','company_name','investment_type','principal_amount','interest_rate','date_invested','number_of_days','no_maturity'],samples:[['INV-001','Access Bank Plc','Fixed Deposit',300000000,22,'2024-03-01',180,false],['INV-002','ARM Funds','Money Market Fund',50000000,19.5,'2024-05-01',0,true]],notes:['investment_id: Unique (e.g. INV-001)','investment_type: Fixed Deposit | Treasury Bills | Government Security | Commercial Paper | Money Market Fund | Notice Deposit','principal_amount: Naira numbers only','interest_rate: annual % as number','date_invested: YYYY-MM-DD','number_of_days: tenor in calendar days (0 for open-ended)','no_maturity: true for Money Market Funds and other open-ended instruments — interest shown as variable']},
   cash:{label:'Cash Balances',filename:'FM_Cash_Template.xlsx',sheetName:'Cash',headers:['account_id','bank','account_number','type','currency','balance','restricted'],samples:[['CA-001','Access Bank Plc','001-234567-001','Current','NGN',124500000,false]],notes:['account_id: Unique (e.g. CA-001)','type: Current | Savings | Dom (USD) | Dom (EUR)','currency: NGN | USD | EUR | GBP','balance: number only','restricted: true | false']},
 };
 function downloadSampleTemplate(module){
