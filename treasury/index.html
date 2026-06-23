@@ -662,6 +662,18 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
   // Spread: compute whenever WARA is known; WACF of 0 means full WARA is the surplus
   const spreadBkts=waraBkts.map((w,i)=>w!=null?w-(wacfBkts[i]??0):null);
 
+  // Diagnostics: per-bucket arrays and contribution to surplus (assets * spread)
+  try {
+    console.groupCollapsed('MaturityTable per-bucket diagnostics');
+    console.log('waraBkts:', waraBkts);
+    console.log('wacfBkts:', wacfBkts);
+    console.log('spreadBkts:', spreadBkts);
+    const contribs = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
+    console.log('contribs (assets * spread % => currency):', contribs);
+    console.log('contribs sum:', contribs.reduce((s,v)=>s+(v||0),0));
+    console.groupEnd();
+  } catch(e){ console.warn('per-bucket diagnostics failed',e); }
+
   const TH='<th>'+TENOR_LBLS.join('</th><th>')+'</th>';
   tbl.innerHTML=`<thead><tr><th>TENOR</th>${TH}<th>TOTAL</th></tr></thead><tbody>
     <tr class="sec-hdr"><td colspan="9">FINANCIAL ASSETS</td></tr>
