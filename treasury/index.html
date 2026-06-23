@@ -1726,11 +1726,6 @@ async function saveSettings(){
         rowH:[0.4, ...sumRows.slice(1).map(()=>0.38)],
         autoPage:false,
       });
-      // Header row style
-      s2.addShape(pptx.ShapeType.rect, { x:0.5, y:1.2, w:8.5, h:0.4, fill:{color:C.bg3} });
-      s2.addText('Metric', { x:0.55, y:1.2, w:3.0, h:0.4, fontSize:10, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'left', valign:'middle' });
-      s2.addText('Value', { x:3.8, y:1.2, w:1.8, h:0.4, fontSize:10, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'right', valign:'middle' });
-      s2.addText('Notes', { x:5.8, y:1.2, w:3.0, h:0.4, fontSize:10, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'left', valign:'middle' });
 
       s2.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.t} });
       s2.addText('CONFIDENTIAL — Board Use Only', { x:0.5, y:6.15, w:8.5, h:0.3, fontSize:9, fontFace:'IBM Plex Mono', color:C.tx3, italic:true });
@@ -1745,15 +1740,8 @@ async function saveSettings(){
       s3.addText('Cumulative tenor gap analysis (₦)', { x:0.5, y:0.75, w:8, h:0.3, fontSize:11, fontFace:'IBM Plex Mono', color:C.tx3 });
 
       const matHeaders = ['Category'].concat(TENOR_LBLS).concat(['TOTAL']);
-      const matRows = [
-        ['Risk Assets (Debtors)'],
-        ['Investments'],
-        ['Cash & Equivalents'],
-        ['TOTAL ASSETS'],
-        ['Borrowings'],
-        ['TOTAL LIABILITIES'],
-        ['LEADING / (GAP)'],
-      ];
+      const N6 = () => new Array(6).fill('—');
+      const PLACEHOLDER_ROW = (label, total) => [label].concat(N6()).concat([fmtNum(total)]);
       const aBkts = mm.aBkts || [];
       const lBkts = mm.lBkts || [];
       const gBkts = mm.gBkts || [];
@@ -1761,32 +1749,26 @@ async function saveSettings(){
       const rITotal = _invCache.reduce((s,i)=>s+i.principal,0);
       const rCTotal = _cashCache.filter(a=>a.currency==='NGN'&&!a.restricted).reduce((s,a)=>s+a.balance,0);
       const rBTotal = _borrowCache.reduce((s,b)=>s+b.outstanding,0);
-      const assetValues = [rDTotal, rITotal, rCTotal, mm.aTotal||0];
-      const liabValues = [rBTotal, mm.lTotal||0];
-      const gapValues = [mm.gTotal||0];
 
-      matRows[0].push(...aBkts.slice(0,3).map(()=>'—'), fmtNum(rDTotal));
-      matRows[1].push(...aBkts.slice(0,3).map(()=>'—'), fmtNum(rITotal));
-      matRows[2].push(...aBkts.slice(0,3).map(()=>'—'), fmtNum(rCTotal));
-      matRows[3].push(...aBkts.map(v=>fmtNum(v)), fmtNum(mm.aTotal));
-      matRows[4].push(...lBkts.slice(0,3).map(()=>'—'), fmtNum(rBTotal));
-      matRows[5].push(...lBkts.map(v=>fmtNum(v)), fmtNum(mm.lTotal));
-      matRows[6].push(...gBkts.map(v=>fmtNum(v)), fmtNum(mm.gTotal));
+      const matRows = [
+        PLACEHOLDER_ROW('Risk Assets (Debtors)', rDTotal),
+        PLACEHOLDER_ROW('Investments', rITotal),
+        PLACEHOLDER_ROW('Cash & Equivalents', rCTotal),
+        ['TOTAL ASSETS'].concat(aBkts.map(v=>fmtNum(v))).concat([fmtNum(mm.aTotal||0)]),
+        PLACEHOLDER_ROW('Borrowings', rBTotal),
+        ['TOTAL LIABILITIES'].concat(lBkts.map(v=>fmtNum(v))).concat([fmtNum(mm.lTotal||0)]),
+        ['LEADING / (GAP)'].concat(gBkts.map(v=>fmtNum(v))).concat([fmtNum(mm.gTotal||0)]),
+      ];
 
       s3.addTable([matHeaders, ...matRows], {
         x:0.4, y:1.15, w:9.0,
         fontSize:10, fontFace:'IBM Plex Mono',
         color:C.tx2, border:{type:'solid', pt:0.5, color:C.b},
         colW:[2.6, 1.35, 1.35, 1.35, 1.35, 1.35, 1.35, 1.35],
-        rowH:0.34,
+        rowH:[0.34, ...matRows.map(()=>0.34)],
         autoPage:false,
-      });
-      // Style header
-      s3.addShape(pptx.ShapeType.rect, { x:0.4, y:1.15, w:9.0, h:0.34, fill:{color:C.bg3} });
-      matHeaders.forEach((h, i) => {
-        const colX = [0.4, 3.0, 4.35, 5.7, 7.05, 8.4][i] || 0.4;
-        const colW = [2.6, 1.35, 1.35, 1.35, 1.35, 1.35][i] || 1.35;
-        s3.addText(h, { x:colX+0.05, y:1.15, w:colW-0.1, h:0.34, fontSize:9, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'center', valign:'middle' });
+        headerRow:true,
+        rowHeader:0,
       });
 
       s3.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.t} });
@@ -1819,11 +1801,6 @@ async function saveSettings(){
         colW:[2.8, 1.6, 1.4, 1.8, 2.0],
         rowH:[0.38, ...waccRows.slice(1).map(()=>0.36)],
         autoPage:false,
-      });
-      s4.addShape(pptx.ShapeType.rect, { x:0.5, y:1.15, w:8.5, h:0.38, fill:{color:C.bg3} });
-      ['Component','Rate (%)','Weight','Contribution','Notes'].forEach((h,i)=>{
-        const xs = [0.55, 3.45, 5.1, 6.55, 8.4];
-        s4.addText(h, { x:xs[i], y:1.15, w:1.6, h:0.38, fontSize:9, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'center', valign:'middle' });
       });
 
       s4.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.t} });
@@ -1908,11 +1885,6 @@ async function saveSettings(){
         colW:[3.0, 1.5, 2.5, 2.0],
         rowH:[0.38, ...appendixRows.slice(1).map(()=>0.36)],
         autoPage:false,
-      });
-      s7.addShape(pptx.ShapeType.rect, { x:0.5, y:1.15, w:8.5, h:0.38, fill:{color:C.bg3} });
-      ['Data Source','Count','Value (₦)','Share'].forEach((h,i)=>{
-        const xs = [0.55, 3.6, 5.15, 7.7];
-        s7.addText(h, { x:xs[i], y:1.15, w:1.5, h:0.38, fontSize:9, fontFace:'IBM Plex Mono', bold:true, color:C.t, align:'center', valign:'middle' });
       });
 
       s7.addShape(pptx.ShapeType.rect, { x:0, y:6.05, w:'100%', h:0.06, fill:{color:C.t} });
