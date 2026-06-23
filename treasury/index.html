@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.10.0/dist/pptxgen.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.10.0/pptxgen.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -175,20 +175,71 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 /* Checkbox styling */
 input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor:pointer}
 @media(max-width:640px){
-  #topbar{padding:0 1rem;height:52px}.logo{font-size:15px}.lm{width:26px;height:26px;font-size:8px}
-  .org-badge{display:none}.user-chip-top{display:none}.nav-btn-link{padding:5px 9px;font-size:10.5px}
-  .wacc-grid{grid-template-columns:1fr 1fr}
+  #topbar{padding:0 0.75rem;height:50px;gap:0.5rem}
+  .logo{font-size:14px;gap:6px}
+  .lm{width:26px;height:26px;font-size:8px;border-radius:6px}
+  .org-badge{display:none}
+  .user-chip-top{display:none}
+  .nav-btn-link{padding:5px 8px;font-size:10px;gap:4px}
+  .nav-btn-link svg{width:10px;height:10px}
+  #btn-export-report{padding:5px 10px;font-size:10px}
+  .wacc-grid{grid-template-columns:1fr 1fr;gap:6px}
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:6px}
+  .kpi{padding:10px 12px}
+  .kv{font-size:17px}
+  .vttl{font-size:17px}
+  .vhdr{flex-direction:column;align-items:flex-start;gap:0.5rem}
+  .vacts{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .vacts::-webkit-scrollbar{display:none}
+  .vacts button{flex-shrink:0}
+  #modal-bg{align-items:flex-end;padding:0}
+  .modal{border-radius:var(--rl) var(--rl) 0 0;max-height:92dvh;width:100%;max-width:100%}
+  .modal.wide{max-width:100%}
+  .mhdr{padding:0.85rem 1rem}
+  .mbody{padding:1rem}
+  .mfoot{padding:0.75rem 1rem;gap:0.4rem}
+  .mfoot button{flex:1;justify-content:center}
+  .fg{grid-template-columns:1fr}
+  .card{padding:1rem}
+  .chart-2{grid-template-columns:1fr;gap:0.75rem}
+  .chart-box{padding:0.85rem}
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{font-size:11px}
+  thead th{padding:6px 8px;font-size:9px}
+  tbody td{padding:6px 8px;font-size:10px}
+  .mat-tbl{font-size:10px;min-width:600px}
+  .mat-tbl th{padding:6px 8px;font-size:8px}
+  .mat-tbl td{padding:5px 8px;font-size:10px}
 }
 @media(max-width:768px){
   #layout{flex-direction:column;overflow:visible}
-  #sidebar{width:100%;height:auto;border-right:none;border-top:1px solid var(--b2);padding:0;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:row;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--n2);box-shadow:0 -4px 20px rgba(0,0,0,.4);-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  #sidebar::-webkit-scrollbar{display:none}.nav-section{display:none}
-  .nav-item{flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 10px;font-size:9px;border-left:none;border-top:3px solid transparent;white-space:nowrap;flex-shrink:0;min-width:56px}
+  #sidebar{width:100%;height:auto;border-right:none;border-top:1px solid var(--b2);padding:0;overflow-x:auto;overflow-y:hidden;display:flex;flex-direction:row;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--n2);box-shadow:0 -4px 20px rgba(0,0,0,.4);-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:env(safe-area-inset-bottom)}
+  #sidebar::-webkit-scrollbar{display:none}
+  .nav-section{display:none}
+  .nav-item{flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 10px;font-size:9px;border-left:none;border-top:3px solid transparent;white-space:nowrap;flex-shrink:0;min-width:52px}
   .nav-item.active{border-left:none;border-top-color:var(--t);background:var(--td)}
-  .nav-item svg{width:17px;height:17px;opacity:.8}.nav-item.active svg{opacity:1}
-  #content{padding:1rem;padding-bottom:80px;overflow-y:auto;flex:1}
-  .chart-2{grid-template-columns:1fr}.chart-box{padding:.85rem}
+  .nav-item svg{width:17px;height:17px;opacity:.8}
+  .nav-item.active svg{opacity:1}
+  #content{padding:1rem;padding-bottom:calc(80px + env(safe-area-inset-bottom));overflow-y:auto;flex:1}
+  .chart-2{grid-template-columns:1fr;gap:0.75rem}
+  .chart-box{padding:0.85rem}
   .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:7px}
+  .kpi{padding:12px 14px}
+  .kv{font-size:18px}
+  .vhdr{flex-direction:column;align-items:flex-start;gap:0.5rem}
+  .vacts{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .vacts::-webkit-scrollbar{display:none}
+  .vttl{font-size:18px}
+  #modal-bg{align-items:flex-end;padding:0}
+  .modal{border-radius:var(--rl) var(--rl) 0 0;max-height:92dvh;width:100%;max-width:100%}
+  .modal.wide{max-width:100%}
+  .mhdr{padding:1rem 1.25rem}
+  .mbody{padding:1.25rem}
+  .mfoot{padding:0.85rem 1.25rem;gap:0.4rem}
+  .mfoot button{flex:1;justify-content:center}
+  .fg{grid-template-columns:1fr}
+  .card{padding:1.1rem 1rem}
 }
 @media(max-width:640px){
   .kpi-grid{grid-template-columns:1fr 1fr;gap:7px}.kpi{padding:12px 14px}.kv{font-size:18px}
@@ -201,9 +252,58 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
   .mfoot{padding:.85rem 1.25rem;gap:.4rem}.mfoot button{flex:1;justify-content:center}
   .fg{grid-template-columns:1fr}.card{padding:1.1rem 1rem}
 }
-@media(max-width:768px){.finput,select,input,textarea{font-size:16px!important}}
-@media(max-width:480px){#toast{left:1rem;right:1rem;transform:none;max-width:none;white-space:normal}}
-@media(max-width:360px){.kpi-grid{grid-template-columns:1fr}.wacc-grid{grid-template-columns:1fr}}
+@media(max-width:768px){
+  .finput,select,input,textarea{font-size:16px!important}
+  .export-cards{grid-template-columns:1fr!important;gap:8px!important}
+  .export-card{padding:12px!important}
+  .export-card .ei{font-size:1.5rem!important;margin-bottom:4px!important}
+  .export-card .et{font-size:11px!important}
+  .export-card .es{font-size:9px!important}
+  .export-card button{margin-top:8px!important;padding:6px 12px!important;font-size:11px!important}
+}
+@media(max-width:480px){
+  #toast{left:1rem;right:1rem;transform:none;max-width:none;white-space:normal}
+  .kpi-grid{grid-template-columns:1fr;gap:6px}
+  .wacc-grid{grid-template-columns:1fr;gap:6px}
+  .kpi{padding:10px 12px}
+  .kv{font-size:16px}
+  .vttl{font-size:16px}
+  .vsub{font-size:11px}
+  .card{padding:0.85rem}
+  .card-label{font-size:9px;margin-bottom:10px}
+  .chart-box{padding:0.75rem}
+  .chart-box canvas{height:180px!important}
+  .mat-tbl{font-size:9px;min-width:500px}
+  .mat-tbl th{padding:5px 6px;font-size:7px;letter-spacing:0.04em}
+  .mat-tbl td{padding:4px 6px;font-size:9px}
+  table{font-size:10px}
+  thead th{padding:5px 6px;font-size:8px}
+  tbody td{padding:5px 6px;font-size:9px}
+  .bulk-bar{flex-wrap:wrap;font-size:11px;padding:6px 10px}
+  .bsm{padding:4px 10px;font-size:11px}
+  button{font-size:12px;padding:6px 14px}
+  .bp{padding:7px 14px;font-size:12px}
+}
+@media(max-width:360px){
+  .kpi-grid{grid-template-columns:1fr}
+  .wacc-grid{grid-template-columns:1fr}
+  .kpi{padding:8px 10px}
+  .kv{font-size:15px}
+  .vttl{font-size:15px}
+  .logo{font-size:13px}
+  .lm{width:24px;height:24px;font-size:7px}
+  .nav-item{padding:6px 8px;font-size:8px;min-width:44px}
+  .nav-item svg{width:15px;height:15px}
+  #content{padding:0.75rem;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+  .card{padding:0.75rem}
+  .fg{gap:0.6rem}
+  .fld{margin-bottom:0.6rem}
+  .finput{padding:7px 10px;font-size:12px}
+  .modal{border-radius:12px 12px 0 0}
+  .mhdr{padding:0.75rem 1rem}
+  .mbody{padding:1rem}
+  .mfoot{padding:0.65rem 1rem}
+}
 </style>
 </head>
 <body>
@@ -1534,7 +1634,8 @@ async function saveSettings(){
   async function exportPpt(){
     try{
       if(typeof PptxGenJS === 'undefined'){
-        throw new Error('PowerPoint library not loaded. Please refresh the page and try again.');
+        setStatus('PowerPoint export unavailable: PptxGenJS library could not be loaded. Please use Excel or PDF export instead, or check your internet connection.', false);
+        return;
       }
       setStatus('Preparing PowerPoint deck…',false);
       await new Promise(r=>setTimeout(r,80));
@@ -1818,7 +1919,7 @@ async function saveSettings(){
       s7.addText('CONFIDENTIAL — Board Use Only', { x:0.5, y:6.15, w:8.5, h:0.3, fontSize:9, fontFace:'IBM Plex Mono', color:C.tx3, italic:true });
 
       await pptx.writeFile({ fileName:'FM_Executive_Dashboard_Report.pptx' });
-      setStatus('PowerPoint deck downloaded — 7 slides including cover page.', true);
+      setStatus('PowerPoint deck downloaded successfully — 7 slides including cover page.', true);
     }catch(e){
       console.error('PPT export error:', e);
       setStatus('PowerPoint export failed: ' + (e.message || e), false);
