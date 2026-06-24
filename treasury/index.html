@@ -158,7 +158,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 .mat-tbl .gap-row td:first-child{font-family:var(--sa)}
 .mat-tbl .pct-row td{background:var(--sf);font-size:10px;color:var(--tx3);font-family:var(--mo)}
 .mat-tbl .pct-row td:first-child{font-family:var(--mo);font-size:10px}
-.mat-tbl .wacf-row td{background:rgba(245,166,35,.05);color:var(--am);font-family:var(--mo)}
+.mat-tbl .wacd-row td{background:rgba(245,166,35,.05);color:var(--am);font-family:var(--mo)}
 .mat-tbl .wara-row td{background:rgba(0,201,167,.05);color:var(--t);font-family:var(--mo)}
 .mat-tbl .spread-row td{font-weight:700;font-family:var(--mo)}
 /* Advisory */
@@ -650,27 +650,27 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     const da=rD.b[i],ia=rI.b[i],ca=rC.b[i],tot=da+ia+ca;
     return tot>0?(da*avgDR+ia*avgIY)/tot:null;
   });
-  // WACF per bucket
-  // WACF per bucket: return 0 (not null) when a bucket has assets but no liabilities.
+  // WACD per bucket
+  // WACD per bucket: return 0 (not null) when a bucket has assets but no liabilities.
   // A bucket with assets and zero liabilities has a funding cost of 0% in that tenor —
   // the spread is WARA − 0 = WARA, which correctly shows the full yield advantage.
   // null is only returned when the bucket has NO assets either (nothing to show).
-  const wacfBkts=waraBkts.map((w,i)=>{
+  const wacdBkts=waraBkts.map((w,i)=>{
     // If there are no assets in this bucket, nothing to display — return null
     if(w==null) return null;
     const items=_borrowCache.filter(b=>tenorIdx(daysBetween(today,b.noMaturity?null:b.maturityDate,'demand'))===i);
     const tot=items.reduce((s,b)=>s+b.outstanding,0);
-    // Assets exist: if no liabilities, WACF = 0% (funded at no cost in this tenor)
+    // Assets exist: if no liabilities, WACD = 0% (funded at no cost in this tenor)
     return tot>0?items.reduce((s,b)=>s+(b.outstanding/tot)*b.interestRate,0):0;
   });
-  // Spread: compute whenever WARA is known; WACF of 0 means full WARA is the surplus
-  const spreadBkts=waraBkts.map((w,i)=>w!=null?w-(wacfBkts[i]??0):null);
+  // Spread: compute whenever WARA is known; WACD of 0 means full WARA is the surplus
+  const spreadBkts=waraBkts.map((w,i)=>w!=null?w-(wacdBkts[i]??0):null);
 
   // Diagnostics: per-bucket arrays and contribution to surplus (assets * spread)
   try {
     console.groupCollapsed('MaturityTable per-bucket diagnostics');
     console.log('waraBkts:', waraBkts);
-    console.log('wacfBkts:', wacfBkts);
+    console.log('wacdBkts:', wacdBkts);
     console.log('spreadBkts:', spreadBkts);
     const contribs = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
     console.log('contribs (assets * spread % => currency):', contribs);
@@ -680,7 +680,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
 
   // Expose latest maturity arrays for export/reporting
   const contribs2 = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
-  window.latestMaturity = { aBkts, lBkts, waraBkts, wacfBkts, spreadBkts, contribs: contribs2, aTotal, lTotal, gBkts, gTotal };
+  window.latestMaturity = { aBkts, lBkts, waraBkts, wacdBkts, spreadBkts, contribs: contribs2, aTotal, lTotal, gBkts, gTotal };
 
   const TH='<th>'+TENOR_LBLS.join('</th><th>')+'</th>';
   tbl.innerHTML=`<thead><tr><th>TENOR</th>${TH}<th>TOTAL</th></tr></thead><tbody>
@@ -698,7 +698,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     <tr class="pct-row"><td>Financial Liabilities %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">WEIGHTED AVERAGE COST OF FUNDS</td></tr>
     <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWARA)}</td></tr>
-    <tr class="wacf-row"><td>WACF (Liabilities) %</td>${wacfBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
+    <tr class="wacd-row"><td>WACD (Liabilities) %</td>${wacdBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
     ${(() => {
       const contribs = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
       const totalContrib = contribs.reduce((s,v)=>s+(v||0),0);
@@ -1440,7 +1440,7 @@ async function saveSettings(){
       rows.push(['Total Financial Assets'].concat((mm.aBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.aTotal)]));
       rows.push(['Total Financial Liabilities'].concat((mm.lBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.lTotal)]));
       rows.push(['WARA (Assets) %'].concat((mm.waraBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat([mm.aTotal? ( (mm.contribs||[]).reduce((s,v)=>s+(v||0),0) / mm.aTotal *100).toFixed(2):'-']));
-      rows.push(['WACD (Liabilities) %'].concat((mm.wacfBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
+      rows.push(['WACD (Liabilities) %'].concat((mm.wacdBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
       rows.push(['Spread %'].concat((mm.spreadBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
       const ws2 = XLSX.utils.aoa_to_sheet([headers].concat(rows)); XLSX.utils.book_append_sheet(wb, ws2, 'Maturity Profile');
       XLSX.writeFile(wb,'FM_Dashboard_Report.xlsx');
