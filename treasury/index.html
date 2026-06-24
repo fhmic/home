@@ -236,7 +236,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
       <div class="nav-item active" data-view="dashboard">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
       </div>
-      <div class="nav-section">Financial Assets</div>
+      <div class="nav-section">Deployable Assets</div>
       <div class="nav-item" data-view="loans">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Risk Assets/Debtors
       </div>
@@ -689,7 +689,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
 
   const TH='<th>'+TENOR_LBLS.join('</th><th>')+'</th>';
   tbl.innerHTML=`<thead><tr><th>TENOR</th>${TH}<th>TOTAL</th></tr></thead><tbody>
-    <tr class="sec-hdr"><td colspan="9">FINANCIAL ASSETS</td></tr>
+    <tr class="sec-hdr"><td colspan="9">DEPLOYABLE ASSETS</td></tr>
     <tr class="sub"><td>Risk Assets (Debtors)</td>${rD.b.map(v=>'<td style="color:var(--t)">'+N(v)+'</td>').join('')}<td style="color:var(--t);font-weight:600">${N(rD.total)}</td></tr>
     <tr class="sub"><td>Investments</td>${rI.b.map(v=>'<td style="color:var(--bl)">'+N(v)+'</td>').join('')}<td style="color:var(--bl);font-weight:600">${N(rI.total)}</td></tr>
     <tr class="sub"><td>Cash &amp; Cash Equivalents</td>${rC.b.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(rC.total)}</td></tr>
@@ -699,8 +699,8 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     <tr class="tot-l"><td>TOTAL FUNDING BASE</td>${lBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(lTotal)}</td></tr>
     <tr class="gap-row"><td>LEADING / (GAP) — Cumulative</td>${gBkts.map(v=>`<td ${cc(v)}>${v!==0?'₦'+fN(v):'—'}</td>`).join('')}<td ${cc(gTotal)}>${'₦'+fN(gTotal)}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">PERIOD'S CONTRIBUTION AS A PERCENTAGE OF TOTAL</td></tr>
-    <tr class="pct-row"><td>Financial Assets %</td>${aBkts.map(v=>'<td>'+(aTotal>0?(v/aTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>100%</td></tr>
-    <tr class="pct-row"><td>FUNDING BASE %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
+    <tr class="pct-row"><td>Deployable Assets %</td>${aBkts.map(v=>'<td>'+(aTotal>0?(v/aTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>100%</td></tr>
+    <tr class="pct-row"><td>Funding Base %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">WEIGHTED AVERAGE COST OF FUNDS</td></tr>
     <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWARA)}</td></tr>
     <tr class="wacd-row"><td>WACD (Liabilities) %</td>${wacdBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
