@@ -566,6 +566,7 @@ async function loadDashboard(){
   const spread=wara-wacd;
   const lever=totalEquity>0?(totalDebt/totalEquity):0;
   const eva_signal=wara-wacc;
+  const debtToDeployable = totalAssets>0 ? totalDebt/totalAssets : 0;
 
   $('dash-ts').textContent='As at '+new Date().toLocaleString('en-GB');
   $('dash-kpis').innerHTML=[
@@ -583,6 +584,7 @@ async function loadDashboard(){
     {l:'Net Interest Spread (NIS)',v:(spread>=0?'+':'')+pct(spread),c:spread>=0?'gr':'rd',sub:'WARA − WACD'},
     {l:'Economic Value Added (EVA)',v:(eva_signal>=0?'+':'')+pct(eva_signal),c:eva_signal>=0?'gr':'rd',sub:'WARA − WACC'},
     {l:'Debt / Equity Ratio',v:lever.toFixed(2)+'×',c:lever>3?'rd':lever>1.5?'am':'gr',sub:'Financial leverage'},
+    {l:'Debt / Deployable Assets',v:pct(debtToDeployable),c:debtToDeployable>0.8?'rd':debtToDeployable>0.6?'am':'gr',sub:'Debt ÷ Deployable Assets'},
     {l:'Debtor Yield',v:pct(avgDR),c:'am',sub:'Avg implied rate on debtors'},
     {l:'Investment Yield',v:pct(avgIY),c:'gr',sub:'Weighted avg investment return'},
     {l:'Cost of Equity (Ke)',v:pct(eq.costOfEquity),c:'pu',sub:'Required shareholder return'},
