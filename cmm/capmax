@@ -1,0 +1,361 @@
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>CapitalMax — Nigerian Investor Portfolio</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>CM</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --n:#050d1a;--n2:#0a1628;--n3:#0f1f3d;--n4:#162747;
+  --t:#00c9a7;--t2:#00a98e;--td:rgba(0,201,167,.13);--tg:rgba(0,201,167,.06);
+  --am:#f5a623;--rd:#e05252;--gr:#22c55e;--bl:#63b3ed;--pu:#a78bfa;
+  --tx:#e8edf5;--tx2:#8fa3bf;--tx3:#4a6080;
+  --b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
+  --sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.08);
+  --r:10px;--rl:16px;
+  --mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif;
+  --sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+}
+html{font-size:15px}
+body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6}
+#app{display:flex;min-height:100vh;flex-direction:column}
+#topbar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.75rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
+.logo{font-family:var(--di);font-weight:700;font-size:17px;letter-spacing:-.03em;color:var(--tx);display:flex;align-items:center;gap:9px}
+.lm{width:30px;height:30px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--n);font-weight:700}
+.la{color:var(--t)}
+.badge-flag{display:inline-flex;align-items:center;gap:5px;background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2);border-radius:20px;padding:2px 10px;font-size:10px;font-family:var(--mo);color:var(--t);margin-left:8px}
+.tbr{display:flex;align-items:center;gap:8px}
+.nav-btn-link{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--b2);border-radius:10px;padding:6px 12px;font-size:11.5px;font-family:var(--mo);color:var(--tx3);cursor:pointer;transition:all .2s;text-decoration:none}
+.nav-btn-link:hover{background:var(--sf2);color:var(--tx)}
+.user-chip-top{display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--b2);border-radius:20px;padding:4px 11px;font-size:11.5px;color:var(--tx2);font-family:var(--mo)}
+#layout{display:flex;flex:1;overflow:hidden}
+#sidebar{width:220px;flex-shrink:0;background:var(--n2);border-right:1px solid var(--b);overflow-y:auto;padding:1rem 0}
+.nav-section{font-size:10px;font-family:var(--mo);color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;padding:8px 18px 4px;margin-top:8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13px;color:var(--tx2);cursor:pointer;transition:all .2s;border-left:3px solid transparent;user-select:none}
+.nav-item:hover{background:var(--sf2);color:var(--tx)}
+.nav-item.active{background:var(--td);color:var(--t);border-left-color:var(--t)}
+.nav-item.active svg{opacity:1}
+.nav-item svg{flex-shrink:0;opacity:.7}
+#content{flex:1;overflow-y:auto;padding:1.75rem}
+.view{display:none}.view.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.view.on{animation:fu .3s ease both}
+.vhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem}
+.vttl{font-family:var(--di);font-size:22px;font-weight:700;letter-spacing:-.03em}
+.vsub{font-size:12px;color:var(--tx3);font-family:var(--mo);margin-top:3px}
+.vacts{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.card{background:var(--n2);border:1px solid var(--b);border-radius:var(--rl);padding:1.5rem;box-shadow:var(--sh)}
+.card-label{font-size:10px;font-family:var(--mo);color:var(--tx2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:1.5rem}
+.kpi{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:var(--r) 0 0 var(--r)}
+.kpi.tl::before,.kpi.ac::before{background:var(--t)}.kpi.rd::before{background:var(--rd)}.kpi.am::before{background:var(--am)}.kpi.gr::before{background:var(--gr)}.kpi.bl::before{background:var(--bl)}.kpi.pu::before{background:var(--pu)}
+.kpi.ac{border-color:rgba(0,201,167,.3);background:var(--td)}
+.kl{font-size:10px;font-family:var(--mo);color:var(--tx3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.kv{font-family:var(--di);font-size:22px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.ks{font-size:10px;font-family:var(--mo);color:var(--tx2);margin-top:4px}
+.kv.tl{color:var(--t)}.kv.rd{color:var(--rd)}.kv.am{color:var(--am)}.kv.gr{color:var(--gr)}.kv.bl{color:var(--bl)}.kv.pu{color:var(--pu)}
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--b)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--n3);color:var(--tx3);font-family:var(--mo);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;text-align:left;border-bottom:1px solid var(--b);white-space:nowrap}
+tbody td{padding:8px 12px;border-bottom:1px solid var(--b);vertical-align:middle;color:var(--tx)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--sf)}
+.trt td{background:var(--n3);font-weight:700;font-family:var(--mo);font-size:11px;border-top:1px solid var(--b2)!important}
+.pl{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:600;white-space:nowrap}
+.ps1{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
+.ps2{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2)}
+.ps3{background:rgba(224,82,82,.1);color:var(--rd);border:1px solid rgba(224,82,82,.2)}
+.pprimary{background:rgba(0,201,167,.1);color:var(--t);border:1px solid rgba(0,201,167,.2)}
+button{font-family:var(--sa);font-size:13px;font-weight:500;border-radius:var(--r);padding:8px 18px;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--tx2);transition:all .2s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+button:hover:not(:disabled){background:var(--sf2);color:var(--tx)}
+button:disabled{opacity:.35;cursor:not-allowed}
+.bp{background:var(--t);border-color:var(--t);color:var(--n);font-weight:600}
+.bp:hover:not(:disabled){background:var(--t2);color:var(--n)}
+.bp2{background:var(--bl);border-color:var(--bl);color:var(--n);font-weight:600}
+.bp2:hover:not(:disabled){background:#4a9bd6;color:var(--n)}
+.bd{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
+.bd:hover:not(:disabled){background:rgba(224,82,82,.2)}
+.bsm{padding:5px 12px;font-size:12px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.fld{margin-bottom:1rem}
+.fld label{display:block;font-size:11px;font-family:var(--mo);color:var(--tx2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
+.finput{width:100%;padding:9px 13px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;transition:border-color .2s;outline:none}
+.finput:focus{border-color:var(--t);box-shadow:0 0 0 2px rgba(0,201,167,.1)}
+.finput::placeholder{color:var(--tx3)}
+select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238fa3bf' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px;cursor:pointer}
+#modal-bg{display:none;position:fixed;inset:0;background:rgba(5,12,24,.75);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
+#modal-bg.on{display:flex}
+.modal{background:var(--n2);border:1px solid var(--b2);border-radius:var(--rl);width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.modal.wide{max-width:820px}
+.mhdr{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--b);flex-shrink:0}
+.mttl{font-family:var(--di);font-size:16px;font-weight:600}
+.mclose{width:30px;height:30px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0}
+.mclose:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
+.mbody{padding:1.5rem;overflow-y:auto;flex:1}
+.mfoot{padding:1rem 1.5rem;border-top:1px solid var(--b);display:flex;justify-content:flex-end;gap:.5rem;flex-shrink:0}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);padding:10px 18px;font-size:12px;font-family:var(--mo);color:var(--tx);z-index:500;box-shadow:var(--sh);display:none;align-items:center;gap:8px;white-space:nowrap;max-width:90vw}
+#toast.on{display:flex}
+#toast.ok{border-color:rgba(34,197,94,.4);color:var(--gr)}
+#toast.err{border-color:rgba(224,82,82,.4);color:var(--rd)}
+.sep{height:1px;background:var(--b);margin:1rem 0}
+.section-ttl{font-family:var(--di);font-size:15px;font-weight:600;margin-bottom:1rem}
+.ep{text-align:center;padding:3rem 1rem;color:var(--tx3);font-family:var(--mo);font-size:12px}
+.ei{font-size:2rem;margin-bottom:10px}
+.nt-info{background:rgba(0,201,167,.07);border:1px solid rgba(0,201,167,.2);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--tx2);margin-bottom:1rem;line-height:1.5}
+.chart-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+.chart-box{background:var(--n2);border:1px solid var(--b);border-radius:var(--r);padding:1.25rem}
+.alloc-bar-wrap{margin-bottom:1.25rem}
+.alloc-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.alloc-label span:first-child{color:var(--tx2)}.alloc-label span:last-child{font-family:var(--mo);font-weight:600}
+.alloc-track{height:22px;background:var(--n3);border-radius:20px;overflow:hidden;display:flex;border:1px solid var(--b)}
+.alloc-seg{height:100%;transition:width .5s ease;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:var(--mo);color:var(--n);font-weight:600;min-width:0}
+.alloc-seg.fx{background:var(--bl)}.alloc-seg.inc{background:var(--t)}.alloc-seg.gro{background:var(--am)}
+.strat-metric-item{background:var(--n);border-radius:6px;padding:6px 12px;text-align:center;min-width:80px}
+.strat-metric-item .val{font-family:var(--mo);font-size:14px;font-weight:600}
+.strat-metric-item .lbl{font-size:9px;color:var(--tx3);font-family:var(--mo);text-transform:uppercase;letter-spacing:.04em}
+.macro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:1.25rem}
+.macro-card{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px 16px}
+.macro-card .mc-label{font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.macro-card .mc-val{font-family:var(--di);font-size:20px;font-weight:700;letter-spacing:-.02em}
+.macro-card .mc-chg{font-size:10px;font-family:var(--mo);margin-top:2px}
+.macro-card .mc-sub{font-size:9px;color:var(--tx3);font-family:var(--mo);margin-top:1px}
+.macro-card.tl .mc-val{color:var(--t)}.macro-card.rd .mc-val{color:var(--rd)}.macro-card.gr .mc-val{color:var(--gr)}.macro-card.am .mc-val{color:var(--am)}.macro-card.bl .mc-val{color:var(--bl)}.macro-card.pu .mc-val{color:var(--pu)}
+.radio-group{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem}
+.radio-card{flex:1;min-width:140px;background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;transition:all .2s}
+.radio-card:hover{border-color:var(--b2)}
+.radio-card.selected{background:var(--td);border-color:var(--t)}
+.radio-card .rc-icon{font-size:1.5rem;margin-bottom:6px}
+.radio-card .rc-title{font-size:12px;font-weight:600;color:var(--tx)}
+.radio-card .rc-desc{font-size:10px;color:var(--tx3);margin-top:4px}
+.step-indicator{display:flex;justify-content:center;gap:8px;margin-bottom:2rem}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--n4);transition:all .3s}
+.step-dot.active{background:var(--t);width:28px;border-radius:5px}
+.step-dot.done{background:var(--t2)}
+@media(max-width:768px){
+  #layout{flex-direction:column;overflow:visible}
+  #sidebar{width:100%;border-right:none;border-top:1px solid var(--b2);padding:0;overflow-x:auto;display:flex;flex-direction:row;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--n2)}
+  #sidebar::-webkit-scrollbar{display:none}
+  .nav-section{display:none}
+  .nav-item{flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 10px;font-size:9px;border-left:none;border-top:3px solid transparent;white-space:nowrap;flex-shrink:0;min-width:52px}
+  .nav-item.active{border-left:none;border-top-color:var(--t);background:var(--td)}
+  .nav-item svg{width:17px;height:17px}
+  #content{padding:1rem;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+  .fg,.fg3{grid-template-columns:1fr}
+  .chart-2,.kpi-grid{grid-template-columns:1fr}
+  .macro-grid{grid-template-columns:1fr 1fr}
+  .modal{border-radius:var(--rl) var(--rl) 0 0;max-height:92dvh}
+  .mhdr{padding:1rem 1.25rem}.mbody{padding:1.25rem}.mfoot{padding:0.85rem 1.25rem}
+  .mfoot button{flex:1;justify-content:center}
+  .card{padding:1.1rem 1rem}
+}
+@media(max-width:480px){
+  .kpi-grid,.macro-grid{grid-template-columns:1fr}
+  .kpi{padding:10px 12px}.kv{font-size:16px}
+  .card{padding:0.85rem}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div class="logo"><div class="lm">CM</div>Capital<span class="la">Max</span><span class="badge-flag">🇳🇬 NG</span></div>
+    <div class="tbr">
+      <div class="user-chip-top"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span id="investor-name">Investor</span></div>
+      <button class="bp" id="btn-onboard" onclick="startOnboarding()" style="display:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Setup Profile</button>
+    </div>
+  </div>
+  <div id="layout">
+    <nav id="sidebar">
+      <div class="nav-item active" data-view="dashboard"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</div>
+      <div class="nav-section">Portfolio</div>
+      <div class="nav-item" data-view="strategy"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/><line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22 8.5 12 15.5 2 8.5"/></svg>Strategy</div>
+      <div class="nav-item" data-view="investments"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Investments</div>
+      <div class="nav-item" data-view="rebalance"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9h-2a1 1 0 0 1-1-1v-1"/><circle cx="12" cy="12" r="3"/></svg>Rebalancing</div>
+      <div class="nav-section">Market</div>
+      <div class="nav-item" data-view="macro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22h20"/><path d="M6 12v6"/><path d="M12 8v10"/><path d="M18 4v16"/></svg>Macro Context</div>
+    </nav>
+    <main id="content">
+      <div class="view" id="view-onboard" style="padding-top:0"><div id="onboard-step"></div></div>
+      <div class="view on" id="view-dashboard">
+        <div class="vhdr"><div><div class="vttl">Investor Dashboard</div><div class="vsub" id="dash-ts">Set up your profile to begin</div></div><div class="vacts"><button onclick="loadDashboard()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button></div></div>
+        <div id="dash-onboard-prompt" class="nt-info" style="display:none;margin-bottom:1rem">Welcome! <a href="#" onclick="startOnboarding();return false" style="color:var(--t)"><strong>Complete your profile setup</strong></a> to get a personalised portfolio strategy.</div>
+        <div class="kpi-grid" id="dash-kpis"></div>
+        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">Portfolio Allocation Strategy</div><div id="dash-allocation"></div></div>
+        <div class="chart-2" id="dash-charts"></div>
+        <div class="card" style="margin-bottom:1.25rem"><div class="card-label">Nigeria Macro Context</div><div id="dash-macro-rationale"></div></div>
+        <div class="card"><div class="card-label" style="margin-bottom:1rem">Portfolio Advisory & Recommendations</div><div id="advisory-content"><div class="ep"><div class="ei">📊</div>Set up your profile to receive recommendations.</div></div></div>
+      </div>
+      <div class="view" id="view-strategy"><div class="vhdr"><div><div class="vttl">Portfolio Strategy</div><div class="vsub" id="strat-ts">Recommended allocation based on Nigeria macro factors</div></div><div class="vacts"><button class="bp" onclick="viewStrategyDetail()">View Detail</button><button onclick="applyStrategy()">Apply to Portfolio</button></div></div><div id="strat-content"><div class="ep"><div class="ei">🧭</div>Complete your profile to see your strategy.</div></div></div>
+      <div class="view" id="view-investments">
+        <div class="vhdr"><div><div class="vttl">My Investments</div><div class="vsub">Record your actual investments across asset classes</div></div><div class="vacts"><button class="bp" onclick="openAddInvestmentModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Investment</button><button onclick="openBulkInvestModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Bulk Apply</button></div></div>
+        <div id="inv-onboard-prompt" class="nt-info" style="display:none;margin-bottom:1rem">Set up your profile first via <a href="#" onclick="startOnboarding();return false" style="color:var(--t)"><strong>Setup Profile</strong></a>.</div>
+        <div class="kpi-grid" id="inv-kpis"></div><div class="chart-2" id="inv-charts"></div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+            <div style="display:flex;gap:6px" id="inv-filters"><button class="bsm" onclick="setInvFilter(this,'all')" style="background:var(--t);color:var(--n);border-color:var(--t)">All</button><button class="bsm" onclick="setInvFilter(this,'fx')">FX-Hedged</button><button class="bsm" onclick="setInvFilter(this,'income')">Income</button><button class="bsm" onclick="setInvFilter(this,'growth')">Growth</button></div>
+            <input class="finput" id="inv-search" placeholder="Search…" style="width:200px;padding:6px 12px" oninput="renderInvestmentTable()">
+          </div>
+          <div id="inv-table-wrap"></div>
+        </div>
+      </div>
+      <div class="view" id="view-rebalance"><div class="vhdr"><div><div class="vttl">Portfolio Rebalancing</div><div class="vsub">Track your strategy vs actual allocation and rebalance for max profit</div></div><div class="vacts"><button class="bp" onclick="runRebalancing()">Run Analysis</button></div></div><div id="rebalance-content"><div class="ep"><div class="ei">🔄</div>Add investments and set a strategy to get recommendations.</div></div></div>
+      <div class="view" id="view-macro"><div class="vhdr"><div><div class="vttl">Nigeria Macroeconomic Context</div><div class="vsub" id="macro-ts">Key indicators driving portfolio strategy</div></div><div class="vacts"><button onclick="loadMacro()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button></div></div><div class="macro-grid" id="macro-indicators"></div><div class="chart-2" id="macro-charts"></div><div class="card" style="margin-bottom:1.25rem"><div class="section-ttl">Nigeria Market Analysis — Q2 2026</div><div id="macro-analysis"></div></div><div class="card"><div class="section-ttl">Asset Class Recommendations</div><div id="macro-recommendations"></div></div></div>
+    </main>
+  </div>
+</div>
+<div id="modal-bg"><div class="modal" id="modal-box"><div class="mhdr"><div class="mttl" id="modal-title">—</div><button class="mclose" onclick="closeModal()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="mbody" id="modal-body"></div><div class="mfoot" id="modal-foot"></div></div></div>
+<div id="toast"></div>
+<script>
+'use strict';
+// ── AUTH & CLOUD SYNC ─────────────────────────────────────────
+// Uses the same FM Portal authentication. Log in at ../portal/ to get a token.
+// All investor data syncs to the cloud so it's available from any device.
+const STATE_KEY='cm_state';const API='https://eis-recbackend.onrender.com/api';
+let _state=null,_charts={},_invFilter='all',_user=null;
+const D={profile:null,strategy:null,investments:[],onboardComplete:false};
+
+function loadState(){try{const r=localStorage.getItem(STATE_KEY);if(r){_state=JSON.parse(r);for(const k of Object.keys(D)){if(!(k in _state))_state[k]=D[k];}return;}}catch(e){}_state=JSON.parse(JSON.stringify(D));}
+function saveState(){try{localStorage.setItem(STATE_KEY,JSON.stringify(_state));}catch(e){}syncToCloud();}
+loadState();
+
+async function api(ep,opts={}){const tok=sessionStorage.getItem('FM_token');const h={'Authorization':tok?'Bearer '+tok:''};h['Content-Type']='application/json';const res=await fetch(API+ep,{...opts,headers:h});const d=await res.json().catch(()=>({success:false}));if(!res.ok)throw new Error(d.message||'Error');return d;}
+
+let _syncing=false,_syncQ=false;
+async function syncToCloud(force){
+  const tok=sessionStorage.getItem('FM_token');if(!tok)return;
+  if(_syncing){if(force)_syncQ=true;return;}_syncing=true;
+  try{await api('/settings/capitalmax',{method:'POST',body:JSON.stringify({profile:_state.profile,strategy:_state.strategy,investments:_state.investments,onboardComplete:_state.onboardComplete})});}catch(e){console.warn('Sync failed:',e.message);}
+  finally{_syncing=false;if(_syncQ&&force){_syncQ=false;syncToCloud(true);}}
+}
+async function pullFromCloud(){
+  const tok=sessionStorage.getItem('FM_token');if(!tok)return false;
+  try{const d=await api('/settings/capitalmax');if(d&&d.profile){_state.profile=d.profile;_state.strategy=d.strategy||null;_state.investments=d.investments||[];_state.onboardComplete=!!d.onboardComplete;saveState();return true;}}catch(e){}
+  return false;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+const fN=n=>n==null||isNaN(n)?'0.00':Number(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt=n=>{const v=Number(n)||0;if(Math.abs(v)>=1e9)return '₦'+(v/1e9).toFixed(2)+'B';if(Math.abs(v)>=1e6)return '₦'+(v/1e6).toFixed(2)+'M';if(Math.abs(v)>=1e3)return '₦'+(v/1e3).toFixed(1)+'K';return '₦'+v.toFixed(2);};
+const pct=n=>(Number(n)||0).toFixed(2)+'%';
+const fD=d=>!d?'—':new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+const ts=()=>new Date().toISOString().slice(0,10);
+function toast(msg,t='ok'){const el=$('toast');el.textContent=(t==='ok'?'✓  ':'⚠  ')+msg;el.className='on '+t;setTimeout(()=>el.className='',4500);}
+function openModal(title,body,foot,wide){$('modal-title').textContent=title;$('modal-body').innerHTML=body;$('modal-foot').innerHTML=foot||'<button onclick="closeModal()">Close</button>';$('modal-box').className='modal'+(wide?' wide':'');$('modal-bg').classList.add('on');}
+function closeModal(){$('modal-bg').classList.remove('on');}
+function empty(m){return '<div class="ep"><div class="ei">📦</div>'+m+'</div>';}
+function mkChart(id,cfg){if(_charts[id])_charts[id].destroy();const c=$(id);if(!c)return;_charts[id]=new Chart(c,cfg);}
+Chart.defaults.color='#8fa3bf';Chart.defaults.borderColor='rgba(255,255,255,.07)';Chart.defaults.font.family="'IBM Plex Mono',monospace";Chart.defaults.font.size=10;
+function rid(){return 'cm_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);}
+
+// ── MACRO DATA ────────────────────────────────────────────────
+const MACRO={
+  inflation:{val:26.3,trend:'moderating',desc:'Year-on-year headline inflation. CBN tightening has brought inflation down from 34% peak.'},
+  mpr:{val:26.75,trend:'hold',desc:'Monetary Policy Rate. CBN held at 26.75% after aggressive hikes. Real rates are now positive.'},
+  nairaUSD:{val:1550,trend:'stable',desc:'Naira/USD parallel market rate. Improved FX liquidity from CBN backlog clearance.'},
+  gdpGrowth:{val:3.2,trend:'moderate',desc:'Real GDP growth. Services sector leads. Non-oil sector resilient.'},
+  reserves:{val:38.5,trend:'stable',desc:'Gross external reserves (USD Bn). Supported by Eurobond issuance and improved oil revenues.'},
+  tb91:{val:22.5,trend:'stable',desc:'91-day T-Bill rate. High nominal returns. Attractive for short-term Naira parking.'},
+  tb364:{val:24.8,trend:'stable',desc:'364-day T-Bill rate. Benchmark risk-free rate anchor for Naira assets.'},
+  fgnBond10y:{val:19.5,trend:'declining',desc:'10-year FGN Bond yield. Declining as inflation moderates. Lock in high yields now.'},
+  ngxASI:{val:102500,trend:'bullish',desc:'NGX All-Share Index. Bull run driven by banking, consumer goods, and telecoms.'},
+  eurobondNG:{val:9.8,trend:'stable',desc:'Nigeria Eurobond yield (10y USD). Hard currency diversification.'},
+  oil:{val:78,trend:'volatile',desc:'Brent crude oil price (USD/bbl). Nigeria\'s fiscal anchor.'},
+  unemployment:{val:5.0,trend:'improving',desc:'Unemployment rate. Improving but underemployment remains high (~21%).'}
+};
+
+// ── STRATEGY ENGINE ───────────────────────────────────────────
+function genStrategy(p){
+  if(!p)return null;const{h,rt,in2,fxEx}=p;let fx=20,inc=40,gro=40;
+  if(rt==='low'){fx+=15;inc+=10;gro-=25;}else if(rt==='high'){fx-=5;inc-=15;gro+=20;}
+  if(h==='short'){fx+=10;inc+=15;gro-=25;}else if(h==='long'){fx-=5;inc-=10;gro+=15;}
+  if(in2==='high'){inc+=20;fx-=5;gro-=15;}else if(in2==='low'){inc-=10;fx+=5;gro+=5;}
+  if(fxEx==='high'){fx+=10;inc-=5;gro-=5;}else if(fxEx==='low'){fx-=10;inc+=5;gro+=5;}
+  fx=Math.max(5,Math.min(70,fx));inc=Math.max(10,Math.min(80,inc));gro=Math.max(10,Math.min(80,gro));
+  const t=fx+inc+gro;fx=Math.round(fx/t*100);inc=Math.round(inc/t*100);gro=100-fx-inc;
+  const er=(fx/100*0.15)+(inc/100*0.17)+(gro/100*0.20);
+  const dom=fx>=inc&&fx>=gro?'FX-Hedged':inc>=fx&&inc>=gro?'Income-Focused':'Growth-Oriented';
+  const adj=rt==='low'?'Conservative':rt==='high'?'Aggressive':'Balanced';
+  return{allocation:{fx,inc,gro},expectedReturn:er,riskLevel:rt,summary:adj+' '+dom+' — '+fx+'% FX / '+inc+'% Inc / '+gro+'% Gro'};
+}
+
+// ── ONBOARDING ────────────────────────────────────────────────
+let _os=0;
+const OBS=[{title:'Welcome to CapitalMax',desc:'Set up your investor profile.',fields:()=>'<div class="fld"><label>Your Name</label><input class="finput" id="ob-name" placeholder="e.g. Chidi Okonkwo" value="'+(_state.profile?.name||'')+'"></div><div class="fld"><label>Capital (₦)</label><input class="finput" id="ob-capital" type="number" placeholder="20000000" value="'+(_state.profile?.capital||'20000000')+'"><div style="font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:4px">Starting capital for this portfolio</div></div>'},{title:'Investment Horizon',desc:'How long do you plan to invest?',opts:[{k:'short',l:'Short-Term',d:'6–18 months',i:'⏱️'},{k:'medium',l:'Medium-Term',d:'2–5 years',i:'📅'},{k:'long',l:'Long-Term',d:'5+ years',i:'🌳'}]},{title:'Risk Tolerance',desc:'How much volatility can you tolerate?',opts:[{k:'low',l:'Conservative',d:'Capital preservation',i:'🛡️'},{k:'medium',l:'Moderate',d:'Balanced risk/reward',i:'⚖️'},{k:'high',l:'Aggressive',d:'Maximise growth',i:'🚀'}]},{title:'Income Needs',desc:'Do you need regular income?',opts:[{k:'low',l:'Minimal Income',d:'Reinvest everything',i:'📈'},{k:'medium',l:'Moderate',d:'Some payouts',i:'💳'},{k:'high',l:'High Income',d:'Need cash flow',i:'💰'}]},{title:'FX Hedging',desc:'How important is Naira devaluation protection?',opts:[{k:'low',l:'Low Priority',d:'Mostly Naira',i:'🇳🇬'},{k:'medium',l:'Moderate',d:'Some USD',i:'🌍'},{k:'high',l:'Essential',d:'Heavy FX hedge',i:'💵'}]},{title:'Strategy Ready!',desc:'Review and confirm your profile.',preview:true}];
+
+function startOnboarding(){_os=0;document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));$('view-onboard').classList.add('on');renderOS();}
+function gOK(s){return{1:'horizon',2:'riskTolerance',3:'incomeNeed',4:'fxExposure'}[s]||'';}
+function selOS(s,k){const f=gOK(s);if(!f)return;if(!_state.profile)_state.profile={};_state.profile[f]=k;renderOS();}
+function renderOS(){const s=OBS[_os],il=_os===OBS.length-1;let b='<div class="step-indicator">'+OBS.map((x,i)=>'<div class="step-dot'+(i===_os?' active':i<_os?' done':'')+'"></div>').join('')+'</div>';b+='<div style="text-align:center;margin-bottom:1.5rem"><div style="font-family:var(--di);font-size:20px;font-weight:700;margin-bottom:6px">'+s.title+'</div><div style="font-size:13px;color:var(--tx2)">'+s.desc+'</div></div>';if(s.fields)b+=s.fields();if(s.opts){b+='<div class="radio-group">'+s.opts.map(o=>{const sel=_state.profile&&_state.profile[gOK(_os)]===o.k;return'<div class="radio-card'+(sel?' selected':'')+'" onclick="selOS('+_os+',\''+o.k+'\')"><div class="rc-icon">'+o.i+'</div><div class="rc-title">'+o.l+'</div><div class="rc-desc">'+o.d+'</div></div>';}).join('')+'</div>';}if(s.preview)b+='<div id="onboard-preview"></div>';const pb=_os>0?'<button onclick="prevOS()">← Back</button>':'';const nb='<button class="bp" onclick="nextOS()">'+(il?'Generate Strategy':'Next →')+'</button>';$('onboard-step').innerHTML=b;const fd=document.createElement('div');fd.style.cssText='display:flex;justify-content:space-between;margin-top:1.5rem';fd.innerHTML=pb+nb;$('onboard-step').appendChild(fd);if(s.preview)renderPrev();}
+function nextOS(){if(_os===0){const n=$('ob-name')?.value?.trim()||'Investor';const c=parseFloat($('ob-capital')?.value)||20000000;if(!_state.profile)_state.profile={};_state.profile.name=n;_state.profile.capital=c;}if(_os===OBS.length-1){_state.onboardComplete=true;if(!_state.profile)_state.profile={};_state.strategy=genStrategy(_state.profile);saveState();toast('Profile complete! Strategy generated.');switchView('dashboard');return;}_os++;renderOS();}
+function prevOS(){_os--;renderOS();}
+function renderPrev(){const p=_state.profile;if(!p)return;const s=genStrategy(p);if(!s)return;const el=$('onboard-preview');let h='<div class="card" style="background:var(--n3);margin-bottom:1rem"><div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';h+='<div><span style="font-size:10px;color:var(--tx3);font-family:var(--mo);text-transform:uppercase">Investor</span><div style="font-size:14px;font-weight:600">'+p.name+'</div></div><div><span style="font-size:10px;color:var(--tx3)">Capital</span><div style="font-size:14px;font-weight:600;color:var(--t)">'+fmt(p.capital)+'</div></div>';h+='<div><span style="font-size:10px;color:var(--tx3)">Horizon</span><div style="font-size:14px;font-weight:600">'+({short:'Short-Term',medium:'Medium-Term',long:'Long-Term'}[p.horizon]||'—')+'</div></div><div><span style="font-size:10px;color:var(--tx3)">Risk</span><div style="font-size:14px;font-weight:600">'+({low:'🛡️ Consv',medium:'⚖️ Mod',high:'🚀 Aggr'}[p.riskTolerance]||'—')+'</div></div>';h+='<div><span style="font-size:10px;color:var(--tx3)">Income</span><div style="font-size:14px;font-weight:600">'+({low:'Reinvest',medium:'Moderate',high:'High'}[p.incomeNeed]||'—')+'</div></div><div><span style="font-size:10px;color:var(--tx3)">FX Hedge</span><div style="font-size:14px;font-weight:600">'+({low:'🇳🇬 Low',medium:'🌍 Mod',high:'💵 High'}[p.fxExposure]||'—')+'</div></div>';h+='</div></div>';const a=s.allocation;h+='<div class="card" style="background:var(--n3)"><div style="font-size:12px;font-weight:600;margin-bottom:10px">Recommended Allocation</div>';h+='<div class="alloc-bar-wrap"><div class="alloc-label"><span>🇺🇸 FX-Hedged</span><span style="color:var(--bl)">'+a.fx+'%</span></div><div class="alloc-track"><div class="alloc-seg fx" style="width:'+a.fx+'%">'+(a.fx>10?a.fx+'%':'')+'</div><div class="alloc-seg inc" style="width:'+a.inc+'%">'+(a.inc>10?a.inc+'%':'')+'</div><div class="alloc-seg gro" style="width:'+a.gro+'%">'+(a.gro>10?a.gro+'%':'')+'</div></div>';h+='<div class="alloc-label"><span>💰 Income</span><span style="color:var(--t)">'+a.inc+'%</span></div><div class="alloc-label"><span>📈 Growth</span><span style="color:var(--am)">'+a.gro+'%</span></div></div>';h+='<div style="font-size:11px;color:var(--tx2);margin-top:8px"><strong>Expected Return:</strong> '+s.expectedReturn.toFixed(1)+'% p.a. · '+s.summary+'</div></div>';el.innerHTML=h;}
+
+// ── NAV ───────────────────────────────────────────────────────
+function switchView(v){document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));const ni=document.querySelector('[data-view="'+v+'"]');if(ni)ni.classList.add('active');const vw=$('view-'+v);if(vw)vw.classList.add('on');({dashboard:loadDashboard,strategy:loadStrategy,investments:loadInvestments,rebalance:loadRebalance,macro:loadMacro}[v]||function(){})();}
+document.getElementById('layout').addEventListener('click',e=>{const ni=e.target.closest('.nav-item');if(ni&&ni.dataset.view)switchView(ni.dataset.view);});
+$('modal-bg').addEventListener('click',e=>{if(e.target===$('modal-bg'))closeModal();});
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+function loadDashboard(){$('dash-ts').textContent='Last updated: '+new Date().toLocaleString('en-GB');const hp=_state.profile&&_state.onboardComplete;const p=$('dash-onboard-prompt');if(p)p.style.display=hp?'none':'block';if(!hp){$('dash-kpis').innerHTML='<div class="ep" style="grid-column:1/-1">👋 Welcome! <a href="#" onclick="startOnboarding();return false" style="color:var(--t)"><strong>Set up your investor profile</strong></a>.</div>';$('dash-allocation').innerHTML='<div class="ep">No profile data yet.</div>';$('dash-macro-rationale').innerHTML='';$('advisory-content').innerHTML='<div class="ep">Set up your profile to receive recommendations.</div>';$('dash-charts').innerHTML='';$('btn-onboard').style.display='block';return;}$('btn-onboard').style.display='none';const pr=_state.profile;const st=_state.strategy||genStrategy(pr);if(st)_state.strategy=st;const inv=_state.investments||[];const ti=inv.reduce((s,i)=>s+i.amount,0);const rm=pr.capital-ti;let aFX=0,aInc=0,aGro=0;inv.forEach(i=>{if(i.type==='fx')aFX+=i.amount;else if(i.type==='income')aInc+=i.amount;else aGro+=i.amount;});const ta=aFX+aInc+aGro;let wr=0;inv.forEach(i=>{wr+=i.amount*(i.returnRate||0);});const ar=ta>0?wr/ta:0;const er=st?st.expectedReturn:0;const tFX=pr.capital*(st?.allocation?.fx||33)/100;const tInc=pr.capital*(st?.allocation?.inc||33)/100;const tGro=pr.capital*(st?.allocation?.gro||34)/100;$('dash-kpis').innerHTML=[{l:'Total Capital',v:fmt(pr.capital),c:'tl',ac:true,sub:'Investable capital'},{l:'Total Invested',v:fmt(ti),c:inv.length?'gr':'tx3',sub:inv.length+' investments'},{l:'Unallocated',v:fmt(rm),c:rm>0?'am':'tx3',sub:rm>0?'Available':'Fully deployed'},{l:'Portfolio Return',v:ar?pct(ar):'—',c:ar>15?'gr':ar>0?'am':'tx3',sub:ar?'Weighted avg':'No data'},{l:'Target Return',v:er?pct(er):'—',c:'bl',sub:'Strategy target'},{l:'Deployed',v:pr.capital>0?((ti/pr.capital)*100).toFixed(0)+'%':'0%',c:rm===0?'gr':rm<pr.capital*0.3?'rd':'am',sub:rm>0?fmt(rm)+' left':'Fully invested'}].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');dashAlloc(st,aFX,aInc,aGro,ta,tFX,tInc,tGro);renderMacroR();dashCharts(st,inv,pr);renderAdv(pr,st,inv,ti,ar,er);}
+function dashAlloc(st,aFX,aInc,aGro,ta,tFX,tInc,tGro){const el=$('dash-allocation');if(!st){el.innerHTML='<div class="ep">No strategy data.</div>';return;}const a=st.allocation;let h='<div class="alloc-bar-wrap"><div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-bottom:6px">TARGET ALLOCATION</div>';h+='<div class="alloc-label"><span>🇺🇸 FX-Hedged</span><span style="color:var(--bl)">'+a.fx+'% · '+fmt(tFX)+'</span></div><div class="alloc-track"><div class="alloc-seg fx" style="width:'+a.fx+'%">'+(a.fx>10?a.fx+'%':'')+'</div><div class="alloc-seg inc" style="width:'+a.inc+'%">'+(a.inc>10?a.inc+'%':'')+'</div><div class="alloc-seg gro" style="width:'+a.gro+'%">'+(a.gro>10?a.gro+'%':'')+'</div></div>';h+='<div class="alloc-label"><span>💰 Income</span><span style="color:var(--t)">'+a.inc+'% · '+fmt(tInc)+'</span></div><div class="alloc-label"><span>📈 Growth</span><span style="color:var(--am)">'+a.gro+'% · '+fmt(tGro)+'</span></div><div class="sep"></div>';if(ta>0){const pFX=aFX/ta*100,pInc=aInc/ta*100,pGro=aGro/ta*100;h+='<div style="font-size:11px;color:var(--tx2);font-family:var(--mo);margin-bottom:6px">ACTUAL ALLOCATION</div>';h+='<div class="alloc-label"><span>🇺🇸 FX-Hedged</span><span style="color:var(--bl)">'+pFX.toFixed(0)+'% · '+fmt(aFX)+'</span></div><div class="alloc-track"><div class="alloc-seg fx" style="width:'+pFX+'%"></div><div class="alloc-seg inc" style="width:'+pInc+'%"></div><div class="alloc-seg gro" style="width:'+pGro+'%"></div></div>';h+='<div class="alloc-label"><span>💰 Income</span><span style="color:var(--t)">'+pInc.toFixed(0)+'% · '+fmt(aInc)+'</span></div><div class="alloc-label"><span>📈 Growth</span><span style="color:var(--am)">'+pGro.toFixed(0)+'% · '+fmt(aGro)+'</span></div>';}else{h+='<div style="font-size:11px;color:var(--tx3);margin-top:10px;text-align:center">Add investments to see actual vs target.</div>';}h+='</div><div style="font-size:11px;color:var(--tx2);margin-top:4px"><strong>Strategy:</strong> '+st.summary+' · <strong>Expected Return:</strong> '+st.expectedReturn.toFixed(1)+'% p.a.</div>';el.innerHTML=h;}
+function renderMacroR(){const el=$('dash-macro-rationale');const ks=['inflation','mpr','nairaUSD','ngxASI'];let h='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px">';ks.forEach(k=>{const m=MACRO[k];if(!m)return;h+='<div style="background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:12px"><div style="font-weight:600;margin-bottom:4px;display:flex;justify-content:space-between"><span>'+k.toUpperCase()+'</span><span style="font-family:var(--mo)">'+(k==='inflation'?m.val.toFixed(1)+'%':k==='mpr'?m.val.toFixed(2)+'%':k==='nairaUSD'?'₦'+m.val+'/$':m.val.toLocaleString())+'</span></div><div style="color:var(--tx3)">'+m.desc+'</div></div>';});h+='</div>';el.innerHTML=h;}
+function dashCharts(st,inv,pr){$('dash-charts').innerHTML='<div class="chart-box"><div class="card-label">Target Allocation</div><canvas id="cdt" height="195"></canvas></div>'+(inv.length?'<div class="chart-box"><div class="card-label">Actual vs Target</div><canvas id="cdd" height="195"></canvas></div>':'<div class="chart-box"><div class="card-label">Macro Factors Impact</div><canvas id="cdm" height="195"></canvas></div>');setTimeout(()=>{if(st){mkChart('cdt',{type:'doughnut',data:{labels:['FX-Hedged ('+st.allocation.fx+'%)','Income ('+st.allocation.inc+'%)','Growth ('+st.allocation.gro+'%)'],datasets:[{data:[st.allocation.fx,st.allocation.inc,st.allocation.gro],backgroundColor:['#63b3ed','#00c9a7','#f5a623'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});}if(inv.length){const aFX=inv.filter(i=>i.type==='fx').reduce((s,i)=>s+i.amount,0);const aInc=inv.filter(i=>i.type==='income').reduce((s,i)=>s+i.amount,0);const aGro=inv.filter(i=>i.type==='growth').reduce((s,i)=>s+i.amount,0);mkChart('cdd',{type:'bar',data:{labels:['FX-Hedged','Income','Growth'],datasets:[{label:'Target',data:[pr.capital*(st?.allocation?.fx||33)/100,pr.capital*(st?.allocation?.inc||33)/100,pr.capital*(st?.allocation?.gro||34)/100],backgroundColor:'#4a6080',borderRadius:4},{label:'Actual',data:[aFX,aInc,aGro],backgroundColor:['#63b3ed','#00c9a7','#f5a623'],borderRadius:4}]},options:{plugins:{legend:{labels:{color:'#8fa3bf',font:{size:10}}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'},ticks:{callback:v=>'₦'+(v/1e6).toFixed(0)+'M'}}}}});}else{mkChart('cdm',{type:'radar',data:{labels:['Inflation','MPR','NGX Bull','FX Risk','GDP Growth','Reserves'],datasets:[{label:'Impact',data:[95,90,80,85,60,55],backgroundColor:'rgba(0,201,167,.15)',borderColor:'#00c9a7',borderWidth:2,pointBackgroundColor:'#00c9a7'}]},options:{plugins:{legend:{display:false}},scales:{r:{grid:{color:'rgba(255,255,255,.07)'},ticks:{display:false},min:0,max:100}}}});}},80);}
+function renderAdv(pr,st,inv,ti,ar,er){const el=$('advisory-content');const pts=[],recs=[];if(!st){el.innerHTML='<div class="ep">Set up your profile to receive recommendations.</div>';return;}const a=st.allocation;const aFX=inv.filter(i=>i.type==='fx').reduce((s,i)=>s+i.amount,0);const aInc=inv.filter(i=>i.type==='income').reduce((s,i)=>s+i.amount,0);const aGro=inv.filter(i=>i.type==='growth').reduce((s,i)=>s+i.amount,0);const ta=aFX+aInc+aGro;const rm=pr.capital-ti;if(rm>0){if(rm>pr.capital*0.4)pts.push({c:'rd',t:'Only '+((ti/pr.capital)*100).toFixed(0)+'% deployed (₦'+fN(rm)+' idle). '+MACRO.inflation.val+'% inflation erodes cash.'});else if(rm>pr.capital*0.2)pts.push({c:'am',t:((ti/pr.capital)*100).toFixed(0)+'% deployed. Deploy remaining ₦'+fN(rm)+' to capture high yields.'});else pts.push({c:'gr',t:((ti/pr.capital)*100).toFixed(0)+'% deployed. Efficient deployment.'});}if(ta>0){const pFX=aFX/ta*100,pInc=aInc/ta*100,pGro=aGro/ta*100;const fD=Math.abs(pFX-a.fx),iD=Math.abs(pInc-a.inc),gD=Math.abs(pGro-a.gro);if(fD>15||iD>15||gD>15)pts.push({c:'am',t:'Significant deviation from target. '+(fD>15?'FX off by '+fD.toFixed(0)+'pp. ':'')+(iD>15?'Income off by '+iD.toFixed(0)+'pp. ':'')+(gD>15?'Growth off by '+gD.toFixed(0)+'pp.':'')+' Rebalance.'});else if(fD>5||iD>5||gD>5)pts.push({c:'bl',t:'Minor drift detected. Consider rebalancing.'});else pts.push({c:'gr',t:'Portfolio well-aligned with strategy.'});}if(ar>0&&er>0){if(ar>=er*0.9)pts.push({c:'gr',t:'Return ('+pct(ar)+') on track vs target ('+pct(er)+').'});else if(ar<er*0.7)pts.push({c:'rd',t:'Return ('+pct(ar)+') below target ('+pct(er)+'). Review asset selection.'});else pts.push({c:'am',t:'Return ('+pct(ar)+') trails target ('+pct(er)+'). Optimise deployment.'});}pts.push({c:'bl',t:'Inflation '+MACRO.inflation.val+'% · MPR '+MACRO.mpr.val+'% · T-Bills '+MACRO.tb91.val+'% · NGX +35% YTD.'});if(rm>pr.capital*0.2)recs.push('Deploy idle cash into 91-day T-Bills (~'+MACRO.tb91.val+'%) immediately.');if(ta>0){const li=inv.filter(i=>(i.returnRate||0)<er*0.6);if(li.length>0)recs.push('Review '+li.length+' low-return investment(s) below target.');}recs.push('Schedule quarterly portfolio review. Rebalance when any class deviates >10% from target.');let h='';if(pts.length){h+='<div style="margin-bottom:1rem"><div style="font-size:13px;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;gap:8px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Portfolio Assessment</div>';h+=pts.map(p=>'<div class="advisory-item" style="display:flex;align-items:flex-start;gap:10px;margin-bottom:.6rem;font-size:12px;color:var(--tx2)"><div style="width:7px;height:7px;border-radius:50%;background:'+({rd:'var(--rd)',am:'var(--am)',gr:'var(--gr)',bl:'var(--bl)'}[p.c]||'var(--t)')+';flex-shrink:0;margin-top:5px"></div><span>'+p.t+'</span></div>').join('');h+='</div>';}if(recs.length){h+='<div><div style="font-size:13px;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;gap:8px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--am)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Recommendations</div>';h+=recs.map(r=>'<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:.6rem;font-size:12px;color:var(--tx2)"><div style="width:7px;height:7px;border-radius:50%;background:var(--am);flex-shrink:0;margin-top:5px"></div><span>'+r+'</span></div>').join('');h+='</div>';}el.innerHTML=h;}
+
+// ── STRATEGY VIEW ─────────────────────────────────────────────
+function loadStrategy(){if(!_state.profile||!_state.onboardComplete){$('strat-content').innerHTML='<div class="ep">Complete your profile first.</div>';return;}const st=_state.strategy||genStrategy(_state.profile);if(st)_state.strategy=st;saveState();$('strat-ts').textContent='Personalised for '+_state.profile.name+' · ₦'+fN(_state.profile.capital)+' · '+st.summary;let h='<div class="card" style="margin-bottom:1.25rem"><div class="card-label">Your Strategy</div><div style="font-family:var(--di);font-size:18px;font-weight:700;margin-bottom:12px">'+st.summary+'</div>';h+='<div style="display:flex;gap:12px;flex-wrap:wrap"><div class="strat-metric-item"><div class="val" style="color:var(--t)">'+pct(st.expectedReturn)+'</div><div class="lbl">Exp. Return</div></div><div class="strat-metric-item"><div class="val" style="color:var(--bl)">'+({low:'🛡️',medium:'⚖️',high:'🚀'}[_state.profile.riskTolerance]||'—')+'</div><div class="lbl">Risk</div></div><div class="strat-metric-item"><div class="val" style="color:var(--am)">'+({short:'6-18mo',medium:'2-5yrs',long:'5yrs+'}[_state.profile.horizon]||'—')+'</div><div class="lbl">Horizon</div></div></div></div>';const a=st.allocation;h+='<div class="card" style="margin-bottom:1.25rem"><div class="alloc-bar-wrap"><div class="alloc-label"><span>🇺🇸 FX-Hedged</span><span style="color:var(--bl);font-size:16px">'+a.fx+'%</span></div><div class="alloc-track" style="height:32px"><div class="alloc-seg fx" style="width:'+a.fx+'%">'+(a.fx>10?a.fx+'%':'')+'</div><div class="alloc-seg inc" style="width:'+a.inc+'%">'+(a.inc>10?a.inc+'%':'')+'</div><div class="alloc-seg gro" style="width:'+a.gro+'%">'+(a.gro>10?a.gro+'%':'')+'</div></div>';h+='<div class="alloc-label"><span>💰 Income</span><span style="color:var(--t);font-size:16px">'+a.inc+'%</span></div><div class="alloc-label"><span>📈 Growth</span><span style="color:var(--am);font-size:16px">'+a.gro+'%</span></div></div>';h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:1rem"><div style="background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:12px;text-align:center"><div style="font-size:10px;color:var(--bl);text-transform:uppercase">FX-Hedged</div><div style="font-size:16px;font-weight:700;color:var(--bl);margin:4px 0">'+fmt(_state.profile.capital*a.fx/100)+'</div></div><div style="background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:12px;text-align:center"><div style="font-size:10px;color:var(--t);text-transform:uppercase">Income</div><div style="font-size:16px;font-weight:700;color:var(--t);margin:4px 0">'+fmt(_state.profile.capital*a.inc/100)+'</div></div><div style="background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:12px;text-align:center"><div style="font-size:10px;color:var(--am);text-transform:uppercase">Growth</div><div style="font-size:16px;font-weight:700;color:var(--am);margin:4px 0">'+fmt(_state.profile.capital*a.gro/100)+'</div></div></div></div>';h+='<div class="card-label" style="margin-bottom:0.5rem">Why This Allocation</div>';h+='<div class="card" style="border-left:4px solid var(--bl);margin-bottom:1rem"><div style="font-size:13px;font-weight:600;margin-bottom:8px">🇺🇸 FX-Hedged ('+a.fx+'%)</div><ul style="margin:0;padding-left:16px"><li style="font-size:12px;color:var(--tx2);margin-bottom:6px">Nigeria parallel market premium remains elevated. USD assets protect purchasing power.</li><li style="font-size:12px;color:var(--tx2)">Eurobonds (~'+MACRO.eurobondNG.val+'% USD yield), USD MMF, DANGCEM, MTNN, SEPLAT.</li></ul></div>';h+='<div class="card" style="border-left:4px solid var(--t);margin-bottom:1rem"><div style="font-size:13px;font-weight:600;margin-bottom:8px">💰 Income ('+a.inc+'%)</div><ul style="margin:0;padding-left:16px"><li style="font-size:12px;color:var(--tx2);margin-bottom:6px">T-Bills '+MACRO.tb91.val+'% and FGN bonds '+MACRO.fgnBond10y.val+'% offer compelling nominal returns. Lock in before rates decline.</li><li style="font-size:12px;color:var(--tx2)">Bank dividend yields 8-12% (GTCO, ACCESSCORP, UBA). REITs ~8-10%.</li></ul></div>';h+='<div class="card" style="border-left:4px solid var(--am);margin-bottom:1rem"><div style="font-size:13px;font-weight:600;margin-bottom:8px">📈 Growth ('+a.gro+'%)</div><ul style="margin:0;padding-left:16px"><li style="font-size:12px;color:var(--tx2);margin-bottom:6px">NGX bull run (+35% YTD). Banking re-rating, telecoms, consumer recovery.</li><li style="font-size:12px;color:var(--tx2)">Focus: GTCO, NESTLE, BUACEMENT, MTNN, AIRTELAF, fintech.</li></ul></div>';h+='<div class="card"><div class="card-label">Recommended Instruments</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:11px"><div><div style="color:var(--bl);margin-bottom:6px;font-weight:600">FX-Hedged</div><div>• Eurobonds '+MACRO.eurobondNG.val+'%<br>• USD MMF 5-7%<br>• DANGCEM, MTNN<br>• AIRTELAF, SEPLAT</div></div><div><div style="color:var(--t);margin-bottom:6px;font-weight:600">Income</div><div>• T-Bills '+MACRO.tb91.val+'%<br>• FGN Bonds '+MACRO.fgnBond10y.val+'%<br>• GTCO, ACCESSCORP<br>• UBA, REITs, Corp bonds</div></div><div><div style="color:var(--am);margin-bottom:6px;font-weight:600">Growth</div><div>• NGX Index Fund<br>• GTCO, NESTLE<br>• BUACEMENT, MTNN<br>• AIRTELAF, Fintech</div></div></div></div>';$('strat-content').innerHTML=h;}
+function viewStrategyDetail(){loadStrategy();switchView('strategy');}
+function applyStrategy(){if(!_state.strategy){toast('Generate a strategy first.','err');return;}openBulkInvestModal();}
+
+// ── INVESTMENTS ───────────────────────────────────────────────
+function loadInvestments(){const hp=_state.profile&&_state.onboardComplete;const p=$('inv-onboard-prompt');if(p)p.style.display=hp?'none':'block';if(!hp){$('inv-kpis').innerHTML='<div class="ep">Set up your profile.</div>';$('inv-charts').innerHTML='';$('inv-table-wrap').innerHTML='';return;}const inv=_state.investments||[];const t=inv.reduce((s,i)=>s+i.amount,0);const fT=inv.filter(i=>i.type==='fx').reduce((s,i)=>s+i.amount,0);const iT=inv.filter(i=>i.type==='income').reduce((s,i)=>s+i.amount,0);const gT=inv.filter(i=>i.type==='growth').reduce((s,i)=>s+i.amount,0);$('inv-kpis').innerHTML=[{l:'Total Invested',v:fmt(t),c:'tl',ac:true,sub:inv.length+' holdings'},{l:'FX-Hedged',v:fmt(fT),c:'bl',sub:'USD hedged'},{l:'Income',v:fmt(iT),c:'t',sub:'Income'},{l:'Growth',v:fmt(gT),c:'am',sub:'Growth'}].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');$('inv-charts').innerHTML='<div class="chart-box"><div class="card-label">Asset Mix</div><canvas id="cit" height="195"></canvas></div><div class="chart-box"><div class="card-label">Returns</div><canvas id="cir" height="195"></canvas></div>';setTimeout(()=>{if(t>0)mkChart('cit',{type:'doughnut',data:{labels:['FX-Hedged','Income','Growth'],datasets:[{data:[fT,iT,gT],backgroundColor:['#63b3ed','#00c9a7','#f5a623'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});if(inv.length>0)mkChart('cir',{type:'bar',data:{labels:inv.map(i=>i.name.length>15?i.name.slice(0,12)+'…':i.name),datasets:[{label:'Return Rate (%)',data:inv.map(i=>i.returnRate||0),backgroundColor:inv.map(i=>i.type==='fx'?'#63b3ed':i.type==='income'?'#00c9a7':'#f5a623'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'},ticks:{callback:v=>v+'%'}}}}});},80);renderInvT();}
+function renderInvT(){let d=_state.investments||[];if(_invFilter!=='all')d=d.filter(i=>i.type===_invFilter);const q=($('inv-search')?.value||'').toLowerCase();if(q)d=d.filter(i=>i.name.toLowerCase().includes(q));if(!d.length){$('inv-table-wrap').innerHTML=empty(_invFilter==='all'?'No investments yet. Click "Add Investment".':'No '+_invFilter+' found.');return;}$('inv-table-wrap').innerHTML='<div class="tw"><table><thead><tr><th>Name</th><th>Type</th><th class="nm">Amount (₦)</th><th class="nm">Return</th><th>Currency</th><th>Date</th><th></th></tr></thead><tbody>'+d.map(i=>'<tr><td><strong>'+i.name+'</strong></td><td><span class="pl '+(i.type==='fx'?'pb':i.type==='income'?'pprimary':'ps2')+'">'+(i.type==='fx'?'FX':i.type==='income'?'Inc':'Gro')+'</span></td><td class="nm">₦'+fN(i.amount)+'</td><td class="nm" style="color:'+((i.returnRate||0)>=15?'var(--gr)':(i.returnRate||0)>0?'var(--am)':'var(--tx3)')+'">'+(i.returnRate?pct(i.returnRate):'—')+'</td><td style="font-family:var(--mo);font-size:11px">'+(i.currency||'NGN')+'</td><td style="font-size:11px;color:var(--tx2)">'+fD(i.date)+'</td><td><button class="bsm bd" onclick="delInv(\''+i.id+'\')">✕</button></td></tr>').join('')+'</tbody><tr class="trt"><td colspan="2">TOTAL</td><td class="nm" style="color:var(--t)">₦'+fN(d.reduce((s,i)=>s+i.amount,0))+'</td><td colspan="4"></td></tr></table></div><div style="margin-top:.5rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">'+d.length+' holding'+(d.length!==1?'s':'')+'</div>';}
+function setInvFilter(btn,f){document.querySelectorAll('#inv-filters button').forEach(b=>b.style.cssText='');btn.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';_invFilter=f;renderInvT();}
+function openAddInvestmentModal(n){const st=_state.strategy;let ah='';if(st)ah='<div class="nt-info" style="font-size:11px">Your strategy: '+st.allocation.fx+'% FX · '+st.allocation.inc+'% Inc · '+st.allocation.gro+'% Gro</div>';openModal('Add Investment',ah+'<div class="fg"><div class="fld"><label>Name *</label><input class="finput" id="inv-name" value="'+(n||'')+'"></div><div class="fld"><label>Type *</label><select class="finput" id="inv-type"><option value="income">Income</option><option value="fx">FX-Hedged</option><option value="growth">Growth</option></select></div><div class="fld"><label>Amount (₦) *</label><input class="finput" id="inv-amount" type="number"></div><div class="fld"><label>Return Rate (%)</label><input class="finput" id="inv-return" type="number" step="0.1"></div><div class="fld"><label>Currency</label><select class="finput" id="inv-currency"><option value="NGN">NGN</option><option value="USD">USD</option></select></div><div class="fld"><label>Ticker</label><input class="finput" id="inv-ticker"></div></div>','<button class="bp" onclick="saveInv()">Save</button> <button onclick="closeModal()">Cancel</button>',true);}
+function saveInv(){const n=$('inv-name')?.value?.trim();const t=$('inv-type')?.value;const a=parseFloat($('inv-amount')?.value);const r=parseFloat($('inv-return')?.value)||0;const c=$('inv-currency')?.value||'NGN';const tk=$('inv-ticker')?.value?.trim()||'';if(!n){toast('Enter a name.','err');return;}if(!a||a<=0){toast('Enter a valid amount.','err');return;}if(!_state.investments)_state.investments=[];_state.investments.push({id:rid(),name:n,type:t,amount:a,returnRate:r,currency:c,ticker:tk,notes:'',date:ts()});saveState();closeModal();toast('Added: '+n);loadInvestments();}
+function delInv(id){if(!confirm('Remove?'))return;_state.investments=(_state.investments||[]).filter(i=>i.id!==id);saveState();toast('Removed.');loadInvestments();}
+function openBulkInvestModal(){const st=_state.strategy;if(!st){toast('Generate a strategy first.','err');return;}const p=_state.profile;const tFX=p.capital*st.allocation.fx/100;const tInc=p.capital*st.allocation.inc/100;const tGro=p.capital*st.allocation.gro/100;const eFX=(_state.investments||[]).filter(i=>i.type==='fx').reduce((s,i)=>s+i.amount,0);const eInc=(_state.investments||[]).filter(i=>i.type==='income').reduce((s,i)=>s+i.amount,0);const eGro=(_state.investments||[]).filter(i=>i.type==='growth').reduce((s,i)=>s+i.amount,0);let h='<div class="fg3"><div class="fld"><label>FX Target</label><div style="font-size:16px;font-weight:700;color:var(--bl)">'+fmt(tFX)+'</div><div style="font-size:10px;color:var(--tx3)">Allocated: '+fmt(eFX)+'</div></div><div class="fld"><label>Income Target</label><div style="font-size:16px;font-weight:700;color:var(--t)">'+fmt(tInc)+'</div><div style="font-size:10px;color:var(--tx3)">Allocated: '+fmt(eInc)+'</div></div><div class="fld"><label>Growth Target</label><div style="font-size:16px;font-weight:700;color:var(--am)">'+fmt(tGro)+'</div><div style="font-size:10px;color:var(--tx3)">Allocated: '+fmt(eGro)+'</div></div></div><div class="fg3"><div class="fld"><label>FX Amount</label><input class="finput" id="bulk-fx" type="number" value="'+Math.max(0,Math.round(tFX-eFX))+'"></div><div class="fld"><label>Income Amount</label><input class="finput" id="bulk-inc" type="number" value="'+Math.max(0,Math.round(tInc-eInc))+'"></div><div class="fld"><label>Growth Amount</label><input class="finput" id="bulk-gro" type="number" value="'+Math.max(0,Math.round(tGro-eGro))+'"></div></div>';openModal('Bulk Apply Strategy',h,'<button class="bp" onclick="saveBulk()">Apply</button> <button onclick="closeModal()">Cancel</button>');}
+function saveBulk(){const fA=parseFloat($('bulk-fx')?.value)||0;const iA=parseFloat($('bulk-inc')?.value)||0;const gA=parseFloat($('bulk-gro')?.value)||0;if(fA+iA+gA===0){toast('Enter at least one amount.','err');return;}if(!_state.investments)_state.investments=[];if(fA>0)_state.investments.push({id:rid(),name:'FX Bulk',type:'fx',amount:fA,returnRate:15,currency:'USD',ticker:'',notes:'Bulk allocation',date:ts()});if(iA>0)_state.investments.push({id:rid(),name:'Income Bulk',type:'income',amount:iA,returnRate:17,currency:'NGN',ticker:'',notes:'Bulk allocation',date:ts()});if(gA>0)_state.investments.push({id:rid(),name:'Growth Bulk',type:'growth',amount:gA,returnRate:20,currency:'NGN',ticker:'',notes:'Bulk allocation',date:ts()});saveState();closeModal();toast('Bulk applied: '+fmt(fA+iA+gA));loadInvestments();}
+
+// ── REBALANCING ───────────────────────────────────────────────
+function loadRebalance(){if(!_state.profile||!_state.onboardComplete||!_state.strategy){$('rebalance-content').innerHTML='<div class="ep">Complete your profile and add investments.</div>';return;}runRebal();}
+function runRebal(){const st=_state.strategy;const inv=_state.investments||[];const p=_state.profile;if(!st||!p){$('rebalance-content').innerHTML='<div class="ep">Set up your profile first.</div>';return;}if(inv.length===0){$('rebalance-content').innerHTML='<div class="ep">Add investments to get recommendations.</div>';return;}const a=st.allocation;const tFX=p.capital*a.fx/100;const tInc=p.capital*a.inc/100;const tGro=p.capital*a.gro/100;const aFX=inv.filter(i=>i.type==='fx').reduce((s,i)=>s+i.amount,0);const aInc=inv.filter(i=>i.type==='income').reduce((s,i)=>s+i.amount,0);const aGro=inv.filter(i=>i.type==='growth').reduce((s,i)=>s+i.amount,0);const tAct=aFX+aInc+aGro;const rFX=tFX-aFX;const rInc=tInc-aInc;const rGro=tGro-aGro;let h='<div class="kpi-grid" style="margin-bottom:1.25rem"><div class="kpi tl ac"><div class="kl">Capital</div><div class="kv tl">'+fmt(p.capital)+'</div></div><div class="kpi gr"><div class="kl">Invested</div><div class="kv gr">'+fmt(tAct)+'</div><div class="ks">'+((tAct/p.capital)*100).toFixed(0)+'% deployed</div></div><div class="kpi am"><div class="kl">Available</div><div class="kv am">'+fmt(p.capital-tAct)+'</div></div><div class="kpi bl"><div class="kl">Target Return</div><div class="kv bl">'+pct(st.expectedReturn)+'</div></div></div>';h+='<div class="card" style="margin-bottom:1.25rem"><div class="card-label">Current vs Target</div><div class="tw"><table><thead><tr><th>Class</th><th class="nm">Target</th><th class="nm">Current</th><th class="nm">Deviation</th><th class="nm">Rebalance</th><th>Action</th></tr></thead><tbody>';const rows=[{l:'FX-Hedged',c:'var(--bl)',a:aFX,t:tFX,p:a.fx,r:rFX},{l:'Income',c:'var(--t)',a:aInc,t:tInc,p:a.inc,r:rInc},{l:'Growth',c:'var(--am)',a:aGro,t:tGro,p:a.gro,r:rGro}];let totR=0;rows.forEach(r=>{const d=tAct>0?(r.a/tAct*100):0;const dev=((r.a-r.t)/r.t*100)||0;const act=r.r>0?'<span class="pl pg">Buy +'+fmt(r.r)+'</span>':r.r<0?'<span class="pl pr">Sell '+fmt(Math.abs(r.r))+'</span>':'<span class="pl pb">Hold</span>';totR+=Math.abs(r.r);h+='<tr><td style="color:'+r.c+';font-weight:600">'+r.l+'</td><td class="nm">₦'+fN(r.t)+' ('+r.p+'%)</td><td class="nm">'+(r.a>0?'₦'+fN(r.a):'—')+'</td><td class="nm" style="color:'+(Math.abs(dev)>15?'var(--rd)':Math.abs(dev)>5?'var(--am)':'var(--gr)')+'">'+(dev>0?'+':'')+dev.toFixed(1)+'%</td><td class="nm" style="color:'+(r.r>0?'var(--gr)':r.r<0?'var(--rd)':'var(--tx3)')+';font-weight:700">'+(r.r!==0?(r.r>0?'+':'')+'₦'+fN(Math.abs(r.r)):'—')+'</td><td>'+act+'</td></tr>';});h+='<tr class="trt"><td>Portfolio</td><td class="nm">₦'+fN(p.capital)+'</td><td class="nm">₦'+fN(tAct)+'</td><td class="nm">—</td><td class="nm" style="color:var(--am);font-weight:700">₦'+fN(totR)+'</td><td></td></tr></tbody></table></div></div>';const recs=[];if(tAct<p.capital)recs.push({t:'gr',v:'Deploy remaining ₦'+fN(p.capital-tAct)+' into underweight classes.'});rows.forEach(r=>{if(r.r>p.capital*0.05)recs.push({t:'gr',v:'Add ₦'+fN(r.r)+' to '+r.l+'. '+(r.l==='FX-Hedged'?'Eurobonds or USD stocks':r.l==='Income'?'T-Bills or bonds':'NGX equities')+'.'});else if(r.r<-p.capital*0.05)recs.push({t:'rd',v:'Reduce '+r.l+' by ₦'+fN(Math.abs(r.r))+'. Take profits.'});});const tI=inv.sort((a,b)=>b.amount-a.amount)[0];if(tI&&tI.amount>tAct*0.35)recs.push({t:'am',v:'Concentrated in "'+tI.name+'" ('+(tI.amount/tAct*100).toFixed(0)+'%). Diversify.'});h+='<div class="card"><div class="card-label">Recommendations</div>'+recs.map(r=>'<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:13px;color:var(--tx2)"><div style="width:7px;height:7px;border-radius:50%;background:'+({gr:'var(--gr)',rd:'var(--rd)',am:'var(--am)'}[r.t]||'var(--t)')+';flex-shrink:0;margin-top:5px"></div><span>'+r.v+'</span></div>').join('')+'</div>';if(rFX>0||rInc>0||rGro>0){h+='<div style="margin-top:1rem;display:flex;gap:10px;flex-wrap:wrap">';if(rFX>0)h+='<button class="bp2" onclick="qRebal(\'fx\','+rFX+')">➕ FX ₦'+fN(rFX)+'</button>';if(rInc>0)h+='<button class="bp" onclick="qRebal(\'income\','+rInc+')">➕ Income ₦'+fN(rInc)+'</button>';if(rGro>0)h+='<button class="bp2" onclick="qRebal(\'growth\','+rGro+')" style="background:var(--am);border-color:var(--am)">➕ Growth ₦'+fN(rGro)+'</button>';h+='</div>';}$('rebalance-content').innerHTML=h;}
+function qRebal(t,a){if(a<=0)return;if(!_state.investments)_state.investments=[];_state.investments.push({id:rid(),name:t==='fx'?'FX Rebalance':t==='income'?'Income Rebalance':'Growth Rebalance',type:t,amount:Math.round(a),returnRate:t==='fx'?15:t==='income'?17:20,currency:t==='fx'?'USD':'NGN',ticker:'',notes:'Rebalance action',date:ts()});saveState();toast('Rebalance added: '+fmt(a));runRebal();}
+
+// ── MACRO ─────────────────────────────────────────────────────
+function loadMacro(){$('macro-ts').textContent='Updated '+new Date().toLocaleString('en-GB');const c=[{k:'inflation',l:'Inflation (CPI)',f:v=>v.toFixed(1)+'%',c:'rd'},{k:'mpr',l:'MPR',f:v=>v.toFixed(2)+'%',c:'am'},{k:'nairaUSD',l:'Naira/USD',f:v=>'₦'+v+'/$',c:'tl'},{k:'gdpGrowth',l:'GDP Growth',f:v=>v.toFixed(1)+'%',c:'gr'},{k:'reserves',l:'Reserves',f:v=>'$'+v.toFixed(1)+'B',c:'bl'},{k:'tb91',l:'91-Day T-Bill',f:v=>v.toFixed(1)+'%',c:'pu'},{k:'tb364',l:'364-Day T-Bill',f:v=>v.toFixed(1)+'%',c:'pu'},{k:'fgnBond10y',l:'10-Yr Bond',f:v=>v.toFixed(1)+'%',c:'am'},{k:'ngxASI',l:'NGX ASI',f:v=>v.toLocaleString(),c:'gr'},{k:'eurobondNG',l:'Eurobond 10Y',f:v=>v.toFixed(1)+'%',c:'bl'},{k:'oil',l:'Brent Crude',f:v=>'$'+v+'/bbl',c:'am'},{k:'unemployment',l:'Unemployment',f:v=>v.toFixed(1)+'%',c:'tx2'}];$('macro-indicators').innerHTML=c.map(x=>{const m=MACRO[x.k];if(!m)return'';const ch=m.trend==='bullish'||m.trend==='moderating'||m.trend==='improving'?'↗':m.trend==='declining'?'↘':'→';const cc=m.trend==='bullish'||m.trend==='improving'||m.trend==='moderating'?'var(--gr)':m.trend==='declining'?'var(--rd)':'var(--tx2)';return'<div class="macro-card '+x.c+'"><div class="mc-label">'+x.l+'</div><div class="mc-val">'+x.f(m.val)+'</div><div class="mc-chg" style="color:'+cc+'">'+ch+'</div><div class="mc-sub">'+m.desc.slice(0,70)+'…</div></div>';}).join('');$('macro-charts').innerHTML='<div class="chart-box"><div class="card-label">Key Rates</div><canvas id="cmr" height="200"></canvas></div><div class="chart-box"><div class="card-label">Asset Class Yields</div><canvas id="cmy" height="200"></canvas></div>';setTimeout(()=>{mkChart('cmr',{type:'bar',data:{labels:['CPI','MPR','91d TB','364d TB','10Y Bond','Eurobond'],datasets:[{label:'%',data:[MACRO.inflation.val,MACRO.mpr.val,MACRO.tb91.val,MACRO.tb364.val,MACRO.fgnBond10y.val,MACRO.eurobondNG.val],backgroundColor:['#e05252','#f5a623','#00c9a7','#00c9a7','#63b3ed','#a78bfa'],borderRadius:5}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'},ticks:{callback:v=>v+'%'}}}}});mkChart('cmy',{type:'radar',data:{labels:['Equities','T-Bills','Bonds','Eurobonds','RE','Cash'],datasets:[{label:'Yield/Risk',data:[85,70,75,65,55,20],backgroundColor:'rgba(99,179,237,.15)',borderColor:'#63b3ed',borderWidth:2,pointBackgroundColor:'#63b3ed'}]},options:{plugins:{legend:{display:false}},scales:{r:{grid:{color:'rgba(255,255,255,.07)'},ticks:{display:false},min:0,max:100}}}});},80);$('macro-analysis').innerHTML='<div style="margin-bottom:1rem"><div style="font-size:13px;font-weight:600;color:var(--t);margin-bottom:8px">📌 Q2 2026</div><p style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px">Nigeria is in a tight monetary cycle with MPR at '+MACRO.mpr.val+'%. Inflation moderated to '+MACRO.inflation.val+'% from 34% peak. Real rates are now positive.</p><p style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px">NGX ASI at '+MACRO.ngxASI.val.toLocaleString()+' (+35% YTD). Banking, telecoms, consumer driving bull run.</p><p style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px">Naira stable at ₦'+MACRO.nairaUSD.val+'/$. Fixed income: T-Bills '+MACRO.tb91.val+'%, bonds '+MACRO.fgnBond10y.val+'%. Lock in before easing cycle.</p><p style="font-size:12px;color:var(--tx2);line-height:1.7">GDP growth '+MACRO.gdpGrowth.val+'%. Non-oil sector resilient. Fintech expanding.</p></div><div class="sep"></div><div style="margin-top:1rem"><div style="font-size:13px;font-weight:600;color:var(--am);margin-bottom:8px">⚠️ Key Risks</div><ul style="margin:0;padding-left:16px;font-size:12px;color:var(--tx2);line-height:1.7"><li>Inflation resurgence</li><li>Naira depreciation risk</li><li>FPI reversal</li><li>2027 election uncertainty</li><li>Fiscal deficit pressures</li></ul></div>';$('macro-recommendations').innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:12px"><div style="background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px;border-top:3px solid var(--bl)"><div style="font-weight:600;margin-bottom:6px">🇺🇸 FX-Hedged</div><div style="color:var(--tx2)"><strong>Allocation:</strong> 15-35%<br><strong>Picks:</strong> Eurobonds '+MACRO.eurobondNG.val+'%, USD MMF, DANGCEM, MTNN<br><strong>Outlook:</strong> ⭐⭐⭐⭐⭐</div></div><div style="background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px;border-top:3px solid var(--t)"><div style="font-weight:600;margin-bottom:6px">💰 Income</div><div style="color:var(--tx2)"><strong>Allocation:</strong> 25-55%<br><strong>Picks:</strong> T-bills '+MACRO.tb91.val+'%, bonds '+MACRO.fgnBond10y.val+'%, GTCO, ACCESSCORP<br><strong>Outlook:</strong> ⭐⭐⭐⭐⭐</div></div><div style="background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px;border-top:3px solid var(--am)"><div style="font-weight:600;margin-bottom:6px">📈 Growth</div><div style="color:var(--tx2)"><strong>Allocation:</strong> 20-45%<br><strong>Picks:</strong> NGX index, GTCO, NESTLE, BUACEMENT, MTNN<br><strong>Outlook:</strong> ⭐⭐⭐⭐</div></div></div>';}
+
+// ── INIT ──────────────────────────────────────────────────────
+function init(){
+  const tok=sessionStorage.getItem('FM_token');
+  if(tok){
+    fetch(API+'/auth/me',{headers:{'Authorization':'Bearer '+tok}})
+    .then(r=>r.json().then(d=>({s:r.status,d})))
+    .then(obj=>{
+      if(obj.s===200&&obj.d.success&&obj.d.user){
+        _user=obj.d.user;
+        document.getElementById('investor-name').textContent=_user.name||_state.profile?.name||'Investor';
+        pullFromCloud().then(()=>{
+          if(_state.profile?.name)document.getElementById('investor-name').textContent=_state.profile.name;
+          loadDashboard();
+        });
+      }else{
+        if(_state.profile?.name)document.getElementById('investor-name').textContent=_state.profile.name;
+        loadDashboard();
+      }
+    })
+    .catch(()=>{if(_state.profile?.name)$('investor-name').textContent=_state.profile.name;loadDashboard();});
+  }else{
+    if(_state.profile?.name)document.getElementById('investor-name').textContent=_state.profile.name;
+    loadDashboard();
+  }
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
