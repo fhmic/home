@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>Treasury Intelligence — FM Finance Suite</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http:/f/www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -707,7 +707,7 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
       const liabCurrency = aTotal * (liabPct/100);
       const perBucket = spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('');
       const emptyCols = TENOR_CAPS.map(()=>'<td>—</td>').join('');
-      return `<tr class="spread-row dim"><td>WACC: Surplus / (Deficit) WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
+      return `<tr class="spread-row dim"><td>Surplus / (Deficit) WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
     })()}
   </tbody>`;
 }
