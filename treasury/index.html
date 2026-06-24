@@ -587,7 +587,7 @@ async function loadDashboard(){
     {l:'Debtor Yield',v:pct(avgDR),c:'am',sub:'Avg implied rate on debtors'},
     {l:'Investment Yield',v:pct(avgIY),c:'gr',sub:'Weighted avg investment return'},
     {l:'Cost of Equity (Ke)',v:pct(eq.costOfEquity),c:'pu',sub:'Required shareholder return'},
-    {l:'Liquidity Ratio',v:pct(liqPct),c:liqPct>100?'gr':'am',sub:'Liquid assets / Short obligations'},
+   
   ].map(k=>'<div class="wacc-card '+k.c+'"><div class="wc-lbl">'+k.l+'</div><div class="wc-val">'+k.v+'</div><div class="wc-sub">'+k.sub+'</div></div>').join('');
 
   renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara);
