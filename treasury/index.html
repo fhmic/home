@@ -572,7 +572,7 @@ async function loadDashboard(){
     {l:'Total Deployable Assets',v:fmt(totalAssets),c:'tl',ac:true,sub:'Debtors + Inv + Cash'},
     {l:'Total Borrowings',v:fmt(totalDebt),c:'rd',sub:_borrowCache.length+' facilities'},
     {l:'Equity & Reserves',v:fmt(totalEquity),c:'pu',sub:'Capital + Retained Earnings'},
-    {l:'Total Funding Base (V)',v:fmt(totalCapital),c:'bl',sub:'Debt + Equity'},
+    {l:'Total Funding Base ',v:fmt(totalCapital),c:'bl',sub:'Debt + Equity'},
     {l:'Net Asset Cover',v:fmt(totalAssets-totalDebt),c:totalAssets>totalDebt?'gr':'rd',sub:'Assets − Liabilities'},
     ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
 
