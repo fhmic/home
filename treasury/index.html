@@ -555,6 +555,7 @@ async function loadDashboard(){
   const eq=_equityData;
   const totalEquity=eq.shareCapital+eq.retainedEarnings+eq.otherReserves;
   const totalAssets=totalDebtors+totalInv+totalCash;
+  const totalCapital=totalEquity+totalDebt;
 
   const wacd=totalDebt>0?_borrowCache.reduce((a,b)=>a+(b.outstanding/totalDebt)*b.interestRate,0):0;
   const avgIY=totalInv>0?_invCache.reduce((a,i)=>a+(i.principal/totalInv)*i.interestRate,0):0;
@@ -571,12 +572,14 @@ async function loadDashboard(){
     {l:'Total Financial Assets',v:fmt(totalAssets),c:'tl',ac:true,sub:'Debtors + Inv + Cash'},
     {l:'Total Borrowings',v:fmt(totalDebt),c:'rd',sub:_borrowCache.length+' facilities'},
     {l:'Equity & Reserves',v:fmt(totalEquity),c:'pu',sub:'Capital + Retained Earnings'},
+    {l:'Total Capital (V)',v:fmt(totalCapital),c:'bl',sub:'Debt + Equity'},
     {l:'Net Asset Cover',v:fmt(totalAssets-totalDebt),c:totalAssets>totalDebt?'gr':'rd',sub:'Assets − Liabilities'},
-    {l:'WARA (Return on Assets)',v:pct(wara),c:'am',sub:'Weighted avg asset return'},
-    {l:'WACD (Cost of Debt)',v:pct(wacd),c:'bl',sub:'Weighted avg cost of debt'},
+    
   ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
 
   $('dash-wacc').innerHTML=[
+    {l:'WARA (Return on Assets)',v:pct(wara),c:'am',sub:'Weighted avg asset return'},
+    {l:'WACD (Cost of Debt)',v:pct(wacd),c:'bl',sub:'Weighted avg cost of debt'},
     {l:'WACC',v:pct(wacc),c:'tl',sub:'Weighted avg cost of capital'},
     {l:'Net Interest Spread (NIS)',v:(spread>=0?'+':'')+pct(spread),c:spread>=0?'gr':'rd',sub:'WARA − WACD'},
     {l:'Economic Value Added (EVA)',v:(eva_signal>=0?'+':'')+pct(eva_signal),c:eva_signal>=0?'gr':'rd',sub:'WARA − WACC'},
@@ -584,6 +587,7 @@ async function loadDashboard(){
     {l:'Debtor Yield',v:pct(avgDR),c:'am',sub:'Avg implied rate on debtors'},
     {l:'Investment Yield',v:pct(avgIY),c:'gr',sub:'Weighted avg investment return'},
     {l:'Cost of Equity (Ke)',v:pct(eq.costOfEquity),c:'pu',sub:'Required shareholder return'},
+    {l:'Liquidity Ratio',v:pct(liqPct),c:liqPct>100?'gr':'am',sub:'Liquid assets / Short obligations'},
   ].map(k=>'<div class="wacc-card '+k.c+'"><div class="wc-lbl">'+k.l+'</div><div class="wc-val">'+k.v+'</div><div class="wc-sub">'+k.sub+'</div></div>').join('');
 
   renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara);
