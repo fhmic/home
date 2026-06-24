@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.10.0/pptxgen.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -1455,28 +1455,7 @@ async function saveSettings(){
     }catch(e){console.error(e);setStatus('Excel export failed');}
   }
 
-  async function exportPpt(){
-    try{
-      setStatus('Preparing PowerPoint…');
-      const pptx = new PptxGenJS();
-      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
-      const slide = pptx.addSlide();
-      slide.addText('FM Dashboard Report',{x:0.5,y:0.5,fontSize:24,color:'363636',bold:true});
-      slide.addText('Summary',{x:0.5,y:1.2,fontSize:14,color:'666666'});
-      const lines = [ 'Total Assets: '+fmtNum(m.totalAssets), 'Total Debt: '+fmtNum(m.totalDebt), 'Total Equity: '+fmtNum(m.totalEquity), 'WARA: '+(m.wara||0)+'%', 'WACD: '+(m.wacd||0)+'%', 'Spread: '+(m.spread||0)+'%' ];
-      slide.addText(lines,{x:0.5,y:1.6,fontSize:12,color:'444444',bullet:true});
-      // Assessment slide
-      const s2 = pptx.addSlide(); s2.addText('Financial Optimisation Assessment',{x:0.5,y:0.5,fontSize:18});
-      const bullets = (a.pts||[]).map(p=>p.t);
-      if(bullets.length) s2.addText(bullets,{x:0.5,y:1.1,fontSize:12,bullet:true}); else s2.addText(['No assessment generated'],{x:0.5,y:1.1,fontSize:12});
-      // Recommendations slide
-      const s3 = pptx.addSlide(); s3.addText('Board Recommendations',{x:0.5,y:0.5,fontSize:18});
-      const recs = (a.recs||[]);
-      if(recs.length) s3.addText(recs,{x:0.5,y:1.1,fontSize:12,bullet:true}); else s3.addText(['No recommendations generated'],{x:0.5,y:1.1,fontSize:12});
-      await pptx.writeFile({fileName:'FM_Dashboard_Report.pptx'});
-      setStatus('PowerPoint downloaded',true);
-    }catch(e){console.error(e);setStatus('PowerPoint export failed');}
-  }
+ 
 
   async function exportPdf(){
     try{
