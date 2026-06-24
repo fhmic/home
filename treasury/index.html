@@ -1409,92 +1409,388 @@ async function saveSettings(){
 })();
 </script>
 
-<!-- Export Report Modal -->
-<div id="export-modal" style="display:none;position:fixed;inset:0;z-index:650;align-items:center;justify-content:center;padding:1rem;background:rgba(5,12,24,.75);backdrop-filter:blur(3px)">
-  <div class="modal" style="max-width:860px;width:100%">
-    <div class="mhdr"><div class="mttl">Export Dashboard Report</div><button class="mclose" id="export-modal-close">×</button></div>
-    <div class="mbody">
-      <p style="color:var(--tx2)">Choose format to download the current dashboard report. Generated from the latest metrics and advisory content.</p>
-      <div style="display:flex;gap:8px;margin-top:1rem">
-        <button id="exp-xls" class="bp">Download Excel</button>
-        <button id="exp-ppt" class="bp">Download PowerPoint</button>
-        <button id="exp-pdf" class="bp">Download PDF</button>
-      </div>
-      <div id="export-status" style="margin-top:1rem;color:var(--tx3);font-size:13px"></div>
-    </div>
-    <div class="mfoot"><button id="export-cancel" class="bsm">Close</button></div>
-  </div>
-</div>
+'use strict';
+const PptxGenJS = require('pptxgenjs');
 
-<script>
-(function(){
-  function fmtNum(v){return typeof v==='number'?v.toLocaleString(undefined,{maximumFractionDigits:2}):v}
-  function safe(obj,path,def){try{return path.split('.').reduce((s,k)=>s[k],obj)||def}catch(e){return def}}
-  function closeModal(){document.getElementById('export-modal').style.display='none'}
-  function showModal(){document.getElementById('export-modal').style.display='flex'}
-  function setStatus(txt,ok){const el=document.getElementById('export-status');if(!el)return;el.textContent=txt;el.style.color=ok?getComputedStyle(document.documentElement).getPropertyValue('--gr'):'#f59e0b'}
+const C = {
+  teal:'00C9A7', teal2:'00A98E', navy:'0A1628', navy2:'0F1F3D', navy3:'162747', navy4:'1C3057',
+  amber:'F5A623', red:'E05252', green:'22C55E', blue:'63B3ED', purple:'A78BFA',
+  tx:'E8EDF5', tx2:'8FA3BF', tx3:'4A6080', white:'FFFFFF', black:'000000',
+};
 
-  async function exportExcel(){
-    try{
-      setStatus('Preparing Excel…');
-      const wb = XLSX.utils.book_new();
-      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
-      const dash = [ ['Metric','Value'], ['Total Assets',fmtNum(m.totalAssets)], ['Total Debt',fmtNum(m.totalDebt)], ['Total Equity',fmtNum(m.totalEquity)], ['Total Debtors',fmtNum(m.totalDebtors)], ['Investments',fmtNum(m.totalInv)], ['Cash',fmtNum(m.totalCash)], ['WACC', (m.wacc||0)], ['WACD', (m.wacd||0)], ['WARA', (m.wara||0)], ['Spread', (m.spread||0)] ];
-      const ws1 = XLSX.utils.aoa_to_sheet(dash); XLSX.utils.book_append_sheet(wb, ws1, 'Dashboard Summary');
-      // Maturity sheet
-      const headers = ['Row'].concat(TENOR_LBLS).concat(['TOTAL']);
-      const rows = [];
-      rows.push(['TOTAL DEPLOYABLE ASSETs'].concat((mm.aBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.aTotal)]));
-      rows.push(['TOTAL FUNDING BASE'].concat((mm.lBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.lTotal)]));
-      rows.push(['WARA (Assets) %'].concat((mm.waraBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat([mm.aTotal? ( (mm.contribs||[]).reduce((s,v)=>s+(v||0),0) / mm.aTotal *100).toFixed(2):'-']));
-      rows.push(['WACD (Liabilities) %'].concat((mm.wacdBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
-      rows.push(['Spread %'].concat((mm.spreadBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
-      const ws2 = XLSX.utils.aoa_to_sheet([headers].concat(rows)); XLSX.utils.book_append_sheet(wb, ws2, 'Maturity Profile');
-      XLSX.writeFile(wb,'FM_Dashboard_Report.xlsx');
-      setStatus('Excel downloaded',true);
-    }catch(e){console.error(e);setStatus('Excel export failed');}
+const fmtM = n => { const v=Number(n)||0; if(Math.abs(v)>=1e9) return '₦'+(v/1e9).toFixed(2)+'B'; if(Math.abs(v)>=1e6) return '₦'+(v/1e6).toFixed(2)+'M'; if(Math.abs(v)>=1e3) return '₦'+(v/1e3).toFixed(1)+'K'; return '₦'+v.toFixed(2); };
+const fN   = n => (Number(n)||0).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pct  = n => (Number(n)||0).toFixed(2)+'%';
+const fD   = d => !d?'—':new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+const todayStr = () => new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+const makeShadow = () => ({type:'outer',color:'000000',blur:8,offset:3,angle:45,opacity:0.18});
+
+function buildPPT(opts, pres) {
+  const {
+    metrics:m={}, assessment:a={}, maturity:mm={},
+    borrowCache=[], invCache=[], cashCache=[], debtorCache=[],
+    equityData:eq={}, orgName='Organisation', userName='—'
+  } = opts;
+
+  pres.layout  = 'LAYOUT_16x9';
+  pres.title   = 'FM Treasury Board Report';
+  pres.author  = userName;
+  pres.company = orgName;
+
+  const TOTAL = 9;
+  const D = todayStr();
+
+  // ── helpers that need pres ──────────────────────────────────────────────
+  const addTopBand = (slide, title, subtitle) => {
+    slide.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:1.0,fill:{color:C.navy2},line:{color:C.navy2}});
+    slide.addShape(pres.shapes.OVAL,{x:0.32,y:0.25,w:0.5,h:0.5,fill:{color:C.teal},line:{color:C.teal}});
+    slide.addText('FM',{x:0.32,y:0.25,w:0.5,h:0.5,fontSize:10,bold:true,color:C.navy,align:'center',valign:'middle',margin:0});
+    slide.addText(title,{x:1.0,y:0.08,w:7.6,h:0.52,fontSize:18,bold:true,color:C.tx,fontFace:'Cambria',margin:0});
+    if(subtitle) slide.addText(subtitle,{x:1.0,y:0.60,w:7.6,h:0.28,fontSize:8.5,color:C.tx2,fontFace:'Arial',margin:0});
+    slide.addText(D,{x:7.5,y:0.08,w:2.3,h:0.3,fontSize:8,color:C.tx3,align:'right',fontFace:'Arial',margin:0});
+  };
+
+  const addFooter = (slide, n) => {
+    slide.addShape(pres.shapes.RECTANGLE,{x:0,y:5.33,w:10,h:0.295,fill:{color:C.navy2},line:{color:C.navy2}});
+    slide.addText('FM Finance Suite — Treasury Intelligence  |  CONFIDENTIAL',{x:0.3,y:5.34,w:8,h:0.25,fontSize:7.5,color:C.tx3,fontFace:'Arial',margin:0});
+    slide.addText(n+' / '+TOTAL,{x:9.2,y:5.34,w:0.6,h:0.25,fontSize:7.5,color:C.tx3,align:'right',fontFace:'Arial',margin:0});
+  };
+
+  const kpiCard = (slide, x, y, w, h, label, value, sub, accent) => {
+    accent = accent||C.teal;
+    slide.addShape(pres.shapes.ROUNDED_RECTANGLE,{x,y,w,h,fill:{color:C.navy3},line:{color:C.navy4},rectRadius:0.08,shadow:makeShadow()});
+    slide.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:x+0.01,y:y+0.1,w:0.04,h:h-0.2,fill:{color:accent},line:{color:accent},rectRadius:0.02});
+    slide.addText(label,{x:x+0.12,y:y+0.09,w:w-0.18,h:0.22,fontSize:7,color:C.tx3,fontFace:'Arial',margin:0,charSpacing:1});
+    slide.addText(value,{x:x+0.12,y:y+0.28,w:w-0.18,h:0.48,fontSize:16,bold:true,color:accent,fontFace:'Cambria',margin:0});
+    if(sub) slide.addText(sub,{x:x+0.12,y:y+0.73,w:w-0.18,h:0.2,fontSize:7.5,color:C.tx2,fontFace:'Arial',margin:0});
+  };
+
+  const secDiv = (slide, x, y, w, label, accent) => {
+    accent=accent||C.teal;
+    slide.addShape(pres.shapes.RECTANGLE,{x,y,w,h:0.01,fill:{color:accent},line:{color:accent}});
+    slide.addText(label,{x,y:y+0.04,w,h:0.2,fontSize:7.5,color:accent,bold:true,fontFace:'Arial',margin:0,charSpacing:2});
+  };
+
+  // ── SLIDE 1: COVER ────────────────────────────────────────────────────────
+  const s1=pres.addSlide();
+  s1.background={color:C.navy};
+  s1.addShape(pres.shapes.OVAL,{x:6.5,y:-1.5,w:5.5,h:5.5,fill:{color:C.teal,transparency:90},line:{color:C.teal,transparency:90}});
+  s1.addShape(pres.shapes.OVAL,{x:7.8,y:2.8,w:3,h:3,fill:{color:C.blue,transparency:92},line:{color:C.blue,transparency:92}});
+  s1.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:0.7,w:0.65,h:0.65,fill:{color:C.teal},line:{color:C.teal},rectRadius:0.1});
+  s1.addText('FM',{x:0.6,y:0.7,w:0.65,h:0.65,fontSize:13,bold:true,color:C.navy,align:'center',valign:'middle',margin:0});
+  s1.addText('FM Finance Suite — Treasury Intelligence',{x:1.42,y:0.82,w:6.5,h:0.4,fontSize:11,color:C.teal,fontFace:'Cambria',margin:0});
+  s1.addText('Treasury Intelligence',{x:0.6,y:1.6,w:9,h:0.9,fontSize:46,bold:true,color:C.tx,fontFace:'Cambria',margin:0});
+  s1.addText('Board Presentation',{x:0.6,y:2.45,w:9,h:0.62,fontSize:28,color:C.teal,fontFace:'Cambria',margin:0,italic:true});
+  s1.addShape(pres.shapes.RECTANGLE,{x:0.6,y:3.18,w:3.5,h:0.022,fill:{color:C.teal},line:{color:C.teal}});
+  s1.addText(orgName,{x:0.6,y:3.28,w:6,h:0.32,fontSize:13,bold:true,color:C.tx,fontFace:'Cambria',margin:0});
+  s1.addText('Prepared: '+D+'  |  Prepared by: '+userName,{x:0.6,y:3.58,w:7,h:0.28,fontSize:9.5,color:C.tx2,fontFace:'Arial',margin:0});
+  s1.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:4.48,w:1.5,h:0.32,fill:{color:C.navy3},line:{color:C.navy4},rectRadius:0.1});
+  s1.addText('CONFIDENTIAL',{x:0.6,y:4.48,w:1.5,h:0.32,fontSize:7.5,bold:true,color:C.amber,align:'center',valign:'middle',fontFace:'Arial',margin:0,charSpacing:1.5});
+  s1.addNotes('Welcome the board. This report covers the full treasury position as at '+D+'. Key items: net interest spread, WACC vs WARA (EVA), debtor staging, and board recommendations.');
+
+  // ── SLIDE 2: EXECUTIVE SUMMARY ────────────────────────────────────────────
+  const s2=pres.addSlide();
+  s2.background={color:C.navy};
+  addTopBand(s2,'Executive Summary','Top-line portfolio metrics — all figures in Naira (₦)');
+  const spread=m.spread||0;
+  const kpis=[
+    {l:'TOTAL FINANCIAL ASSETS',v:fmtM(m.totalAssets),  s:'Debtors + Inv + Cash',   acc:C.teal  },
+    {l:'TOTAL BORROWINGS',      v:fmtM(m.totalDebt),    s:borrowCache.length+' facilities', acc:C.red   },
+    {l:'EQUITY & RESERVES',     v:fmtM(m.totalEquity),  s:'Capital + Retained Earnings', acc:C.purple},
+    {l:'NET ASSET COVER',       v:fmtM((m.totalAssets||0)-(m.totalDebt||0)), s:'Assets − Liabilities', acc:(m.totalAssets||0)>(m.totalDebt||0)?C.green:C.red},
+    {l:'WARA',                  v:pct(m.wara),           s:'Return on earning assets', acc:C.amber },
+    {l:'WACD',                  v:pct(m.wacd),           s:'Weighted avg cost of debt', acc:C.blue  },
+    {l:'WACC',                  v:pct(m.wacc),           s:'Cost of capital',           acc:C.purple},
+    {l:'NET INT. SPREAD',       v:(spread>=0?'+':'')+pct(spread), s:'WARA − WACD',      acc:spread>=0?C.green:C.red},
+  ];
+  const cW=2.28,cH=1.08,g=0.07,sx=0.22,sy=1.12;
+  kpis.forEach((k,i)=>kpiCard(s2, sx+(i%4)*(cW+g), sy+Math.floor(i/4)*(cH+0.1), cW, cH, k.l, k.v, k.s, k.acc));
+  addFooter(s2,2);
+  s2.addNotes('Net asset cover and net interest spread are the two headline metrics. Both should be positive. If spread is negative, the entity is paying more on funding than it earns on assets — urgent action needed.');
+
+  // ── SLIDE 3: WACC BREAKDOWN ───────────────────────────────────────────────
+  const s3=pres.addSlide();
+  s3.background={color:C.navy};
+  addTopBand(s3,'Capital Structure & WACC','Cost of capital decomposition — debt, equity weighting');
+  const V=(m.totalEquity||0)+(m.totalDebt||0);
+  s3.addChart(pres.charts.PIE,[{
+    name:'Capital',
+    labels:['Equity & Reserves','Borrowings'],
+    values:[Math.max(m.totalEquity||0.01,0.01),Math.max(m.totalDebt||0.01,0.01)]
+  }],{
+    x:0.25,y:1.12,w:4.3,h:3.45,
+    chartColors:[C.green,C.red],
+    showPercent:true,showLegend:true,legendPos:'b',
+    chartArea:{fill:{color:C.navy3}},
+    dataLabelColor:C.white,dataLabelFontSize:11,
+  });
+  secDiv(s3,4.85,1.12,4.9,'WACC COMPONENT BUILD-UP');
+  const waccTbl=[
+    [{text:'Component',options:{bold:true,color:C.teal}},{text:'Amount',options:{bold:true,color:C.teal}},{text:'Weight',options:{bold:true,color:C.teal}},{text:'Rate',options:{bold:true,color:C.teal}},{text:'Weighted',options:{bold:true,color:C.teal}}],
+    ['Equity & Reserves', fmtM(m.totalEquity), V>0?(m.totalEquity/V*100).toFixed(1)+'%':'—', (eq.costOfEquity||20)+'%', V>0?((m.totalEquity/V)*(eq.costOfEquity||20)).toFixed(2)+'%':'—'],
+    ['Borrowings (pre-tax)',fmtM(m.totalDebt), V>0?(m.totalDebt/V*100).toFixed(1)+'%':'—',   pct(m.wacd),               V>0?((m.totalDebt/V)*(m.wacd||0)).toFixed(2)+'%':'—'],
+    ['Tax Shield (30%)',   '—',               '—',                                            '×0.70',                   V>0?(-(m.totalDebt/V)*(m.wacd||0)*0.30).toFixed(2)+'%':'—'],
+    [{text:'WACC (Final)',options:{bold:true,color:C.teal}},'—','100%','—',{text:pct(m.wacc),options:{bold:true,color:C.teal}}],
+  ];
+  s3.addTable(waccTbl,{x:4.85,y:1.42,w:4.9,h:2.4,border:{pt:0.5,color:C.navy4},color:C.tx,fontSize:9,fontFace:'Arial',fill:{color:C.navy3},rowH:0.42,align:'center',colW:[1.5,1.0,0.7,0.7,0.9]});
+  const evaSig=(m.wara||0)>=(m.wacc||0)?'POSITIVE — Value Creating ▲':'NEGATIVE — Value Destroying ▼';
+  const evaCol=(m.wara||0)>=(m.wacc||0)?C.green:C.red;
+  s3.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:4.85,y:3.95,w:4.9,h:0.7,fill:{color:evaCol,transparency:90},line:{color:evaCol},rectRadius:0.08});
+  s3.addText([
+    {text:'EVA Signal: ',options:{color:C.tx2}},
+    {text:evaSig,options:{color:evaCol,bold:true}},
+    {text:'   WARA '+pct(m.wara)+' vs WACC '+pct(m.wacc),options:{color:C.tx3}},
+  ],{x:4.85,y:3.95,w:4.9,h:0.7,fontSize:9.5,fontFace:'Arial',align:'center',valign:'middle',margin:0});
+  addFooter(s3,3);
+  s3.addNotes('WACC = (E/V × Ke) + (D/V × Kd × (1−tax)). If WARA > WACC the entity generates positive EVA. Debt is tax-advantaged; however excessive leverage increases financial risk. Target D/E ≤ 2×.');
+
+  // ── SLIDE 4: MATURITY PROFILE ────────────────────────────────────────────
+  const s4=pres.addSlide();
+  s4.background={color:C.navy};
+  addTopBand(s4,'Asset & Liability Maturity Profile','Cumulative tenor gap — funding adequacy across maturity buckets');
+  const tL=['≤30d','≤60d','≤90d','≤180d','≤270d','≤365d+'];
+  const aB=(mm.aBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const lB=(mm.lBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const gB=(mm.gBkts||new Array(6).fill(0)).map(v=>Number(v)||0);
+  s4.addChart(pres.charts.BAR,[
+    {name:'Assets',     labels:tL,values:aB},
+    {name:'Liabilities',labels:tL,values:lB},
+  ],{
+    x:0.2,y:1.12,w:6.1,h:3.55,
+    barDir:'col',barGrouping:'clustered',
+    chartColors:[C.teal,C.red],
+    chartArea:{fill:{color:C.navy3}},
+    catAxisLabelColor:C.tx2,valAxisLabelColor:C.tx2,
+    valGridLine:{color:C.navy4,size:0.5},catGridLine:{style:'none'},
+    showLegend:true,legendPos:'b',
+  });
+  secDiv(s4,6.55,1.12,3.2,'CUMULATIVE GAP',C.blue);
+  const gapTbl=[[{text:'Tenor',options:{bold:true,color:C.teal}},{text:'Gap (₦)',options:{bold:true,color:C.teal}},{text:'Signal',options:{bold:true,color:C.teal}}]];
+  tL.forEach((t,i)=>{const g=gB[i];gapTbl.push([t,'₦'+fN(g),{text:g>=0?'LEADING':'DEFICIT',options:{color:g>=0?C.green:C.red,bold:true}}]);});
+  gapTbl.push([{text:'TOTAL',options:{bold:true}},'₦'+fN(mm.gTotal||0),{text:(mm.gTotal||0)>=0?'SURPLUS':'DEFICIT',options:{color:(mm.gTotal||0)>=0?C.green:C.red,bold:true}}]);
+  s4.addTable(gapTbl,{x:6.55,y:1.42,w:3.2,h:3.2,border:{pt:0.5,color:C.navy4},color:C.tx,fontSize:9,fontFace:'Arial',fill:{color:C.navy3},rowH:0.37,align:'center',colW:[0.75,1.3,1.15]});
+  addFooter(s4,4);
+  s4.addNotes('Cumulative gap = total assets maturing ≤ tenor − total liabilities maturing ≤ tenor. A deficit means liabilities reprice or mature before assets — creating funding risk. All buckets should ideally show a LEADING position.');
+
+  // ── SLIDE 5: WARA / WACD SPREAD ──────────────────────────────────────────
+  const s5=pres.addSlide();
+  s5.background={color:C.navy};
+  addTopBand(s5,'Net Interest Spread by Tenor','WARA vs WACD per bucket — earning power analysis');
+  const wA=(mm.waraBkts||new Array(6).fill(0)).map(v=>v==null?0:+(Number(v)||0).toFixed(2));
+  const wF=(mm.wacfBkts||new Array(6).fill(0)).map(v=>v==null?0:+(Number(v)||0).toFixed(2));
+  const sB=(mm.spreadBkts||new Array(6).fill(0));
+  s5.addChart(pres.charts.BAR,[
+    {name:'WARA (Asset Return %)',  labels:tL,values:wA},
+    {name:'WACD (Funding Cost %)', labels:tL,values:wF},
+  ],{
+    x:0.2,y:1.12,w:6.1,h:3.55,
+    barDir:'col',barGrouping:'clustered',
+    chartColors:[C.teal,C.red],
+    chartArea:{fill:{color:C.navy3}},
+    catAxisLabelColor:C.tx2,valAxisLabelColor:C.tx2,
+    valGridLine:{color:C.navy4,size:0.5},catGridLine:{style:'none'},
+    showLegend:true,legendPos:'b',
+    showValue:true,dataLabelFontSize:8,dataLabelColor:C.white,
+  });
+  secDiv(s5,6.55,1.12,3.2,'SPREAD SUMMARY',C.amber);
+  const spTbl=[[{text:'Tenor',options:{bold:true,color:C.teal}},{text:'WARA',options:{bold:true,color:C.teal}},{text:'WACD',options:{bold:true,color:C.teal}},{text:'Spread',options:{bold:true,color:C.teal}}]];
+  tL.forEach((t,i)=>{
+    const sp=sB[i];
+    spTbl.push([t, wA[i].toFixed(2)+'%', wF[i].toFixed(2)+'%',
+      {text:(sp==null?'—':(sp>=0?'+':'')+sp.toFixed(2)+'%'),options:{color:sp!=null&&sp>=0?C.green:C.red,bold:sp!=null}}]);
+  });
+  s5.addTable(spTbl,{x:6.55,y:1.42,w:3.2,h:3.0,border:{pt:0.5,color:C.navy4},color:C.tx,fontSize:9,fontFace:'Arial',fill:{color:C.navy3},rowH:0.42,align:'center',colW:[0.7,0.78,0.78,0.94]});
+  addFooter(s5,5);
+  s5.addNotes('A positive spread in a tenor bucket = the entity earns more on assets than it pays on liabilities repriceable in that window. Negative spread buckets are loss-generating and should be investigated.');
+
+  // ── SLIDE 6: DEBTOR BOOK ──────────────────────────────────────────────────
+  const s6=pres.addSlide();
+  s6.background={color:C.navy};
+  addTopBand(s6,'Debtor Book & IFRS 9 Staging','Receivables portfolio quality — live from Receivables module');
+  const s1a=debtorCache.filter(d=>(d.stage||1)===1);
+  const s2a=debtorCache.filter(d=>(d.stage||1)===2);
+  const s3a=debtorCache.filter(d=>(d.stage||1)===3);
+  const s1v=s1a.reduce((a,d)=>a+(d.totalOutstanding||0),0);
+  const s2v=s2a.reduce((a,d)=>a+(d.totalOutstanding||0),0);
+  const s3v=s3a.reduce((a,d)=>a+(d.totalOutstanding||0),0);
+  s6.addChart(pres.charts.PIE,[{
+    name:'Stage',
+    labels:['Stage 1 — Performing','Stage 2 — Watchlist','Stage 3 — Non-Performing'],
+    values:[Math.max(s1v,0.01),Math.max(s2v,0.01),Math.max(s3v,0.01)]
+  }],{
+    x:0.25,y:1.12,w:4.3,h:3.45,
+    chartColors:[C.green,C.amber,C.red],
+    showPercent:true,showLegend:true,legendPos:'b',
+    chartArea:{fill:{color:C.navy3}},
+    dataLabelColor:C.white,dataLabelFontSize:11,
+  });
+  secDiv(s6,4.85,1.12,4.9,'IFRS 9 STAGING SUMMARY',C.blue);
+  const stgTbl=[
+    [{text:'Stage',options:{bold:true,color:C.teal}},{text:'Count',options:{bold:true,color:C.teal}},{text:'Outstanding (₦)',options:{bold:true,color:C.teal}},{text:'ECL Basis',options:{bold:true,color:C.teal}}],
+    ['Stage 1',s1a.length,fmtM(s1v),'12-month ECL'],
+    ['Stage 2',s2a.length,fmtM(s2v),'Lifetime ECL (SICR)'],
+    ['Stage 3',s3a.length,fmtM(s3v),'Lifetime ECL (Impaired)'],
+    [{text:'TOTAL',options:{bold:true}},debtorCache.length,fmtM(m.totalDebtors||0),'—'],
+  ];
+  s6.addTable(stgTbl,{x:4.85,y:1.42,w:4.9,h:2.2,border:{pt:0.5,color:C.navy4},color:C.tx,fontSize:10,fontFace:'Arial',fill:{color:C.navy3},rowH:0.38,align:'center',colW:[1.0,0.8,1.65,1.45]});
+  if(s3a.length>0){
+    s6.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:4.85,y:3.72,w:4.9,h:0.78,fill:{color:C.red,transparency:90},line:{color:C.red},rectRadius:0.08});
+    s6.addText([
+      {text:'⚠ ALERT: ',options:{bold:true,color:C.red}},
+      {text:s3a.length+' debtor'+(s3a.length>1?'s':'')+' ('+fmtM(s3v)+') are Stage 3. Ensure full provisioning and escalate recovery.',options:{color:C.tx}},
+    ],{x:4.85,y:3.72,w:4.9,h:0.78,fontSize:9,fontFace:'Arial',margin:0.1,valign:'middle'});
   }
+  addFooter(s6,6);
+  s6.addNotes('Stage 3 debtors should each have an individual recovery plan tabled to the board. Stage 2 are pre-default watch — review SICR indicators monthly.');
 
- 
+  // ── SLIDE 7: INVESTMENTS & BORROWINGS ────────────────────────────────────
+  const s7=pres.addSlide();
+  s7.background={color:C.navy};
+  addTopBand(s7,'Investments & Borrowings','Treasury placement portfolio and funding facilities schedule');
+  secDiv(s7,0.2,1.12,4.65,'INVESTMENT PORTFOLIO',C.teal);
+  const invTbl=[[{text:'Counterparty',options:{bold:true,color:C.teal}},{text:'Type',options:{bold:true,color:C.teal}},{text:'Principal',options:{bold:true,color:C.teal}},{text:'Rate',options:{bold:true,color:C.teal}},{text:'Maturity',options:{bold:true,color:C.teal}}]];
+  invCache.slice(0,7).forEach(i=>invTbl.push([
+    (i.counterparty||'').substring(0,15),
+    (i.type||'').substring(0,13),
+    fmtM(i.principal),
+    i.interestRate+'%',
+    i.noMaturity?'Open-ended':fD(i.maturityDate),
+  ]));
+  if(invCache.length>7) invTbl.push(['+ '+(invCache.length-7)+' more','','','','']);
+  invTbl.push([{text:'TOTAL',options:{bold:true}},{text:'',options:{}},fmtM(m.totalInv),{text:pct(m.avgIY||0)+' avg',options:{color:C.green}},{}]);
+  s7.addTable(invTbl,{x:0.2,y:1.42,w:4.65,h:3.85,border:{pt:0.5,color:C.navy4},color:C.tx,fontSize:8,fontFace:'Arial',fill:{color:C.navy3},rowH:0.34,align:'left',colW:[1.45,1.1,0.72,0.52,0.86]});
 
-  async function exportPdf(){
-    try{
-      setStatus('Preparing PDF…');
-      // Build a printable snapshot
-      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
-      const tmp = document.createElement('div'); tmp.style.position='fixed'; tmp.style.left='20px'; tmp.style.top='20px'; tmp.style.width='800px'; tmp.style.padding='20px'; tmp.style.background='#fff'; tmp.style.color='#000'; tmp.style.zIndex=9999;
-      tmp.innerHTML = '<h2>FM Dashboard Report</h2>' +
-        '<h3>Summary</h3><table>' + ['Total Assets','Total Debt','Total Equity','Total Debtors','Investments','Cash','WARA','WACD','Spread'].map(k=>'<tr><td style="padding:4px 8px;font-weight:600">'+k+'</td><td style="padding:4px 8px">'+ (k==='Total Assets'?fmtNum(m.totalAssets): k==='Total Debt'?fmtNum(m.totalDebt): k==='Total Equity'?fmtNum(m.totalEquity): k==='Total Debtors'?fmtNum(m.totalDebtors): k==='Investments'?fmtNum(m.totalInv): k==='Cash'?fmtNum(m.totalCash): k==='WARA'? (m.wara||0)+'%': k==='WACD'? (m.wacd||0)+'%': (m.spread||0)+'%') +'</td></tr>').join('') + '</table>';
-      tmp.innerHTML += '<h3>Assessment</h3>' + ((a.pts||[]).map(p=>'<p style="margin:6px 0">• '+p.t+'</p>').join('')||'<p>No assessment</p>');
-      tmp.innerHTML += '<h3>Recommendations</h3>' + ((a.recs||[]).map(r=>'<p style="margin:6px 0">• '+r+'</p>').join('')||'<p>No recommendations</p>');
-      document.body.appendChild(tmp);
-      // render
-      const canvas = await html2canvas(tmp,{scale:2});
-      const img = canvas.toDataURL('image/png');
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('p','pt','a4');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgProps = pdf.getImageProperties(img);
-      const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-      pdf.addImage(img,'PNG',0,0,pageWidth,pdfHeight);
-      pdf.save('FM_Dashboard_Report.pdf');
-      tmp.remove();
-      setStatus('PDF downloaded',true);
-    }catch(e){console.error(e);setStatus('PDF export failed');}
-  }
+  secDiv(s7,5.15,1.12,4.65,'BORROWINGS SCHEDULE',C.red);
+  const borTbl=[[{text:'Lender',options:{bold:true,color:C.red}},{text:'Type',options:{bold:true,color:C.red}},{text:'Outstanding',options:{bold:true,color:C.red}},{text:'Rate',options:{bold:true,color:C.red}},{text:'Maturity',options:{bold:true,color:C.red}}]];
+  borrowCache.slice(0,7).forEach(b=>borTbl.push([
+    (b.lender||'').substring(0,14),
+    (b.type||'').substring(0,12),
+    fmtM(b.outstanding),
+    b.interestRate+'%',
+    b.noMaturity?'On demand':fD(b.maturityDate),
+  ]));
+  if(borrowCache.length>7) borTbl.push(['+ '+(borrowCache.length-7)+' more','','','','']);
+  borTbl.push([{text:'TOTAL',options:{bold:true}},{text:'',options:{}},fmtM(m.totalDebt||0),{text:pct(m.wacd||0)+' avg',options:{color:C.red}},{}]);
+  s7.addTable(borTbl,{x:5.15,y:1.42,w:4.65,h:3.85,border:{pt:0.5,color:C.navy4},color:C.tx,fontSize:8,fontFace:'Arial',fill:{color:C.navy3},rowH:0.34,align:'left',colW:[1.4,1.1,0.85,0.52,0.78]});
+  addFooter(s7,7);
+  s7.addNotes('Flag any investment maturing within 30 days — reinvestment rates may differ. Flag any borrowing maturing within 90 days — refinancing needs to be confirmed.');
 
-  function attach(){
-    const b=document.getElementById('btn-export-report'); if(b) b.addEventListener('click',showModal);
-    const c=document.getElementById('export-modal-close'); if(c) c.addEventListener('click',closeModal);
-    const x=document.getElementById('export-cancel'); if(x) x.addEventListener('click',closeModal);
-    const ex=document.getElementById('exp-xls'); if(ex) ex.addEventListener('click',exportExcel);
-    const ep=document.getElementById('exp-ppt'); if(ep) ep.addEventListener('click',exportPpt);
-    const epp=document.getElementById('exp-pdf'); if(epp) epp.addEventListener('click',exportPdf);
-  }
+  // ── SLIDE 8: BOARD ADVISORY ───────────────────────────────────────────────
+  const s8=pres.addSlide();
+  s8.background={color:C.navy};
+  addTopBand(s8,'Board Advisory & Recommendations','Financial optimisation assessment and strategic action points');
+  const pts=(a.pts||[]).slice(0,5);
+  const recs=(a.recs||[]).slice(0,4);
+  secDiv(s8,0.2,1.12,5.5,'FINANCIAL OPTIMISATION ASSESSMENT',C.blue);
+  pts.forEach((p,i)=>{
+    const dc=p.c==='gr'?C.green:p.c==='rd'?C.red:C.amber;
+    s8.addShape(pres.shapes.OVAL,{x:0.2,y:1.48+i*0.77+0.08,w:0.13,h:0.13,fill:{color:dc},line:{color:dc}});
+    s8.addText(p.t.substring(0,155),{x:0.44,y:1.46+i*0.77,w:5.1,h:0.72,fontSize:9,color:C.tx,fontFace:'Arial',margin:0,valign:'middle'});
+  });
+  secDiv(s8,5.9,1.12,3.88,'BOARD RECOMMENDATIONS',C.amber);
+  recs.forEach((r,i)=>{
+    s8.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:5.9,y:1.46+i*0.9,w:3.88,h:0.78,fill:{color:C.navy3},line:{color:C.navy4},rectRadius:0.08,shadow:makeShadow()});
+    s8.addText([
+      {text:(i+1)+'. ',options:{bold:true,color:C.amber}},
+      {text:r.substring(0,130),options:{color:C.tx}},
+    ],{x:5.9,y:1.46+i*0.9,w:3.88,h:0.78,fontSize:8.5,fontFace:'Arial',margin:0.1,valign:'middle'});
+  });
+  addFooter(s8,8);
+  s8.addNotes('Board should resolve on each recommendation. Assign an owner, budget if required, and target completion date. Carry forward unresolved items to the next board meeting.');
 
-  if(document.readyState==='complete')setTimeout(attach,200);else window.addEventListener('load',()=>setTimeout(attach,200));
-})();
+  // ── SLIDE 9: SIGN-OFF ────────────────────────────────────────────────────
+  const s9=pres.addSlide();
+  s9.background={color:C.navy};
+  s9.addShape(pres.shapes.OVAL,{x:-1.2,y:-1.2,w:5.5,h:5.5,fill:{color:C.teal,transparency:92},line:{color:C.teal,transparency:92}});
+  s9.addShape(pres.shapes.OVAL,{x:7,y:2.5,w:4,h:4,fill:{color:C.purple,transparency:93},line:{color:C.purple,transparency:93}});
+  s9.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:0.65,w:0.65,h:0.65,fill:{color:C.teal},line:{color:C.teal},rectRadius:0.1});
+  s9.addText('FM',{x:0.6,y:0.65,w:0.65,h:0.65,fontSize:13,bold:true,color:C.navy,align:'center',valign:'middle',margin:0});
+  s9.addText('FM Finance Suite — Treasury Intelligence',{x:1.42,y:0.78,w:7,h:0.4,fontSize:10,color:C.teal,fontFace:'Cambria',margin:0});
+  s9.addText('Management Sign-Off',{x:0.6,y:1.35,w:9,h:0.65,fontSize:28,bold:true,color:C.tx,fontFace:'Cambria',margin:0});
+  s9.addShape(pres.shapes.RECTANGLE,{x:0.6,y:1.98,w:8.8,h:0.02,fill:{color:C.teal},line:{color:C.teal}});
+  const blocks=[
+    {role:'Chief Finance Officer'},
+    {role:'Managing Director / CEO'},
+    {role:'Board Chairman'},
+  ];
+  blocks.forEach((b,i)=>{
+    const bx=0.4+i*3.15;
+    s9.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:bx,y:2.15,w:2.95,h:1.8,fill:{color:C.navy3},line:{color:C.navy4},rectRadius:0.08,shadow:makeShadow()});
+    s9.addText(b.role,{x:bx+0.12,y:2.23,w:2.71,h:0.28,fontSize:9,bold:true,color:C.teal,fontFace:'Cambria',margin:0});
+    s9.addText('Name: ________________________',{x:bx+0.12,y:2.57,w:2.71,h:0.28,fontSize:9,color:C.tx2,fontFace:'Arial',margin:0});
+    s9.addText('Signature: ___________________',{x:bx+0.12,y:2.92,w:2.71,h:0.28,fontSize:9,color:C.tx2,fontFace:'Arial',margin:0});
+    s9.addText('Date: _______________________',{x:bx+0.12,y:3.27,w:2.71,h:0.28,fontSize:9,color:C.tx2,fontFace:'Arial',margin:0});
+    s9.addText('Designation: ________________',{x:bx+0.12,y:3.62,w:2.71,h:0.28,fontSize:9,color:C.tx3,fontFace:'Arial',margin:0});
+  });
+  s9.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:4.52,w:1.5,h:0.3,fill:{color:C.navy3},line:{color:C.navy4},rectRadius:0.08});
+  s9.addText('CONFIDENTIAL',{x:0.6,y:4.52,w:1.5,h:0.3,fontSize:7,bold:true,color:C.amber,align:'center',valign:'middle',fontFace:'Arial',margin:0,charSpacing:1.5});
+  s9.addText('FM Finance Suite  ·  Generated '+D+'  ·  Prepared by: '+userName,{x:0,y:5.33,w:10,h:0.29,fontSize:7.5,color:C.tx3,align:'center',fontFace:'Arial',margin:0});
+  s9.addNotes('Collect signatures before circulating. File signed copy with board minutes as required by governance policy.');
+
+  return pres.writeFile({fileName:'FM_Treasury_Board_Report_'+new Date().toISOString().slice(0,10)+'.pptx'});
+}
+
+// ── RUN ────────────────────────────────────────────────────────────────────
+const testOpts = {
+  orgName:'EIS Finance Ltd', userName:'Michael Felix Happy',
+  metrics:{
+    totalAssets:4500e6,totalDebt:1800e6,totalEquity:1200e6,
+    totalDebtors:2600e6,totalInv:1400e6,totalCash:500e6,
+    wacc:17.4,wacd:19.5,wara:20.8,spread:1.3,
+    avgIY:22.0,avgDR:21.0,lever:1.5,
+  },
+  equityData:{shareCapital:800e6,retainedEarnings:300e6,otherReserves:100e6,costOfEquity:24},
+  assessment:{
+    pts:[
+      {c:'gr',t:'Net interest spread of 1.30% is positive — the entity earns above its cost of funds.'},
+      {c:'am',t:'WARA (20.80%) marginally above WACC (17.40%) — entity is at EVA break-even. Improve asset yields to strengthen value creation.'},
+      {c:'am',t:'57.8% of assets are in debtors — high concentration. Rebalance into short-term investments to reduce credit risk.'},
+      {c:'gr',t:'Investment yield (22.0%) exceeds WACD (19.5%) by 2.5pp — surplus liquidity well deployed at positive spreads.'},
+      {c:'gr',t:'Capital ratio of 26.7% indicates an adequately capitalised entity. Equity buffer supports growth.'},
+    ],
+    recs:[
+      'Reprice debtor facilities upward — target minimum debtor yield of WACD + 5% to ensure viability after ECL charges.',
+      'Deploy idle cash into 91-day Treasury Bills to improve WARA without increasing credit risk.',
+      'Consider a rights issue to reduce leverage below 2× and improve debt capacity for future growth.',
+      'Maintain minimum 10-15% investment portfolio of total assets as a liquidity buffer and yield anchor.',
+    ],
+  },
+  maturity:{
+    aBkts:[500e6,300e6,400e6,1200e6,800e6,1300e6],
+    lBkts:[200e6,150e6,300e6,400e6,500e6,250e6],
+    gBkts:[300e6,450e6,550e6,1350e6,1650e6,2700e6],
+    waraBkts:[21.2,20.5,22.0,20.0,21.5,20.8],
+    wacfBkts:[19.5,20.0,19.0,20.5,19.5,0],
+    spreadBkts:[1.7,0.5,3.0,-0.5,2.0,20.8],
+    aTotal:4500e6,lTotal:1800e6,gTotal:2700e6,
+  },
+  borrowCache:[
+    {lender:'FCMB Ltd',      type:'Term Loan',   outstanding:800e6,interestRate:19.5,maturityDate:'2025-06-30',noMaturity:false},
+    {lender:'Access Bank',   type:'Overdraft',   outstanding:500e6,interestRate:21.0,maturityDate:'2025-03-31',noMaturity:false},
+    {lender:'Customer Funds',type:'Target Plan', outstanding:500e6,interestRate:16.0,maturityDate:null,        noMaturity:true },
+  ],
+  invCache:[
+    {counterparty:'Access Bank',  type:'Fixed Deposit',    principal:600e6,interestRate:22.0,tenorDays:180,dateInvested:'2024-06-01',maturityDate:'2024-12-01',noMaturity:false},
+    {counterparty:'ARM Mgrs',     type:'Treasury Bills',   principal:500e6,interestRate:22.5,tenorDays:91, dateInvested:'2024-07-01',maturityDate:'2024-10-01',noMaturity:false},
+    {counterparty:'Stanbic IBTC', type:'Money Market Fund',principal:300e6,interestRate:20.5,tenorDays:0,  dateInvested:'2024-01-01',maturityDate:null,         noMaturity:true },
+  ],
+  cashCache:[
+    {bank:'Access Bank',balance:250e6,currency:'NGN',restricted:false},
+    {bank:'GTBank',    balance:150e6,currency:'NGN',restricted:false},
+    {bank:'Zenith',    balance:100e6,currency:'NGN',restricted:true },
+  ],
+  debtorCache:[
+    {_id:'d1',name:'ABC Ltd',      totalOutstanding:600e6, stage:1},
+    {_id:'d2',name:'XYZ Corp',     totalOutstanding:400e6, stage:2},
+    {_id:'d3',name:'DEF Holdings', totalOutstanding:1600e6,stage:1},
+  ],
+};
+
+const pres=new PptxGenJS();
+buildPPT(testOpts,pres).then(()=>{
+  console.log('✓ Done: FM_Treasury_Board_Report_'+new Date().toISOString().slice(0,10)+'.pptx');
+}).catch(e=>console.error('✗',e.message,e.stack));
+
 </script>
 
 </body>
