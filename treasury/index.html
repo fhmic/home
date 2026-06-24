@@ -669,34 +669,28 @@ async function fetchEquity() {
   try {
     const res = await api('/treasury/equity');
 
-    if (res.success) {
-      // adapt depending on backend response structure
-      const data = res.data || {};
-
-      _equityData = {
-        shareCapital: data.shareCapital || 0,
-        retainedEarnings: data.retainedEarnings || 0,
-        otherReserves: data.otherReserves || 0,
-        costOfEquity: data.costOfEquity || 20
-      };
+    if (res.success && res.data) {
+      _equityData = res.data;
+      return;
     }
   } catch (e) {
-    console.warn('Equity fetch failed, using fallback');
+    console.warn('DB fetch failed:', e.message);
+  }
 
-    // fallback to local storage
-    try {
-      const local = JSON.parse(localStorage.getItem('fm_equity') || '{}');
+  // ✅ ALWAYS fallback (critical fix)
+  try {
+    const local = JSON.parse(localStorage.getItem('fm_equity') || '{}');
 
-      _equityData = {
-        shareCapital: local.shareCapital || 0,
-        retainedEarnings: local.retainedEarnings || 0,
-        otherReserves: local.otherReserves || 0,
-        costOfEquity: local.costOfEquity || 20
-      };
-    } catch {}
+    _equityData = {
+      shareCapital: local.shareCapital || 0,
+      retainedEarnings: local.retainedEarnings || 0,
+      otherReserves: local.otherReserves || 0,
+      costOfEquity: local.costOfEquity || 20
+    };
+  } catch {
+    _equityData = { shareCapital:0, retainedEarnings:0, otherReserves:0, costOfEquity:20 };
   }
 }
-
 async function loadEquity(){
   $('equity-kpis').innerHTML = '<div class="loading-row">Loading capital data…</div>';
   await fetchEquity();
@@ -771,24 +765,26 @@ async function saveEquity(){
     costOfEquity:     parseFloat($('eq-ke').value)  || 20
   };
   $('eq-save-txt').textContent = 'Saving…';
-  try {
-    // POST to DB endpoint
-    await api('/treasury/equity', { method:'POST', body:JSON.stringify(payload) });
+  
+try {
+    await api('/treasury/equity', { 
+      method:'POST', 
+      body:JSON.stringify(payload) 
+    });
+
     _equityData = payload;
-    closeModal();
-    toast('Capital data saved to database.');
-    renderEquity();
+    localStorage.setItem('fm_equity', JSON.stringify(payload)); // ✅ persist always
+    toast('Saved to database');
+
   } catch(e){
-    // Backend endpoint may not exist yet — save locally as fallback and warn
-    console.warn('Equity DB save failed, using local fallback:', e.message);
+    console.warn('DB save failed:', e.message);
+
     _equityData = payload;
-    try { localStorage.setItem('fm_equity', JSON.stringify(payload)); } catch(x){}
-    closeModal();
-    toast('Saved locally (DB endpoint not available yet — deploy backend update).', 'err');
-    renderEquity();
-  } finally {
-    const t = $('eq-save-txt'); if(t) t.textContent = 'Save Capital Data';
+    localStorage.setItem('fm_equity', JSON.stringify(payload));
+    toast('Saved locally only (backend not working)', 'err');
   }
+
+  renderEquity();
 }
 
 // ════════════════════════════════════════════════════
