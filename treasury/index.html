@@ -10,6 +10,9 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.10.0/pptxgen.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -218,6 +221,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span id="user-name">Loading...</span>
       </div>
+      <button id="btn-export-report" class="bp" title="Export Dashboard Report">Export Report</button>
       <a href="../portal/" class="nav-btn-link">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Portal
       </a>
@@ -580,7 +584,7 @@ async function loadDashboard(){
     {l:'Cost of Equity (Ke)',v:pct(eq.costOfEquity),c:'pu',sub:'Required shareholder return'},
   ].map(k=>'<div class="wacc-card '+k.c+'"><div class="wc-lbl">'+k.l+'</div><div class="wc-val">'+k.v+'</div><div class="wc-sub">'+k.sub+'</div></div>').join('');
 
-  renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara);
+  renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,totalEquity,wacd,avgIY,avgDR,wara,eq.costOfEquity);
   renderDashCharts(totalDebtors,totalInv,totalCash,totalDebt,totalEquity,avgDR,avgIY,wacd,eq.costOfEquity);
   renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever});
 }
@@ -589,7 +593,7 @@ async function loadDashboard(){
 // FIX [A]: Gap row is now CUMULATIVE — each column shows the running
 // leading/(gap) position as at end of that tenor bucket.
 // e.g. 60-day column = (assets maturing ≤60d) − (liabilities maturing ≤60d)
-function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara){
+function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,totalEquity,wacd,avgIY,avgDR,wara,ke){
   const tbl=$('maturity-tbl');if(!tbl)return;
   const N=v=>v>0?'₦'+fN(v):'—';
   // P(): null → '—' (empty bucket); 0 → '0.00%' (assets present, no liability cost); >0 → normal rate
@@ -621,6 +625,24 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
   }
   const gTotal=aTotal-lTotal; // grand total gap (non-cumulative for total column)
 
+  // Recompute total WARA & WACD locally from the same rows used in this table
+  const localWARA = aTotal>0 ? ((rD.total || 0) * avgDR + (rI.total || 0) * avgIY) / aTotal : 0;
+  const totalDebtAndEquity = totalDebt + totalEquity;
+  const localWACD = totalDebtAndEquity>0 ? ((totalDebt/totalDebtAndEquity) * (lTotal>0 ? _borrowCache.reduce((a,b)=>a+(b.outstanding/lTotal)*b.interestRate,0) : 0) + (totalEquity/totalDebtAndEquity) * ke) : 0;
+
+  // Diagnostics: log bucket sums and totals used for WARA/WACD so mismatches can be investigated
+  try {
+    console.groupCollapsed('MaturityTable diagnostics');
+    console.log('aBkts (per bucket assets):', aBkts);
+    console.log('aBkts sum:', aBkts.reduce((s,v)=>s+(v||0),0), 'aTotal:', aTotal);
+    console.log('lBkts (per bucket liabilities):', lBkts);
+    console.log('lBkts sum:', lBkts.reduce((s,v)=>s+(v||0),0), 'lTotal:', lTotal);
+    console.log('rD.total (debtors):', rD.total, 'rI.total (investments):', rI.total, 'rC.total (cash):', rC.total);
+    console.log('global WARA param (from caller):', wara, 'localWARA (table basis):', localWARA);
+    console.log('global WACD param (from caller):', wacd, 'localWACD (table basis):', localWACD);
+    console.groupEnd();
+  } catch(e){ console.warn('Diagnostics logging failed', e); }
+
   // WARA per bucket
   // WARA per bucket: include ALL assets (debtors + investments + cash) in denominator
   // so per-bucket rates are consistent with portfolio-wide WARA in Total column.
@@ -645,14 +667,21 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
   // Spread: compute whenever WARA is known; WACF of 0 means full WARA is the surplus
   const spreadBkts=waraBkts.map((w,i)=>w!=null?w-(wacfBkts[i]??0):null);
 
-  // ── Total column rates: both computed on the SAME base (totalAssets) ──────
-  // waraTotal: earning assets only contribute yield; cash contributes 0 to numerator
-  //            but IS in the denominator — consistent with per-bucket WARA formula.
-  const waraTotal = aTotal>0 ? (rD.total*avgDR + rI.total*avgIY) / aTotal : 0;
-  // wacfTotal: total interest cost of all liabilities divided by SAME asset base
-  //            so spread = waraTotal - wacfTotal is a true apples-to-apples comparison.
-  const wacfTotal = aTotal>0 ? _borrowCache.reduce((s,b)=>s+b.outstanding*b.interestRate,0) / aTotal : 0;
-  const spreadTotal = waraTotal - wacfTotal;
+  // Diagnostics: per-bucket arrays and contribution to surplus (assets * spread)
+  try {
+    console.groupCollapsed('MaturityTable per-bucket diagnostics');
+    console.log('waraBkts:', waraBkts);
+    console.log('wacfBkts:', wacfBkts);
+    console.log('spreadBkts:', spreadBkts);
+    const contribs = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
+    console.log('contribs (assets * spread % => currency):', contribs);
+    console.log('contribs sum:', contribs.reduce((s,v)=>s+(v||0),0));
+    console.groupEnd();
+  } catch(e){ console.warn('per-bucket diagnostics failed',e); }
+
+  // Expose latest maturity arrays for export/reporting
+  const contribs2 = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
+  window.latestMaturity = { aBkts, lBkts, waraBkts, wacfBkts, spreadBkts, contribs: contribs2, aTotal, lTotal, gBkts, gTotal };
 
   const TH='<th>'+TENOR_LBLS.join('</th><th>')+'</th>';
   tbl.innerHTML=`<thead><tr><th>TENOR</th>${TH}<th>TOTAL</th></tr></thead><tbody>
@@ -669,9 +698,22 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     <tr class="pct-row"><td>Financial Assets %</td>${aBkts.map(v=>'<td>'+(aTotal>0?(v/aTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>100%</td></tr>
     <tr class="pct-row"><td>Financial Liabilities %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">WEIGHTED AVERAGE COST OF FUNDS</td></tr>
-    <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(waraTotal)}</td></tr>
-    <tr class="wacf-row"><td>WACF (Liabilities) %</td>${wacfBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(wacfTotal)}</td></tr>
-    <tr class="spread-row gap-row"><td>Surplus / (Deficit) %</td>${spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('')}<td ${cc(spreadTotal)}>${(spreadTotal>=0?'+':'')+spreadTotal.toFixed(2)+'%'}</td></tr>
+    <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWARA)}</td></tr>
+    <tr class="wacf-row"><td>WACC (Debt & Equity) %</td>${wacfBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
+    ${(() => {
+      const contribs = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
+      const totalContrib = contribs.reduce((s,v)=>s+(v||0),0);
+      const surplusPct = aTotal>0 ? (totalContrib / aTotal * 100) : 0;
+      const liabPct = localWARA - localWACD;
+      const liabCurrency = aTotal * (liabPct/100);
+      const perBucket = spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('');
+      const emptyCols = TENOR_CAPS.map(()=>'<td>—</td>').join('');
+<<<<<<< HEAD
+      return `<tr class="spread-row dim"><td>Surplus / (Deficit) — WARA − WACC</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
+=======
+      return `<tr class="spread-row dim"><td>WACC: Surplus / (Deficit) WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
+>>>>>>> ef496d35727b502322c96ababeee0a43e30e8ba0
+    })()}
   </tbody>`;
 }
 
@@ -681,13 +723,13 @@ function renderDashCharts(totalDebtors,totalInv,totalCash,totalDebt,totalEquity,
     '<div class="chart-box"><div class="card-label">Funding Structure — Debt vs Equity</div><canvas id="ch-fs" height="195"></canvas></div>';
   $('dash-charts2').innerHTML='<div class="chart-box"><div class="card-label">Rate Comparison — Cost vs Return by Source (%)</div><canvas id="ch-rc" height="195"></canvas></div>'+
     '<div class="chart-box"><div class="card-label">Debtor Ageing Distribution (₦)</div><canvas id="ch-ag" height="195"></canvas></div>';
-  const ag={current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'180_plus':0};
+  const ag={current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'181_270':0,'271_365':0,'365_plus':0};
   _debtorCache.forEach(d=>Object.keys(ag).forEach(k=>{ag[k]+=(d.ageing[k]||0);}));
   setTimeout(()=>{
     mkChart('ch-ac',{type:'doughnut',data:{labels:['Debtors','Investments','Cash & Equivalents'],datasets:[{data:[totalDebtors,totalInv,totalCash],backgroundColor:['#00c9a7','#63b3ed','#a78bfa'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
     mkChart('ch-fs',{type:'doughnut',data:{labels:['Borrowings','Equity & Reserves'],datasets:[{data:[totalDebt,totalEquity||0.01],backgroundColor:['#e05252','#22c55e'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
     mkChart('ch-rc',{type:'bar',data:{labels:['Debtor Yield','Investment Yield','Cash Yield','Cost of Debt (WACD)','Cost of Equity (Ke)'],datasets:[{label:'Rate (%)',data:[+avgDR.toFixed(2),+avgIY.toFixed(2),0,+wacd.toFixed(2),ke],backgroundColor:['#00c9a7','#63b3ed','#4a6080','#e05252','#a78bfa'],borderRadius:5}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'},ticks:{callback:v=>v+'%'}}}}});
-    mkChart('ch-ag',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','180+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#84cc16','#f59e0b','#ef4444','#dc2626','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-ag',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','181-270d','271-365d','365+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#84cc16','#fbbf24','#f59e0b','#ef4444','#dc2626','#991b1b','#7c2d12'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
   },80);
 }
 
@@ -754,6 +796,8 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
   }
   if(!html)html='<div class="ep" style="padding:1rem"><div class="ei">📊</div>Enter borrowings, investments, cash and equity data to generate the board advisory.</div>';
   el.innerHTML=html;
+  // Expose latest assessment/recommendations for export
+  window.latestAssessment = { pts, recs, metrics: { totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever } };
 }
 
 // ── DEBTOR BOOK (from Receivables) ───────────────────────────
@@ -773,17 +817,17 @@ function renderLoanKPIs(){
   ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
 }
 function renderLoanChart(){
-  const ag={current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'180_plus':0};
+  const ag={current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'181_270':0,'271_365':0,'365_plus':0};
   _debtorCache.forEach(d=>Object.keys(ag).forEach(k=>{ag[k]+=(d.ageing[k]||0);}));
-  setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','180+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#00c9a7','#63b3ed','#f5a623','#e05252','#991b1b'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}}),60);
+  setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','181-270d','271-365d','365+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#00c9a7','#63b3ed','#fbbf24','#f5a623','#e05252','#dc2626','#7c2d12'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}}),60);
 }
 function setLoanFilter(btn,stage){
   document.querySelectorAll('#loan-filters button').forEach(b=>b.style.cssText='');
   btn.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';
   _loanFilter=stage;renderLoanTable();
 }
-const BCLS={current:'pg','1_30':'pg','31_60':'pa','61_90':'pr','91_180':'pr','180_plus':'pdark'};
-const BLBL={current:'Current','1_30':'1-30d','31_60':'31-60d','61_90':'61-90d','91_180':'91-180d','180_plus':'180+d'};
+const BCLS={current:'pg','1_30':'pg','31_60':'pa','61_90':'pr','91_180':'pr','181_270':'pr','271_365':'pdark','365_plus':'pdark'};
+const BLBL={current:'Current','1_30':'1-30d','31_60':'31-60d','61_90':'61-90d','91_180':'91-180d','181_270':'181-270d','271_365':'271-365d','365_plus':'365+d'};
 function renderLoanTable(){
   let data=_debtorCache;
   if(_loanFilter!=='all')data=data.filter(d=>getStage(d._id)===+_loanFilter);
@@ -795,7 +839,7 @@ function renderLoanTable(){
     '<thead><tr><th>Debtor</th><th>Email</th><th class="nm">Outstanding (₦)</th><th>Oldest Bucket</th><th>Stage</th><th>Invoices</th><th>Risk</th></tr></thead>'+
     '<tbody>'+data.map(d=>{
       const stage=getStage(d._id);
-      const hb=['180_plus','91_180','61_90','31_60','1_30','current'].find(k=>(d.ageing[k]||0)>0)||'current';
+      const hb=['365_plus','271_365','181_270','91_180','61_90','31_60','1_30','current'].find(k=>(d.ageing[k]||0)>0)||'current';
       const rs=d.collectionScore||0;
       return'<tr>'+
         '<td><strong>'+d.name+'</strong>'+(d.contactPerson?'<div style="font-size:10px;color:var(--tx3)">'+d.contactPerson+'</div>':'')+' </td>'+
@@ -1362,5 +1406,115 @@ async function saveSettings(){
   }
 })();
 </script>
+
+<!-- Export Report Modal -->
+<div id="export-modal" style="display:none;position:fixed;inset:0;z-index:650;align-items:center;justify-content:center;padding:1rem;background:rgba(5,12,24,.75);backdrop-filter:blur(3px)">
+  <div class="modal" style="max-width:860px;width:100%">
+    <div class="mhdr"><div class="mttl">Export Dashboard Report</div><button class="mclose" id="export-modal-close">×</button></div>
+    <div class="mbody">
+      <p style="color:var(--tx2)">Choose format to download the current dashboard report. Generated from the latest metrics and advisory content.</p>
+      <div style="display:flex;gap:8px;margin-top:1rem">
+        <button id="exp-xls" class="bp">Download Excel</button>
+        <button id="exp-ppt" class="bp">Download PowerPoint</button>
+        <button id="exp-pdf" class="bp">Download PDF</button>
+      </div>
+      <div id="export-status" style="margin-top:1rem;color:var(--tx3);font-size:13px"></div>
+    </div>
+    <div class="mfoot"><button id="export-cancel" class="bsm">Close</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function fmtNum(v){return typeof v==='number'?v.toLocaleString(undefined,{maximumFractionDigits:2}):v}
+  function safe(obj,path,def){try{return path.split('.').reduce((s,k)=>s[k],obj)||def}catch(e){return def}}
+  function closeModal(){document.getElementById('export-modal').style.display='none'}
+  function showModal(){document.getElementById('export-modal').style.display='flex'}
+  function setStatus(txt,ok){const el=document.getElementById('export-status');if(!el)return;el.textContent=txt;el.style.color=ok?getComputedStyle(document.documentElement).getPropertyValue('--gr'):'#f59e0b'}
+
+  async function exportExcel(){
+    try{
+      setStatus('Preparing Excel…');
+      const wb = XLSX.utils.book_new();
+      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
+      const dash = [ ['Metric','Value'], ['Total Assets',fmtNum(m.totalAssets)], ['Total Debt',fmtNum(m.totalDebt)], ['Total Equity',fmtNum(m.totalEquity)], ['Total Debtors',fmtNum(m.totalDebtors)], ['Investments',fmtNum(m.totalInv)], ['Cash',fmtNum(m.totalCash)], ['WACC', (m.wacc||0)], ['WACD', (m.wacd||0)], ['WARA', (m.wara||0)], ['Spread', (m.spread||0)] ];
+      const ws1 = XLSX.utils.aoa_to_sheet(dash); XLSX.utils.book_append_sheet(wb, ws1, 'Dashboard Summary');
+      // Maturity sheet
+      const headers = ['Row'].concat(TENOR_LBLS).concat(['TOTAL']);
+      const rows = [];
+      rows.push(['Total Financial Assets'].concat((mm.aBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.aTotal)]));
+      rows.push(['Total Financial Liabilities'].concat((mm.lBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.lTotal)]));
+      rows.push(['WARA (Assets) %'].concat((mm.waraBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat([mm.aTotal? ( (mm.contribs||[]).reduce((s,v)=>s+(v||0),0) / mm.aTotal *100).toFixed(2):'-']));
+      rows.push(['WACD (Liabilities) %'].concat((mm.wacfBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
+      rows.push(['Spread %'].concat((mm.spreadBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
+      const ws2 = XLSX.utils.aoa_to_sheet([headers].concat(rows)); XLSX.utils.book_append_sheet(wb, ws2, 'Maturity Profile');
+      XLSX.writeFile(wb,'FM_Dashboard_Report.xlsx');
+      setStatus('Excel downloaded',true);
+    }catch(e){console.error(e);setStatus('Excel export failed');}
+  }
+
+  async function exportPpt(){
+    try{
+      setStatus('Preparing PowerPoint…');
+      const pptx = new PptxGenJS();
+      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
+      const slide = pptx.addSlide();
+      slide.addText('FM Dashboard Report',{x:0.5,y:0.5,fontSize:24,color:'363636',bold:true});
+      slide.addText('Summary',{x:0.5,y:1.2,fontSize:14,color:'666666'});
+      const lines = [ 'Total Assets: '+fmtNum(m.totalAssets), 'Total Debt: '+fmtNum(m.totalDebt), 'Total Equity: '+fmtNum(m.totalEquity), 'WARA: '+(m.wara||0)+'%', 'WACD: '+(m.wacd||0)+'%', 'Spread: '+(m.spread||0)+'%' ];
+      slide.addText(lines,{x:0.5,y:1.6,fontSize:12,color:'444444',bullet:true});
+      // Assessment slide
+      const s2 = pptx.addSlide(); s2.addText('Financial Optimisation Assessment',{x:0.5,y:0.5,fontSize:18});
+      const bullets = (a.pts||[]).map(p=>p.t);
+      if(bullets.length) s2.addText(bullets,{x:0.5,y:1.1,fontSize:12,bullet:true}); else s2.addText(['No assessment generated'],{x:0.5,y:1.1,fontSize:12});
+      // Recommendations slide
+      const s3 = pptx.addSlide(); s3.addText('Board Recommendations',{x:0.5,y:0.5,fontSize:18});
+      const recs = (a.recs||[]);
+      if(recs.length) s3.addText(recs,{x:0.5,y:1.1,fontSize:12,bullet:true}); else s3.addText(['No recommendations generated'],{x:0.5,y:1.1,fontSize:12});
+      await pptx.writeFile({fileName:'FM_Dashboard_Report.pptx'});
+      setStatus('PowerPoint downloaded',true);
+    }catch(e){console.error(e);setStatus('PowerPoint export failed');}
+  }
+
+  async function exportPdf(){
+    try{
+      setStatus('Preparing PDF…');
+      // Build a printable snapshot
+      const a = window.latestAssessment||{}; const m = a.metrics||{}; const mm = window.latestMaturity||{};
+      const tmp = document.createElement('div'); tmp.style.position='fixed'; tmp.style.left='20px'; tmp.style.top='20px'; tmp.style.width='800px'; tmp.style.padding='20px'; tmp.style.background='#fff'; tmp.style.color='#000'; tmp.style.zIndex=9999;
+      tmp.innerHTML = '<h2>FM Dashboard Report</h2>' +
+        '<h3>Summary</h3><table>' + ['Total Assets','Total Debt','Total Equity','Total Debtors','Investments','Cash','WARA','WACD','Spread'].map(k=>'<tr><td style="padding:4px 8px;font-weight:600">'+k+'</td><td style="padding:4px 8px">'+ (k==='Total Assets'?fmtNum(m.totalAssets): k==='Total Debt'?fmtNum(m.totalDebt): k==='Total Equity'?fmtNum(m.totalEquity): k==='Total Debtors'?fmtNum(m.totalDebtors): k==='Investments'?fmtNum(m.totalInv): k==='Cash'?fmtNum(m.totalCash): k==='WARA'? (m.wara||0)+'%': k==='WACD'? (m.wacd||0)+'%': (m.spread||0)+'%') +'</td></tr>').join('') + '</table>';
+      tmp.innerHTML += '<h3>Assessment</h3>' + ((a.pts||[]).map(p=>'<p style="margin:6px 0">• '+p.t+'</p>').join('')||'<p>No assessment</p>');
+      tmp.innerHTML += '<h3>Recommendations</h3>' + ((a.recs||[]).map(r=>'<p style="margin:6px 0">• '+r+'</p>').join('')||'<p>No recommendations</p>');
+      document.body.appendChild(tmp);
+      // render
+      const canvas = await html2canvas(tmp,{scale:2});
+      const img = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p','pt','a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgProps = pdf.getImageProperties(img);
+      const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+      pdf.addImage(img,'PNG',0,0,pageWidth,pdfHeight);
+      pdf.save('FM_Dashboard_Report.pdf');
+      tmp.remove();
+      setStatus('PDF downloaded',true);
+    }catch(e){console.error(e);setStatus('PDF export failed');}
+  }
+
+  function attach(){
+    const b=document.getElementById('btn-export-report'); if(b) b.addEventListener('click',showModal);
+    const c=document.getElementById('export-modal-close'); if(c) c.addEventListener('click',closeModal);
+    const x=document.getElementById('export-cancel'); if(x) x.addEventListener('click',closeModal);
+    const ex=document.getElementById('exp-xls'); if(ex) ex.addEventListener('click',exportExcel);
+    const ep=document.getElementById('exp-ppt'); if(ep) ep.addEventListener('click',exportPpt);
+    const epp=document.getElementById('exp-pdf'); if(epp) epp.addEventListener('click',exportPdf);
+  }
+
+  if(document.readyState==='complete')setTimeout(attach,200);else window.addEventListener('load',()=>setTimeout(attach,200));
+})();
+</script>
+
 </body>
 </html>
