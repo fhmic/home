@@ -246,7 +246,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
       <div class="nav-item" data-view="cash">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>Cash Position
       </div>
-      <div class="nav-section">Financial Liabilities</div>
+      <div class="nav-section">FUNDING BASE</div>
       <div class="nav-item" data-view="borrowings">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Borrowings
       </div>
@@ -569,7 +569,7 @@ async function loadDashboard(){
 
   $('dash-ts').textContent='As at '+new Date().toLocaleString('en-GB');
   $('dash-kpis').innerHTML=[
-    {l:'Total Financial Assets',v:fmt(totalAssets),c:'tl',ac:true,sub:'Debtors + Inv + Cash'},
+    {l:'Total Deployable Assets',v:fmt(totalAssets),c:'tl',ac:true,sub:'Debtors + Inv + Cash'},
     {l:'Total Borrowings',v:fmt(totalDebt),c:'rd',sub:_borrowCache.length+' facilities'},
     {l:'Equity & Reserves',v:fmt(totalEquity),c:'pu',sub:'Capital + Retained Earnings'},
     {l:'Total Capital (V)',v:fmt(totalCapital),c:'bl',sub:'Debt + Equity'},
@@ -693,14 +693,14 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     <tr class="sub"><td>Risk Assets (Debtors)</td>${rD.b.map(v=>'<td style="color:var(--t)">'+N(v)+'</td>').join('')}<td style="color:var(--t);font-weight:600">${N(rD.total)}</td></tr>
     <tr class="sub"><td>Investments</td>${rI.b.map(v=>'<td style="color:var(--bl)">'+N(v)+'</td>').join('')}<td style="color:var(--bl);font-weight:600">${N(rI.total)}</td></tr>
     <tr class="sub"><td>Cash &amp; Cash Equivalents</td>${rC.b.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(rC.total)}</td></tr>
-    <tr class="tot-a"><td>TOTAL FINANCIAL ASSETS</td>${aBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(aTotal)}</td></tr>
-    <tr class="sec-hdr rd"><td colspan="9">FINANCIAL LIABILITIES</td></tr>
+    <tr class="tot-a"><td>TOTAL DEPLOYABLE ASSETS</td>${aBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(aTotal)}</td></tr>
+    <tr class="sec-hdr rd"><td colspan="9">FUNDING BASE</td></tr>
     <tr class="sub"><td>Borrowings from Customers / Lenders</td>${rB.b.map(v=>'<td style="color:var(--rd)">'+N(v)+'</td>').join('')}<td style="color:var(--rd);font-weight:600">${N(rB.total)}</td></tr>
-    <tr class="tot-l"><td>TOTAL FINANCIAL LIABILITIES</td>${lBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(lTotal)}</td></tr>
+    <tr class="tot-l"><td>TOTAL FUNDING BASE</td>${lBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(lTotal)}</td></tr>
     <tr class="gap-row"><td>LEADING / (GAP) — Cumulative</td>${gBkts.map(v=>`<td ${cc(v)}>${v!==0?'₦'+fN(v):'—'}</td>`).join('')}<td ${cc(gTotal)}>${'₦'+fN(gTotal)}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">PERIOD'S CONTRIBUTION AS A PERCENTAGE OF TOTAL</td></tr>
     <tr class="pct-row"><td>Financial Assets %</td>${aBkts.map(v=>'<td>'+(aTotal>0?(v/aTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>100%</td></tr>
-    <tr class="pct-row"><td>Financial Liabilities %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
+    <tr class="pct-row"><td>FUNDING BASE %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">WEIGHTED AVERAGE COST OF FUNDS</td></tr>
     <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWARA)}</td></tr>
     <tr class="wacd-row"><td>WACD (Liabilities) %</td>${wacdBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
@@ -1442,8 +1442,8 @@ async function saveSettings(){
       // Maturity sheet
       const headers = ['Row'].concat(TENOR_LBLS).concat(['TOTAL']);
       const rows = [];
-      rows.push(['Total Financial Assets'].concat((mm.aBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.aTotal)]));
-      rows.push(['Total Financial Liabilities'].concat((mm.lBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.lTotal)]));
+      rows.push(['TOTAL DEPLOYABLE ASSETs'].concat((mm.aBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.aTotal)]));
+      rows.push(['TOTAL FUNDING BASE'].concat((mm.lBkts||[]).map(v=>fmtNum(v))).concat([fmtNum(mm.lTotal)]));
       rows.push(['WARA (Assets) %'].concat((mm.waraBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat([mm.aTotal? ( (mm.contribs||[]).reduce((s,v)=>s+(v||0),0) / mm.aTotal *100).toFixed(2):'-']));
       rows.push(['WACD (Liabilities) %'].concat((mm.wacdBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
       rows.push(['Spread %'].concat((mm.spreadBkts||[]).map(v=>v==null?'-':(v.toFixed?v.toFixed(2):v))).concat(['-']));
