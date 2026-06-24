@@ -574,12 +574,11 @@ async function loadDashboard(){
     {l:'Equity & Reserves',v:fmt(totalEquity),c:'pu',sub:'Capital + Retained Earnings'},
     {l:'Total Capital (V)',v:fmt(totalCapital),c:'bl',sub:'Debt + Equity'},
     {l:'Net Asset Cover',v:fmt(totalAssets-totalDebt),c:totalAssets>totalDebt?'gr':'rd',sub:'Assets − Liabilities'},
-    {l:'WARA (Return on Assets)',v:pct(wara),c:'am',sub:'Weighted avg asset return'},
-    {l:'WACD (Cost of Debt)',v:pct(wacd),c:'bl',sub:'Weighted avg cost of debt'},
-  ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
+    ].map(k=>'<div class="kpi '+k.c+(k.ac?' ac':'')+'"><div class="kl">'+k.l+'</div><div class="kv '+k.c+'">'+k.v+'</div><div class="ks">'+k.sub+'</div></div>').join('');
 
   $('dash-wacc').innerHTML=[
-
+    {l:'WARA (Return on Assets)',v:pct(wara),c:'am',sub:'Weighted avg asset return'},
+    {l:'WACD (Cost of Debt)',v:pct(wacd),c:'bl',sub:'Weighted avg cost of debt'},
     {l:'WACC',v:pct(wacc),c:'tl',sub:'Weighted avg cost of capital'},
     {l:'Net Interest Spread (NIS)',v:(spread>=0?'+':'')+pct(spread),c:spread>=0?'gr':'rd',sub:'WARA − WACD'},
     {l:'Economic Value Added (EVA)',v:(eva_signal>=0?'+':'')+pct(eva_signal),c:eva_signal>=0?'gr':'rd',sub:'WARA − WACC'},
