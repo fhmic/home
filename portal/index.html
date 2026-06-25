@@ -709,16 +709,15 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 'use strict';
 var API='https://eis-recbackend.onrender.com/api';
 var _tok=null,_user=null;
-var APP_KEYS=['jobs','markets','bankrecon','receivables','treasury','financialModels'];
+var APP_KEYS=['jobs','markets','bankrecon','receivables','treasury','capmax'];
 var APP_META={
   jobs:        { title:'Job Portal', desc:'FM 360 Live Job Update: Find every opportunity, every day.', icon:'💼', href:'../job/', color:'rgba(0,201,167,.12)' },
   markets:     { title:'Global Market Intelligence', desc:'FM 360 Live Capital Market & FX rate Update: Get up to date Capital Market & FX rate 24/7.', icon:'🏦', href:'../gmi/', color:'rgba(0,201,167,.12)' },
   bankrecon:   { title:'Bank Reconciliation', desc:'Automated bank-to-GL reconciliation engine with fuzzy matching, multi-pass logic and full audit trail.', icon:'🏦', href:'../recon/', color:'rgba(0,201,167,.12)' },
   receivables: { title:'Receivables Tracker', desc:'Track debtors, manage outstanding invoices, ageing analysis and automated payment reminders.', icon:'🧾', href:'../receivables/', color:'rgba(245,166,35,.12)' },
   treasury:    { title:'Treasury Dashboard', desc:'Cash position monitoring, liquidity management and investment portfolio tracking.', icon:'💰', href:'../treasury/', color:'rgba(52,211,153,.1)' },
-  financialModels: {title:'Financial Models', desc:'Dynamic budgeting, forecasting and ALM models for finance teams in regulated environments.', icon:'📋',href:'#', comingSoon: true}
-
-};
+  capmax:    { title:'Capital Maximization', desc:'Nigerian Investor Portfolio Maximisation Strategy Platform.', icon:'📊', href:'../capmax/', color:'rgba(0,201,167,.12)' }
+  };
 
 // wake up backend silently
 (function(){fetch(API+'/health',{method:'GET'}).catch(function(){});})();
@@ -889,7 +888,8 @@ document.querySelectorAll('.auth-card').forEach(function(card){card.addEventList
 function showLogin(){
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('portal-screen').style.display='none';
-  document.getElementById('admin-panel').style.display='none';
+ 
+  document.getElementById('admin-panel').classList.add('active');
   document.getElementById('org-panel').style.display='none';
   document.getElementById('home-link').style.display='flex';
 }
@@ -1034,7 +1034,7 @@ document.getElementById('chpwd-btn').addEventListener('click',async function(){
 // admin panel + org panel nav
 document.getElementById('admin-panel-btn').addEventListener('click',showAdmin);
 document.getElementById('admin-back-portal').addEventListener('click',function(){
-  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('admin-panel').style.display='block';
   document.getElementById('portal-screen').style.display='block';
 });
 document.getElementById('org-panel-btn').addEventListener('click',showOrgPanel);
