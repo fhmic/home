@@ -10,10 +10,10 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <!-- Critical libs loaded eagerly; non-critical deferred -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -399,7 +399,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
           <div><div class="vttl">Equity &amp; Capital Structure</div><div class="vsub">Share capital · Retained earnings · Capital adequacy</div></div>
           <button class="bp" onclick="openEquityModal()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Update Capital</button>
         </div>
-        <div class="nt-info">Update Share Capital, Retained Earnings and Reserves here.</div>
+        <div class="nt-info">Capital structure is saved to your account database — shared across devices and team members automatically.</div>
         <div class="kpi-grid" id="equity-kpis"></div>
         <div class="chart-2" id="equity-charts"></div>
         <div id="equity-detail"></div>
@@ -1771,9 +1771,28 @@ document.addEventListener('DOMContentLoaded', () => {
   $('exp-close').addEventListener('click', () => { $('export-modal').classList.remove('on'); });
   $('exp-cancel').addEventListener('click', () => { $('export-modal').classList.remove('on'); });
 
+  // Poll up to 10s for a CDN library before running an export
+  function waitForLib(check, label, timeout){
+    timeout = timeout || 10000;
+    return new Promise(function(resolve, reject){
+      if(check()) return resolve();
+      var interval = 250, start = Date.now();
+      var t = setInterval(function(){
+        if(check()){ clearInterval(t); return resolve(); }
+        if(Date.now()-start > timeout){
+          clearInterval(t);
+          reject(new Error(label + ' failed to load. Check your internet connection and refresh.'));
+        }
+      }, interval);
+    });
+  }
+
   $('exp-ppt-btn').addEventListener('click', async () => {
-    if(typeof PptxGenJS === 'undefined'){ setExpStatus('PptxGenJS library is still loading — wait a moment and try again.', false); return; }
-    setExpLoading('exp-ppt-btn', true); setExpStatus('Generating 9-slide board deck…', true);
+    setExpLoading('exp-ppt-btn', true); setExpStatus('Loading PowerPoint library…', true);
+    try {
+      await waitForLib(() => typeof PptxGenJS !== 'undefined', 'PptxGenJS');
+    } catch(e){ setExpStatus(e.message, false); setExpLoading('exp-ppt-btn', false); return; }
+    setExpStatus('Generating 9-slide board deck…', true);
     try {
       await exportBoardPPT();
       setExpStatus('✓ PowerPoint downloaded — check your downloads folder.', true);
@@ -1785,8 +1804,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   $('exp-xls-btn').addEventListener('click', async () => {
-    if(typeof XLSX === 'undefined'){ setExpStatus('XLSX library still loading — try again.', false); return; }
-    setExpLoading('exp-xls-btn', true); setExpStatus('Building Excel workbook…', true);
+    setExpLoading('exp-xls-btn', true); setExpStatus('Loading Excel library…', true);
+    try {
+      await waitForLib(() => typeof XLSX !== 'undefined', 'XLSX');
+    } catch(e){ setExpStatus(e.message, false); setExpLoading('exp-xls-btn', false); return; }
+    setExpStatus('Building Excel workbook…', true);
     try {
       await exportDashboardExcel();
       setExpStatus('✓ Excel downloaded.', true);
@@ -1797,8 +1819,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   $('exp-pdf-btn').addEventListener('click', async () => {
-    if(typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined'){ setExpStatus('PDF libraries still loading — try again.', false); return; }
-    setExpLoading('exp-pdf-btn', true); setExpStatus('Rendering PDF…', true);
+    setExpLoading('exp-pdf-btn', true); setExpStatus('Loading PDF libraries…', true);
+    try {
+      await waitForLib(() => typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined', 'PDF libraries');
+    } catch(e){ setExpStatus(e.message, false); setExpLoading('exp-pdf-btn', false); return; }
+    setExpStatus('Rendering PDF…', true);
     try {
       await exportDashboardPDF();
       setExpStatus('✓ PDF downloaded.', true);
