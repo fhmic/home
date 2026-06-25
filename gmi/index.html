@@ -633,7 +633,7 @@ var _NGR=[
   {id:'t364',cls:'tbl',lbl:'T-Bill — 364 Day',       ttl:'NTB Stop Rate (364d)', rate:16.50,u:'%', meta:'Primary Market — Jun 2026',       src:'CBN',  url:'https://cbn.gov.ng',              chg:'↓ from 22.6% (Jan 2025)'},
   {id:'mm',  cls:'mm', lbl:'Money Market Rate',      ttl:'NIBOR Overnight',      rate:26.80,u:'%', meta:'Lagos interbank — Jun 2026',      src:'FMDQ', url:'https://fmdqgroup.com',           chg:'+30bps spread over MPR'},
   {id:'crr', cls:'crr',lbl:'Cash Reserve Ratio',     ttl:'CRR (DMBs)',            rate:45.0, u:'%', meta:'MPC May 2026',                    src:'CBN',  url:'https://cbn.gov.ng',              chg:'Merchant Banks: 16%'},
-  {id:'inf', cls:'inf',lbl:'Headline Inflation',     ttl:'CPI Year-on-Year',     rate:15.70,u:'%', meta:'NBS CPI — Apr 2026',              src:'NBS',  url:'https://nigerianstat.gov.ng',     chg:'↑ from 14.8% (Mar 2026)'},
+  {id:'inf', cls:'inf',lbl:'Headline Inflation',     ttl:'CPI Year-on-Year',     rate:15.93,u:'%', meta:'NBS CPI — May 2026 · Auto-updates on load',src:'NBS',  url:'https://nigerianstat.gov.ng',     chg:'↑ from 15.69% (Apr 2026) · Food: 16.96% · Core: 16.82%'},
   {id:'fx',  cls:'fxr',lbl:'USD/NGN Official Rate',  ttl:'CBN Reference Rate',   rate:1598.50,u:'₦',meta:'I&E Window — Jun 5 2026',        src:'CBN',  url:'https://cbn.gov.ng',              chg:'Parallel: ~₦1,610'},
   {id:'liq', cls:'crr',lbl:'Liquidity Ratio',        ttl:'Min Liquidity Ratio',  rate:30.0, u:'%', meta:'Unchanged — MPC May 2026',        src:'CBN',  url:'https://cbn.gov.ng',              chg:'Unchanged'},
 ];
@@ -652,7 +652,29 @@ var _FIT=[
 var _YHMAP={dow:'%5EDJI',ndx:'%5EIXIC',sp500:'%5EGSPC',ftse:'%5EFTSE',dax:'%5EGDAXI',nky:'%5EN225',sse:'000001.SS',snsx:'%5EBSESN',ngx:'%5ENGSEINDX',jse:'%5EJ203.JO',egx:'%5EEGX30'};
 var _CG_IDS='bitcoin,ethereum,binancecoin,ripple,solana,tether,cardano,avalanche-2,dogecoin,chainlink';
 var _CG_MAP={bitcoin:'BTC',ethereum:'ETH',binancecoin:'BNB',ripple:'XRP',solana:'SOL',tether:'USDT',cardano:'ADA','avalanche-2':'AVAX',dogecoin:'DOGE',chainlink:'LINK'};
-var _px='https://corsproxy.io/?url=';
+var _px='https://corsproxy.io/?url='; // kept for _ngnHist
+var _PROXIES=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url='];
+function _proxyFetch(url,ms){
+  ms=ms||12000;
+  var last='';
+  return _PROXIES.reduce(function(p,proxy){
+    return p.then(function(res){if(res!==null)return res;return null;}).catch(function(){return null;})
+    .then(function(res){
+      if(res!==null&&res!==undefined)return res;
+      return fetch(proxy+encodeURIComponent(url),{signal:_sig(ms)})
+        .then(function(r){
+          if(!r.ok)throw new Error('HTTP '+r.status);
+          var ct=r.headers.get('content-type')||'';
+          if(ct.includes('json')&&proxy.includes('allorigins'))
+            return r.json().then(function(j){return j.contents||'';});
+          return r.text();
+        });
+    }).catch(function(e){last=e.message;return null;});
+  },Promise.resolve(null)).then(function(res){
+    if(!res)throw new Error('All proxies failed: '+last);
+    return res;
+  });
+}
 
 function _upd(){var e=_$('_ts');if(e)e.textContent='Updated: '+new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+' WAT';}
 function _sts(id,st){var e=_$('_as1');if(!e)return;var m={live:'Live',loading:'◌ Fetching…',fallback:'○ Cached'};var c={live:'var(--gr)',loading:'var(--am)',fallback:'var(--tx3)'};e.textContent=m[st]||m.fallback;e.style.color=c[st]||c.fallback;}
@@ -1125,37 +1147,117 @@ async function _fIdx(){
 }
 
 var _ngCache={data:null,ts:0};
-var _NG_TTL=4*60*60*1000;
-async function _fNG(){
-  if(_ngCache.data&&(Date.now()-_ngCache.ts)<_NG_TTL){_apNG(_ngCache.data);return true;}
+var _NG_TTL=4*60*60*1000; // 4 hours cache
+
+// Show per-source fetch status in the API bar
+function _ngSts(results){
+  var icons=results.map(function(r){return r.status==='fulfilled'?'✓':'✗';});
+  var labels=['MPR','Infl','TBill'];
+  var el=document.getElementById('_as1');
+  if(!el)return;
+  el.innerHTML=icons.map(function(ic,i){
+    return'<span style="color:'+(ic==='✓'?'var(--gr)':'var(--rd)')+'">'+ic+'</span> '+labels[i];
+  }).join(' <span style="color:var(--tx4)">·</span> ');
+}
+
+async function _fNG(force){
+  // Use cache unless forced (Refresh button) or expired
+  if(!force&&_ngCache.data&&(Date.now()-_ngCache.ts)<_NG_TTL){
+    _apNG(_ngCache.data);
+    return true;
+  }
   var res=await Promise.allSettled([_sCBN(),_sNBS(),_sTB()]);
-  var mpc=res[0].status==='fulfilled'?res[0].value:null;
-  var infl=res[1].status==='fulfilled'?res[1].value:null;
-  var tbill=res[2].status==='fulfilled'?res[2].value:null;
-  if(mpc||infl||tbill){_ngCache={data:{mpc,infl,tbill},ts:Date.now()};_apNG({mpc,infl,tbill});}
+  _ngSts(res);
+
+  var mpc   =res[0].status==='fulfilled'?res[0].value:null;
+  var infl  =res[1].status==='fulfilled'?res[1].value:null;
+  var tbill =res[2].status==='fulfilled'?res[2].value:null;
+
+  // Log failures to console for debugging
+  res.forEach(function(r,i){
+    if(r.status==='rejected')
+      console.warn(['CBN MPR','NBS Infl','CBN TBill'][i]+' failed:',r.reason&&r.reason.message);
+  });
+
+  var any=mpc||infl||tbill;
+  if(any){
+    _ngCache={data:{mpc:mpc,infl:infl,tbill:tbill},ts:Date.now()};
+    _apNG({mpc:mpc,infl:infl,tbill:tbill});
+  }
+  return !!any;
 }
 async function _sCBN(){
-  var url='https://www.cbn.gov.ng/MonetaryPolicy/decisions.asp';
-  var r=await fetch(_px+encodeURIComponent(url),{signal:_sig(14000)});
-  if(!r.ok)throw new Error('CBN '+r.status);
-  var html=await r.text();
+  var urls=[
+    'https://www.cbn.gov.ng/MonetaryPolicy/decisions.asp',
+    'https://www.cbn.gov.ng/rates/MacroIndicators.html',
+    'https://www.cbn.gov.ng/'
+  ];
+  var html='';
+  for(var ui=0;ui<urls.length;ui++){
+    try{var h=await _proxyFetch(urls[ui],12000);if(h&&h.length>300){html=h;break;}}
+    catch(e){continue;}
+  }
+  if(!html||html.length<200)throw new Error('CBN MPR page unreachable');
+
+  var clean=html.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ');
   var mpr=null,crr=null,liq=null;
-  var mm=html.match(/Monetary Policy Rate[^.]*?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i);if(mm)mpr=parseFloat(mm[1]);
-  var cm=html.match(/Cash Reserve Require?ment[^.]*?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i);if(cm)crr=parseFloat(cm[1]);
-  var lm=html.match(/[Ll]iquidity\s*[Rr]atio[^.]*?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i);if(lm)liq=parseFloat(lm[1]);
-  if(!mpr)throw new Error('MPR parse fail');
-  return{mpr,crr,liq,slf:mpr?+(mpr+0.5).toFixed(2):null,sdf:mpr?+(mpr-4.5).toFixed(2):null};
+
+  var mprPatterns=[
+    /Monetary Policy Rate[^.]{0,80}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
+    /\bMPR\b[^.]{0,40}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
+    /\bMPR\b[^.]{0,30}?(\d{1,2}(?:\.\d{1,2})?)\s*%/i,
+    /policy rate[^.]{0,50}?(\d{1,2}(?:\.\d{1,2})?)\s*%/i,
+    /policy rate[^.]{0,50}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
+  ];
+  for(var i=0;i<mprPatterns.length;i++){var mm=clean.match(mprPatterns[i]);if(mm){mpr=parseFloat(mm[1]);break;}}
+
+  var crrPatterns=[
+    /Cash Reserve Require?ment[^.]{0,80}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
+    /\bCRR\b[^.]{0,40}?(\d{1,3}(?:\.\d{1,2})?)\s*per\s*cent/i,
+    /\bCRR\b[^.]{0,30}?(\d{1,3}(?:\.\d{1,2})?)\s*%/i,
+  ];
+  for(var i=0;i<crrPatterns.length;i++){var mc=clean.match(crrPatterns[i]);if(mc){crr=parseFloat(mc[1]);break;}}
+
+  var liqPatterns=[
+    /[Ll]iquidity\s*[Rr]atio[^.]{0,80}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
+    /[Ll]iquidity\s*[Rr]atio[^.]{0,40}?(\d{1,2}(?:\.\d{1,2})?)\s*%/i,
+  ];
+  for(var i=0;i<liqPatterns.length;i++){var ml=clean.match(liqPatterns[i]);if(ml){liq=parseFloat(ml[1]);break;}}
+
+  if(!mpr)throw new Error('MPR not found in CBN page');
+  if(mpr<15||mpr>35)throw new Error('MPR out of plausible range: '+mpr);
+  return{mpr:+mpr.toFixed(2),crr:crr?+crr.toFixed(2):null,liq:liq?+liq.toFixed(2):null,
+    slf:+(mpr+0.5).toFixed(2),sdf:+(mpr-4.5).toFixed(2)};
 }
 async function _sNBS(){
-  var url='https://www.nigerianstat.gov.ng/';
-  var r=await fetch(_px+encodeURIComponent(url),{signal:_sig(14000)});
-  if(!r.ok)throw new Error('NBS '+r.status);
-  var html=await r.text();
-  var sm=html.match(/Inflation Rate[^)]+\)\s*([\d.,\s]+)/i);
-  if(!sm)throw new Error('NBS series not found');
-  var series=sm[1].trim().split(',').map(function(v){return parseFloat(v.trim());}).filter(function(v){return !isNaN(v);});
-  if(!series.length)throw new Error('NBS empty');
-  return{headline:series[series.length-1],prev:series.length>=2?series[series.length-2]:null};
+  var urls=['https://nigerianstat.gov.ng/','https://www.nigerianstat.gov.ng/'];
+  var html='';
+  for(var ui=0;ui<urls.length;ui++){
+    // Try direct fetch first (NBS allows CORS), then via proxy
+    try{var r=await fetch(urls[ui],{signal:_sig(9000)});if(r.ok){html=await r.text();break;}}
+    catch(e){}
+    try{html=await _proxyFetch(urls[ui],10000);if(html&&html.length>200)break;}
+    catch(e){continue;}
+  }
+  if(!html||html.length<200)throw new Error('NBS page unreachable');
+
+  // Primary: embedded series after "(All-Items)"
+  var m=html.match(/Inflation Rate[^)]+\)\s*\(All-Items\)\s*([\d.,\s]+)/i);
+  // Fallback A: series after closing paren before base period marker
+  if(!m)m=html.match(/Inflation Rate[^)]+\)\s*([\d.,\s]+)/i);
+  // Fallback B: any long comma-separated numeric series on the page
+  if(!m)m=html.match(/(\d{2}\.\d{1,2}(?:,\s*\d{1,2}\.\d{1,2}){4,})/);
+  if(!m)throw new Error('NBS inflation series not found');
+
+  var series=m[1].trim().split(',')
+    .map(function(v){return parseFloat(v.trim());})
+    .filter(function(v){return !isNaN(v)&&v>0&&v<100;});
+  if(series.length<2)throw new Error('NBS series too short');
+
+  var headline=series[series.length-1];
+  var prev=series[series.length-2];
+  if(headline<5||headline>80)throw new Error('NBS rate implausible: '+headline);
+  return{headline:+headline.toFixed(2),prev:+prev.toFixed(2),series:series};
 }
 async function _sTB(){
   var url='https://www.cbn.gov.ng/rates/tBillsrates.asp';
@@ -1179,26 +1281,52 @@ async function _sTB(){
 }
 function _apNG(p){
   var mpc=p.mpc,infl=p.infl,tbill=p.tbill;
+
   if(mpc&&mpc.mpr){
-    var mi=_NGR.find(function(r){return r.id==='mpr';});if(mi){mi.rate=mpc.mpr;mi.meta='MPC — live from cbn.gov.ng';mi.chg='Live from CBN';}
-    var ci=_NGR.find(function(r){return r.id==='crr';});if(ci&&mpc.crr){ci.rate=mpc.crr;ci.meta='CRR (DMBs) — live from cbn.gov.ng';}
-    var li=_NGR.find(function(r){return r.id==='liq';});if(li&&mpc.liq){li.rate=mpc.liq;}
+    var mi=_NGR.find(function(r){return r.id==='mpr';});
+    if(mi){mi.rate=mpc.mpr;mi.meta='MPC — auto-fetched · cbn.gov.ng';
+      mi.chg='SLF: '+(mpc.slf||'—')+'% · SDF: '+(mpc.sdf||'—')+'%';}
+    var ci=_NGR.find(function(r){return r.id==='crr';});
+    if(ci&&mpc.crr){ci.rate=mpc.crr;ci.meta='CRR — auto-fetched · cbn.gov.ng';}
+    var li=_NGR.find(function(r){return r.id==='liq';});
+    if(li&&mpc.liq){li.rate=mpc.liq;li.meta='Liquidity Ratio — auto-fetched · cbn.gov.ng';}
   }
+
   if(infl&&infl.headline){
     var ii=_NGR.find(function(r){return r.id==='inf';});
-    if(ii){ii.rate=infl.headline;ii.meta='NBS CPI — latest published';ii.chg=infl.prev?(infl.headline>=infl.prev?'↑':'↓')+' from '+infl.prev.toFixed(2)+'% prev month':'Live from NBS';}
+    if(ii){
+      ii.rate=infl.headline;
+      ii.meta='NBS CPI — auto-fetched · nigerianstat.gov.ng';
+      ii.chg=infl.prev
+        ?(infl.headline>=infl.prev?'↑':'↓')+' from '+infl.prev.toFixed(2)+'% prev month'
+        :'Live from NBS';
+    }
+    // Update last point on historical chart
+    if(window._ngchI){
+      var inflDs=window._ngchI.data.datasets.find(function(d){return d.label==='Inflation';});
+      if(inflDs){inflDs.data[inflDs.data.length-1]=infl.headline;window._ngchI.update();}
+    }
   }
+
   if(tbill){
-    ['t91','t182','t364'].forEach(function(k){
+    var tmap={t91:'t91',t182:'t182',t364:'t364'};
+    var tenorLabel={t91:'91 days',t182:'182 days',t364:'364 days'};
+    Object.keys(tmap).forEach(function(k){
       if(!tbill[k])return;
-      var tid=k==='t91'?'t91':k==='t182'?'t182':'t364';
-      var ni=_NGR.find(function(r){return r.id===tid;});
-      if(ni){ni.rate=tbill[k];ni.meta='NTB stop rate — latest CBN auction';}
-      var fid=['t91','t182','t364'].indexOf(k);
-      var fi=_FIT[fid];if(fi)fi.rate=tbill[k].toFixed(2)+'%';
+      var ni=_NGR.find(function(r){return r.id===tmap[k];});
+      if(ni){ni.rate=tbill[k];ni.meta='NTB Stop Rate — auto-fetched · cbn.gov.ng';
+        ni.chg='Latest CBN primary market auction';}
+      var fi=_FIT.find(function(r){return r.ten===tenorLabel[k];});
+      if(fi){fi.rate=tbill[k].toFixed(2)+'%';fi.la='Latest';fi.ba=(tbill[k]-0.10).toFixed(2)+'%';}
     });
+    // Update last point on historical chart
+    if(tbill.t364&&window._ngchI){
+      var tbDs=window._ngchI.data.datasets.find(function(d){return d.label==='T-Bill 364d';});
+      if(tbDs){tbDs.data[tbDs.data.length-1]=tbill.t364;window._ngchI.update();}
+    }
   }
-  _bngr();_bfit();
+
+  _bngr();_bfit();_btk();
 }
 
 function _mktSt(){
@@ -1220,8 +1348,8 @@ document.querySelectorAll('._nmi').forEach(function(btn){
   });
 });
 
-window._rf=async function(btn){btn.classList.add('spin');btn.disabled=true;try{await Promise.allSettled([_fCI(),_fFX(),_fIdx(),_fNG()]);_upd();_mktSt();}finally{btn.classList.remove('spin');btn.disabled=false;}};
-window._rfx=async function(btn){btn.classList.add('spin');btn.disabled=true;try{await Promise.allSettled([_fFX(),_fNG()]);_upd();}finally{btn.classList.remove('spin');btn.disabled=false;}};
+window._rf=async function(btn){btn.classList.add('spin');btn.disabled=true;try{await Promise.allSettled([_fCI(),_fFX(),_fIdx(),_fNG(true)]);_upd();_mktSt();}finally{btn.classList.remove('spin');btn.disabled=false;}};
+window._rfx=async function(btn){btn.classList.add('spin');btn.disabled=true;try{await Promise.allSettled([_fFX(),_fNG(true)]);_upd();}finally{btn.classList.remove('spin');btn.disabled=false;}};
 window._rcy=async function(btn){btn.classList.add('spin');btn.disabled=true;try{await _fCI();_upd();}finally{btn.classList.remove('spin');btn.disabled=false;}};
 
 async function _init(){
@@ -1236,6 +1364,13 @@ async function _init(){
   setInterval(_mktSt,60*1000);
 }
 window.addEventListener('load',_init);
+// Auto-refresh Nigeria rates when user returns to tab after 30+ min
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'){
+    var stale=!_ngCache.data||(Date.now()-_ngCache.ts)>30*60*1000;
+    if(stale)_fNG(true).catch(function(){});
+  }
+});
 </script>
 </body>
 </html>
