@@ -888,7 +888,7 @@ document.querySelectorAll('.auth-card').forEach(function(card){card.addEventList
 function showLogin(){
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('portal-screen').style.display='none';
-  document.getElementById('admin-panel').style.display='none';
+ 
   document.getElementById('admin-panel').classList.add('active');
   document.getElementById('org-panel').style.display='none';
   document.getElementById('home-link').style.display='flex';
@@ -1034,7 +1034,7 @@ document.getElementById('chpwd-btn').addEventListener('click',async function(){
 // admin panel + org panel nav
 document.getElementById('admin-panel-btn').addEventListener('click',showAdmin);
 document.getElementById('admin-back-portal').addEventListener('click',function(){
-  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('admin-panel').style.display='block';
   document.getElementById('portal-screen').style.display='block';
 });
 document.getElementById('org-panel-btn').addEventListener('click',showOrgPanel);
