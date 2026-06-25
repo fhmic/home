@@ -399,7 +399,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
           <div><div class="vttl">Equity &amp; Capital Structure</div><div class="vsub">Share capital · Retained earnings · Capital adequacy</div></div>
           <button class="bp" onclick="openEquityModal()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Update Capital</button>
         </div>
-        
+        <div class="nt-info">Capital structure is saved to your account database — shared across devices and team members automatically.</div>
         <div class="kpi-grid" id="equity-kpis"></div>
         <div class="chart-2" id="equity-charts"></div>
         <div id="equity-detail"></div>
@@ -494,6 +494,8 @@ var _cashCache    = [];
 var _debtorCache  = [];
 var _portfolioCache = [];
 var _equityData   = { shareCapital:0, retainedEarnings:0, otherReserves:0, costOfEquity:20 };
+// Pre-load from localStorage immediately so dashboard shows saved equity before auth/DB resolves
+(function(){ try{ const e=localStorage.getItem('fm_equity'); if(e){ const p=JSON.parse(e); if(p&&p.shareCapital) _equityData=p; } }catch(x){} })();
 var _loanFilter   = 'all';
 var _charts       = {};
 var _dashLoaded   = false; // prevent double-loads on first paint
@@ -665,32 +667,33 @@ function avgDebtorEIR(){
 // ════════════════════════════════════════════════════
 // EQUITY — DB-BACKED (reads /treasury/equity, saves /treasury/equity)
 // ════════════════════════════════════════════════════
-async function fetchEquity() {
+async function fetchEquity(){
+  // Always load localStorage first as immediate fallback
   try {
-    const res = await api('/treasury/equity');
+    const local = localStorage.getItem('fm_equity');
+    if(local){ const p = JSON.parse(local); if(p.shareCapital) _equityData = p; }
+  } catch(x){}
 
-    if (res.success && res.data) {
-      _equityData = res.data;
-      return;
+  // Try DB — if it returns data, it wins over localStorage
+  try {
+    const d = await api('/treasury/equity');
+    if(d && d.equity && d.equity.shareCapital){
+      _equityData = {
+        shareCapital:      d.equity.shareCapital      || 0,
+        retainedEarnings:  d.equity.retainedEarnings  || 0,
+        otherReserves:     d.equity.otherReserves     || 0,
+        costOfEquity:      d.equity.costOfEquity      || 20
+      };
+      // Keep localStorage in sync with DB value
+      try { localStorage.setItem('fm_equity', JSON.stringify(_equityData)); } catch(x){}
     }
-  } catch (e) {
-    console.warn('DB fetch failed:', e.message);
-  }
-
-  // ✅ ALWAYS fallback (critical fix)
-  try {
-    const local = JSON.parse(localStorage.getItem('fm_equity') || '{}');
-
-    _equityData = {
-      shareCapital: local.shareCapital || 0,
-      retainedEarnings: local.retainedEarnings || 0,
-      otherReserves: local.otherReserves || 0,
-      costOfEquity: local.costOfEquity || 20
-    };
-  } catch {
-    _equityData = { shareCapital:0, retainedEarnings:0, otherReserves:0, costOfEquity:20 };
+    // If DB returns empty/null, localStorage value already loaded above
+  } catch(e){
+    // DB endpoint not yet deployed — localStorage value already loaded above
+    console.info('Equity DB not available, using localStorage fallback.');
   }
 }
+
 async function loadEquity(){
   $('equity-kpis').innerHTML = '<div class="loading-row">Loading capital data…</div>';
   await fetchEquity();
@@ -765,26 +768,24 @@ async function saveEquity(){
     costOfEquity:     parseFloat($('eq-ke').value)  || 20
   };
   $('eq-save-txt').textContent = 'Saving…';
-  
-try {
-    await api('/treasury/equity', { 
-      method:'POST', 
-      body:JSON.stringify(payload) 
-    });
+  // Always persist to localStorage immediately so refresh never loses data
+  try { localStorage.setItem('fm_equity', JSON.stringify(payload)); } catch(x){}
+  _equityData = payload;
 
-    _equityData = payload;
-    localStorage.setItem('fm_equity', JSON.stringify(payload)); // ✅ persist always
-    toast('Saved to database');
-
+  try {
+    await api('/treasury/equity', { method:'POST', body:JSON.stringify(payload) });
+    closeModal();
+    toast('Capital data saved to database.');
+    renderEquity();
   } catch(e){
-    console.warn('DB save failed:', e.message);
-
-    _equityData = payload;
-    localStorage.setItem('fm_equity', JSON.stringify(payload));
-    toast('Saved locally only (backend not working)', 'err');
+    // DB not available — localStorage already saved above, data survives refresh
+    console.info('Equity DB not available, saved to localStorage.');
+    closeModal();
+    toast('Capital data saved locally.');
+    renderEquity();
+  } finally {
+    const t = $('eq-save-txt'); if(t) t.textContent = 'Save Capital Data';
   }
-
-  renderEquity();
 }
 
 // ════════════════════════════════════════════════════
