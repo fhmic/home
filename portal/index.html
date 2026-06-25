@@ -716,7 +716,7 @@ var APP_META={
   bankrecon:   { title:'Bank Reconciliation', desc:'Automated bank-to-GL reconciliation engine with fuzzy matching, multi-pass logic and full audit trail.', icon:'🏦', href:'../recon/', color:'rgba(0,201,167,.12)' },
   receivables: { title:'Receivables Tracker', desc:'Track debtors, manage outstanding invoices, ageing analysis and automated payment reminders.', icon:'🧾', href:'../receivables/', color:'rgba(245,166,35,.12)' },
   treasury:    { title:'Treasury Dashboard', desc:'Cash position monitoring, liquidity management and investment portfolio tracking.', icon:'💰', href:'../treasury/', color:'rgba(52,211,153,.1)' },
-  capmax:    { title:'Capital Maximization', desc:'Nigerian Investor Portfolio Maximisation Intelligence.', icon:'📊', href:'../capmax/', color:'rgba(0,201,167,.12)' }
+  capmax:    { title:'Capital Maximization', desc:'Nigerian Investor Portfolio Maximisation Strategy Platform.', icon:'📊', href:'../capmax/', color:'rgba(0,201,167,.12)' }
   };
 
 // wake up backend silently
@@ -889,6 +889,7 @@ function showLogin(){
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('portal-screen').style.display='none';
   document.getElementById('admin-panel').style.display='none';
+  document.getElementById('admin-panel').classList.add('active');
   document.getElementById('org-panel').style.display='none';
   document.getElementById('home-link').style.display='flex';
 }
