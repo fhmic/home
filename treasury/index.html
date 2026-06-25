@@ -142,7 +142,7 @@ button:disabled{opacity:.35;cursor:not-allowed}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
 .fld{margin-bottom:.9rem}
 .fld label{display:block;font-size:10.5px;font-family:var(--mo);color:var(--tx2);margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase}
-.finput{width:100%;padding:8px 12px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;transition:border-color .15s;outline:none;appearance:none;-webkit-appearance:none}
+.finput{width:100%;padding:8px 12px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;transition:border-color .15s;outline:none;-webkit-appearance:none}
 .finput:focus{border-color:var(--t);box-shadow:0 0 0 2px rgba(0,201,167,.1)}
 .finput::placeholder{color:var(--tx3)}
 select.finput{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238fa3bf' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;cursor:pointer}
@@ -399,7 +399,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
           <div><div class="vttl">Equity &amp; Capital Structure</div><div class="vsub">Share capital · Retained earnings · Capital adequacy</div></div>
           <button class="bp" onclick="openEquityModal()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Update Capital</button>
         </div>
-        <div class="nt-info">Update Share Capital, Retained Earnings and Reserves.</div>
+        <div class="nt-info">Capital structure is saved to your account database — shared across devices and team members automatically.</div>
         <div class="kpi-grid" id="equity-kpis"></div>
         <div class="chart-2" id="equity-charts"></div>
         <div id="equity-detail"></div>
@@ -849,21 +849,20 @@ async function loadDashboard(){
     {l:'Cost of Equity (Ke)', v:pct(eq.costOfEquity),              c:'pu', sub:'Required shareholder return'},
   ].map(k=>`<div class="wacc-card ${k.c}"><div class="wc-lbl">${k.l}</div><div class="wc-val">${k.v}</div><div class="wc-sub">${k.sub}</div></div>`).join('');
 
-  renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara);
-  renderDashCharts(totalDebtors,totalInv,totalCash,totalDebt,totalEquity,avgDR,avgIY,wacd,eq.costOfEquity);
-  renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever});
+  renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt, wacd, avgIY, avgDR, wara);
+  renderDashCharts(totalDebtors, totalInv, totalCash, totalDebt, totalEquity, avgDR, avgIY, wacd, eq.costOfEquity);
+  renderAdvisory({ totalAssets, totalDebt, totalEquity, totalDebtors, totalInv, totalCash, wacc, wacd, wara, spread, avgIY, avgDR, lever });
+  _dashLoaded = true;
 }
 
-// ── MATURITY TABLE ─────────────────────────────────────────────
-// FIX [A]: Gap row is now CUMULATIVE — each column shows the running
-// leading/(gap) position as at end of that tenor bucket.
-// e.g. 60-day column = (assets maturing ≤60d) − (liabilities maturing ≤60d)
-function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara){
-  const tbl=$('maturity-tbl');if(!tbl)return;
-  const N=v=>v>0?'₦'+fN(v):'—';
-  // P(): null → '—' (empty bucket); 0 → '0.00%' (assets present, no liability cost); >0 → normal rate
-  const P=v=>v!=null?v.toFixed(2)+'%':'—';
-  const cc=v=>v>0?'style="color:var(--gr)"':v<0?'style="color:var(--rd)"':'';
+// ════════════════════════════════════════════════════
+// MATURITY PROFILE TABLE
+// ════════════════════════════════════════════════════
+function renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt, wacd, avgIY, avgDR, wara){
+  const tbl = $('maturity-tbl'); if(!tbl) return;
+  const N  = v => v > 0 ? '₦'+fN(v) : '—';
+  const P  = v => v != null ? v.toFixed(2)+'%' : '—';
+  const cc = v => v > 0 ? 'style="color:var(--gr)"' : v < 0 ? 'style="color:var(--rd)"' : '';
 
   const rD = buildRow(_portfolioCache, r=>r.balance, r=>r.dueDate, today, 'demand');
   const rI = buildRow(_invCache, i=>i.principal, i=>i.noMaturity?null:i.maturityDate, today, 'liquid');
@@ -881,30 +880,12 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
   for(let i=0; i<TENOR_CAPS.length; i++){ _cum += (aBkts[i]-lBkts[i]); gBkts.push(_cum); }
   const gTotal = aTotal - lTotal;
 
-  // Recompute total WARA & WACD locally from the same rows used in this table
-  const localWARA = aTotal>0 ? ((rD.total || 0) * avgDR + (rI.total || 0) * avgIY) / aTotal : 0;
-  const localWACD = lTotal>0 ? (_borrowCache.reduce((a,b)=>a+(b.outstanding/lTotal)*b.interestRate,0)) : 0;
+  const localWARA = aTotal>0 ? ((rD.total||0)*avgDR + (rI.total||0)*avgIY) / aTotal : 0;
+  const localWACD = lTotal>0 ? _borrowCache.reduce((a,b)=>a+(b.outstanding/lTotal)*b.interestRate,0) : 0;
 
-  // Diagnostics: log bucket sums and totals used for WARA/WACD so mismatches can be investigated
-  try {
-    console.groupCollapsed('MaturityTable diagnostics');
-    console.log('aBkts (per bucket assets):', aBkts);
-    console.log('aBkts sum:', aBkts.reduce((s,v)=>s+(v||0),0), 'aTotal:', aTotal);
-    console.log('lBkts (per bucket liabilities):', lBkts);
-    console.log('lBkts sum:', lBkts.reduce((s,v)=>s+(v||0),0), 'lTotal:', lTotal);
-    console.log('rD.total (debtors):', rD.total, 'rI.total (investments):', rI.total, 'rC.total (cash):', rC.total);
-    console.log('global WARA param (from caller):', wara, 'localWARA (table basis):', localWARA);
-    console.log('global WACD param (from caller):', wacd, 'localWACD (table basis):', localWACD);
-    console.groupEnd();
-  } catch(e){ console.warn('Diagnostics logging failed', e); }
-
-  // WARA per bucket
-  // WARA per bucket: include ALL assets (debtors + investments + cash) in denominator
-  // so per-bucket rates are consistent with portfolio-wide WARA in Total column.
-  // Cash earns 0% — large idle cash correctly drags WARA down, signalling idle-liquidity cost.
-  const waraBkts=aBkts.map((v,i)=>{
-    const da=rD.b[i],ia=rI.b[i],ca=rC.b[i],tot=da+ia+ca;
-    return tot>0?(da*avgDR+ia*avgIY)/tot:null;
+  const waraBkts = aBkts.map((v,i) => {
+    const da=rD.b[i], ia=rI.b[i], tot=da+ia+rC.b[i];
+    return tot>0 ? (da*avgDR + ia*avgIY)/tot : null;
   });
   const wacdBkts = waraBkts.map((w,i) => {
     if(w==null) return null;
@@ -937,17 +918,8 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     <tr class="pct-row"><td>Funding Base %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">WEIGHTED AVERAGE COST OF FUNDS</td></tr>
     <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWARA)}</td></tr>
-    <tr class="wacf-row"><td>WACF (Liabilities) %</td>${wacfBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
-    ${(() => {
-      const contribs = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
-      const totalContrib = contribs.reduce((s,v)=>s+(v||0),0);
-      const surplusPct = aTotal>0 ? (totalContrib / aTotal * 100) : 0;
-      const liabPct = localWARA - localWACD;
-      const liabCurrency = aTotal * (liabPct/100);
-      const perBucket = spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('');
-      const emptyCols = TENOR_CAPS.map(()=>'<td>—</td>').join('');
-      return `<tr class="spread-row dim"><td>Surplus / (Deficit) — WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
-    })()}
+    <tr class="wacd-row"><td>WACD (Liabilities) %</td>${wacdBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
+    <tr class="spread-row dim"><td>Surplus / (Deficit) WARA − WACD</td>${TENOR_CAPS.map(()=>'<td>—</td>').join('')}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)}% (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>
   </tbody>`;
 }
 
