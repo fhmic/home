@@ -1666,8 +1666,8 @@ async function exportBoardPPT(){
   s1.addShape(pres.shapes.OVAL,{x:7.8,y:2.8,w:3,h:3,fill:{color:EXP_C.blue,transparency:92},line:{color:EXP_C.blue,transparency:92}});
   s1.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:0.7,w:0.65,h:0.65,fill:{color:EXP_C.teal},line:{color:EXP_C.teal},rectRadius:0.1});
   s1.addText('FM',{x:0.6,y:0.7,w:0.65,h:0.65,fontSize:13,bold:true,color:EXP_C.navy,align:'center',valign:'middle',margin:0});
-  s1.addText(orgName &'— Treasury Intelligence',{x:1.42,y:0.82,w:6.5,h:0.4,fontSize:11,color:EXP_C.teal,fontFace:'Cambria',margin:0});
-  s1.addText('Treasury Repot',{x:0.6,y:1.6,w:9,h:0.9,fontSize:46,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
+  s1.addText(orgName + ' — Treasury Intelligence',{x:1.42,y:0.82,w:6.5,h:0.4,fontSize:11,color:EXP_C.teal,fontFace:'Cambria',margin:0});
+  s1.addText('Treasury Report',{x:0.6,y:1.6,w:9,h:0.9,fontSize:46,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
   s1.addText('Board Presentation',{x:0.6,y:2.45,w:9,h:0.62,fontSize:28,color:EXP_C.teal,fontFace:'Cambria',margin:0,italic:true});
   s1.addShape(pres.shapes.RECTANGLE,{x:0.6,y:3.18,w:3.5,h:0.022,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
   s1.addText('Prepared: '+D+'  |  Prepared by: '+userName,{x:0.6,y:3.58,w:7,h:0.28,fontSize:9.5,color:EXP_C.tx2,fontFace:'Arial',margin:0});
@@ -1900,7 +1900,7 @@ async function exportBoardPPT(){
   s9.addShape(pres.shapes.OVAL,{x:7,y:2.5,w:4,h:4,fill:{color:EXP_C.purple,transparency:93},line:{color:EXP_C.purple,transparency:93}});
   s9.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:0.65,w:0.65,h:0.65,fill:{color:EXP_C.teal},line:{color:EXP_C.teal},rectRadius:0.1});
   s9.addText('FM',{x:0.6,y:0.65,w:0.65,h:0.65,fontSize:13,bold:true,color:EXP_C.navy,align:'center',valign:'middle',margin:0});
-  s9.addText('FM Finance Suite — Treasury Intelligence',{x:1.42,y:0.78,w:7,h:0.4,fontSize:10,color:EXP_C.teal,fontFace:'Cambria',margin:0});
+  s9.addText(orgName + ' — Treasury Report',{x:1.42,y:0.78,w:7,h:0.4,fontSize:10,color:EXP_C.teal,fontFace:'Cambria',margin:0});
   s9.addText('Management Sign-Off',{x:0.6,y:1.35,w:9,h:0.65,fontSize:28,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
   s9.addShape(pres.shapes.RECTANGLE,{x:0.6,y:1.98,w:8.8,h:0.02,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
   [{role:'Chief Finance Officer'},{role:'Managing Director / CEO'},{role:'Board Chairman'}].forEach((b,i)=>{
