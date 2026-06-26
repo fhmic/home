@@ -1701,9 +1701,9 @@ async function exportBoardPPT(){
     {l:'INVESTMENT YIELD',       v:expPct(m.avgIY),                                 s:'Weighted avg investment yield',acc:EXP_C.green },
     {l:'COST OF EQUITY (Ke)',    v:expPct(m.eq?.costOfEquity||_equityData.costOfEquity||20), s:'Required shareholder return', acc:EXP_C.purple},
   ];
-  // 3 rows × 5 cols, compact cards
-  const cW2=1.87, cH2=0.95, g2=0.05, sx2=0.18, sy2=1.1;
-  all15.forEach((k,i)=>expKpiCard(s2,pres,sx2+(i%5)*(cW2+g2),sy2+Math.floor(i/5)*(cH2+0.08),cW2,cH2,k.l,k.v,k.s,k.acc));
+  // TO (4 rows × 6 cols = 24 slots, fits 22 comfortably):
+const cW2=1.55, cH2=0.88, g2=0.04, sx2=0.18, sy2=1.1;
+all15.forEach((k,i)=>expKpiCard(s2,pres,sx2+(i%6)*(cW2+g2),sy2+Math.floor(i/6)*(cH2+0.07),cW2,cH2,k.l,k.v,k.s,k.acc));
   expFooter(s2,pres,2,TOTAL);
   s2.addNotes('All 15 dashboard KPIs. Key: Net Asset Cover and NIS must be positive. EVA Signal confirms value creation. D/E >3× is normal for a finance company funding risk assets.');
 
