@@ -1143,7 +1143,7 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
   if(cashPct>25)   concerns.push('deploying idle cash');
   const posStr  = positives.length>0 ? `building on its ${positives.join(', ')}` : 'addressing key structural gaps';
   const conStr  = concerns.length>0  ? concerns.join(', and ') : 'sustaining current performance metrics';
-  const conclusion = `The Board should prioritise ${conStr}, while ${posStr}. Execution discipline and speed are critical to prevent further earnings dilution and to position the company for sustainable profitability.`;
+  const conclusion = `The Management should prioritise ${conStr}, while ${posStr}. Execution discipline and speed are critical to prevent further earnings dilution and to position the company for sustainable profitability.`;
 
   // ── Render HTML ──────────────────────────────────────────────
   let html = '';
