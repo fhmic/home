@@ -845,15 +845,16 @@ async function loadDashboard(){
     {l:'Total Funding Base',      v:fmt(totalCapital),            c:'bl',         sub:'Debt + Equity'},
     {l:'Total Borrowings',        v:fmt(totalDebt),               c:'rd',         sub:_borrowCache.length+' facilities'},
     {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'pu',         sub:'Capital + Retained Earnings'},
-    {l:'Net Asset Cover',         v:fmt(totalAssets-totalDebt),   c:totalAssets>totalDebt?'gr':'rd', sub:'Assets − Liabilities'},
+    
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
 
   $('dash-wacc').innerHTML = [
+    {l:'Net Asset Cover',     v:fmt(totalAssets-totalDebt),   c:totalAssets>totalDebt?'gr':'rd', sub:'Assets − Liabilities'},
     {l:'WARA',                v:pct(wara),                         c:'am', sub:'Return on earning assets'},
     {l:'WACD',                v:pct(wacd),                         c:'bl', sub:'Weighted avg cost of debt'},
     {l:'WACC',                v:pct(wacc),                         c:'tl', sub:'Weighted avg cost of capital'},
-    {l:'Net Int. Spread',     v:(spread>=0?'+':'')+pct(spread),    c:spread>=0?'gr':'rd', sub:'WARA − WACD'},
-    {l:'Economic Value Added (EVA)', v:(evaSig>=0?'+':'')+pct(evaSig),    c:evaSig>=0?'gr':'rd', sub:'WARA − WACC'},
+    {l:'Net Int. Spread',     v:(spread>=0?'+':'')+pct(spread),    c:spread>=0?'gr':'rd', sub:'MIS: WARA − WACD'},
+    {l:'Economic Value Added', v:(evaSig>=0?'+':'')+pct(evaSig),    c:evaSig>=0?'gr':'rd', sub:'EVA: WARA − WACC'},
     {l:'Debt / Equity',       v:lever.toFixed(2)+'×',              c:lever>8?'rd':lever>3?'gr':lever>1.5?'am':'gr', sub:'Financial leverage'},
     {l:'Debt / Assets',       v:pct(dta),                          c:dta>0.8?'rd':dta>0.6?'am':'gr', sub:'Debt ÷ Deployable Assets'},
     {l:'Debtor Yield',        v:pct(avgDR),                        c:'am', sub:'Avg implied rate on debtors'},
@@ -1668,11 +1669,10 @@ async function exportBoardPPT(){
   s1.addShape(pres.shapes.OVAL,{x:7.8,y:2.8,w:3,h:3,fill:{color:EXP_C.blue,transparency:92},line:{color:EXP_C.blue,transparency:92}});
   s1.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:0.7,w:0.65,h:0.65,fill:{color:EXP_C.teal},line:{color:EXP_C.teal},rectRadius:0.1});
   s1.addText('FM',{x:0.6,y:0.7,w:0.65,h:0.65,fontSize:13,bold:true,color:EXP_C.navy,align:'center',valign:'middle',margin:0});
-  s1.addText('FM Finance Suite — Treasury Intelligence',{x:1.42,y:0.82,w:6.5,h:0.4,fontSize:11,color:EXP_C.teal,fontFace:'Cambria',margin:0});
-  s1.addText('Treasury Intelligence',{x:0.6,y:1.6,w:9,h:0.9,fontSize:46,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
+  s1.addText(orgName+'— Treasury Intelligence',{x:1.42,y:0.82,w:6.5,h:0.4,fontSize:11,color:EXP_C.teal,fontFace:'Cambria',margin:0});
+  s1.addText('Treasury Report',{x:0.6,y:1.6,w:9,h:0.9,fontSize:46,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
   s1.addText('Board Presentation',{x:0.6,y:2.45,w:9,h:0.62,fontSize:28,color:EXP_C.teal,fontFace:'Cambria',margin:0,italic:true});
   s1.addShape(pres.shapes.RECTANGLE,{x:0.6,y:3.18,w:3.5,h:0.022,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
-  s1.addText(orgName,{x:0.6,y:3.28,w:6,h:0.32,fontSize:13,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
   s1.addText('Prepared: '+D+'  |  Prepared by: '+userName,{x:0.6,y:3.58,w:7,h:0.28,fontSize:9.5,color:EXP_C.tx2,fontFace:'Arial',margin:0});
   s1.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:4.48,w:1.5,h:0.32,fill:{color:EXP_C.navy3},line:{color:EXP_C.navy4},rectRadius:0.1});
   s1.addText('CONFIDENTIAL',{x:0.6,y:4.48,w:1.5,h:0.32,fontSize:7.5,bold:true,color:EXP_C.amber,align:'center',valign:'middle',fontFace:'Arial',margin:0,charSpacing:1.5});
@@ -1683,11 +1683,21 @@ async function exportBoardPPT(){
   expTopBand(s2,pres,'Executive Summary','Top-line portfolio metrics — all figures in Naira (₦)');
   const sp=m.spread||0; const evS=(m.wara||0)-(m.wacc||0); const lvr=m.lever||0;
   const all15=[
+  {l:'Total Deployable Assets', v:fmt(totalAssets),             c:'tl', ac:true, sub:'Loans + Inv + Cash'},
+    {l:'Risk Assets',             v:fmt(totalDebtors),            c:'tl', ac:true, sub:'Outstanding Loans'},
+    {l:'Investment',              v:fmt(totalInv),                 c:'tl', ac:true, sub:'Investment Value'},
+    {l:'Cash &amp; Bank ',        v:fmt(totalCash),               c:'tl', ac:true, sub:'Cash &amp; Cash Equivalents'},
+    {l:'Total Funding Base',      v:fmt(totalCapital),            c:'bl',         sub:'Debt + Equity'},
+    {l:'Total Borrowings',        v:fmt(totalDebt),               c:'rd',         sub:_borrowCache.length+' facilities'},
+    {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'pu',         sub:'Capital + Retained Earnings'},   
     {l:'TOTAL DEPLOYABLE ASSETS', v:expFmtM(m.totalAssets),                        s:'Loans + Inv + Cash',        acc:EXP_C.teal  },
-    {l:'TOTAL FUNDING BASE',     v:expFmtM((m.totalEquity||0)+(m.totalDebt||0)),   s:'Debt + Equity',               acc:EXP_C.blue  },
+    {l:'Risk Assets',             v:expFmtM(totalDebtors),                         s:'Outstanding Loans',         acc:EXP_C.red  },
+    {l:'Investment',              v:expFmtM(totalInv),                             s:'Investment Value',          acc:EXP_C.red  },
+    {l:'Cash &amp; Bank ',        v:expFmtM(totalCash),                            s:'Cash &amp; Cash Equivalents',acc:EXP_C.red  },
+    {l:'TOTAL FUNDING BASE',     v:expFmtM((m.totalEquity||0)+(m.totalDebt||0)),   s:'Debt + Equity',               acc:EXP_C.teal  },
     {l:'TOTAL BORROWINGS',       v:expFmtM(m.totalDebt),                           s:_borrowCache.length+' facilities', acc:EXP_C.red   },
-    {l:'EQUITY & RESERVES',      v:expFmtM(m.totalEquity),                         s:'Capital + Retained',          acc:EXP_C.purple},
-    {l:'NET ASSET COVER',        v:expFmtM((m.totalAssets||0)-(m.totalDebt||0)),   s:'Assets − Liabilities',        acc:(m.totalAssets||0)>(m.totalDebt||0)?EXP_C.green:EXP_C.red},
+    {l:'EQUITY & RESERVES',      v:expFmtM(m.totalEquity),                         s:'Capital + Retained',          acc:EXP_C.red},
+    {l:'NET ASSET COVER',        v:expFmtM((m.totalAssets||0)-(m.totalDebt||0)),   s:'Assets − Liabilities',        acc:(m.totalAssets||0)>(m.totalDebt||0)?EXP_C.green:EXP_C.blue},
     {l:'WARA',                   v:expPct(m.wara),                                  s:'Return on earning assets',    acc:EXP_C.amber },
     {l:'WACD',                   v:expPct(m.wacd),                                  s:'Weighted avg cost of debt',   acc:EXP_C.blue  },
     {l:'WACC',                   v:expPct(m.wacc),                                  s:'Cost of capital',             acc:EXP_C.purple},
@@ -1903,7 +1913,7 @@ async function exportBoardPPT(){
   s9.addShape(pres.shapes.OVAL,{x:7,y:2.5,w:4,h:4,fill:{color:EXP_C.purple,transparency:93},line:{color:EXP_C.purple,transparency:93}});
   s9.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:0.65,w:0.65,h:0.65,fill:{color:EXP_C.teal},line:{color:EXP_C.teal},rectRadius:0.1});
   s9.addText('FM',{x:0.6,y:0.65,w:0.65,h:0.65,fontSize:13,bold:true,color:EXP_C.navy,align:'center',valign:'middle',margin:0});
-  s9.addText('FM Finance Suite — Treasury Intelligence',{x:1.42,y:0.78,w:7,h:0.4,fontSize:10,color:EXP_C.teal,fontFace:'Cambria',margin:0});
+  s9.addText(orgName' — Treasury Report',{x:1.42,y:0.78,w:7,h:0.4,fontSize:10,color:EXP_C.teal,fontFace:'Cambria',margin:0});
   s9.addText('Management Sign-Off',{x:0.6,y:1.35,w:9,h:0.65,fontSize:28,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
   s9.addShape(pres.shapes.RECTANGLE,{x:0.6,y:1.98,w:8.8,h:0.02,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
   [{role:'Chief Finance Officer'},{role:'Managing Director / CEO'},{role:'Board Chairman'}].forEach((b,i)=>{
