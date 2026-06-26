@@ -11,7 +11,7 @@
 <!-- Critical libs loaded eagerly; non-critical deferred -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.min.js"></script>
+<!-- PptxGenJS loaded dynamically on first PPT export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -1771,27 +1771,84 @@ document.addEventListener('DOMContentLoaded', () => {
   $('exp-close').addEventListener('click', () => { $('export-modal').classList.remove('on'); });
   $('exp-cancel').addEventListener('click', () => { $('export-modal').classList.remove('on'); });
 
-  // Poll up to 10s for a CDN library before running an export
-  function waitForLib(check, label, timeout){
-    timeout = timeout || 10000;
+  // Dynamically load a script, trying multiple CDN sources in order
+  function loadScript(urls){
+    return new Promise(function(resolve, reject){
+      var idx = 0;
+      function tryNext(){
+        if(idx >= urls.length) return reject(new Error('Could not load library from any CDN source. Check your internet connection.'));
+        var s = document.createElement('script');
+        s.src = urls[idx++];
+        s.onload = resolve;
+        s.onerror = function(){ console.warn('Failed to load:', s.src); tryNext(); };
+        document.head.appendChild(s);
+      }
+      tryNext();
+    });
+  }
+  // Poll up to 10s for a global to appear after script load
+  function waitForGlobal(check, timeout){
+    timeout = timeout || 8000;
     return new Promise(function(resolve, reject){
       if(check()) return resolve();
-      var interval = 250, start = Date.now();
+      var interval = 100, start = Date.now();
       var t = setInterval(function(){
         if(check()){ clearInterval(t); return resolve(); }
-        if(Date.now()-start > timeout){
-          clearInterval(t);
-          reject(new Error(label + ' failed to load. Check your internet connection and refresh.'));
-        }
+        if(Date.now()-start > timeout){ clearInterval(t); reject(new Error('Library global not found after load.')); }
       }, interval);
     });
+  }
+  // Ensure PptxGenJS is loaded — tries 3 CDN sources
+  var _pptxLoading = null;
+  function ensurePptxGenJS(){
+    if(typeof PptxGenJS !== 'undefined') return Promise.resolve();
+    if(_pptxLoading) return _pptxLoading;
+    _pptxLoading = loadScript([
+      'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js',
+      'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.min.js'
+    ]).then(function(){ return waitForGlobal(function(){ return typeof PptxGenJS !== 'undefined'; }); })
+      .catch(function(e){ _pptxLoading = null; throw e; });
+    return _pptxLoading;
+  }
+  // Ensure XLSX is loaded
+  var _xlsxLoading = null;
+  function ensureXLSX(){
+    if(typeof XLSX !== 'undefined') return Promise.resolve();
+    if(_xlsxLoading) return _xlsxLoading;
+    _xlsxLoading = loadScript([
+      'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+      'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+    ]).then(function(){ return waitForGlobal(function(){ return typeof XLSX !== 'undefined'; }); })
+      .catch(function(e){ _xlsxLoading = null; throw e; });
+    return _xlsxLoading;
+  }
+  // Ensure PDF libs are loaded
+  var _pdfLoading = null;
+  function ensurePDFLibs(){
+    if(typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined') return Promise.resolve();
+    if(_pdfLoading) return _pdfLoading;
+    _pdfLoading = loadScript([
+      'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+      'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
+    ]).then(function(){
+      return loadScript([
+        'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+        'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
+      ]);
+    }).then(function(){ return waitForGlobal(function(){ return typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined'; }); })
+      .catch(function(e){ _pdfLoading = null; throw e; });
+    return _pdfLoading;
   }
 
   $('exp-ppt-btn').addEventListener('click', async () => {
     setExpLoading('exp-ppt-btn', true); setExpStatus('Loading PowerPoint library…', true);
     try {
-      await waitForLib(() => typeof PptxGenJS !== 'undefined', 'PptxGenJS');
-    } catch(e){ setExpStatus(e.message, false); setExpLoading('exp-ppt-btn', false); return; }
+      await ensurePptxGenJS();
+    } catch(e){ setExpStatus('Could not load PptxGenJS: ' + e.message, false); setExpLoading('exp-ppt-btn', false); return; }
     setExpStatus('Generating 9-slide board deck…', true);
     try {
       await exportBoardPPT();
@@ -1806,8 +1863,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $('exp-xls-btn').addEventListener('click', async () => {
     setExpLoading('exp-xls-btn', true); setExpStatus('Loading Excel library…', true);
     try {
-      await waitForLib(() => typeof XLSX !== 'undefined', 'XLSX');
-    } catch(e){ setExpStatus(e.message, false); setExpLoading('exp-xls-btn', false); return; }
+      await ensureXLSX();
+    } catch(e){ setExpStatus('Could not load XLSX: ' + e.message, false); setExpLoading('exp-xls-btn', false); return; }
     setExpStatus('Building Excel workbook…', true);
     try {
       await exportDashboardExcel();
@@ -1821,8 +1878,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $('exp-pdf-btn').addEventListener('click', async () => {
     setExpLoading('exp-pdf-btn', true); setExpStatus('Loading PDF libraries…', true);
     try {
-      await waitForLib(() => typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined', 'PDF libraries');
-    } catch(e){ setExpStatus(e.message, false); setExpLoading('exp-pdf-btn', false); return; }
+      await ensurePDFLibs();
+    } catch(e){ setExpStatus('Could not load PDF libraries: ' + e.message, false); setExpLoading('exp-pdf-btn', false); return; }
     setExpStatus('Rendering PDF…', true);
     try {
       await exportDashboardPDF();
