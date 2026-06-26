@@ -597,6 +597,7 @@ var _NGR=[
   {id:'crr', cls:'crr',lbl:'Cash Reserve Ratio',     ttl:'CRR (DMBs)',            rate:45.0, u:'%', meta:'MPC May 2026 · Auto-fetches on load',                    src:'CBN',  url:'https://cbn.gov.ng',              chg:'Merchant Banks: 16%'},
   {id:'inf', cls:'inf',lbl:'Headline Inflation',     ttl:'CPI Year-on-Year',     rate:15.93,u:'%', meta:'NBS CPI — May 2026 (pub. 15 Jun 2026) · Auto-fetches on load',src:'NBS',  url:'https://nigerianstat.gov.ng',     chg:'↑ from 15.69% (Apr 2026) · Food: 16.96% · Core: 16.82%'},
   {id:'fx',  cls:'fxr',lbl:'USD/NGN Official Rate',  ttl:'CBN Reference Rate',   rate:1598.50,u:'₦',meta:'I&E Window — Jun 5 2026',        src:'CBN',  url:'https://cbn.gov.ng',              chg:'Parallel: ~₦1,610'},
+  {id:'gdp', cls:'mm', lbl:'Real GDP Growth Rate',    ttl:'GDP Y-o-Y (Q1 2026)',  rate:3.89,u:'%', meta:'NBS GDP Report Q1 2026 — pub. 25 May 2026',    src:'NBS',  url:'https://nigerianstat.gov.ng',             chg:'↑ from 3.13% (Q1 2025) · FY 2025: 3.87%'},
   {id:'liq', cls:'crr',lbl:'Liquidity Ratio',        ttl:'Min Liquidity Ratio',  rate:30.0, u:'%', meta:'Unchanged — MPC May 2026',        src:'CBN',  url:'https://cbn.gov.ng',              chg:'Unchanged'},
 ];
 var _FIT=[
@@ -609,6 +610,7 @@ var _FIT=[
   {inst:'Eurobond 2031',  rate:'8.75%', ten:'~5yr USD',  ba:'8.60%', la:'Jun 2026',note:'USD-denominated'},
   {inst:'NIBOR O/N',      rate:'26.80%',ten:'Overnight', ba:'26.70%',la:'Jun 5 2026',note:'Above MPR'},
   {inst:'NIBOR 30-day',   rate:'27.20%',ten:'30 days',  ba:'27.05%',la:'Jun 5 2026',note:'FMDQ platform'},
+  {inst:'Real GDP Growth (Q1 2026)',rate:'3.89%',ten:'YoY',ba:'Q4 2025: 4.07%',la:'25 May 2026',note:'NBS · Oil: 2.57% · Non-oil: 3.94%'},
   {inst:'Commercial Paper',rate:'18–20%',ten:'90–180d',  ba:'Market',la:'Ongoing',  note:'OTC market'},
 ];
 var _YHMAP={dow:'%5EDJI',ndx:'%5EIXIC',sp500:'%5EGSPC',ftse:'%5EFTSE',dax:'%5EGDAXI',nky:'%5EN225',sse:'000001.SS',snsx:'%5EBSESN',ngx:'%5ENGSEINDX',jse:'%5EJ203.JO',egx:'%5EEGX30'};
@@ -1036,7 +1038,11 @@ async function _sNBS(){
   var headline=series[series.length-1];
   var prev=series[series.length-2];
   if(headline<5||headline>80)throw new Error('NBS rate implausible: '+headline);
-  return{headline:+headline.toFixed(2),prev:+prev.toFixed(2),series:series};
+  // Also try to parse GDP growth from the same page
+  var gdp=null,gdpPrev=null;
+  var gm=html.match(/GDP grew by\s*([\d.]+)%/i)||html.match(/GDP growth[^\d]{0,20}([\d.]+)%/i)||html.match(/Gross Domestic Product[^\d]{0,40}([\d.]+)%/i);
+  if(gm){gdp=parseFloat(gm[1]);if(gdp<0||gdp>20)gdp=null;}
+  return{headline:+headline.toFixed(2),prev:+prev.toFixed(2),series:series,gdp:gdp,gdpPrev:gdpPrev};
 }
 
 // ── MPR / CRR / Liquidity Ratio from CBN ───────────────────────────
@@ -1111,6 +1117,12 @@ function _apNG(p){
     if(window._ngchI){
       var inflDs=window._ngchI.data.datasets.find(function(d){return d.label==='Inflation';});
       if(inflDs){inflDs.data[inflDs.data.length-1]=infl.headline;window._ngchI.update();}
+    }
+    // Update GDP card if parsed from NBS page
+    if(infl.gdp){
+      var gi2=_NGR.find(function(r){return r.id==='gdp';});
+      if(gi2){gi2.rate=infl.gdp;gi2.meta='NBS GDP — auto-fetched · nigerianstat.gov.ng';
+        gi2.chg=infl.gdpPrev?'Prev: '+infl.gdpPrev.toFixed(2)+'%':'Latest NBS quarterly GDP';}
     }
   }
 
