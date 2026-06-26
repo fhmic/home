@@ -719,7 +719,7 @@ function renderEquity(){
     {l:'Retained Earnings',       v:fmt(e.retainedEarnings),   c:'gr', sub:'Accumulated profits'},
     {l:'Other Reserves',          v:fmt(e.otherReserves),      c:'am', sub:'Statutory / fair value'},
     {l:'Capital Ratio',           v:cr.toFixed(1)+'%',         c:cr<10?'rd':cr>30?'gr':'am', sub:'Equity / Total Assets'},
-    {l:'Debt / Equity Ratio',     v:de.toFixed(2)+'×',         c:de>3?'rd':de>1.5?'am':'gr', sub:'Financial leverage'},
+    {l:'Debt / Equity Ratio',     v:de.toFixed(2)+'×',         c:de>8?'rd':de>3?'gr':de>1.5?'am':'gr', sub:'Financial leverage'},
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
 
   $('equity-charts').innerHTML = '<div class="chart-box"><div class="card-label">Equity Composition</div><canvas id="ch-eq1" height="200"></canvas></div><div class="chart-box"><div class="card-label">Capital Structure</div><canvas id="ch-eq2" height="200"></canvas></div>';
@@ -842,7 +842,7 @@ async function loadDashboard(){
     {l:'WACC',                v:pct(wacc),                         c:'tl', sub:'Weighted avg cost of capital'},
     {l:'Net Int. Spread',     v:(spread>=0?'+':'')+pct(spread),    c:spread>=0?'gr':'rd', sub:'WARA − WACD'},
     {l:'EVA Signal',          v:(evaSig>=0?'+':'')+pct(evaSig),    c:evaSig>=0?'gr':'rd', sub:'WARA − WACC'},
-    {l:'Debt / Equity',       v:lever.toFixed(2)+'×',              c:lever>3?'rd':lever>1.5?'am':'gr', sub:'Financial leverage'},
+    {l:'Debt / Equity',       v:lever.toFixed(2)+'×',              c:lever>8?'rd':lever>3?'gr':lever>1.5?'am':'gr', sub:'Financial leverage'},
     {l:'Debt / Assets',       v:pct(dta),                          c:dta>0.8?'rd':dta>0.6?'am':'gr', sub:'Debt ÷ Deployable Assets'},
     {l:'Debtor Yield',        v:pct(avgDR),                        c:'am', sub:'Avg implied rate on debtors'},
     {l:'Investment Yield',    v:pct(avgIY),                        c:'gr', sub:'Weighted avg investment return'},
@@ -959,17 +959,20 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     else              pts.push({c:'am',t:`WARA (${pct(wara)}) is marginally above WACC (${pct(wacc)}). At EVA break-even; improving asset yields will strengthen value creation.`});
   }
 
-  if(debtorPct>70)  pts.push({c:'am',t:`${debtorPct.toFixed(0)}% of assets are in debtors — high concentration. Rebalance into short investments.`});
-  else if(debtorPct>50) pts.push({c:'bl',t:`Debtor book (${debtorPct.toFixed(0)}% of assets) is primary earning asset. Keep ECL model current for accurate provisioning.`});
+  if(debtorPct>80)  pts.push({c:'am',t:`${debtorPct.toFixed(0)}% of assets are in risk assets — very high concentration. Maintain a minimum 10–15% liquidity buffer in short-term investments.`});
+  else if(debtorPct>50) pts.push({c:'gr',t:`Risk asset (debtor) book at ${debtorPct.toFixed(0)}% of total assets — ideal allocation for a finance company. Higher-yield risk assets offset borrowing costs. Keep ECL model current.`});
+  else if(debtorPct>0)  pts.push({c:'am',t:`Risk assets at only ${debtorPct.toFixed(0)}% of portfolio — below optimal for a finance company. Scale the loan/debtor book to leverage borrowings at higher yields than fixed deposits.`});
 
   if(totalInv>0){
     if(avgIY>wacd+2)  pts.push({c:'gr',t:`Investment yield (${pct(avgIY)}) exceeds WACD by ${(avgIY-wacd).toFixed(2)}pp — surplus liquidity deployed at positive spreads.`});
-    else if(avgIY<wacd)pts.push({c:'am',t:`Investment yield (${pct(avgIY)}) below WACD (${pct(wacd)}) — idle liquidity earns less than funding cost.`});
+    else if(avgIY<wacd)pts.push({c:'am',t:`Investment yield (${pct(avgIY)}) below WACD (${pct(wacd)}) — idle liquidity earns less than funding cost. Finance companies should prioritise risk assets (loans/debtors) over fixed deposits as higher asset yields cover borrowing costs more effectively.`});
   }
   if(cashPct>25) pts.push({c:'am',t:`${cashPct.toFixed(0)}% of assets (${fmt(totalCash)}) sit as idle cash. Deploy excess into T-Bills or short FDs.`});
-  if(lever>3)    pts.push({c:'rd',t:`Debt/Equity of ${lever.toFixed(2)}× is elevated. Prioritise equity injection or profit retention.`});
-  else if(lever>1.5) pts.push({c:'am',t:`Debt/Equity of ${lever.toFixed(2)}× is moderate. Monitor covenant headroom.`});
-  else if(lever<0.5&&totalDebt>0) pts.push({c:'bl',t:`Low leverage (${lever.toFixed(2)}×) suggests under-utilisation of debt capacity.`});
+  // Finance companies fund operations via borrowings — elevated leverage is normal
+  if(lever>8)      pts.push({c:'rd',t:`Debt/Equity of ${lever.toFixed(2)}× is very high — approaching regulatory limits. Monitor capital adequacy ratios.`});
+  else if(lever>3) pts.push({c:'gr',t:`Debt/Equity of ${lever.toFixed(2)}× reflects adequate leverage for a finance company. Borrowings fund risk assets which earn higher returns to offset funding costs.`});
+  else if(lever>1.5) pts.push({c:'am',t:`Debt/Equity of ${lever.toFixed(2)}× is moderate for a finance company. Consider scaling debt utilisation to grow the risk asset book.`});
+  else if(lever<0.5&&totalDebt>0) pts.push({c:'am',t:`Low leverage (${lever.toFixed(2)}×) — finance companies typically operate at 3–6× to optimise ROE. Consider scaling borrowings to fund risk assets.`});
 
   if(totalEquity===0) pts.push({c:'rd',t:'No equity data entered. Go to Equity & Capital to enter share capital — essential for WACC.'});
   else { const cr=totalAssets>0?totalEquity/totalAssets*100:0; pts.push(cr<10?{c:'rd',t:`Capital ratio of ${cr.toFixed(1)}% is thin. Target ≥ 20%.`}:{c:'gr',t:`Capital ratio of ${cr.toFixed(1)}% indicates adequate capitalisation.`}); }
@@ -979,7 +982,8 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
 
   if(spread<2)          recs.push('Reprice debtor facilities — target minimum debtor yield of WACD + 5% to cover ECL charges.');
   if(cashPct>25)        recs.push(`Deploy idle cash into 91-day T-Bills (~${Math.min(avgIY||20,21).toFixed(1)}%) to improve WARA without credit risk.`);
-  if(lever>2.5)         recs.push('Consider a rights issue or preference share offer to reduce leverage below 2×.');
+  if(lever>8)            recs.push('Leverage above 8× — consider equity injection or profit retention to restore capital adequacy.');
+  else if(lever>3)       recs.push('Leverage is within normal range for a finance company. Ensure borrowings fund risk assets (loans/debtors) ahead of lower-yield instruments to maximise interest spread.');
   if(invPct<10&&totalAssets>0) recs.push('Maintain minimum 10-15% investment portfolio as liquidity buffer and yield anchor.');
   if(wara<wacc&&wacc>0) recs.push(`To restore positive EVA, target WARA ≥ ${Math.ceil(wacc+1)}% via higher-yield assets.`);
   if(s3.length>0)       recs.push('Accelerate Stage 3 collections — consider collections agency or legal recovery proceedings.');
@@ -1485,7 +1489,7 @@ async function exportBoardPPT(){
   const mm = window.latestMaturity  || {};
   const orgName  = _user?.orgName || 'Organisation';
   const userName = _user?.name    || '—';
-  const TOTAL    = 9;
+  const TOTAL    = 10;
   const D = todayStr();
   const tL = ['≤30d','≤60d','≤90d','≤180d','≤270d','≤365d+'];
 
@@ -1505,24 +1509,32 @@ async function exportBoardPPT(){
   s1.addText('CONFIDENTIAL',{x:0.6,y:4.48,w:1.5,h:0.32,fontSize:7.5,bold:true,color:EXP_C.amber,align:'center',valign:'middle',fontFace:'Arial',margin:0,charSpacing:1.5});
   s1.addNotes('Welcome the board. Key items: net interest spread, WACC vs WARA (EVA signal), debtor staging, and recommendations.');
 
-  // ── SLIDE 2: EXECUTIVE SUMMARY ──────────────────────────────
+  // ── SLIDE 2: EXECUTIVE SUMMARY — all 15 KPIs, 3 rows × 5 cols ──
   const s2=pres.addSlide(); s2.background={color:EXP_C.navy};
   expTopBand(s2,pres,'Executive Summary','Top-line portfolio metrics — all figures in Naira (₦)');
-  const sp=m.spread||0;
-  const kpis=[
-    {l:'TOTAL FINANCIAL ASSETS',v:expFmtM(m.totalAssets),  s:'Debtors + Inv + Cash',   acc:EXP_C.teal  },
-    {l:'TOTAL BORROWINGS',      v:expFmtM(m.totalDebt),    s:_borrowCache.length+' facilities',acc:EXP_C.red   },
-    {l:'EQUITY & RESERVES',     v:expFmtM(m.totalEquity),  s:'Capital + Retained',       acc:EXP_C.purple},
-    {l:'NET ASSET COVER',       v:expFmtM((m.totalAssets||0)-(m.totalDebt||0)),s:'Assets − Liabilities',acc:(m.totalAssets||0)>(m.totalDebt||0)?EXP_C.green:EXP_C.red},
-    {l:'WARA',                  v:expPct(m.wara),           s:'Return on earning assets', acc:EXP_C.amber },
-    {l:'WACD',                  v:expPct(m.wacd),           s:'Avg cost of debt',         acc:EXP_C.blue  },
-    {l:'WACC',                  v:expPct(m.wacc),           s:'Cost of capital',           acc:EXP_C.purple},
-    {l:'NET INT. SPREAD',       v:(sp>=0?'+':'')+expPct(sp),s:'WARA − WACD',              acc:sp>=0?EXP_C.green:EXP_C.red},
+  const sp=m.spread||0; const evS=(m.wara||0)-(m.wacc||0); const lvr=m.lever||0;
+  const all15=[
+    {l:'TOTAL FINANCIAL ASSETS', v:expFmtM(m.totalAssets),                        s:'Debtors + Inv + Cash',        acc:EXP_C.teal  },
+    {l:'TOTAL BORROWINGS',       v:expFmtM(m.totalDebt),                           s:_borrowCache.length+' facilities', acc:EXP_C.red   },
+    {l:'EQUITY & RESERVES',      v:expFmtM(m.totalEquity),                         s:'Capital + Retained',          acc:EXP_C.purple},
+    {l:'TOTAL FUNDING BASE',     v:expFmtM((m.totalEquity||0)+(m.totalDebt||0)),   s:'Debt + Equity',               acc:EXP_C.blue  },
+    {l:'NET ASSET COVER',        v:expFmtM((m.totalAssets||0)-(m.totalDebt||0)),   s:'Assets − Liabilities',        acc:(m.totalAssets||0)>(m.totalDebt||0)?EXP_C.green:EXP_C.red},
+    {l:'WARA',                   v:expPct(m.wara),                                  s:'Return on earning assets',    acc:EXP_C.amber },
+    {l:'WACD',                   v:expPct(m.wacd),                                  s:'Weighted avg cost of debt',   acc:EXP_C.blue  },
+    {l:'WACC',                   v:expPct(m.wacc),                                  s:'Cost of capital',             acc:EXP_C.purple},
+    {l:'NET INT. SPREAD',        v:(sp>=0?'+':'')+expPct(sp),                       s:'WARA − WACD',                 acc:sp>=0?EXP_C.green:EXP_C.red},
+    {l:'EVA SIGNAL',             v:(evS>=0?'+':'')+expPct(evS),                     s:'WARA − WACC',                 acc:evS>=0?EXP_C.green:EXP_C.red},
+    {l:'DEBT / EQUITY',          v:lvr.toFixed(2)+'×',                              s:'Financial leverage',          acc:lvr>8?EXP_C.red:lvr>3?EXP_C.green:EXP_C.amber},
+    {l:'DEBT / ASSETS',          v:expPct(m.totalAssets>0?(m.totalDebt/m.totalAssets)*100:0), s:'Debt ÷ Deployable Assets', acc:EXP_C.blue},
+    {l:'DEBTOR YIELD',           v:expPct(m.avgDR),                                 s:'Avg implied rate on debtors', acc:EXP_C.amber },
+    {l:'INVESTMENT YIELD',       v:expPct(m.avgIY),                                 s:'Weighted avg investment yield',acc:EXP_C.green },
+    {l:'COST OF EQUITY (Ke)',    v:expPct(m.eq?.costOfEquity||_equityData.costOfEquity||20), s:'Required shareholder return', acc:EXP_C.purple},
   ];
-  const cW=2.28,cH=1.08,g=0.07,sx=0.22,sy=1.12;
-  kpis.forEach((k,i)=>expKpiCard(s2,pres,sx+(i%4)*(cW+g),sy+Math.floor(i/4)*(cH+0.1),cW,cH,k.l,k.v,k.s,k.acc));
+  // 3 rows × 5 cols, compact cards
+  const cW2=1.87, cH2=0.95, g2=0.05, sx2=0.18, sy2=1.1;
+  all15.forEach((k,i)=>expKpiCard(s2,pres,sx2+(i%5)*(cW2+g2),sy2+Math.floor(i/5)*(cH2+0.08),cW2,cH2,k.l,k.v,k.s,k.acc));
   expFooter(s2,pres,2,TOTAL);
-  s2.addNotes('Net asset cover and NIS are the two headline metrics. Both should be positive.');
+  s2.addNotes('All 15 dashboard KPIs. Key: Net Asset Cover and NIS must be positive. EVA Signal confirms value creation. D/E >3× is normal for a finance company funding risk assets.');
 
   // ── SLIDE 3: CAPITAL STRUCTURE & WACC ───────────────────────
   const s3=pres.addSlide(); s3.background={color:EXP_C.navy};
@@ -1549,13 +1561,41 @@ async function exportBoardPPT(){
   const aB=(mm.aBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
   const lB=(mm.lBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
   const gB=(mm.gBkts||new Array(6).fill(0)).map(v=>Number(v)||0);
-  s4.addChart(pres.charts.BAR,[{name:'Assets',labels:tL,values:aB},{name:'Liabilities',labels:tL,values:lB}],{x:0.2,y:1.12,w:6.1,h:3.55,barDir:'col',barGrouping:'clustered',chartColors:[EXP_C.teal,EXP_C.red],chartArea:{fill:{color:EXP_C.navy3}},catAxisLabelColor:EXP_C.tx2,valAxisLabelColor:EXP_C.tx2,valGridLine:{color:EXP_C.navy4,size:0.5},catGridLine:{style:'none'},showLegend:true,legendPos:'b'});
+  // Y-axis in thousands for readability
+  const aB_k=aB.map(v=>Math.round(v/1000)); const lB_k=lB.map(v=>Math.round(v/1000));
+  s4.addText('₦ Thousands',{x:0.2,y:1.0,w:2,h:0.18,fontSize:7,color:EXP_C.tx3,fontFace:'Arial',italic:true});
+  s4.addChart(pres.charts.BAR,[{name:'Assets',labels:tL,values:aB_k},{name:'Liabilities',labels:tL,values:lB_k}],{x:0.2,y:1.12,w:6.1,h:3.55,barDir:'col',barGrouping:'clustered',chartColors:[EXP_C.teal,EXP_C.red],chartArea:{fill:{color:EXP_C.navy3}},catAxisLabelColor:EXP_C.tx2,valAxisLabelColor:EXP_C.tx2,valAxisNumFmt:'#,##0',valGridLine:{color:EXP_C.navy4,size:0.5},catGridLine:{style:'none'},showLegend:true,legendPos:'b'});
   expSecDiv(s4,pres,6.55,1.12,3.2,'CUMULATIVE GAP',EXP_C.blue);
   const gapTbl=[[{text:'Tenor',options:{bold:true,color:EXP_C.teal}},{text:'Gap (₦)',options:{bold:true,color:EXP_C.teal}},{text:'Signal',options:{bold:true,color:EXP_C.teal}}]];
   tL.forEach((t,i)=>{const g=gB[i]; gapTbl.push([t,'₦'+expFmt(g),{text:g>=0?'LEADING':'DEFICIT',options:{color:g>=0?EXP_C.green:EXP_C.red,bold:true}}]);});
   gapTbl.push([{text:'TOTAL',options:{bold:true}},'₦'+expFmt(mm.gTotal||0),{text:(mm.gTotal||0)>=0?'SURPLUS':'DEFICIT',options:{color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,bold:true}}]);
   s4.addTable(gapTbl,{x:6.55,y:1.42,w:3.2,h:3.2,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:9,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.37,align:'center',colW:[0.75,1.3,1.15]});
   expFooter(s4,pres,4,TOTAL);
+
+  // ── SLIDE 4b: ASSET & LIABILITY MATURITY PROFILE TABLE ──────
+  const s4b=pres.addSlide(); s4b.background={color:EXP_C.navy};
+  expTopBand(s4b,pres,'Asset & Liability Maturity Profile (₦)','Cumulative Tenor Gap — figures in Naira');
+  // Full maturity table: Asset rows, Liability rows, Gap row
+  const matHdr=[
+    [{text:'Category',options:{bold:true,color:EXP_C.teal,fill:{color:EXP_C.navy4}}},
+     ...tL.map(t=>({text:t,options:{bold:true,color:EXP_C.teal,align:'center',fill:{color:EXP_C.navy4}}})),
+     {text:'TOTAL',options:{bold:true,color:EXP_C.teal,align:'center',fill:{color:EXP_C.navy4}}}]
+  ];
+  const fN2=v=>v===0?'—':'₦'+(Math.round(v/1000)).toLocaleString()+'k';
+  const matRows=[
+    [{text:'Assets (₦)',options:{bold:true,color:EXP_C.teal}},...aB.map(v=>({text:fN2(v),options:{color:EXP_C.teal,align:'right'}})),{text:fN2(aB.reduce((s,v)=>s+v,0)),options:{bold:true,color:EXP_C.teal,align:'right'}}],
+    [{text:'Liabilities (₦)',options:{bold:true,color:EXP_C.red}},...lB.map(v=>({text:fN2(v),options:{color:EXP_C.red,align:'right'}})),{text:fN2(lB.reduce((s,v)=>s+v,0)),options:{bold:true,color:EXP_C.red,align:'right'}}],
+    [{text:'Cumulative Gap',options:{bold:true,color:EXP_C.white}},...gB.map(v=>({text:'₦'+(Math.round(v/1000)).toLocaleString()+'k',options:{bold:true,color:v>=0?EXP_C.green:EXP_C.red,align:'right'}})),{text:'₦'+(Math.round((mm.gTotal||0)/1000)).toLocaleString()+'k',options:{bold:true,color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,align:'right'}}],
+    [{text:'Signal',options:{bold:true,color:EXP_C.tx2}},...gB.map(v=>({text:v>=0?'LEADING':'DEFICIT',options:{bold:true,color:v>=0?EXP_C.green:EXP_C.red,align:'center'}})),{text:(mm.gTotal||0)>=0?'SURPLUS':'DEFICIT',options:{bold:true,color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,align:'center'}}],
+  ];
+  const matTblData=[...matHdr,...matRows];
+  const colCount=tL.length+2; // category + 6 tenors + total = 8
+  const colWArr=[1.6,...tL.map(()=>0.98),1.0];
+  s4b.addTable(matTblData,{x:0.2,y:1.15,w:9.6,h:2.2,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:8.5,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.42,colW:colWArr});
+  // Legend note
+  s4b.addText('Note: Values shown in ₦ Thousands (k). Cumulative Gap = running total of Assets minus Liabilities across tenors. LEADING = asset-funded; DEFICIT = funding shortfall.',
+    {x:0.2,y:3.55,w:9.6,h:0.45,fontSize:7.5,color:EXP_C.tx3,fontFace:'Arial',italic:true,wrap:true});
+  expFooter(s4b,pres,5,TOTAL);
 
   // ── SLIDE 5: WARA / WACD SPREAD ──────────────────────────────
   const s5=pres.addSlide(); s5.background={color:EXP_C.navy};
@@ -1568,7 +1608,7 @@ async function exportBoardPPT(){
   const spTbl=[[{text:'Tenor',options:{bold:true,color:EXP_C.teal}},{text:'WARA',options:{bold:true,color:EXP_C.teal}},{text:'WACD',options:{bold:true,color:EXP_C.teal}},{text:'Spread',options:{bold:true,color:EXP_C.teal}}]];
   tL.forEach((t,i)=>{const sp=sB[i]; spTbl.push([t,wA[i].toFixed(2)+'%',wF[i].toFixed(2)+'%',{text:(sp==null?'—':(sp>=0?'+':'')+sp.toFixed(2)+'%'),options:{color:sp!=null&&sp>=0?EXP_C.green:EXP_C.red,bold:sp!=null}}]);});
   s5.addTable(spTbl,{x:6.55,y:1.42,w:3.2,h:3.0,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:9,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.42,align:'center',colW:[0.7,0.78,0.78,0.94]});
-  expFooter(s5,pres,5,TOTAL);
+  expFooter(s5,pres,6,TOTAL);
 
   // ── SLIDE 6: DEBTOR BOOK ──────────────────────────────────────
   const s6=pres.addSlide(); s6.background={color:EXP_C.navy};
@@ -1591,7 +1631,7 @@ async function exportBoardPPT(){
     s6.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:4.85,y:3.72,w:4.9,h:0.78,fill:{color:EXP_C.red,transparency:90},line:{color:EXP_C.red},rectRadius:0.08});
     s6.addText([{text:'⚠ ALERT: ',options:{bold:true,color:EXP_C.red}},{text:s3a.length+' debtor'+(s3a.length>1?'s':'')+' ('+expFmtM(s3v)+') are Stage 3. Ensure full provisioning and escalate recovery.',options:{color:EXP_C.tx}}],{x:4.85,y:3.72,w:4.9,h:0.78,fontSize:9,fontFace:'Arial',margin:0.1,valign:'middle'});
   }
-  expFooter(s6,pres,6,TOTAL);
+  expFooter(s6,pres,7,TOTAL);
 
   // ── SLIDE 7: INVESTMENTS & BORROWINGS ─────────────────────────
   const s7=pres.addSlide(); s7.background={color:EXP_C.navy};
@@ -1608,7 +1648,7 @@ async function exportBoardPPT(){
   if(_borrowCache.length>7) borTbl.push(['+ '+(_borrowCache.length-7)+' more','','','','']);
   borTbl.push([{text:'TOTAL',options:{bold:true}},'',expFmtM(m.totalDebt||0),{text:expPct(m.wacd||0)+' avg',options:{color:EXP_C.red}},'']);
   s7.addTable(borTbl,{x:5.15,y:1.42,w:4.65,h:3.85,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:8,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.34,align:'left',colW:[1.4,1.1,0.85,0.52,0.78]});
-  expFooter(s7,pres,7,TOTAL);
+  expFooter(s7,pres,8,TOTAL);
 
   // ── SLIDE 8: BOARD ADVISORY ────────────────────────────────────
   const s8=pres.addSlide(); s8.background={color:EXP_C.navy};
@@ -1625,7 +1665,7 @@ async function exportBoardPPT(){
     s8.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:5.9,y:1.46+i*0.9,w:3.88,h:0.78,fill:{color:EXP_C.navy3},line:{color:EXP_C.navy4},rectRadius:0.08,shadow:expMakeShadow()});
     s8.addText([{text:(i+1)+'. ',options:{bold:true,color:EXP_C.amber}},{text:r.substring(0,130),options:{color:EXP_C.tx}}],{x:5.9,y:1.46+i*0.9,w:3.88,h:0.78,fontSize:8.5,fontFace:'Arial',margin:0.1,valign:'middle'});
   });
-  expFooter(s8,pres,8,TOTAL);
+  expFooter(s8,pres,9,TOTAL);
 
   // ── SLIDE 9: SIGN-OFF ───────────────────────────────────────────
   const s9=pres.addSlide(); s9.background={color:EXP_C.navy};
