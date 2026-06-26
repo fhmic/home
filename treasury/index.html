@@ -839,12 +839,12 @@ async function loadDashboard(){
 
   $('dash-kpis').innerHTML = [
     {l:'Total Deployable Assets', v:fmt(totalAssets),             c:'tl', ac:true, sub:'Loans + Inv + Cash'},
-    {l:'Risk Assets',             v:fmt(totalDebtors),            c:'tl', ac:true, sub:'Outstanding Loans'},
-    {l:'Investment',              v:fmt(totalInv),                 c:'tl', ac:true, sub:'Investment Value'},
-    {l:'Cash &amp; Bank ',        v:fmt(totalCash),               c:'tl', ac:true, sub:'Cash &amp; Cash Equivalents'},
-    {l:'Total Funding Base',      v:fmt(totalCapital),            c:'bl',         sub:'Debt + Equity'},
-    {l:'Total Borrowings',        v:fmt(totalDebt),               c:'rd',         sub:_borrowCache.length+' facilities'},
-    {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'pu',         sub:'Capital + Retained Earnings'},
+    {l:'Risk Assets',             v:fmt(totalDebtors),            c:'pu',         sub:'Outstanding Loans'},
+    {l:'Investment',              v:fmt(totalInv),                c:'pu',         sub:'Investment Value'},
+    {l:'Cash &amp; Bank ',        v:fmt(totalCash),               c:'pu',         sub:'Cash &amp; Cash Equivalents'},
+    {l:'Total Funding Base',      v:fmt(totalCapital),            c:'rd',         sub:'Debt + Equity'},
+    {l:'Total Borrowings',        v:fmt(totalDebt),               c:'bl',         sub:_borrowCache.length+' facilities'},
+    {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'bl',         sub:'Capital + Retained Earnings'},
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
 
   $('dash-wacc').innerHTML = [
