@@ -845,11 +845,10 @@ async function loadDashboard(){
     {l:'Total Funding Base',      v:fmt(totalCapital),            c:'bl',         sub:'Debt + Equity'},
     {l:'Total Borrowings',        v:fmt(totalDebt),               c:'rd',         sub:_borrowCache.length+' facilities'},
     {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'pu',         sub:'Capital + Retained Earnings'},
-    {l:'Net Asset Cover',     v:fmt(totalAssets-totalDebt),   c:totalAssets>totalDebt?'gr':'rd', sub:'Assets − Liabilities'},
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
 
   $('dash-wacc').innerHTML = [
-    
+    {l:'Net Asset Cover',     v:fmt(totalAssets-totalDebt),   c:totalAssets>totalDebt?'gr':'rd', sub:'Assets − Liabilities'},
     {l:'WARA',                v:pct(wara),                         c:'am', sub:'Return on earning assets'},
     {l:'WACD',                v:pct(wacd),                         c:'bl', sub:'Weighted avg cost of debt'},
     {l:'WACC',                v:pct(wacc),                         c:'tl', sub:'Weighted avg cost of capital'},
@@ -1683,17 +1682,10 @@ async function exportBoardPPT(){
   expTopBand(s2,pres,'Executive Summary','Top-line portfolio metrics — all figures in Naira (₦)');
   const sp=m.spread||0; const evS=(m.wara||0)-(m.wacc||0); const lvr=m.lever||0;
   const all15=[
-  {l:'Total Deployable Assets', v:fmt(totalAssets),             c:'tl', ac:true, sub:'Loans + Inv + Cash'},
-    {l:'Risk Assets',             v:fmt(totalDebtors),            c:'tl', ac:true, sub:'Outstanding Loans'},
-    {l:'Investment',              v:fmt(totalInv),                 c:'tl', ac:true, sub:'Investment Value'},
-    {l:'Cash &amp; Bank ',        v:fmt(totalCash),               c:'tl', ac:true, sub:'Cash &amp; Cash Equivalents'},
-    {l:'Total Funding Base',      v:fmt(totalCapital),            c:'bl',         sub:'Debt + Equity'},
-    {l:'Total Borrowings',        v:fmt(totalDebt),               c:'rd',         sub:_borrowCache.length+' facilities'},
-    {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'pu',         sub:'Capital + Retained Earnings'},   
     {l:'TOTAL DEPLOYABLE ASSETS', v:expFmtM(m.totalAssets),                        s:'Loans + Inv + Cash',        acc:EXP_C.teal  },
-    {l:'Risk Assets',             v:expFmtM(totalDebtors),                         s:'Outstanding Loans',         acc:EXP_C.red  },
-    {l:'Investment',              v:expFmtM(totalInv),                             s:'Investment Value',          acc:EXP_C.red  },
-    {l:'Cash &amp; Bank ',        v:expFmtM(totalCash),                            s:'Cash &amp; Cash Equivalents',acc:EXP_C.red  },
+    {l:'RISK ASSETS',             v:expFmtM(totalDebtors),                         s:'Outstanding Loans',         acc:EXP_C.red  },
+    {l:'INVESTMENTS',              v:expFmtM(totalInv),                             s:'Investment Value',          acc:EXP_C.red  },
+    {l:'CASH &amp; BANK ',        v:expFmtM(totalCash),                            s:'Cash &amp; Cash Equivalents',acc:EXP_C.red  },
     {l:'TOTAL FUNDING BASE',     v:expFmtM((m.totalEquity||0)+(m.totalDebt||0)),   s:'Debt + Equity',               acc:EXP_C.teal  },
     {l:'TOTAL BORROWINGS',       v:expFmtM(m.totalDebt),                           s:_borrowCache.length+' facilities', acc:EXP_C.red   },
     {l:'EQUITY & RESERVES',      v:expFmtM(m.totalEquity),                         s:'Capital + Retained',          acc:EXP_C.red},
