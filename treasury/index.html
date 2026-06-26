@@ -973,7 +973,7 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
 
   if(debtorPct>80)       pts.push({c:'am',t:`Risk assets at ${debtorPct.toFixed(0)}% of portfolio — very high concentration. Maintain a minimum 10–15% liquidity buffer in short-term investments.`});
   else if(debtorPct>50)  pts.push({c:'gr',t:`Risk asset (debtor) book at ${debtorPct.toFixed(0)}% of total assets — ideal allocation for a finance company. Higher-yield risk assets offset borrowing costs. Keep ECL model current.`});
-  else if(debtorPct>0)   pts.push({c:'am',t:`Risk assets at only ${debtorPct.toFixed(0)}% of portfolio — below optimal for a finance company. Scale the loan/Debtors/Loans to leverage borrowings at higher yields than fixed deposits.`});
+  else if(debtorPct>0)   pts.push({c:'am',t:`Risk assets at only ${debtorPct.toFixed(0)}% of portfolio — below optimal for a finance company. Scale the Debtors/Loans to leverage borrowings at higher yields than fixed deposits.`});
 
   if(totalInv>0){
     if(avgIY>wacd+2)   pts.push({c:'gr',t:`Investment yield (${pct(avgIY)}) exceeds WACD by ${(avgIY-wacd).toFixed(2)}pp — surplus liquidity deployed at positive spreads.`});
@@ -1026,7 +1026,7 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
       n: recNum,
       title: 'Re-optimise Asset Allocation Towards Risk Assets',
       obs:   `Risk assets (debtors/loans) represent only ${debtorPct.toFixed(0)}% of total deployable assets. The remaining ${(100-debtorPct).toFixed(0)}% is held in lower-yielding investments and cash.`,
-      rec:   `Set a strategic target of 60–70% risk asset concentration. Channel new borrowing drawdowns primarily into the loan/Debtors/Loans rather than fixed deposits or money market placements.`,
+      rec:   `Set a strategic target of 60–70% risk asset concentration. Channel new borrowing drawdowns primarily into the Debtors/Loans rather than fixed deposits or money market placements.`,
       rat:   `Risk assets command yields significantly above the cost of borrowing, unlike fixed deposits which typically earn below WACD. Re-allocating from investments to loans will directly improve WARA and widen the interest spread.`,
       dot:   'am'
     });
