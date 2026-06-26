@@ -845,11 +845,11 @@ async function loadDashboard(){
     {l:'Total Funding Base',      v:fmt(totalCapital),            c:'bl',         sub:'Debt + Equity'},
     {l:'Total Borrowings',        v:fmt(totalDebt),               c:'rd',         sub:_borrowCache.length+' facilities'},
     {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'pu',         sub:'Capital + Retained Earnings'},
-    
+    {l:'Net Asset Cover',     v:fmt(totalAssets-totalDebt),   c:totalAssets>totalDebt?'gr':'rd', sub:'Assets − Liabilities'},
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
 
   $('dash-wacc').innerHTML = [
-    {l:'Net Asset Cover',     v:fmt(totalAssets-totalDebt),   c:totalAssets>totalDebt?'gr':'rd', sub:'Assets − Liabilities'},
+    
     {l:'WARA',                v:pct(wara),                         c:'am', sub:'Return on earning assets'},
     {l:'WACD',                v:pct(wacd),                         c:'bl', sub:'Weighted avg cost of debt'},
     {l:'WACC',                v:pct(wacc),                         c:'tl', sub:'Weighted avg cost of capital'},
