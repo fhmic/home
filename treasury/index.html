@@ -1798,17 +1798,26 @@ document.addEventListener('DOMContentLoaded', () => {
       }, interval);
     });
   }
-  // Ensure PptxGenJS is loaded — tries 3 CDN sources
+  // Ensure PptxGenJS is loaded — JSZip must load first (peer dependency)
   var _pptxLoading = null;
   function ensurePptxGenJS(){
     if(typeof PptxGenJS !== 'undefined') return Promise.resolve();
     if(_pptxLoading) return _pptxLoading;
     _pptxLoading = loadScript([
-      'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js',
-      'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.min.js'
-    ]).then(function(){ return waitForGlobal(function(){ return typeof PptxGenJS !== 'undefined'; }); })
-      .catch(function(e){ _pptxLoading = null; throw e; });
+      'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',
+      'https://unpkg.com/jszip@3.10.1/dist/jszip.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
+    ]).then(function(){
+      return waitForGlobal(function(){ return typeof JSZip !== 'undefined'; });
+    }).then(function(){
+      return loadScript([
+        'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js',
+        'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.min.js'
+      ]);
+    }).then(function(){
+      return waitForGlobal(function(){ return typeof PptxGenJS !== 'undefined'; });
+    }).catch(function(e){ _pptxLoading = null; throw e; });
     return _pptxLoading;
   }
   // Ensure XLSX is loaded
