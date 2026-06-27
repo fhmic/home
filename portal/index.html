@@ -1343,7 +1343,7 @@ async function loadTeam(){
         '<option value="member" '+(m.orgRole==='member'?'selected':'')+'>Member</option>'+
         '<option value="admin" '+(m.orgRole==='admin'?'selected':'')+'>Admin</option>'+
       '</select>';
-      var lockedAdminAll=_user && m._id === _user.id;
+      var lockedAdminAll=false;
       var toggles=APP_KEYS.map(function(k){
         var on=!!perms[k];
         var hasModules=_moduleDefs[k]&&_moduleDefs[k].length;
