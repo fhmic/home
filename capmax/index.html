@@ -162,10 +162,19 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 <body>
 <div id="app">
   <div id="topbar">
-    <div class="logo"><div class="lm">CM</div>Capital<span class="la">Max</span><span class="badge-flag">🇳🇬 NG</span></div>
+    <div class="logo"><div class="lm">FM</div>FM<span class="la">&nbsp;Treasury</span><span class="badge-flag">📊 CapMax</span></div>
     <div class="tbr">
+      <a href="../portal/" class="nav-btn-link" title="Back to Portal">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Portal
+      </a>
+      <a href="../" class="nav-btn-link" title="Home">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </a>
       <div class="user-chip-top"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span id="investor-name">Investor</span></div>
-      <button class="bp" id="btn-onboard" onclick="startOnboarding()" style="display:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Setup Profile</button>
+      <button class="bd" id="logout-btn" title="Sign out" onclick="signOut()">Sign out</button>
+
     </div>
   </div>
   <div id="layout">
@@ -418,6 +427,14 @@ function init(){
   }
 }
 document.addEventListener('DOMContentLoaded',init);
+
+// ── AUTH ACTIONS ───────────────────────────────────────────
+function signOut(){
+  try{sessionStorage.removeItem('FM_token');}catch(e){}
+  try{localStorage.removeItem('cm_state');}catch(e){}
+  window.location.href='../portal/';
+}
+
 </script>
 </body>
 </html>
