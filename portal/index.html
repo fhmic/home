@@ -889,7 +889,7 @@ function showLogin(){
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('portal-screen').style.display='none';
  
-  document.getElementById('admin-panel').classList.add('active');
+  document.getElementById('admin-panel').style.display='none';
   document.getElementById('org-panel').style.display='none';
   document.getElementById('home-link').style.display='flex';
 }
@@ -1311,7 +1311,7 @@ async function delDomain(id,domain){
 // ═══════════════════════════════════════════════════════════
 // ══ ORG TEAM & PERMISSIONS PANEL (org admin) ══
 // ═══════════════════════════════════════════════════════════
-var APP_LABELS_SHORT={ markets:'Markets', bankrecon:'Bank Recon', receivables:'Receivables', treasury:'Treasury', jobs:'Jobs' };
+var APP_LABELS_SHORT={ markets:'Markets', bankrecon:'Bank Recon', receivables:'Receivables', treasury:'Treasury', jobs:'Jobs',capmax: 'Capital Max' };
 var _moduleDefs={}, _moduleLevels=['none','view','edit']; // populated from /api/org/team response
 var _teamMembersCache=[];
 
@@ -1343,7 +1343,7 @@ async function loadTeam(){
         '<option value="member" '+(m.orgRole==='member'?'selected':'')+'>Member</option>'+
         '<option value="admin" '+(m.orgRole==='admin'?'selected':'')+'>Admin</option>'+
       '</select>';
-      var lockedAdminAll=m.orgRole==='admin';
+      var lockedAdminAll=false;
       var toggles=APP_KEYS.map(function(k){
         var on=!!perms[k];
         var hasModules=_moduleDefs[k]&&_moduleDefs[k].length;

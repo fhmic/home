@@ -10,10 +10,10 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <!-- Critical libs loaded eagerly; non-critical deferred -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- PptxGenJS loaded dynamically on first PPT export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -142,7 +142,7 @@ button:disabled{opacity:.35;cursor:not-allowed}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
 .fld{margin-bottom:.9rem}
 .fld label{display:block;font-size:10.5px;font-family:var(--mo);color:var(--tx2);margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase}
-.finput{width:100%;padding:8px 12px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;transition:border-color .15s;outline:none;appearance:none;-webkit-appearance:none}
+.finput{width:100%;padding:8px 12px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;transition:border-color .15s;outline:none;-webkit-appearance:none}
 .finput:focus{border-color:var(--t);box-shadow:0 0 0 2px rgba(0,201,167,.1)}
 .finput::placeholder{color:var(--tx3)}
 select.finput{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238fa3bf' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;cursor:pointer}
@@ -198,6 +198,16 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
 .advisory-item{display:flex;align-items:flex-start;gap:9px;margin-bottom:.55rem;font-size:12px;color:var(--tx2);line-height:1.65}
 .adot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
 .adot.gr{background:var(--gr)}.adot.rd{background:var(--rd)}.adot.am{background:var(--am)}.adot.bl{background:var(--bl)}.adot.pu{background:var(--pu)}
+.advisory-rec-item{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);margin-bottom:.7rem;overflow:hidden}
+.advisory-rec-header{display:flex;align-items:center;gap:8px;padding:9px 13px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--b)}
+.advisory-rec-num{font-size:11px;font-weight:700;color:var(--tx3);font-family:var(--mo);flex-shrink:0}
+.advisory-rec-title{font-size:12px;font-weight:600;color:var(--tx);font-family:var(--di)}
+.advisory-rec-body{padding:10px 13px;display:flex;flex-direction:column;gap:6px}
+.advisory-rec-row{display:flex;gap:6px;font-size:11.5px;color:var(--tx2);line-height:1.65}
+.advisory-rec-label{font-weight:700;color:var(--t);font-family:var(--mo);font-size:10px;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;padding-top:2px;min-width:110px}
+.advisory-conclusion{background:rgba(0,201,167,.06);border:1px solid rgba(0,201,167,.2);border-radius:var(--r);padding:11px 14px;margin-top:.5rem}
+.advisory-conclusion-label{font-size:10px;font-weight:700;color:var(--t);font-family:var(--mo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.advisory-conclusion-text{font-size:12px;color:var(--tx2);line-height:1.7}
 
 /* ── EXPORT MODAL ── */
 #export-modal{display:none;position:fixed;inset:0;z-index:650;align-items:center;justify-content:center;padding:1rem;background:rgba(5,12,24,.8);backdrop-filter:blur(4px)}
@@ -331,7 +341,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
       <!-- DEBTORS -->
       <div class="view" id="view-loans">
         <div class="vhdr">
-          <div><div class="vttl">Debtor Book</div><div class="vsub">Live from Receivables · invoices &amp; staging</div></div>
+          <div><div class="vttl">Loans/Debtors</div><div class="vsub">Live from Receivables · invoices &amp; staging</div></div>
           <button onclick="loadLoans()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
         </div>
         <div class="nt-info">Data is sourced live from the <strong>Receivables module</strong>. <a href="../receivables/" style="color:var(--t)">FM Receivables →</a></div>
@@ -494,8 +504,7 @@ var _cashCache    = [];
 var _debtorCache  = [];
 var _portfolioCache = [];
 var _equityData   = { shareCapital:0, retainedEarnings:0, otherReserves:0, costOfEquity:20 };
-// Pre-load from localStorage immediately so dashboard shows saved equity before auth/DB resolves
-(function(){ try{ const e=localStorage.getItem('fm_equity'); if(e){ const p=JSON.parse(e); if(p&&p.shareCapital) _equityData=p; } }catch(x){} })();
+// Equity pre-load removed — fetchEquity() runs post-auth with user-scoped localStorage key
 var _loanFilter   = 'all';
 var _charts       = {};
 var _dashLoaded   = false; // prevent double-loads on first paint
@@ -670,7 +679,7 @@ function avgDebtorEIR(){
 async function fetchEquity(){
   // Always load localStorage first as immediate fallback
   try {
-    const local = localStorage.getItem('fm_equity');
+    const local = localStorage.getItem('fm_equity_'+(_user?._id||'guest'));
     if(local){ const p = JSON.parse(local); if(p.shareCapital) _equityData = p; }
   } catch(x){}
 
@@ -685,7 +694,7 @@ async function fetchEquity(){
         costOfEquity:      d.equity.costOfEquity      || 20
       };
       // Keep localStorage in sync with DB value
-      try { localStorage.setItem('fm_equity', JSON.stringify(_equityData)); } catch(x){}
+      try { localStorage.setItem('fm_equity_'+(_user?._id||'guest'), JSON.stringify(_equityData)); } catch(x){}
     }
     // If DB returns empty/null, localStorage value already loaded above
   } catch(e){
@@ -719,7 +728,7 @@ function renderEquity(){
     {l:'Retained Earnings',       v:fmt(e.retainedEarnings),   c:'gr', sub:'Accumulated profits'},
     {l:'Other Reserves',          v:fmt(e.otherReserves),      c:'am', sub:'Statutory / fair value'},
     {l:'Capital Ratio',           v:cr.toFixed(1)+'%',         c:cr<10?'rd':cr>30?'gr':'am', sub:'Equity / Total Assets'},
-    {l:'Debt / Equity Ratio',     v:de.toFixed(2)+'×',         c:de>3?'rd':de>1.5?'am':'gr', sub:'Financial leverage'},
+    {l:'Debt / Equity Ratio',     v:de.toFixed(2)+'×',         c:de>8?'rd':de>3?'gr':de>1.5?'am':'gr', sub:'Financial leverage'},
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
 
   $('equity-charts').innerHTML = '<div class="chart-box"><div class="card-label">Equity Composition</div><canvas id="ch-eq1" height="200"></canvas></div><div class="chart-box"><div class="card-label">Capital Structure</div><canvas id="ch-eq2" height="200"></canvas></div>';
@@ -769,7 +778,7 @@ async function saveEquity(){
   };
   $('eq-save-txt').textContent = 'Saving…';
   // Always persist to localStorage immediately so refresh never loses data
-  try { localStorage.setItem('fm_equity', JSON.stringify(payload)); } catch(x){}
+  try { localStorage.setItem('fm_equity_'+(_user?._id||'guest'), JSON.stringify(payload)); } catch(x){}
   _equityData = payload;
 
   try {
@@ -829,41 +838,43 @@ async function loadDashboard(){
   $('dash-ts').textContent = 'As at ' + new Date().toLocaleString('en-GB');
 
   $('dash-kpis').innerHTML = [
-    {l:'Total Deployable Assets', v:fmt(totalAssets),             c:'tl', ac:true, sub:'Debtors + Inv + Cash'},
-    {l:'Total Borrowings',        v:fmt(totalDebt),               c:'rd',         sub:_borrowCache.length+' facilities'},
-    {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'pu',         sub:'Capital + Retained Earnings'},
-    {l:'Total Funding Base',      v:fmt(totalCapital),            c:'bl',         sub:'Debt + Equity'},
-    {l:'Net Asset Cover',         v:fmt(totalAssets-totalDebt),   c:totalAssets>totalDebt?'gr':'rd', sub:'Assets − Liabilities'},
+    {l:'Total Deployable Assets', v:fmt(totalAssets),             c:'tl', ac:true, sub:'Loans + Inv + Cash'},
+    {l:'Risk Assets',             v:fmt(totalDebtors),            c:'pu',         sub:'Outstanding Loans'},
+    {l:'Investment',              v:fmt(totalInv),                c:'pu',         sub:'Investment Value'},
+    {l:'Cash &amp; Bank ',        v:fmt(totalCash),               c:'pu',         sub:'Cash &amp; Cash Equivalents'},
+    {l:'Total Funding Base',      v:fmt(totalCapital),            c:'rd',         sub:'Debt + Equity'},
+    {l:'Total Borrowings',        v:fmt(totalDebt),               c:'bl',         sub:_borrowCache.length+' facilities'},
+    {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'bl',         sub:'Capital + Retained Earnings'},
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
 
   $('dash-wacc').innerHTML = [
+    {l:'Net Asset Cover',     v:fmt(totalAssets-totalDebt),   c:totalAssets>totalDebt?'gr':'rd', sub:'Assets − Liabilities'},
     {l:'WARA',                v:pct(wara),                         c:'am', sub:'Return on earning assets'},
     {l:'WACD',                v:pct(wacd),                         c:'bl', sub:'Weighted avg cost of debt'},
     {l:'WACC',                v:pct(wacc),                         c:'tl', sub:'Weighted avg cost of capital'},
-    {l:'Net Int. Spread',     v:(spread>=0?'+':'')+pct(spread),    c:spread>=0?'gr':'rd', sub:'WARA − WACD'},
-    {l:'EVA Signal',          v:(evaSig>=0?'+':'')+pct(evaSig),    c:evaSig>=0?'gr':'rd', sub:'WARA − WACC'},
-    {l:'Debt / Equity',       v:lever.toFixed(2)+'×',              c:lever>3?'rd':lever>1.5?'am':'gr', sub:'Financial leverage'},
+    {l:'Net Int. Spread',     v:(spread>=0?'+':'')+pct(spread),    c:spread>=0?'gr':'rd', sub:'MIS: WARA − WACD'},
+    {l:'Economic Value Added', v:(evaSig>=0?'+':'')+pct(evaSig),    c:evaSig>=0?'gr':'rd', sub:'EVA: WARA − WACC'},
+    {l:'Debt / Equity',       v:lever.toFixed(2)+'×',              c:lever>8?'rd':lever>3?'gr':lever>1.5?'am':'gr', sub:'Financial leverage'},
     {l:'Debt / Assets',       v:pct(dta),                          c:dta>0.8?'rd':dta>0.6?'am':'gr', sub:'Debt ÷ Deployable Assets'},
     {l:'Debtor Yield',        v:pct(avgDR),                        c:'am', sub:'Avg implied rate on debtors'},
     {l:'Investment Yield',    v:pct(avgIY),                        c:'gr', sub:'Weighted avg investment return'},
     {l:'Cost of Equity (Ke)', v:pct(eq.costOfEquity),              c:'pu', sub:'Required shareholder return'},
   ].map(k=>`<div class="wacc-card ${k.c}"><div class="wc-lbl">${k.l}</div><div class="wc-val">${k.v}</div><div class="wc-sub">${k.sub}</div></div>`).join('');
 
-  renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara);
-  renderDashCharts(totalDebtors,totalInv,totalCash,totalDebt,totalEquity,avgDR,avgIY,wacd,eq.costOfEquity);
-  renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever});
+  renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt, wacd, avgIY, avgDR, wara);
+  renderDashCharts(totalDebtors, totalInv, totalCash, totalDebt, totalEquity, avgDR, avgIY, wacd, eq.costOfEquity);
+  renderAdvisory({ totalAssets, totalDebt, totalEquity, totalDebtors, totalInv, totalCash, wacc, wacd, wara, spread, avgIY, avgDR, lever });
+  _dashLoaded = true;
 }
 
-// ── MATURITY TABLE ─────────────────────────────────────────────
-// FIX [A]: Gap row is now CUMULATIVE — each column shows the running
-// leading/(gap) position as at end of that tenor bucket.
-// e.g. 60-day column = (assets maturing ≤60d) − (liabilities maturing ≤60d)
-function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wacd,avgIY,avgDR,wara){
-  const tbl=$('maturity-tbl');if(!tbl)return;
-  const N=v=>v>0?'₦'+fN(v):'—';
-  // P(): null → '—' (empty bucket); 0 → '0.00%' (assets present, no liability cost); >0 → normal rate
-  const P=v=>v!=null?v.toFixed(2)+'%':'—';
-  const cc=v=>v>0?'style="color:var(--gr)"':v<0?'style="color:var(--rd)"':'';
+// ════════════════════════════════════════════════════
+// MATURITY PROFILE TABLE
+// ════════════════════════════════════════════════════
+function renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt, wacd, avgIY, avgDR, wara){
+  const tbl = $('maturity-tbl'); if(!tbl) return;
+  const N  = v => v > 0 ? '₦'+fN(v) : '—';
+  const P  = v => v != null ? v.toFixed(2)+'%' : '—';
+  const cc = v => v > 0 ? 'style="color:var(--gr)"' : v < 0 ? 'style="color:var(--rd)"' : '';
 
   const rD = buildRow(_portfolioCache, r=>r.balance, r=>r.dueDate, today, 'demand');
   const rI = buildRow(_invCache, i=>i.principal, i=>i.noMaturity?null:i.maturityDate, today, 'liquid');
@@ -881,30 +892,12 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
   for(let i=0; i<TENOR_CAPS.length; i++){ _cum += (aBkts[i]-lBkts[i]); gBkts.push(_cum); }
   const gTotal = aTotal - lTotal;
 
-  // Recompute total WARA & WACD locally from the same rows used in this table
-  const localWARA = aTotal>0 ? ((rD.total || 0) * avgDR + (rI.total || 0) * avgIY) / aTotal : 0;
-  const localWACD = lTotal>0 ? (_borrowCache.reduce((a,b)=>a+(b.outstanding/lTotal)*b.interestRate,0)) : 0;
+  const localWARA = aTotal>0 ? ((rD.total||0)*avgDR + (rI.total||0)*avgIY) / aTotal : 0;
+  const localWACD = lTotal>0 ? _borrowCache.reduce((a,b)=>a+(b.outstanding/lTotal)*b.interestRate,0) : 0;
 
-  // Diagnostics: log bucket sums and totals used for WARA/WACD so mismatches can be investigated
-  try {
-    console.groupCollapsed('MaturityTable diagnostics');
-    console.log('aBkts (per bucket assets):', aBkts);
-    console.log('aBkts sum:', aBkts.reduce((s,v)=>s+(v||0),0), 'aTotal:', aTotal);
-    console.log('lBkts (per bucket liabilities):', lBkts);
-    console.log('lBkts sum:', lBkts.reduce((s,v)=>s+(v||0),0), 'lTotal:', lTotal);
-    console.log('rD.total (debtors):', rD.total, 'rI.total (investments):', rI.total, 'rC.total (cash):', rC.total);
-    console.log('global WARA param (from caller):', wara, 'localWARA (table basis):', localWARA);
-    console.log('global WACD param (from caller):', wacd, 'localWACD (table basis):', localWACD);
-    console.groupEnd();
-  } catch(e){ console.warn('Diagnostics logging failed', e); }
-
-  // WARA per bucket
-  // WARA per bucket: include ALL assets (debtors + investments + cash) in denominator
-  // so per-bucket rates are consistent with portfolio-wide WARA in Total column.
-  // Cash earns 0% — large idle cash correctly drags WARA down, signalling idle-liquidity cost.
-  const waraBkts=aBkts.map((v,i)=>{
-    const da=rD.b[i],ia=rI.b[i],ca=rC.b[i],tot=da+ia+ca;
-    return tot>0?(da*avgDR+ia*avgIY)/tot:null;
+  const waraBkts = aBkts.map((v,i) => {
+    const da=rD.b[i], ia=rI.b[i], tot=da+ia+rC.b[i];
+    return tot>0 ? (da*avgDR + ia*avgIY)/tot : null;
   });
   const wacdBkts = waraBkts.map((w,i) => {
     if(w==null) return null;
@@ -937,17 +930,8 @@ function renderMaturityTable(today,totalDebtors,totalInv,totalCash,totalDebt,wac
     <tr class="pct-row"><td>Funding Base %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">WEIGHTED AVERAGE COST OF FUNDS</td></tr>
     <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWARA)}</td></tr>
-    <tr class="wacf-row"><td>WACF (Liabilities) %</td>${wacfBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
-    ${(() => {
-      const contribs = aBkts.map((a,i)=>{ const sp = spreadBkts[i]; return sp!=null ? (a * (sp/100)) : null; });
-      const totalContrib = contribs.reduce((s,v)=>s+(v||0),0);
-      const surplusPct = aTotal>0 ? (totalContrib / aTotal * 100) : 0;
-      const liabPct = localWARA - localWACD;
-      const liabCurrency = aTotal * (liabPct/100);
-      const perBucket = spreadBkts.map(v=>`<td ${cc(v)}>${v!=null?((v>=0?'+':'')+v.toFixed(2)+'%'):'—'}</td>`).join('');
-      const emptyCols = TENOR_CAPS.map(()=>'<td>—</td>').join('');
-      return `<tr class="spread-row dim"><td>Surplus / (Deficit) — WARA − WACD</td>${emptyCols}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)+'%'} (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>`;
-    })()}
+    <tr class="wacd-row"><td>WACD (Liabilities) %</td>${wacdBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
+    <tr class="spread-row dim"><td>Surplus / (Deficit) WARA − WACD</td>${TENOR_CAPS.map(()=>'<td>—</td>').join('')}<td ${cc(liabPct)}>${(liabPct>=0?'+':'')+liabPct.toFixed(2)}% (${liabPct>=0?'+':''}₦${fN(liabCurrency)})</td></tr>
   </tbody>`;
 }
 
@@ -976,56 +960,217 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
   const debtorPct = totalAssets>0 ? totalDebtors/totalAssets*100 : 0;
   const invPct    = totalAssets>0 ? totalInv/totalAssets*100 : 0;
   const cashPct   = totalAssets>0 ? totalCash/totalAssets*100 : 0;
+  const cr        = totalAssets>0 ? totalEquity/totalAssets*100 : 0;
 
-  if(spread>5)     pts.push({c:'gr',t:`Strong net interest spread of ${spread.toFixed(2)}% — entity earns comfortably above cost of funds.`});
+  // ── Financial Optimisation Assessment points ─────────────────
+  if(spread>5)      pts.push({c:'gr',t:`Strong net interest spread of ${spread.toFixed(2)}% — entity earns comfortably above cost of funds.`});
   else if(spread>0) pts.push({c:'am',t:`Net interest spread of ${spread.toFixed(2)}% is thin. Consider repricing assets or securing cheaper funding.`});
-  else             pts.push({c:'rd',t:`Negative net interest spread (${spread.toFixed(2)}%) — entity pays more on liabilities than it earns on assets. Immediate corrective action required.`});
+  else              pts.push({c:'rd',t:`Negative net interest spread (${spread.toFixed(2)}%) — entity pays more on liabilities than it earns on assets. Immediate corrective action required.`});
 
   if(wacc>0){
     if(wara>=wacc+2)  pts.push({c:'gr',t:`WARA (${pct(wara)}) exceeds WACC (${pct(wacc)}) by ${(wara-wacc).toFixed(2)}pp — positive EVA. Entity creates shareholder value.`});
-    else if(wara<wacc)pts.push({c:'rd',t:`WARA (${pct(wara)}) is below WACC (${pct(wacc)}) — entity is destroying economic value.`});
-    else              pts.push({c:'am',t:`WARA (${pct(wara)}) is marginally above WACC (${pct(wacc)}). At EVA break-even; improving asset yields will strengthen value creation.`});
+    else if(wara<wacc)pts.push({c:'rd',t:`WARA (${pct(wara)}) is below WACC (${pct(wacc)}) — entity is destroying economic value. Immediate asset repricing required.`});
+    else              pts.push({c:'am',t:`WARA (${pct(wara)}) marginally above WACC (${pct(wacc)}). At EVA break-even — improving asset yields will strengthen value creation.`});
   }
 
-  if(debtorPct>70)  pts.push({c:'am',t:`${debtorPct.toFixed(0)}% of assets are in debtors — high concentration. Rebalance into short investments.`});
-  else if(debtorPct>50) pts.push({c:'bl',t:`Debtor book (${debtorPct.toFixed(0)}% of assets) is primary earning asset. Keep ECL model current for accurate provisioning.`});
+  if(debtorPct>80)       pts.push({c:'am',t:`Risk assets at ${debtorPct.toFixed(0)}% of portfolio — very high concentration. Maintain a minimum 10–15% liquidity buffer in short-term investments.`});
+  else if(debtorPct>50)  pts.push({c:'gr',t:`Risk asset (debtor) book at ${debtorPct.toFixed(0)}% of total assets — ideal allocation for a finance company. Higher-yield risk assets offset borrowing costs. Keep ECL model current.`});
+  else if(debtorPct>0)   pts.push({c:'am',t:`Risk assets at only ${debtorPct.toFixed(0)}% of portfolio — below optimal for a finance company. Scale the loans/debtor to leverage borrowings at higher yields than fixed deposits.`});
 
   if(totalInv>0){
-    if(avgIY>wacd+2)  pts.push({c:'gr',t:`Investment yield (${pct(avgIY)}) exceeds WACD by ${(avgIY-wacd).toFixed(2)}pp — surplus liquidity deployed at positive spreads.`});
-    else if(avgIY<wacd)pts.push({c:'am',t:`Investment yield (${pct(avgIY)}) below WACD (${pct(wacd)}) — idle liquidity earns less than funding cost.`});
+    if(avgIY>wacd+2)   pts.push({c:'gr',t:`Investment yield (${pct(avgIY)}) exceeds WACD by ${(avgIY-wacd).toFixed(2)}pp — surplus liquidity deployed at positive spreads.`});
+    else if(avgIY<wacd)pts.push({c:'am',t:`Investment yield (${pct(avgIY)}) below WACD (${pct(wacd)}) — idle liquidity earns less than funding cost. Finance companies should prioritise risk assets over fixed deposits as higher asset yields cover borrowing costs more effectively.`});
   }
-  if(cashPct>25) pts.push({c:'am',t:`${cashPct.toFixed(0)}% of assets (${fmt(totalCash)}) sit as idle cash. Deploy excess into T-Bills or short FDs.`});
-  if(lever>3)    pts.push({c:'rd',t:`Debt/Equity of ${lever.toFixed(2)}× is elevated. Prioritise equity injection or profit retention.`});
-  else if(lever>1.5) pts.push({c:'am',t:`Debt/Equity of ${lever.toFixed(2)}× is moderate. Monitor covenant headroom.`});
-  else if(lever<0.5&&totalDebt>0) pts.push({c:'bl',t:`Low leverage (${lever.toFixed(2)}×) suggests under-utilisation of debt capacity.`});
+  if(cashPct>25) pts.push({c:'am',t:`${cashPct.toFixed(0)}% of assets (${fmt(totalCash)}) sit as idle cash. Deploy excess into 91-day T-Bills or short-term FDs.`});
 
-  if(totalEquity===0) pts.push({c:'rd',t:'No equity data entered. Go to Equity & Capital to enter share capital — essential for WACC.'});
-  else { const cr=totalAssets>0?totalEquity/totalAssets*100:0; pts.push(cr<10?{c:'rd',t:`Capital ratio of ${cr.toFixed(1)}% is thin. Target ≥ 20%.`}:{c:'gr',t:`Capital ratio of ${cr.toFixed(1)}% indicates adequate capitalisation.`}); }
+  if(lever>8)        pts.push({c:'rd',t:`Debt/Equity of ${lever.toFixed(2)}× is very high — approaching regulatory limits. Monitor capital adequacy ratios closely.`});
+  else if(lever>3)   pts.push({c:'gr',t:`Debt/Equity of ${lever.toFixed(2)}× reflects adequate leverage for a finance company. Borrowings fund risk assets which earn higher returns to offset funding costs.`});
+  else if(lever>1.5) pts.push({c:'am',t:`Debt/Equity of ${lever.toFixed(2)}× is moderate for a finance company. Consider scaling debt utilisation to grow the risk asset book.`});
+  else if(lever<0.5&&totalDebt>0) pts.push({c:'am',t:`Low leverage (${lever.toFixed(2)}×) — finance companies typically operate at 3–6× to optimise ROE. Consider scaling borrowings to fund risk assets.`});
+
+  if(totalEquity===0) pts.push({c:'rd',t:'No equity data entered. Go to Equity & Capital to enter share capital — essential for WACC computation.'});
+  else pts.push(cr<10?{c:'rd',t:`Capital ratio of ${cr.toFixed(1)}% is thin. Target ≥ 20% to maintain regulatory headroom.`}:{c:'gr',t:`Capital ratio of ${cr.toFixed(1)}% indicates adequate capitalisation and remains a key strength.`});
 
   const s3 = _debtorCache.filter(d=>getStage(d._id)===3);
-  if(s3.length>0){ const s3amt=s3.reduce((s,d)=>s+d.totalOutstanding,0); pts.push({c:'rd',t:`${s3.length} debtor${s3.length>1?'s':''} (${fmt(s3amt)}) are Stage 3. Ensure full ECL provisions and escalate recovery.`}); }
+  if(s3.length>0){ const s3amt=s3.reduce((s,d)=>s+d.totalOutstanding,0); pts.push({c:'rd',t:`${s3.length} debtor${s3.length>1?'s':''} (${fmt(s3amt)}) are Stage 3. Ensure full ECL provisions are recognised and escalate recovery immediately.`}); }
 
-  if(spread<2)          recs.push('Reprice debtor facilities — target minimum debtor yield of WACD + 5% to cover ECL charges.');
-  if(cashPct>25)        recs.push(`Deploy idle cash into 91-day T-Bills (~${Math.min(avgIY||20,21).toFixed(1)}%) to improve WARA without credit risk.`);
-  if(lever>2.5)         recs.push('Consider a rights issue or preference share offer to reduce leverage below 2×.');
-  if(invPct<10&&totalAssets>0) recs.push('Maintain minimum 10-15% investment portfolio as liquidity buffer and yield anchor.');
-  if(wara<wacc&&wacc>0) recs.push(`To restore positive EVA, target WARA ≥ ${Math.ceil(wacc+1)}% via higher-yield assets.`);
-  if(s3.length>0)       recs.push('Accelerate Stage 3 collections — consider collections agency or legal recovery proceedings.');
+  // ── Board Recommendations — structured Observation / Recommendation / Rationale ──
+  let recNum = 0;
+  const recItems = [];
 
+  // 1. Net Interest Spread
+  if(spread<=0){
+    recNum++;
+    recItems.push({
+      n: recNum,
+      title: 'Address Negative Net Interest Spread Urgently',
+      obs:   `Current net interest spread is ${spread.toFixed(2)}% — the entity is paying more on its liabilities than it earns on its assets, which directly erodes profitability.`,
+      rec:   `Immediately reprice debtor/loan facilities upward. Target a minimum debtor yield of WACD + 5% (i.e. ≥ ${(wacd+5).toFixed(1)}%) to cover ECL charges and generate positive spread. Simultaneously, explore renegotiating the highest-cost borrowing facilities.`,
+      rat:   `Every basis point of negative spread compounds against equity. Restoring a positive NIS of at least 2–3% is the single most impactful lever available to management at this time.`,
+      dot:   'rd'
+    });
+  } else if(spread<2){
+    recNum++;
+    recItems.push({
+      n: recNum,
+      title: 'Reprice Assets to Widen Interest Spread',
+      obs:   `Net interest spread of ${spread.toFixed(2)}% is thin and provides minimal buffer against credit losses and operating costs.`,
+      rec:   `Target a minimum debtor yield of WACD + 5% (≥ ${(wacd+5).toFixed(1)}%) across new and renewed facilities. Review pricing on floating-rate exposures and introduce risk-adjusted pricing tiers.`,
+      rat:   `A wider spread of at least 3–5% is the industry benchmark for sustainable profitability in a lending-focused finance company. Thin spreads leave the business exposed to any uptick in credit losses or funding costs.`,
+      dot:   'am'
+    });
+  }
+
+  // 2. Asset allocation — grow risk assets
+  if(debtorPct<50){
+    recNum++;
+    recItems.push({
+      n: recNum,
+      title: 'Re-optimise Asset Allocation Towards Risk Assets',
+      obs:   `Risk assets (debtors/loans) represent only ${debtorPct.toFixed(0)}% of total deployable assets. The remaining ${(100-debtorPct).toFixed(0)}% is held in lower-yielding investments and cash.`,
+      rec:   `Set a strategic target of 60–70% risk asset concentration. Channel new borrowing drawdowns primarily into the loans rather than fixed deposits or money market placements.`,
+      rat:   `Risk assets command yields significantly above the cost of borrowing, unlike fixed deposits which typically earn below WACD. Re-allocating from investments to loans will directly improve WARA and widen the interest spread.`,
+      dot:   'am'
+    });
+  } else if(debtorPct>80){
+    recNum++;
+    recItems.push({
+      n: recNum,
+      title: 'Maintain Minimum Liquidity Buffer',
+      obs:   `Risk asset concentration at ${debtorPct.toFixed(0)}% of total assets is very high, leaving limited liquid assets as a buffer.`,
+      rec:   `Maintain a minimum 10–15% of total assets in short-term liquid instruments (91-day T-Bills, overnight placements) as a structural liquidity reserve.`,
+      rat:   `Regulatory and operational resilience requires sufficient liquidity to meet short-term obligations without forced asset sales. A 10–15% buffer preserves optionality while not materially diluting WARA.`,
+      dot:   'am'
+    });
+  }
+
+  // 3. Investment yield vs WACD
+  if(totalInv>0 && avgIY<wacd){
+    recNum++;
+    recItems.push({
+      n: recNum,
+      title: 'Redeploy Sub-WACD Liquidity into Higher-Yield Instruments',
+      obs:   `Investment yield of ${pct(avgIY)} is below WACD of ${pct(wacd)} — the entity is effectively subsidising its liquidity position at a net cost.`,
+      rec:   `Redeploy excess liquidity from low-yield placements into the risk asset (loan/debtor) book, which commands rates significantly above money market and fixed deposit yields. Where loan demand is insufficient, retain fixed deposits and money market instruments as the secondary option — note that these typically yield above FGN T-Bill rates and should be maintained as the liquidity buffer rather than replaced by government securities.`,
+      rat:   `Idle liquidity deployed below funding cost is a drag on ROE. Even a 100–200bp improvement in investment yield will contribute meaningfully to WARA and EVA.`,
+      dot:   'am'
+    });
+  }
+
+  // 4. EVA / WACC
+  if(wacc>0 && wara>=wacc){
+    recNum++;
+    recItems.push({
+      n: recNum,
+      title: 'Sustain and Strengthen Positive EVA Position',
+      obs:   `WARA of ${pct(wara)} exceeds WACC of ${pct(wacc)} by ${(wara-wacc).toFixed(2)}pp, confirming the entity is generating value above its cost of capital.`,
+      rec:   `Protect this margin by defending asset yields on renewals and resisting pressure to reduce rates in competitive bids. Target WARA ≥ WACC + 3pp as a standing internal benchmark.`,
+      rat:   `Positive EVA is the foundation of long-term equity value creation. It remains a key strength and should not be eroded during balance sheet expansion.`,
+      dot:   'gr'
+    });
+  } else if(wacc>0 && wara<wacc){
+    recNum++;
+    recItems.push({
+      n: recNum,
+      title: 'Restore Positive EVA Through Asset Yield Improvement',
+      obs:   `WARA of ${pct(wara)} is below WACC of ${pct(wacc)}, indicating the entity is currently destroying economic value.`,
+      rec:   `Target WARA ≥ ${(Math.ceil(wacc+1)).toFixed(1)}% through a combination of asset repricing, portfolio mix shift towards higher-yield risk assets, and cost-of-funds reduction.`,
+      rat:   `Sustained negative EVA erodes book value over time. Restoring positive EVA is a board-level priority that protects shareholder interests and supports future capital raising.`,
+      dot:   'rd'
+    });
+  }
+
+  // 5. Capital / Capital ratio
+  if(totalEquity>0){
+    if(cr<10){
+      recNum++;
+      recItems.push({
+        n: recNum,
+        title: 'Strengthen Capital Base',
+        obs:   `Capital ratio of ${cr.toFixed(1)}% is below the 20% internal benchmark — the balance sheet is thinly capitalised relative to total assets.`,
+        rec:   `Prioritise profit retention over dividend distribution until the capital ratio reaches ≥ 20%. Evaluate a rights issue or preference share offer to inject fresh equity.`,
+        rat:   `A stronger capital base expands borrowing headroom, reduces the cost of funds, and provides a larger buffer against unexpected credit losses.`,
+        dot:   'rd'
+      });
+    } else {
+      recNum++;
+      recItems.push({
+        n: recNum,
+        title: 'Maintain Prudent Leverage While Scaling',
+        obs:   `Debt-to-equity of ${lever.toFixed(2)}× is within acceptable levels for a finance company, and capital ratio of ${cr.toFixed(1)}% provides adequate headroom.`,
+        rec:   `Gradually increase leverage in line with asset growth, ensuring borrowings are channelled into higher-yielding risk assets rather than low-yield placements. Target a D/E ceiling of 6–7× before seeking fresh equity.`,
+        rat:   `The current leverage headroom supports balance sheet expansion without undue financial strain. Capital adequacy remains a key strength and should not be eroded during expansion.`,
+        dot:   'gr'
+      });
+    }
+  }
+
+  // 6. Idle cash
+  if(cashPct>25){
+    recNum++;
+    recItems.push({
+      n: recNum,
+      title: 'Deploy Excess Cash to Reduce Earnings Drag',
+      obs:   `${cashPct.toFixed(0)}% of total assets (${fmt(totalCash)}) is held as idle cash — earning zero or near-zero return while funded by interest-bearing borrowings.`,
+      rec:   `Deploy a minimum of 70% of excess cash (above a 10% liquidity reserve) into 91-day FGN Treasury Bills (~${Math.min(avgIY||20,21).toFixed(1)}% p.a.) or short-term commercial paper within the next 30 days.`,
+      rat:   `Cash drag directly suppresses WARA and widens the gap between asset returns and funding costs. Even a partial deployment into T-Bills can improve WARA by 50–100bp.`,
+      dot:   'am'
+    });
+  }
+
+  // 7. Stage 3 debtors
+  if(s3.length>0){
+    const s3amt=s3.reduce((s,d)=>s+d.totalOutstanding,0);
+    recNum++;
+    recItems.push({
+      n: recNum,
+      title: 'Accelerate Recovery of Stage 3 Exposures',
+      obs:   `${s3.length} debtor${s3.length>1?'s':''} totalling ${fmt(s3amt)} are classified Stage 3 (credit-impaired), requiring lifetime ECL provisioning.`,
+      rec:   `Escalate recovery on all Stage 3 accounts — engage a collections agency or initiate legal recovery proceedings within 60 days. Ensure full IFRS 9 lifetime ECL provisions are recognised in the current reporting period.`,
+      rat:   `Unresolved Stage 3 exposures continue to accrue interest income that may never be recovered, inflating WARA optically while understating true credit losses. Swift resolution protects capital and improves ECL coverage ratios.`,
+      dot:   'rd'
+    });
+  }
+
+  // ── Build conclusion dynamically ────────────────────────────
+  const positives=[], concerns=[];
+  if(wara>=wacc+2) positives.push('positive EVA position');
+  if(cr>=20)       positives.push('well-capitalised balance sheet');
+  if(lever>1.5&&lever<=8) positives.push('adequate leverage headroom');
+  if(debtorPct>50&&debtorPct<=80) positives.push('well-deployed risk asset book');
+  if(spread<=0)    concerns.push('restoring positive interest spread');
+  if(debtorPct<50) concerns.push('re-optimising asset mix towards risk assets');
+  if(wara<wacc&&wacc>0) concerns.push('reversing negative EVA');
+  if(s3.length>0)  concerns.push('resolving Stage 3 credit exposures');
+  if(cashPct>25)   concerns.push('deploying idle cash');
+  const posStr  = positives.length>0 ? `building on its ${positives.join(', ')}` : 'addressing key structural gaps';
+  const conStr  = concerns.length>0  ? concerns.join(', and ') : 'sustaining current performance metrics';
+  const conclusion = `Management should prioritise ${conStr}, while ${posStr}. Execution discipline and speed are critical to prevent further earnings dilution and to position the company for sustainable profitability.`;
+
+  // ── Render HTML ──────────────────────────────────────────────
   let html = '';
   if(pts.length){
     html += '<div class="advisory-section"><div class="advisory-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Financial Optimisation Assessment</div>';
     html += pts.map(p=>`<div class="advisory-item"><div class="adot ${p.c}"></div><span>${p.t}</span></div>`).join('');
     html += '</div>';
   }
-  if(recs.length){
+  if(recItems.length){
     html += '<div class="advisory-section"><div class="advisory-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--am)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Board Recommendations</div>';
-    html += recs.map(r=>`<div class="advisory-item"><div class="adot am"></div><span>${r}</span></div>`).join('');
+    html += recItems.map(r=>`
+      <div class="advisory-rec-item">
+        <div class="advisory-rec-header"><div class="adot ${r.dot}"></div><span class="advisory-rec-num">${r.n}.</span><span class="advisory-rec-title">${r.title}</span></div>
+        <div class="advisory-rec-body">
+          <div class="advisory-rec-row"><span class="advisory-rec-label">Observation:</span><span>${r.obs}</span></div>
+          <div class="advisory-rec-row"><span class="advisory-rec-label">Recommendation:</span><span>${r.rec}</span></div>
+          <div class="advisory-rec-row"><span class="advisory-rec-label">Rationale:</span><span>${r.rat}</span></div>
+        </div>
+      </div>`).join('');
+    html += `<div class="advisory-conclusion"><div class="advisory-conclusion-label">Conclusion</div><div class="advisory-conclusion-text">${conclusion}</div></div>`;
     html += '</div>';
   }
   if(!html) html = '<div class="ep" style="padding:1rem"><div class="ei">📊</div>Enter borrowings, investments, cash and equity data to generate the advisory.</div>';
   el.innerHTML = html;
-  window.latestAssessment = { pts, recs, metrics:{ totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever } };
+  window.latestAssessment = { pts, recs, recItems, conclusion, metrics:{ totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever } };
 }
 
 // ════════════════════════════════════════════════════
@@ -1040,7 +1185,7 @@ function renderLoanKPIs(){
   const d=_debtorCache, total=d.reduce((s,x)=>s+x.totalOutstanding,0);
   const s1=d.filter(x=>getStage(x._id)===1), s2=d.filter(x=>getStage(x._id)===2), s3=d.filter(x=>getStage(x._id)===3);
   $('loans-kpis').innerHTML=[
-    {l:'Total Debtor Book',        v:fmt(total),                              c:'tl',ac:true,sub:d.length+' debtors'},
+    {l:'Total Debtors/Loans',        v:fmt(total),                              c:'tl',ac:true,sub:d.length+' debtors'},
     {l:'Stage 1 — Performing',     v:fmt(s1.reduce((s,x)=>s+x.totalOutstanding,0)), c:'gr', sub:s1.length+' debtors'},
     {l:'Stage 2 — Watchlist',      v:fmt(s2.reduce((s,x)=>s+x.totalOutstanding,0)), c:'am', sub:s2.length+' debtors'},
     {l:'Stage 3 — Non-Performing', v:fmt(s3.reduce((s,x)=>s+x.totalOutstanding,0)), c:'rd', sub:s3.length+' debtors'},
@@ -1513,7 +1658,7 @@ async function exportBoardPPT(){
   const mm = window.latestMaturity  || {};
   const orgName  = _user?.orgName || 'Organisation';
   const userName = _user?.name    || '—';
-  const TOTAL    = 9;
+  const TOTAL    = 11;
   const D = todayStr();
   const tL = ['≤30d','≤60d','≤90d','≤180d','≤270d','≤365d+'];
 
@@ -1523,34 +1668,44 @@ async function exportBoardPPT(){
   s1.addShape(pres.shapes.OVAL,{x:7.8,y:2.8,w:3,h:3,fill:{color:EXP_C.blue,transparency:92},line:{color:EXP_C.blue,transparency:92}});
   s1.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:0.7,w:0.65,h:0.65,fill:{color:EXP_C.teal},line:{color:EXP_C.teal},rectRadius:0.1});
   s1.addText('FM',{x:0.6,y:0.7,w:0.65,h:0.65,fontSize:13,bold:true,color:EXP_C.navy,align:'center',valign:'middle',margin:0});
-  s1.addText('FM Finance Suite — Treasury Intelligence',{x:1.42,y:0.82,w:6.5,h:0.4,fontSize:11,color:EXP_C.teal,fontFace:'Cambria',margin:0});
-  s1.addText('Treasury Intelligence',{x:0.6,y:1.6,w:9,h:0.9,fontSize:46,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
+  s1.addText(orgName + '— Treasury Intelligence',{x:1.42,y:0.82,w:6.5,h:0.4,fontSize:11,color:EXP_C.teal,fontFace:'Cambria',margin:0});
+  s1.addText('Treasury Report',{x:0.6,y:1.6,w:9,h:0.9,fontSize:46,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
   s1.addText('Board Presentation',{x:0.6,y:2.45,w:9,h:0.62,fontSize:28,color:EXP_C.teal,fontFace:'Cambria',margin:0,italic:true});
   s1.addShape(pres.shapes.RECTANGLE,{x:0.6,y:3.18,w:3.5,h:0.022,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
-  s1.addText(orgName,{x:0.6,y:3.28,w:6,h:0.32,fontSize:13,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
   s1.addText('Prepared: '+D+'  |  Prepared by: '+userName,{x:0.6,y:3.58,w:7,h:0.28,fontSize:9.5,color:EXP_C.tx2,fontFace:'Arial',margin:0});
   s1.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:4.48,w:1.5,h:0.32,fill:{color:EXP_C.navy3},line:{color:EXP_C.navy4},rectRadius:0.1});
   s1.addText('CONFIDENTIAL',{x:0.6,y:4.48,w:1.5,h:0.32,fontSize:7.5,bold:true,color:EXP_C.amber,align:'center',valign:'middle',fontFace:'Arial',margin:0,charSpacing:1.5});
   s1.addNotes('Welcome the board. Key items: net interest spread, WACC vs WARA (EVA signal), debtor staging, and recommendations.');
 
-  // ── SLIDE 2: EXECUTIVE SUMMARY ──────────────────────────────
+  // ── SLIDE 2: EXECUTIVE SUMMARY — all 15 KPIs, 3 rows × 5 cols ──
   const s2=pres.addSlide(); s2.background={color:EXP_C.navy};
   expTopBand(s2,pres,'Executive Summary','Top-line portfolio metrics — all figures in Naira (₦)');
-  const sp=m.spread||0;
-  const kpis=[
-    {l:'TOTAL FINANCIAL ASSETS',v:expFmtM(m.totalAssets),  s:'Debtors + Inv + Cash',   acc:EXP_C.teal  },
-    {l:'TOTAL BORROWINGS',      v:expFmtM(m.totalDebt),    s:_borrowCache.length+' facilities',acc:EXP_C.red   },
-    {l:'EQUITY & RESERVES',     v:expFmtM(m.totalEquity),  s:'Capital + Retained',       acc:EXP_C.purple},
-    {l:'NET ASSET COVER',       v:expFmtM((m.totalAssets||0)-(m.totalDebt||0)),s:'Assets − Liabilities',acc:(m.totalAssets||0)>(m.totalDebt||0)?EXP_C.green:EXP_C.red},
-    {l:'WARA',                  v:expPct(m.wara),           s:'Return on earning assets', acc:EXP_C.amber },
-    {l:'WACD',                  v:expPct(m.wacd),           s:'Avg cost of debt',         acc:EXP_C.blue  },
-    {l:'WACC',                  v:expPct(m.wacc),           s:'Cost of capital',           acc:EXP_C.purple},
-    {l:'NET INT. SPREAD',       v:(sp>=0?'+':'')+expPct(sp),s:'WARA − WACD',              acc:sp>=0?EXP_C.green:EXP_C.red},
+  const sp=m.spread||0; const evS=(m.wara||0)-(m.wacc||0); const lvr=m.lever||0;
+  const all15=[
+    {l:'TOTAL DEPLOYABLE ASSETS', v:expFmtM(m.totalAssets),                             s:'Loans + Inv + Cash',            acc:EXP_C.amber  },
+    {l:'RISK ASSETS',             v:expFmtM(m.totalDebtors),                            s:'Outstanding Loans',             acc:EXP_C.blue  },
+    {l:'INVESTMENT',              v:expFmtM(m.totalInv),                                s:'Investment Value',              acc:EXP_C.blue  },
+    {l:'CASH & BANK',             v:expFmtM(m.totalCash),                               s:'Cash & Cash Equivalents',       acc:EXP_C.blue},
+    {l:'TOTAL FUNDING BASE',      v:expFmtM((m.totalEquity||0)+(m.totalDebt||0)),       s:'Debt + Equity',                 acc:EXP_C.amber  },
+    {l:'TOTAL BORROWINGS',        v:expFmtM(m.totalDebt),                               s:_borrowCache.length+' facilities', acc:EXP_C.blue },
+    {l:'EQUITY & RESERVES',       v:expFmtM(m.totalEquity),                             s:'Capital + Retained Earnings',   acc:EXP_C.blue },
+    {l:'NET ASSET COVER',        v:expFmtM((m.totalAssets||0)-(m.totalDebt||0)),   s:'Assets − Liabilities',        acc:(m.totalAssets||0)>(m.totalDebt||0)?EXP_C.green:EXP_C.red},
+    {l:'WARA',                   v:expPct(m.wara),                                  s:'Return on earning assets',    acc:EXP_C.teal },
+    {l:'WACD',                   v:expPct(m.wacd),                                  s:'Weighted avg cost of debt',   acc:EXP_C.purple  },
+    {l:'WACC',                   v:expPct(m.wacc),                                  s:'Cost of capital',             acc:EXP_C.teal},
+    {l:'NET INT. SPREAD',        v:(sp>=0?'+':'')+expPct(sp),                       s:'NIS: WARA − WACD',            acc:sp>=0?EXP_C.green:EXP_C.red},
+    {l:'Economic Value Added',   v:(evS>=0?'+':'')+expPct(evS),                     s:'EVA: WARA − WACC',            acc:evS>=0?EXP_C.green:EXP_C.red},
+    {l:'DEBT / EQUITY',          v:lvr.toFixed(2)+'×',                              s:'Financial leverage',          acc:lvr>8?EXP_C.red:lvr>3?EXP_C.green:EXP_C.amber},
+    {l:'DEBT / ASSETS',          v:expPct(m.totalAssets>0?(m.totalDebt/m.totalAssets)*100:0), s:'Debt ÷ Deployable Assets', acc:EXP_C.purple},
+    {l:'DEBTOR YIELD',           v:expPct(m.avgDR),                                 s:'Avg implied rate on debtors', acc:EXP_C.teal },
+    {l:'INVESTMENT YIELD',       v:expPct(m.avgIY),                                 s:'Weighted avg investment yield',acc:EXP_C.purple },
+    {l:'COST OF EQUITY (Ke)',    v:expPct(m.eq?.costOfEquity||_equityData.costOfEquity||20), s:'Required shareholder return', acc:EXP_C.teal},
   ];
-  const cW=2.28,cH=1.08,g=0.07,sx=0.22,sy=1.12;
-  kpis.forEach((k,i)=>expKpiCard(s2,pres,sx+(i%4)*(cW+g),sy+Math.floor(i/4)*(cH+0.1),cW,cH,k.l,k.v,k.s,k.acc));
+  // TO (4 rows × 6 cols = 24 slots, fits 22 comfortably):
+const cW2=1.55, cH2=0.88, g2=0.04, sx2=0.18, sy2=1.1;
+all15.forEach((k,i)=>expKpiCard(s2,pres,sx2+(i%6)*(cW2+g2),sy2+Math.floor(i/6)*(cH2+0.07),cW2,cH2,k.l,k.v,k.s,k.acc));
   expFooter(s2,pres,2,TOTAL);
-  s2.addNotes('Net asset cover and NIS are the two headline metrics. Both should be positive.');
+  s2.addNotes('All 15 dashboard KPIs. Key: Net Asset Cover and NIS must be positive. EVA Signal confirms value creation. D/E >3× is normal for a finance company funding risk assets.');
 
   // ── SLIDE 3: CAPITAL STRUCTURE & WACC ───────────────────────
   const s3=pres.addSlide(); s3.background={color:EXP_C.navy};
@@ -1577,13 +1732,41 @@ async function exportBoardPPT(){
   const aB=(mm.aBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
   const lB=(mm.lBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
   const gB=(mm.gBkts||new Array(6).fill(0)).map(v=>Number(v)||0);
-  s4.addChart(pres.charts.BAR,[{name:'Assets',labels:tL,values:aB},{name:'Liabilities',labels:tL,values:lB}],{x:0.2,y:1.12,w:6.1,h:3.55,barDir:'col',barGrouping:'clustered',chartColors:[EXP_C.teal,EXP_C.red],chartArea:{fill:{color:EXP_C.navy3}},catAxisLabelColor:EXP_C.tx2,valAxisLabelColor:EXP_C.tx2,valGridLine:{color:EXP_C.navy4,size:0.5},catGridLine:{style:'none'},showLegend:true,legendPos:'b'});
+  // Y-axis in thousands for readability
+  const aB_k=aB.map(v=>Math.round(v/1000)); const lB_k=lB.map(v=>Math.round(v/1000));
+  s4.addText('₦ Thousands',{x:0.2,y:1.0,w:2,h:0.18,fontSize:7,color:EXP_C.tx3,fontFace:'Arial',italic:true});
+  s4.addChart(pres.charts.BAR,[{name:'Assets',labels:tL,values:aB_k},{name:'Liabilities',labels:tL,values:lB_k}],{x:0.2,y:1.12,w:6.1,h:3.55,barDir:'col',barGrouping:'clustered',chartColors:[EXP_C.teal,EXP_C.red],chartArea:{fill:{color:EXP_C.navy3}},catAxisLabelColor:EXP_C.tx2,valAxisLabelColor:EXP_C.tx2,valAxisNumFmt:'#,##0',valGridLine:{color:EXP_C.navy4,size:0.5},catGridLine:{style:'none'},showLegend:true,legendPos:'b'});
   expSecDiv(s4,pres,6.55,1.12,3.2,'CUMULATIVE GAP',EXP_C.blue);
   const gapTbl=[[{text:'Tenor',options:{bold:true,color:EXP_C.teal}},{text:'Gap (₦)',options:{bold:true,color:EXP_C.teal}},{text:'Signal',options:{bold:true,color:EXP_C.teal}}]];
   tL.forEach((t,i)=>{const g=gB[i]; gapTbl.push([t,'₦'+expFmt(g),{text:g>=0?'LEADING':'DEFICIT',options:{color:g>=0?EXP_C.green:EXP_C.red,bold:true}}]);});
   gapTbl.push([{text:'TOTAL',options:{bold:true}},'₦'+expFmt(mm.gTotal||0),{text:(mm.gTotal||0)>=0?'SURPLUS':'DEFICIT',options:{color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,bold:true}}]);
   s4.addTable(gapTbl,{x:6.55,y:1.42,w:3.2,h:3.2,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:9,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.37,align:'center',colW:[0.75,1.3,1.15]});
   expFooter(s4,pres,4,TOTAL);
+
+  // ── SLIDE 4b: ASSET & LIABILITY MATURITY PROFILE TABLE ──────
+  const s4b=pres.addSlide(); s4b.background={color:EXP_C.navy};
+  expTopBand(s4b,pres,'Asset & Liability Maturity Profile (₦)','Cumulative Tenor Gap — figures in Naira');
+  // Full maturity table: Asset rows, Liability rows, Gap row
+  const matHdr=[
+    [{text:'Category',options:{bold:true,color:EXP_C.teal,fill:{color:EXP_C.navy4}}},
+     ...tL.map(t=>({text:t,options:{bold:true,color:EXP_C.teal,align:'center',fill:{color:EXP_C.navy4}}})),
+     {text:'TOTAL',options:{bold:true,color:EXP_C.teal,align:'center',fill:{color:EXP_C.navy4}}}]
+  ];
+  const fN2=v=>v===0?'—':'₦'+(Math.round(v/1000)).toLocaleString()+'k';
+  const matRows=[
+    [{text:'Assets (₦)',options:{bold:true,color:EXP_C.teal}},...aB.map(v=>({text:fN2(v),options:{color:EXP_C.teal,align:'right'}})),{text:fN2(aB.reduce((s,v)=>s+v,0)),options:{bold:true,color:EXP_C.teal,align:'right'}}],
+    [{text:'Liabilities (₦)',options:{bold:true,color:EXP_C.red}},...lB.map(v=>({text:fN2(v),options:{color:EXP_C.red,align:'right'}})),{text:fN2(lB.reduce((s,v)=>s+v,0)),options:{bold:true,color:EXP_C.red,align:'right'}}],
+    [{text:'Cumulative Gap',options:{bold:true,color:EXP_C.white}},...gB.map(v=>({text:'₦'+(Math.round(v/1000)).toLocaleString()+'k',options:{bold:true,color:v>=0?EXP_C.green:EXP_C.red,align:'right'}})),{text:'₦'+(Math.round((mm.gTotal||0)/1000)).toLocaleString()+'k',options:{bold:true,color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,align:'right'}}],
+    [{text:'Signal',options:{bold:true,color:EXP_C.tx2}},...gB.map(v=>({text:v>=0?'LEADING':'DEFICIT',options:{bold:true,color:v>=0?EXP_C.green:EXP_C.red,align:'center'}})),{text:(mm.gTotal||0)>=0?'SURPLUS':'DEFICIT',options:{bold:true,color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,align:'center'}}],
+  ];
+  const matTblData=[...matHdr,...matRows];
+  const colCount=tL.length+2; // category + 6 tenors + total = 8
+  const colWArr=[1.6,...tL.map(()=>0.98),1.0];
+  s4b.addTable(matTblData,{x:0.2,y:1.15,w:9.6,h:2.2,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:8.5,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.42,colW:colWArr});
+  // Legend note
+  s4b.addText('Note: Values shown in ₦ Thousands (k). Cumulative Gap = running total of Assets minus Liabilities across tenors. LEADING = asset-funded; DEFICIT = funding shortfall.',
+    {x:0.2,y:3.55,w:9.6,h:0.45,fontSize:7.5,color:EXP_C.tx3,fontFace:'Arial',italic:true,wrap:true});
+  expFooter(s4b,pres,5,TOTAL);
 
   // ── SLIDE 5: WARA / WACD SPREAD ──────────────────────────────
   const s5=pres.addSlide(); s5.background={color:EXP_C.navy};
@@ -1596,11 +1779,11 @@ async function exportBoardPPT(){
   const spTbl=[[{text:'Tenor',options:{bold:true,color:EXP_C.teal}},{text:'WARA',options:{bold:true,color:EXP_C.teal}},{text:'WACD',options:{bold:true,color:EXP_C.teal}},{text:'Spread',options:{bold:true,color:EXP_C.teal}}]];
   tL.forEach((t,i)=>{const sp=sB[i]; spTbl.push([t,wA[i].toFixed(2)+'%',wF[i].toFixed(2)+'%',{text:(sp==null?'—':(sp>=0?'+':'')+sp.toFixed(2)+'%'),options:{color:sp!=null&&sp>=0?EXP_C.green:EXP_C.red,bold:sp!=null}}]);});
   s5.addTable(spTbl,{x:6.55,y:1.42,w:3.2,h:3.0,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:9,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.42,align:'center',colW:[0.7,0.78,0.78,0.94]});
-  expFooter(s5,pres,5,TOTAL);
+  expFooter(s5,pres,6,TOTAL);
 
   // ── SLIDE 6: DEBTOR BOOK ──────────────────────────────────────
   const s6=pres.addSlide(); s6.background={color:EXP_C.navy};
-  expTopBand(s6,pres,'Debtor Book & IFRS 9 Staging','Receivables portfolio quality');
+  expTopBand(s6,pres,'Loans/Debtors & IFRS 9 Staging','Receivables portfolio quality');
   const s1a=_debtorCache.filter(d=>(d.stage||getStage(d._id))===1);
   const s2a=_debtorCache.filter(d=>(d.stage||getStage(d._id))===2);
   const s3a=_debtorCache.filter(d=>(d.stage||getStage(d._id))===3);
@@ -1619,7 +1802,7 @@ async function exportBoardPPT(){
     s6.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:4.85,y:3.72,w:4.9,h:0.78,fill:{color:EXP_C.red,transparency:90},line:{color:EXP_C.red},rectRadius:0.08});
     s6.addText([{text:'⚠ ALERT: ',options:{bold:true,color:EXP_C.red}},{text:s3a.length+' debtor'+(s3a.length>1?'s':'')+' ('+expFmtM(s3v)+') are Stage 3. Ensure full provisioning and escalate recovery.',options:{color:EXP_C.tx}}],{x:4.85,y:3.72,w:4.9,h:0.78,fontSize:9,fontFace:'Arial',margin:0.1,valign:'middle'});
   }
-  expFooter(s6,pres,6,TOTAL);
+  expFooter(s6,pres,7,TOTAL);
 
   // ── SLIDE 7: INVESTMENTS & BORROWINGS ─────────────────────────
   const s7=pres.addSlide(); s7.background={color:EXP_C.navy};
@@ -1636,24 +1819,85 @@ async function exportBoardPPT(){
   if(_borrowCache.length>7) borTbl.push(['+ '+(_borrowCache.length-7)+' more','','','','']);
   borTbl.push([{text:'TOTAL',options:{bold:true}},'',expFmtM(m.totalDebt||0),{text:expPct(m.wacd||0)+' avg',options:{color:EXP_C.red}},'']);
   s7.addTable(borTbl,{x:5.15,y:1.42,w:4.65,h:3.85,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:8,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.34,align:'left',colW:[1.4,1.1,0.85,0.52,0.78]});
-  expFooter(s7,pres,7,TOTAL);
+  expFooter(s7,pres,8,TOTAL);
 
-  // ── SLIDE 8: BOARD ADVISORY ────────────────────────────────────
+  // ── SLIDE 8: BOARD ADVISORY (Assessment) ─────────────────────
   const s8=pres.addSlide(); s8.background={color:EXP_C.navy};
-  expTopBand(s8,pres,'Board Advisory & Recommendations','Financial optimisation assessment and strategic action points');
-  const pts=(a.pts||[]).slice(0,5); const recs=(a.recs||[]).slice(0,4);
-  expSecDiv(s8,pres,0.2,1.12,5.5,'FINANCIAL OPTIMISATION ASSESSMENT',EXP_C.blue);
-  pts.forEach((p,i)=>{
-    const dc=p.c==='gr'?EXP_C.green:p.c==='rd'?EXP_C.red:EXP_C.amber;
-    s8.addShape(pres.shapes.OVAL,{x:0.2,y:1.48+i*0.77+0.08,w:0.13,h:0.13,fill:{color:dc},line:{color:dc}});
-    s8.addText(p.t.substring(0,155),{x:0.44,y:1.46+i*0.77,w:5.1,h:0.72,fontSize:9,color:EXP_C.tx,fontFace:'Arial',margin:0,valign:'middle'});
+  expTopBand(s8,pres,'Financial Optimisation Assessment','Key performance observations — traffic-light rated');
+  const ptsSlide=(a.pts||[]).slice(0,6);
+  expSecDiv(s8,pres,0.2,1.12,9.6,'FINANCIAL OPTIMISATION ASSESSMENT',EXP_C.blue);
+  ptsSlide.forEach((p,i)=>{
+    const dc=p.c==='gr'?EXP_C.green:p.c==='rd'?EXP_C.red:p.c==='bl'?EXP_C.blue:EXP_C.amber;
+    const col=i<3?0:1; const row=i%3;
+    const bx=0.2+col*4.85; const by=1.48+row*0.97;
+    s8.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:bx,y:by,w:4.6,h:0.82,fill:{color:EXP_C.navy3},line:{color:dc,transparency:60},rectRadius:0.06});
+    s8.addShape(pres.shapes.OVAL,{x:bx+0.12,y:by+0.34,w:0.13,h:0.13,fill:{color:dc},line:{color:dc}});
+    s8.addText(p.t.substring(0,160),{x:bx+0.32,y:by+0.06,w:4.2,h:0.72,fontSize:8.5,color:EXP_C.tx,fontFace:'Arial',margin:0,valign:'middle',wrap:true});
   });
-  expSecDiv(s8,pres,5.9,1.12,3.88,'BOARD RECOMMENDATIONS',EXP_C.amber);
-  recs.forEach((r,i)=>{
-    s8.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:5.9,y:1.46+i*0.9,w:3.88,h:0.78,fill:{color:EXP_C.navy3},line:{color:EXP_C.navy4},rectRadius:0.08,shadow:expMakeShadow()});
-    s8.addText([{text:(i+1)+'. ',options:{bold:true,color:EXP_C.amber}},{text:r.substring(0,130),options:{color:EXP_C.tx}}],{x:5.9,y:1.46+i*0.9,w:3.88,h:0.78,fontSize:8.5,fontFace:'Arial',margin:0.1,valign:'middle'});
-  });
-  expFooter(s8,pres,8,TOTAL);
+  expFooter(s8,pres,9,TOTAL);
+
+  // ── SLIDE 8b+: BOARD RECOMMENDATIONS — 2 per slide, conclusion on own row ──
+  // Layout: usable area y=1.32→5.08 (3.76in). 2 cards × 1.62in = 3.24in + 0.62in conclusion = 3.86in ✓
+  const allRecs=(a.recItems||[]);
+  const RECS_PER_SLIDE=2;
+  // Conclusion gets its own slide if recs fill all pages, else appended after last card
+  const recPageCount=Math.max(1,Math.ceil(allRecs.length/RECS_PER_SLIDE));
+  const dynamicTotal=TOTAL+(recPageCount-1);
+  let recSlideNum=10;
+  for(let pg=0;pg<recPageCount;pg++){
+    const pageRecs=allRecs.slice(pg*RECS_PER_SLIDE,(pg+1)*RECS_PER_SLIDE);
+    const isLast=pg===recPageCount-1;
+    const sRec=pres.addSlide(); sRec.background={color:EXP_C.navy};
+    const pgLabel=recPageCount>1?` (${pg+1} of ${recPageCount})`:'';
+    expTopBand(sRec,pres,'Board Recommendations'+pgLabel,'Observation · Recommendation · Rationale');
+    expSecDiv(sRec,pres,0.2,1.1,9.6,'BOARD RECOMMENDATIONS',EXP_C.amber);
+    // Each card: 1.62in tall; gap 0.1in; start y=1.32
+    const CARD_H=1.62, CARD_GAP=0.1, CARD_START=1.32;
+    pageRecs.forEach((r,i)=>{
+      const dc=r.dot==='gr'?EXP_C.green:r.dot==='rd'?EXP_C.red:EXP_C.amber;
+      const by=CARD_START+i*(CARD_H+CARD_GAP);
+      // Card background
+      sRec.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.2,y:by,w:9.6,h:CARD_H,fill:{color:EXP_C.navy3},line:{color:dc,transparency:65},rectRadius:0.07});
+      // Left accent bar
+      sRec.addShape(pres.shapes.RECTANGLE,{x:0.2,y:by,w:0.07,h:CARD_H,fill:{color:dc},line:{color:dc}});
+      // Number + Title
+      sRec.addText([
+        {text:r.n+'.  ',options:{bold:true,color:EXP_C.amber,fontSize:9.5}},
+        {text:r.title,options:{bold:true,color:EXP_C.tx,fontSize:9.5}}
+      ],{x:0.36,y:by+0.07,w:9.2,h:0.25,fontFace:'Cambria',margin:0,valign:'top'});
+      // Divider line
+      sRec.addShape(pres.shapes.RECTANGLE,{x:0.36,y:by+0.34,w:9.2,h:0.006,fill:{color:EXP_C.navy4},line:{color:EXP_C.navy4}});
+      // Obs
+      sRec.addText([
+        {text:'Observation:  ',options:{bold:true,color:'4da6ff',fontSize:7.5}},
+        {text:r.obs,options:{color:EXP_C.tx2,fontSize:7.5}}
+      ],{x:0.36,y:by+0.38,w:9.2,h:0.36,fontFace:'Arial',margin:0,valign:'top',wrap:true});
+      // Recommendation
+      sRec.addText([
+        {text:'Recommendation:  ',options:{bold:true,color:EXP_C.teal,fontSize:7.5}},
+        {text:r.rec,options:{color:EXP_C.tx,fontSize:7.5}}
+      ],{x:0.36,y:by+0.73,w:9.2,h:0.44,fontFace:'Arial',margin:0,valign:'top',wrap:true});
+      // Rationale
+      sRec.addText([
+        {text:'Rationale:  ',options:{bold:true,color:EXP_C.amber,fontSize:7.5}},
+        {text:r.rat,options:{color:EXP_C.tx3,fontSize:7.5,italic:true}}
+      ],{x:0.36,y:by+1.16,w:9.2,h:0.38,fontFace:'Arial',margin:0,valign:'top',wrap:true});
+    });
+    // Conclusion: fixed at y=4.42 on last page — always below cards, always above footer
+    if(isLast){
+      const concl=(a.conclusion||'');
+      if(concl){
+        sRec.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.2,y:4.42,w:9.6,h:0.62,fill:{color:'002e28'},line:{color:EXP_C.teal,transparency:25},rectRadius:0.08});
+        sRec.addShape(pres.shapes.RECTANGLE,{x:0.2,y:4.42,w:0.07,h:0.62,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
+        sRec.addText([
+          {text:'Conclusion:  ',options:{bold:true,color:EXP_C.teal,fontSize:8.5}},
+          {text:concl,options:{color:EXP_C.tx,fontSize:8}}
+        ],{x:0.36,y:4.42,w:9.3,h:0.62,fontFace:'Arial',margin:0.09,valign:'middle',wrap:true});
+      }
+    }
+    expFooter(sRec,pres,recSlideNum,dynamicTotal);
+    recSlideNum++;
+  }
 
   // ── SLIDE 9: SIGN-OFF ───────────────────────────────────────────
   const s9=pres.addSlide(); s9.background={color:EXP_C.navy};
@@ -1661,7 +1905,7 @@ async function exportBoardPPT(){
   s9.addShape(pres.shapes.OVAL,{x:7,y:2.5,w:4,h:4,fill:{color:EXP_C.purple,transparency:93},line:{color:EXP_C.purple,transparency:93}});
   s9.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:0.65,w:0.65,h:0.65,fill:{color:EXP_C.teal},line:{color:EXP_C.teal},rectRadius:0.1});
   s9.addText('FM',{x:0.6,y:0.65,w:0.65,h:0.65,fontSize:13,bold:true,color:EXP_C.navy,align:'center',valign:'middle',margin:0});
-  s9.addText('FM Finance Suite — Treasury Intelligence',{x:1.42,y:0.78,w:7,h:0.4,fontSize:10,color:EXP_C.teal,fontFace:'Cambria',margin:0});
+  s9.addText(orgName + ' — Treasury Report',{x:1.42,y:0.78,w:7,h:0.4,fontSize:10,color:EXP_C.teal,fontFace:'Cambria',margin:0});
   s9.addText('Management Sign-Off',{x:0.6,y:1.35,w:9,h:0.65,fontSize:28,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
   s9.addShape(pres.shapes.RECTANGLE,{x:0.6,y:1.98,w:8.8,h:0.02,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
   [{role:'Chief Finance Officer'},{role:'Managing Director / CEO'},{role:'Board Chairman'}].forEach((b,i)=>{
@@ -1676,6 +1920,7 @@ async function exportBoardPPT(){
   s9.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:4.52,w:1.5,h:0.3,fill:{color:EXP_C.navy3},line:{color:EXP_C.navy4},rectRadius:0.08});
   s9.addText('CONFIDENTIAL',{x:0.6,y:4.52,w:1.5,h:0.3,fontSize:7,bold:true,color:EXP_C.amber,align:'center',valign:'middle',fontFace:'Arial',margin:0,charSpacing:1.5});
   s9.addText('FM Finance Suite  ·  Generated '+D+'  ·  Prepared by: '+userName,{x:0,y:5.33,w:10,h:0.29,fontSize:7.5,color:EXP_C.tx3,align:'center',fontFace:'Arial',margin:0});
+  expFooter(s9,pres,recSlideNum,dynamicTotal);
 
   return pres.writeFile({ fileName:'FM_Treasury_Board_'+ts()+'.pptx' });
 }
@@ -1755,27 +2000,73 @@ async function exportDashboardExcel(){
 async function exportDashboardPDF(){
   const a = window.latestAssessment || {};
   const m = a.metrics || {};
+  const recItems = a.recItems || [];
   const tmp = document.createElement('div');
-  tmp.style.cssText = 'position:fixed;left:20px;top:20px;width:800px;padding:24px;background:#fff;color:#000;z-index:9999;font-family:Arial,sans-serif;font-size:13px';
-  tmp.innerHTML = `<h2 style="margin-bottom:8px">FM Finance Suite — Treasury Dashboard Report</h2>
-    <p style="color:#666;margin-bottom:16px">Generated: ${new Date().toLocaleString('en-GB')} | Prepared by: ${_user?.name||'—'} | ${_user?.orgName||'Organisation'}</p>
-    <h3 style="margin-bottom:8px">Executive Summary</h3>
-    <table border="1" cellpadding="5" cellspacing="0" style="width:100%;border-collapse:collapse;margin-bottom:16px">
-      ${[['Total Deployable Assets',expFmtM(m.totalAssets)],['Total Borrowings',expFmtM(m.totalDebt)],['Equity & Reserves',expFmtM(m.totalEquity)],['WARA',expPct(m.wara)],['WACD',expPct(m.wacd)],['WACC',expPct(m.wacc)],['Net Interest Spread',(m.spread>=0?'+':'')+expPct(m.spread)],['Debt/Equity Ratio',(m.lever||0).toFixed(2)+'×']].map(([k,v])=>`<tr><td style="font-weight:600;background:#f5f5f5">${k}</td><td>${v}</td></tr>`).join('')}
+  // Pure black on white — all text #000, backgrounds white or light grey only
+  tmp.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;padding:32px;background:#ffffff;color:#000000;z-index:9999;font-family:Arial,sans-serif;font-size:12px;line-height:1.6';
+
+  const kpis=[
+    ['Total Deployable Assets',expFmtM(m.totalAssets)],
+    ['Total Borrowings',expFmtM(m.totalDebt)],
+    ['Equity & Reserves',expFmtM(m.totalEquity)],
+    ['Total Funding Base',expFmtM((m.totalEquity||0)+(m.totalDebt||0))],
+    ['Net Asset Cover',expFmtM((m.totalAssets||0)-(m.totalDebt||0))],
+    ['WARA',expPct(m.wara)],
+    ['WACD',expPct(m.wacd)],
+    ['WACC',expPct(m.wacc)],
+    ['Net Interest Spread',(m.spread>=0?'+':'')+expPct(m.spread)],
+    ['EVA Signal',((m.wara||0)-(m.wacc||0)>=0?'+':'')+expPct((m.wara||0)-(m.wacc||0))],
+    ['Debt / Equity Ratio',(m.lever||0).toFixed(2)+'×'],
+    ['Debtor Yield',expPct(m.avgDR)],
+    ['Investment Yield',expPct(m.avgIY)],
+  ];
+
+  const dotChar = p => p.c==='gr'?'●':p.c==='rd'?'●':'●';
+  const dotCol  = p => p.c==='gr'?'#166534':p.c==='rd'?'#991b1b':'#92400e';
+
+  tmp.innerHTML = `
+    <div style="border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:18px">
+      <div style="font-size:18px;font-weight:700;color:#000">FM Finance Suite — Treasury Intelligence Report</div>
+      <div style="font-size:11px;color:#333;margin-top:4px">Generated: ${new Date().toLocaleString('en-GB')} &nbsp;|&nbsp; Prepared by: ${_user?.name||'—'} &nbsp;|&nbsp; ${_user?.orgName||_user?.name||'—'}</div>
+    </div>
+
+    <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:8px;border-bottom:1px solid #ccc;padding-bottom:4px">Executive Summary — Key Performance Indicators</div>
+    <table cellpadding="6" cellspacing="0" style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:11.5px">
+      ${kpis.map(([k,v],i)=>`<tr style="background:${i%2===0?'#f7f7f7':'#ffffff'}"><td style="font-weight:600;color:#000;border:1px solid #ddd;width:55%">${k}</td><td style="color:#000;border:1px solid #ddd;font-weight:500">${v}</td></tr>`).join('')}
     </table>
-    <h3 style="margin-bottom:8px">Financial Optimisation Assessment</h3>
-    ${(a.pts||[]).map(p=>`<p style="margin:6px 0">• ${p.t}</p>`).join('')||'<p>No assessment available. Load the dashboard first.</p>'}
-    <h3 style="margin:16px 0 8px">Board Recommendations</h3>
-    ${(a.recs||[]).map((r,i)=>`<p style="margin:6px 0">${i+1}. ${r}</p>`).join('')||'<p>No recommendations available.</p>'}`;
+
+    <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:8px;border-bottom:1px solid #ccc;padding-bottom:4px">Financial Optimisation Assessment</div>
+    ${(a.pts||[]).map(p=>`<div style="display:flex;gap:8px;margin-bottom:7px;align-items:flex-start"><span style="color:${dotCol(p)};flex-shrink:0;font-size:14px;line-height:1.4">${dotChar(p)}</span><span style="color:#000;font-size:11.5px">${p.t}</span></div>`).join('')||'<p style="color:#000">No assessment available.</p>'}
+
+    <div style="font-size:14px;font-weight:700;color:#000;margin:20px 0 8px;border-bottom:1px solid #ccc;padding-bottom:4px">Board Recommendations</div>
+    ${recItems.map(r=>`
+      <div style="border:1px solid #ccc;border-radius:4px;margin-bottom:12px;overflow:hidden">
+        <div style="background:#f0f0f0;padding:7px 10px;font-weight:700;font-size:12px;color:#000;border-bottom:1px solid #ccc">${r.n}. ${r.title}</div>
+        <div style="padding:8px 10px">
+          <div style="margin-bottom:5px;font-size:11.5px"><span style="font-weight:700;color:#000">Observation: </span><span style="color:#000">${r.obs}</span></div>
+          <div style="margin-bottom:5px;font-size:11.5px"><span style="font-weight:700;color:#000">Recommendation: </span><span style="color:#000">${r.rec}</span></div>
+          <div style="font-size:11.5px"><span style="font-weight:700;color:#000">Rationale: </span><span style="color:#000">${r.rat}</span></div>
+        </div>
+      </div>`).join('')||'<p style="color:#000">No recommendations available.</p>'}
+
+    ${(a.conclusion)?`<div style="border:2px solid #000;border-radius:4px;padding:10px 14px;margin-top:4px;background:#f7f7f7"><div style="font-weight:700;font-size:12px;color:#000;margin-bottom:4px">Conclusion</div><div style="font-size:11.5px;color:#000">${a.conclusion}</div></div>`:''}
+  `;
+
   document.body.appendChild(tmp);
-  const canvas = await html2canvas(tmp, { scale:2 });
+  const canvas = await html2canvas(tmp, { scale:2, backgroundColor:'#ffffff', useCORS:true });
   const img = canvas.toDataURL('image/png');
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF('p','pt','a4');
   const pw = pdf.internal.pageSize.getWidth();
-  const imgProps = pdf.getImageProperties(img);
-  const ph = (imgProps.height * pw) / imgProps.width;
-  pdf.addImage(img,'PNG',0,0,pw,ph);
+  const ph_full = (canvas.height * pw) / canvas.width;
+  const pageH = pdf.internal.pageSize.getHeight();
+  // Multi-page: slice image across A4 pages
+  let yPos = 0;
+  while(yPos < ph_full){
+    if(yPos > 0) pdf.addPage();
+    pdf.addImage(img,'PNG',0,-yPos,pw,ph_full);
+    yPos += pageH;
+  }
   pdf.save('FM_Treasury_Report_'+ts()+'.pdf');
   tmp.remove();
 }
@@ -1799,9 +2090,94 @@ document.addEventListener('DOMContentLoaded', () => {
   $('exp-close').addEventListener('click', () => { $('export-modal').classList.remove('on'); });
   $('exp-cancel').addEventListener('click', () => { $('export-modal').classList.remove('on'); });
 
+  // Dynamically load a script, trying multiple CDN sources in order
+  function loadScript(urls){
+    return new Promise(function(resolve, reject){
+      var idx = 0;
+      function tryNext(){
+        if(idx >= urls.length) return reject(new Error('Could not load library from any CDN source. Check your internet connection.'));
+        var s = document.createElement('script');
+        s.src = urls[idx++];
+        s.onload = resolve;
+        s.onerror = function(){ console.warn('Failed to load:', s.src); tryNext(); };
+        document.head.appendChild(s);
+      }
+      tryNext();
+    });
+  }
+  // Poll up to 10s for a global to appear after script load
+  function waitForGlobal(check, timeout){
+    timeout = timeout || 8000;
+    return new Promise(function(resolve, reject){
+      if(check()) return resolve();
+      var interval = 100, start = Date.now();
+      var t = setInterval(function(){
+        if(check()){ clearInterval(t); return resolve(); }
+        if(Date.now()-start > timeout){ clearInterval(t); reject(new Error('Library global not found after load.')); }
+      }, interval);
+    });
+  }
+  // Ensure PptxGenJS is loaded — JSZip must load first (peer dependency)
+  var _pptxLoading = null;
+  function ensurePptxGenJS(){
+    if(typeof PptxGenJS !== 'undefined') return Promise.resolve();
+    if(_pptxLoading) return _pptxLoading;
+    _pptxLoading = loadScript([
+      'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',
+      'https://unpkg.com/jszip@3.10.1/dist/jszip.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
+    ]).then(function(){
+      return waitForGlobal(function(){ return typeof JSZip !== 'undefined'; });
+    }).then(function(){
+      return loadScript([
+        'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js',
+        'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.min.js'
+      ]);
+    }).then(function(){
+      return waitForGlobal(function(){ return typeof PptxGenJS !== 'undefined'; });
+    }).catch(function(e){ _pptxLoading = null; throw e; });
+    return _pptxLoading;
+  }
+  // Ensure XLSX is loaded
+  var _xlsxLoading = null;
+  function ensureXLSX(){
+    if(typeof XLSX !== 'undefined') return Promise.resolve();
+    if(_xlsxLoading) return _xlsxLoading;
+    _xlsxLoading = loadScript([
+      'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+      'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+    ]).then(function(){ return waitForGlobal(function(){ return typeof XLSX !== 'undefined'; }); })
+      .catch(function(e){ _xlsxLoading = null; throw e; });
+    return _xlsxLoading;
+  }
+  // Ensure PDF libs are loaded
+  var _pdfLoading = null;
+  function ensurePDFLibs(){
+    if(typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined') return Promise.resolve();
+    if(_pdfLoading) return _pdfLoading;
+    _pdfLoading = loadScript([
+      'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+      'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
+    ]).then(function(){
+      return loadScript([
+        'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+        'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
+      ]);
+    }).then(function(){ return waitForGlobal(function(){ return typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined'; }); })
+      .catch(function(e){ _pdfLoading = null; throw e; });
+    return _pdfLoading;
+  }
+
   $('exp-ppt-btn').addEventListener('click', async () => {
-    if(typeof PptxGenJS === 'undefined'){ setExpStatus('PptxGenJS library is still loading — wait a moment and try again.', false); return; }
-    setExpLoading('exp-ppt-btn', true); setExpStatus('Generating 9-slide board deck…', true);
+    setExpLoading('exp-ppt-btn', true); setExpStatus('Loading PowerPoint library…', true);
+    try {
+      await ensurePptxGenJS();
+    } catch(e){ setExpStatus('Could not load PptxGenJS: ' + e.message, false); setExpLoading('exp-ppt-btn', false); return; }
+    setExpStatus('Generating 9-slide board deck…', true);
     try {
       await exportBoardPPT();
       setExpStatus('✓ PowerPoint downloaded — check your downloads folder.', true);
@@ -1813,8 +2189,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   $('exp-xls-btn').addEventListener('click', async () => {
-    if(typeof XLSX === 'undefined'){ setExpStatus('XLSX library still loading — try again.', false); return; }
-    setExpLoading('exp-xls-btn', true); setExpStatus('Building Excel workbook…', true);
+    setExpLoading('exp-xls-btn', true); setExpStatus('Loading Excel library…', true);
+    try {
+      await ensureXLSX();
+    } catch(e){ setExpStatus('Could not load XLSX: ' + e.message, false); setExpLoading('exp-xls-btn', false); return; }
+    setExpStatus('Building Excel workbook…', true);
     try {
       await exportDashboardExcel();
       setExpStatus('✓ Excel downloaded.', true);
@@ -1825,8 +2204,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   $('exp-pdf-btn').addEventListener('click', async () => {
-    if(typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined'){ setExpStatus('PDF libraries still loading — try again.', false); return; }
-    setExpLoading('exp-pdf-btn', true); setExpStatus('Rendering PDF…', true);
+    setExpLoading('exp-pdf-btn', true); setExpStatus('Loading PDF libraries…', true);
+    try {
+      await ensurePDFLibs();
+    } catch(e){ setExpStatus('Could not load PDF libraries: ' + e.message, false); setExpLoading('exp-pdf-btn', false); return; }
+    setExpStatus('Rendering PDF…', true);
     try {
       await exportDashboardPDF();
       setExpStatus('✓ PDF downloaded.', true);
