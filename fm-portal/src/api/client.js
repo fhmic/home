@@ -1,59 +1,53 @@
-const API_URL = import.meta.env.VITE_API_URL;
+// src/api/client.js
+// This file is the bridge between your React app and your Render backend.
+// Every app calls this instead of writing fetch() directly.
 
-function resolveApiUrl() {
-  if (API_URL && typeof API_URL === 'string') return API_URL;
-  // Leave as empty string so `fetch` will still work with relative endpoints
-  // (Phase 6 will set the env correctly for Render/CORS).
-  return '';
-}
+const BASE_URL = 'https://eis-recbackend.onrender.com';
 
+// This function reads the login token that was saved when the user logged in
 function getToken() {
-  return localStorage.getItem('token');
+  return localStorage.getItem('fm_token');
 }
 
-/**
- * Centralized API client.
- *
- * - Attaches Bearer token from localStorage automatically
- * - Assumes JSON in/out
- * - Throws a helpful Error on non-2xx responses
- */
-export async function apiClient(endpoint, options = {}) {
+// This is the main function all your apps will use to talk to the backend
+async function apiCall(path, options = {}) {
   const token = getToken();
-  const base = resolveApiUrl();
 
-  const url = `${base}${endpoint}`;
-
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : null),
-    ...(options.headers || null),
+  const config = {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      // Attach the login token automatically to every request
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
   };
 
-  const res = await fetch(url, {
-    ...options,
-    headers,
-  });
+  const response = await fetch(`${BASE_URL}${path}`, config);
+  const data = await response.json();
 
-  // Some endpoints might return empty body (204)
-  const text = await res.text();
-  const data = text ? safeJsonParse(text) : null;
-
-  if (!res.ok) {
-    const msg =
-      (data && (data.message || data.error || data.detail)) ||
-      `API error (${res.status})`;
-    throw new Error(msg);
+  // If the server says the token is expired or invalid, log the user out
+  if (response.status === 401) {
+    localStorage.removeItem('fm_token');
+    localStorage.removeItem('fm_user');
+    window.location.href = '/portal';
   }
 
-  return data;
+  return { ok: response.ok, status: response.status, data };
 }
 
-function safeJsonParse(text) {
-  try {
-    return JSON.parse(text);
-  } catch {
-    return { raw: text };
-  }
-}
+// Shortcut functions — your apps will use these
+export const api = {
+  get:    (path)               => apiCall(path, { method: 'GET' }),
+  post:   (path, body)         => apiCall(path, { method: 'POST',   body: JSON.stringify(body) }),
+  put:    (path, body)         => apiCall(path, { method: 'PUT',    body: JSON.stringify(body) }),
+  patch:  (path, body)         => apiCall(path, { method: 'PATCH',  body: JSON.stringify(body) }),
+  delete: (path)               => apiCall(path, { method: 'DELETE' }),
 
+  // Special version for file uploads (no Content-Type header — browser sets it automatically)
+  upload: (path, formData) => apiCall(path, {
+    method: 'POST',
+    body: formData,
+    headers: {}, // override to remove Content-Type so browser sets multipart boundary
+  }),
+};
