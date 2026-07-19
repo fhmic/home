@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FM — Bank Reconciliation Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<link rel="stylesheet" href="./assets/recon-style-cbd6d11f.css">
+</head>
+<body>
+
+
+<div id="bar">
+  <div class="logo">
+    <div class="lm">FM</div>
+    FM BankRecon<span class="la"> App</span>
+  </div>
+  <div id="br">
+    <span id="sd"></span>
+    <span id="stx">FM BankRecon — Ready</span>
+    <div class="user-chip">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span id="user-display">User</span>
+    </div>
+
+    
+    <a href="../" class="back-btn" title="Back to Homepage">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="../portal/" class="back-btn" title="Back to Portal">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      <span>Portal</span>
+    </a>
+    <button class="logout-btn" id="logout-btn" title="Sign out">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span>Sign out</span>
+    </button>
+  </div>
+</div>
+
+<div id="main">
+  <div id="stp">
+    <div class="si act" id="s1"><div class="sn">1</div><span>Upload files</span></div>
+    <div class="sl" id="l1"></div>
+    <div class="si" id="s2"><div class="sn">2</div><span>Date formats</span></div>
+    <div class="sl" id="l2"></div>
+    <div class="si" id="s3"><div class="sn">3</div><span>Results</span></div>
+  </div>
+  <div id="err"></div>
+  <div class="pan on ani" id="p1">
+    <div class="card">
+      <div class="ct">Upload source files</div>
+     <div class="cs">
+Accepts CSV, XLSX, XLS or XLSM.
+<a href="#" id="downloadTemplate"
+   style="color:var(--t);text-decoration:underline;font-weight:600;cursor:pointer;">
+   Download sample template file
+</a><br>
+Fill in your data using this format before upload. Headers and blank rows are auto-skipped. Multi-month statements are fully supported.
+</div>
+
+
+      <div class="upg">
+        <div>
+          <div class="ubx" id="bb"><input type="file" id="bi" accept=".csv,.xlsx,.xls,.xlsm">
+            <div class="ui">🏦</div><div class="ul">Bank Statement</div><div class="uh">Click or drop file here</div>
+            <div class="un" id="bn"></div><div class="uc" id="bc"></div>
+          </div><div id="bpv"></div>
+        </div>
+        <div>
+          <div class="ubx" id="gb"><input type="file" id="gi" accept=".csv,.xlsx,.xls,.xlsm">
+            <div class="ui">📒</div><div class="ul">GL Account</div><div class="uh">Click or drop file here</div>
+            <div class="un" id="gn"></div><div class="uc" id="gc"></div>
+          </div><div id="gpv"></div>
+        </div>
+      </div>
+      <div class="row re"><button class="bp" id="nxt" disabled>Continue →</button></div>
+    </div>
+  </div>
+  <div class="pan ani" id="p2">
+    <div class="card">
+      <div class="ct">Date format settings</div>
+      <div class="cs">Select the date format used in each file. Critical for correct parsing — wrong format misreads dates.</div>
+      <div class="fg">
+        <div class="fld"><label>Bank Statement date format</label>
+          <select id="bf"><option value="DMY">DMY — dd/mm/yyyy (Nigerian default)</option><option value="MDY">MDY — mm/dd/yyyy</option><option value="YMD">YMD — yyyy-mm-dd</option></select>
+        </div>
+        <div class="fld"><label>GL Account date format</label>
+          <select id="gf"><option value="DMY">DMY — dd/mm/yyyy (Nigerian default)</option><option value="MDY">MDY — mm/dd/yyyy</option><option value="YMD">YMD — yyyy-mm-dd</option></select>
+        </div>
+      </div>
+      <div class="ib"><strong>MATCHING LOGIC</strong>Outflows: BS Debit ↔ GL Credit &nbsp;·&nbsp; Inflows: BS Credit ↔ GL Debit<br>Amount tolerance ₦0.005 &nbsp;·&nbsp; Date: same month OR within ±7 days across months (Pass 2: ±14 days)<br>Fuzzy scoring: separators replaced in GL narration only; long numeric tokens (NUBAN accounts) score 4 pts</div>
+      <div class="row"><button id="bk">← Back</button><button class="bp" id="run">▶ Run reconciliation</button></div>
+    </div>
+  </div>
+  <div class="pan ani" id="p3">
+    <div id="res">
+      <div class="rh">
+        <div><div class="rt">Reconciliation results</div><div class="rm" id="rmeta"></div></div>
+        <div class="ra">
+          <div class="ib2 ps" id="ibg"><div class="id"></div>DATE INTEGRITY: PASS</div>
+          <div class="dlw">
+            <button class="bdl" id="bxl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Excel</button>
+            <button class="bca" id="bca"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="dmn" id="dmn">
+              <button class="dit" id="mxl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Download as .xlsx</button>
+              <div class="dsp"></div>
+              <button class="dit" id="mpd"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Download as .pdf</button>
+            </div>
+          </div>
+          <button id="bnw">↺ New reconciliation</button>
+        </div>
+      </div>
+      <div class="mg" id="mgr"></div>
+      <div class="tn">
+        <button class="tb on" data-t="sum">Summary</button>
+        <button class="tb" data-t="out">Matched outflows</button>
+        <button class="tb" data-t="inf">Matched inflows</button>
+        <button class="tb" data-t="bsd">BS debit not in GL</button>
+        <button class="tb" data-t="bsc">BS credit not in GL</button>
+        <button class="tb" data-t="glc">GL credit not in BS</button>
+        <button class="tb" data-t="gld">GL debit not in BS</button>
+        <button class="tb" data-t="aud">Date audit</button>
+      </div>
+      <div id="t-sum" class="tp on"></div>
+      <div id="t-out" class="tp"></div>
+      <div id="t-inf" class="tp"></div>
+      <div id="t-bsd" class="tp"></div>
+      <div id="t-bsc" class="tp"></div>
+      <div id="t-glc" class="tp"></div>
+      <div id="t-gld" class="tp"></div>
+      <div id="t-aud" class="tp"></div>
+    </div>
+  </div>
+</div>
+
+<div id="ft">&copy; <span id="yr"></span> <span class="hl">Michael Felix Happy</span> &nbsp;·&nbsp; BRS &nbsp;·&nbsp; All rights reserved</div>
+<div id="ld"><div class="spn"></div><div class="ldt" id="ldm">Processing...</div></div>
+
+<script src="./assets/recon-script-aa116415.js"></script>
+<script src="./assets/recon-script2-fc88b71c.js"></script>
+</body>
+</html>

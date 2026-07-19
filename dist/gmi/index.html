@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FM Markets — Global Intelligence | FM Finance Suite</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="./assets/gmi-style-5b733d15.css">
+</head>
+<body>
+<a href="#_main" class="skip-link">Skip to main content</a>
+<div id="_tw" aria-label="Live market ticker" role="marquee"><div id="_tt"></div></div>
+<nav id="_nb" aria-label="Main navigation">
+  <a href="../" class="_nl" aria-label="FM Markets home"><div class="_nm" aria-hidden="true">FM</div><span class="_nlt">FM <span style="color:var(--t);margin-left:4px">Markets</span></span></a>
+  <div class="_nc" role="tablist" aria-label="Market sections">
+    <button class="_nmi on" data-pg="home" role="tab" aria-selected="true" aria-controls="pg-home">Market</button>
+    <button class="_nmi" data-pg="forex" role="tab" aria-selected="false" aria-controls="pg-forex">Forex</button>
+    <button class="_nmi" data-pg="crypto" role="tab" aria-selected="false" aria-controls="pg-crypto">Crypto</button>
+  </div>
+  <div class="_nr">
+    <div class="_ast" id="_apibar">
+      <div class="_ld" aria-hidden="true"></div>
+      <span id="_as1" style="font-size:10px;color:var(--tx3)">Loading…</span>
+    </div>
+    <div class="_uc"><div class="_ld" aria-hidden="true"></div><span id="_un" style="font-family:var(--mo);font-size:11px">Live</span></div>
+    <a href="../portal/" class="_nb2" aria-label="Return to portal">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Portal</span>
+    </a>
+    <a href="../" class="_nb2" aria-label="Return to home">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span>
+    </a>
+    <button class="_nb2" id="_lo"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Sign out</span></button>
+  </div>
+</nav>
+
+<main id="_main">
+<div class="_pg on" id="pg-home" role="tabpanel" aria-labelledby="tab-home">
+  <div class="_ph">
+    <div>
+      <div class="_pe">FM Financial Intelligence Platform</div>
+      <div class="_pt">Global Market Intelligence</div>
+      <div class="_ps" id="_ts">Initialising…</div>
+    </div>
+    <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+      <div class="_dtag"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Indices ~15min delay</div>
+      <button class="_rbtn" id="_rfb" onclick="window._rf(this)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh All</button>
+    </div>
+  </div>
+  <div class="_sh gl">Global Stock Indices <span class="_sb dl">Delayed</span></div>
+  <div class="_cg _ga" id="_gi" role="list" aria-label="Global indices"></div>
+  <div class="_sh af" style="margin-top:1.75rem">African Exchanges <span class="_sb dl">Delayed</span></div>
+  <div class="_cg _ga" id="_ai" role="list" aria-label="African exchanges"></div>
+  <div class="_sep"></div>
+  <div class="_sh sp">S&amp;P 500 Heatmap — 1 Day Performance <span class="_sb lv">Live</span></div>
+  <div class="_ni">Tile size = market cap weight. Color = 1-day % change. Click any tile to view full stock detail.</div>
+  <div id="_spm" aria-label="S&P 500 heatmap by sector"></div>
+  <div class="_sep"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start" class="stock-split">
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+        <div class="_sh gl" style="margin:0">Top Stocks — Signal View</div>
+        <select class="_finput _fsel" id="_sflt" style="width:auto;padding:5px 28px 5px 9px;font-size:10px" onchange="window._bst()">
+          <option value="all">All Signals</option>
+          <option value="strong-buy">Strong Buy</option>
+          <option value="buy">Buy</option>
+          <option value="neutral">Neutral</option>
+          <option value="sell">Sell</option>
+          <option value="strong-sell">Strong Sell</option>
+        </select>
+      </div>
+      <div class="_twp">
+        <table aria-label="Top stocks with trading signals">
+          <thead><tr><th>Ticker</th><th>Last</th><th>Chg</th><th>%</th><th>Vol</th><th>Signal</th></tr></thead>
+          <tbody id="_stb"></tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+        <div class="_sh af" style="margin:0">NGX Top Stocks <span class="_sb dl" style="font-size:8px">NGX</span></div>
+        <div style="font-size:9px;font-family:var(--mo);color:var(--tx3);margin-top:2px">Live NGX API not publicly available — last known prices shown</div>
+        <div style="font-size:9px;font-family:var(--mo);color:var(--tx3)">Nigerian Exchange</div>
+      </div>
+      <div class="_twp">
+        <table aria-label="NGX top Nigerian stocks">
+          <thead><tr><th>Ticker</th><th>Price (₦)</th><th>Chg</th><th>%</th><th>Vol</th><th>Signal</th></tr></thead>
+          <tbody id="_ngxtb"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="_pg" id="pg-forex" role="tabpanel" aria-labelledby="tab-forex">
+  <div class="_ph">
+    <div>
+      <div class="_pe">Foreign Exchange Markets</div>
+      <div class="_pt">Forex Intelligence</div>
+      <div class="_ps">Live rates from open.er-api.com · NGN pairs from CBN</div>
+    </div>
+    <button class="_rbtn" onclick="window._rfx(this)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh Rates</button>
+  </div>
+  <div class="_cg _g2" id="_fxg" aria-label="Foreign exchange rate pairs"></div>
+  <div class="_sep"></div>
+  <div class="_sh fx" style="margin-bottom:1rem">Currency Performance Heatmap <span class="_sb lv">Live</span></div>
+  <div class="_pan">
+    <div class="_ph2"><div><div class="_pt2">24h vs USD Heatmap</div><div class="_ps2">Green = stronger vs USD · Red = weaker vs USD</div></div></div>
+    <div class="_hg" id="_fxhm" aria-label="Currency 24h heatmap"></div>
+  </div>
+  <div class="_sep"></div>
+  <div class="_sh fx" style="margin-bottom:1rem">Historical Currency Lookup <span class="_sb of">Free API</span></div>
+  <div class="_pan">
+    <div class="_ph2"><div><div class="_pt2">Check Any Currency Pair on Any Date</div><div class="_ps2">Powered by frankfurter.dev — free historical data, full CORS support</div></div></div>
+    <div class="_ni">Select a base currency, target currency, and date to retrieve the exact exchange rate on that day.</div>
+    <div class="_fg" style="align-items:flex-end">
+      <div class="_fld"><label class="_flbl" for="_hbase">Base Currency</label>
+        <select class="_finput _fsel" id="_hbase"><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="NGN">NGN — Nigerian Naira</option><option value="JPY">JPY — Japanese Yen</option><option value="CNY">CNY — Chinese Yuan</option><option value="ZAR">ZAR — South African Rand</option><option value="GHS">GHS — Ghanaian Cedi</option><option value="KES">KES — Kenyan Shilling</option><option value="EGP">EGP — Egyptian Pound</option><option value="CHF">CHF — Swiss Franc</option><option value="AUD">AUD — Australian Dollar</option><option value="CAD">CAD — Canadian Dollar</option><option value="BRL">BRL — Brazilian Real</option><option value="INR">INR — Indian Rupee</option><option value="SGD">SGD — Singapore Dollar</option><option value="NOK">NOK — Norwegian Krone</option><option value="SEK">SEK — Swedish Krona</option><option value="RUB">RUB — Russian Ruble</option></select>
+      </div>
+      <div class="_fld"><label class="_flbl" for="_htgt">Target Currency</label>
+        <select class="_finput _fsel" id="_htgt"><option value="NGN">NGN — Nigerian Naira</option><option value="USD" selected>USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="JPY">JPY — Japanese Yen</option><option value="CNY">CNY — Chinese Yuan</option><option value="ZAR">ZAR — South African Rand</option><option value="GHS">GHS — Ghanaian Cedi</option><option value="KES">KES — Kenyan Shilling</option><option value="EGP">EGP — Egyptian Pound</option><option value="CHF">CHF — Swiss Franc</option><option value="AUD">AUD — Australian Dollar</option><option value="CAD">CAD — Canadian Dollar</option><option value="BRL">BRL — Brazilian Real</option><option value="INR">INR — Indian Rupee</option><option value="RUB">RUB — Russian Ruble</option></select>
+      </div>
+      <div class="_fld"><label class="_flbl" for="_hdt">Date</label><input class="_finput" type="date" id="_hdt" max=""></div>
+      <div class="_fld" style="align-self:flex-end"><button class="_rbtn" style="background:var(--t);color:var(--n);border-color:var(--t);font-weight:700;width:100%;justify-content:center" onclick="window._lkup()">Look Up Rate</button></div>
+    </div>
+    <div id="_hres"></div>
+  </div>
+  <div class="_sep"></div>
+  <div class="_sh ng">Nigeria Official Rates <span class="_sb of">CBN/NBS · Auto-fetch</span></div>
+  <div class="_cg _g3" id="_ngr" role="list" aria-label="Nigeria official rates"></div>
+  <div style="margin-top:1.25rem">
+    <div class="_pan">
+      <div class="_ph2"><div><div class="_pt2">Nigeria Rate Environment — Historical Trend</div><div class="_ps2">MPR vs T-Bill (364d) vs Inflation — Jan 2024 to Jun 2026</div></div></div>
+      <div style="position:relative;height:250px"><canvas id="_ngch" role="img" aria-label="Nigeria interest rates historical chart"></canvas></div>
+    </div>
+  </div>
+  <div style="margin-top:1rem">
+    <div class="_twp">
+      <table aria-label="Nigeria fixed income rates">
+        <thead><tr><th>Instrument</th><th>Yield/Rate</th><th>Tenor</th><th>Bid/Ask</th><th>Last Auction</th><th>Notes</th></tr></thead>
+        <tbody id="_fit"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="_pg" id="pg-crypto" role="tabpanel" aria-labelledby="tab-crypto">
+  <div class="_ph">
+    <div>
+      <div class="_pe">Digital Asset Markets</div>
+      <div class="_pt">Cryptocurrency Intelligence</div>
+      <div class="_ps">Live prices · Updates every 60 seconds via CoinGecko</div>
+    </div>
+    <button class="_rbtn" onclick="window._rcy(this)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
+  </div>
+  <div class="_cg _g5" id="_cg" role="list" aria-label="Cryptocurrency prices"></div>
+  <div style="margin-top:1.25rem">
+    <div class="_pan">
+      <div class="_ph2"><div><div class="_pt2">Market Dominance</div><div class="_ps2">Market cap share — live from CoinGecko</div></div></div>
+      <div style="display:grid;grid-template-columns:190px 1fr;gap:20px;align-items:center">
+        <div style="position:relative;height:190px"><canvas id="_dmc" aria-label="Crypto dominance chart"></canvas></div>
+        <div id="_dml"></div>
+      </div>
+    </div>
+  </div>
+  <div class="_sep"></div>
+  <div class="_sh cr" style="margin-bottom:1rem">Crypto Ticker — Signal View <span class="_sb lv">Live</span></div>
+  <div class="_twp">
+    <table aria-label="Crypto ticker table">
+      <thead><tr><th>Symbol</th><th>Name</th><th>Price (USD)</th><th>24h Change</th><th>% Chg</th><th>Market Cap</th><th>Signal</th></tr></thead>
+      <tbody id="_ctb"></tbody>
+    </table>
+  </div>
+</div>
+</main>
+
+<div class="_modal" id="_sdm" role="dialog" aria-modal="true" aria-labelledby="_sdmt">
+  <div class="_mbox">
+    <div class="_mhd">
+      <div class="_mtt" id="_sdmt">Stock Detail</div>
+      <button class="_mcl" onclick="window._cm()" aria-label="Close modal">✕</button>
+    </div>
+    <div class="_mbd" id="_sdmb"></div>
+  </div>
+</div>
+
+<footer>
+  <div><div class="_fb2">FM Markets Intelligence</div><div class="_fn" style="margin-top:3px">Market data for informational purposes only. Indices delayed ~15min. Crypto live via CoinGecko. Forex via open.er-api.com. Nigeria rates auto-fetched from CBN/NBS. Not financial advice.</div></div>
+  <div class="_fli"><a href="https://cbn.gov.ng" target="_blank" rel="noopener">CBN</a><a href="https://nigerianstat.gov.ng" target="_blank" rel="noopener">NBS</a><a href="https://coingecko.com" target="_blank" rel="noopener">CoinGecko</a><a href="https://ngxgroup.com" target="_blank" rel="noopener">NGX</a></div>
+</footer>
+
+<script src="./assets/gmi-script-dd59a6cd.js"></script>
+</body>
+</html>
