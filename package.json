@@ -1,16 +1,13 @@
 {
-  "name": "build",
+  "name": "fhmic-home",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Source + build pipeline for fhmic.github.io/home. Edit files in src/, run `npm run build` to produce the concealed docs/ output that GitHub Pages actually serves.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node build.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "clean-css": "^5.3.3",
-    "terser": "^5.49.0"
+  "devDependencies": {
+    "terser": "^5.31.0",
+    "clean-css": "^5.3.3"
   }
 }
