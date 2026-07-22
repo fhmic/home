@@ -12,13 +12,13 @@
 </head>
 <body>
 
-<!-- Home link visible on login screen -->
+
 <a href="../" class="home-link" id="home-link">
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
   Home
 </a>
 
-<!-- ══ LOGIN SCREEN ═══════════════════════════════════════ -->
+
 <div id="login-screen">
   <div class="login-wrap ani">
     <div class="login-hero">
@@ -71,7 +71,7 @@
   </div>
 </div>
 
-<!-- ══ STEP 0: ACCOUNT TYPE PICKER ═══════════════════════ -->
+
 <div class="auth-card" id="atype-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="atype-close">✕</button>
@@ -94,7 +94,7 @@
   </div>
 </div>
 
-<!-- ══ INDIVIDUAL SIGNUP ══════════════════════════════════ -->
+
 <div class="auth-card" id="signup-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="signup-close">✕</button>
@@ -111,7 +111,7 @@
   </div>
 </div>
 
-<!-- ══ CORPORATE SIGNUP — EMAIL/DOMAIN CHECK STEP ═════════ -->
+
 <div class="auth-card" id="corp-check-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="corp-check-close">✕</button>
@@ -125,7 +125,7 @@
   </div>
 </div>
 
-<!-- ══ CORPORATE SIGNUP — CREATE NEW ORG ═══════════════════ -->
+
 <div class="auth-card" id="corp-create-card">
   <div class="auth-inner wide ani">
     <button class="ac-close" id="corp-create-close">✕</button>
@@ -157,7 +157,7 @@
   </div>
 </div>
 
-<!-- ══ CORPORATE SIGNUP — JOIN EXISTING ORG ════════════════ -->
+
 <div class="auth-card" id="corp-join-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="corp-join-close">✕</button>
@@ -173,7 +173,7 @@
   </div>
 </div>
 
-<!-- ══ CORPORATE SIGNUP — DOMAIN NOT APPROVED ══════════════ -->
+
 <div class="auth-card" id="corp-blocked-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="corp-blocked-close">✕</button>
@@ -185,7 +185,7 @@
   </div>
 </div>
 
-<!-- ══ SET PASSWORD ══════════════════════════════════════ -->
+
 <div class="auth-card" id="setpwd-card">
   <div class="auth-inner ani">
     <div class="ac-brand"><div class="ac-mark" style="background:var(--t)">FM</div><div class="ac-title">Set Your Password</div></div>
@@ -197,7 +197,7 @@
   </div>
 </div>
 
-<!-- ══ FORGOT PASSWORD ═══════════════════════════════════ -->
+
 <div class="auth-card" id="forgot-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="forgot-close">✕</button>
@@ -210,7 +210,7 @@
   </div>
 </div>
 
-<!-- ══ RESET PASSWORD ════════════════════════════════════ -->
+
 <div class="auth-card" id="resetpwd-card">
   <div class="auth-inner ani">
     <div class="ac-brand"><div class="ac-mark" style="background:var(--am)">FM</div><div class="ac-title">Reset Password</div></div>
@@ -222,7 +222,7 @@
   </div>
 </div>
 
-<!-- ══ CONTACT ADMIN ═════════════════════════════════════ -->
+
 <div class="auth-card" id="contact-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="contact-close">✕</button>
@@ -237,7 +237,7 @@
   </div>
 </div>
 
-<!-- ══ CHANGE PASSWORD MODAL ═════════════════════════════ -->
+
 <div id="chpwd-modal">
   <div class="auth-inner ani">
     <button class="ac-close" id="chpwd-close">✕</button>
@@ -251,7 +251,7 @@
   </div>
 </div>
 
-<!-- ══ PORTAL DASHBOARD ══════════════════════════════════ -->
+
 <div id="portal-screen">
   <div id="portal-bar">
     <div class="plogo">
@@ -297,13 +297,13 @@
     </div>
     <div class="p-section-title">Available Tools</div>
     <div class="resources-grid" id="resources-grid">
-      <!-- rendered by JS based on permissions -->
+      
     </div>
     <div class="p-footer">&copy; <span id="yr"></span> <span>Felix Happy Michael</span> · FM Financial Tools · All rights reserved</div>
   </div>
 </div>
 
-<!-- ══ ADMIN PANEL (super-admin: Users + Domain Whitelist) ═ -->
+
 <div id="admin-panel">
   <div id="admin-bar">
     <div class="plogo"><div class="plm">FM</div>Admin <span style="color:var(--t);margin-left:5px">Panel</span></div>
@@ -322,7 +322,7 @@
       <button class="admin-tab" id="tab-btn-domains" data-tab="domains">Domain Whitelist</button>
     </div>
 
-    <!-- USERS TAB -->
+    
     <div class="admin-tabpanel active" id="tab-users">
       <div class="admin-msg" id="admin-msg"></div>
       <div class="admin-toolbar">
@@ -340,7 +340,7 @@
       </div>
     </div>
 
-    <!-- DOMAIN WHITELIST TAB -->
+    
     <div class="admin-tabpanel" id="tab-domains">
       <div class="admin-msg" id="domain-msg"></div>
       <p style="font-size:12.5px;color:var(--tx2);margin-bottom:1.1rem;line-height:1.6">Only email domains listed here can register a Corporate account (create or join an organisation). Individual signups are unaffected.</p>
@@ -359,7 +359,7 @@
   </div>
 </div>
 
-<!-- ══ ORG TEAM & PERMISSIONS PANEL (org admin) ═══════════ -->
+
 <div id="org-panel">
   <div id="org-bar">
     <div class="plogo"><div class="plm">FM</div>Team <span style="color:var(--pu);margin-left:5px">&amp; Permissions</span></div>
@@ -393,7 +393,7 @@
   </div>
 </div>
 
-<!-- ══ USER FORM MODAL (super-admin) ══════════════════════ -->
+
 <div id="user-modal">
   <div class="um-card ani">
     <div class="um-title" id="um-title">Add User</div>
@@ -418,7 +418,7 @@
   </div>
 </div>
 
-<!-- ══ ADD TEAM MEMBER MODAL (org admin) ══════════════════ -->
+
 <div id="team-modal">
   <div class="um-card ani">
     <div class="um-title">Add Team Member</div>
@@ -440,8 +440,8 @@
 </div>
 
 
-<script src="../assets/portal-script-ce54447d.js"></script>
+<script src="../assets/portal-script-e1b254e9.js"></script>
 
-<script src="../assets/portal-script2-aed5ecac.js"></script>
+<script src="../assets/portal-script2-fadac05b.js"></script>
 </body>
 </html>

@@ -6,8 +6,8 @@
   "scripts": {
     "build": "node build.js"
   },
-  "devDependencies": {
-    "terser": "^5.31.0",
-    "clean-css": "^5.3.3"
+  "dependencies": {
+    "clean-css": "^5.3.3",
+    "javascript-obfuscator": "^5.5.0"
   }
 }

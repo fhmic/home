@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<!-- Critical libs loaded eagerly; non-critical deferred -->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<!-- PptxGenJS loaded dynamically on first PPT export -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="../assets/treasury-style-f5162b7a.css">
@@ -81,7 +81,7 @@
 
     <main id="content">
 
-      <!-- DASHBOARD -->
+      
       <div class="view on" id="view-dashboard">
         <div class="vhdr">
           <div><div class="vttl">Executive Dashboard</div><div class="vsub" id="dash-ts">—</div></div>
@@ -101,7 +101,7 @@
         </div>
       </div>
 
-      <!-- DEBTORS -->
+      
       <div class="view" id="view-loans">
         <div class="vhdr">
           <div><div class="vttl">Loans/Debtors</div><div class="vsub">Live from Receivables · invoices &amp; staging</div></div>
@@ -124,7 +124,7 @@
         </div>
       </div>
 
-      <!-- BORROWINGS -->
+      
       <div class="view" id="view-borrowings">
         <div class="vhdr">
           <div><div class="vttl">Borrowings</div><div class="vsub">Debt facilities and cost of funds</div></div>
@@ -138,7 +138,7 @@
         <div class="card" id="borrowings-table-wrap"></div>
       </div>
 
-      <!-- INVESTMENTS -->
+      
       <div class="view" id="view-investments">
         <div class="vhdr">
           <div><div class="vttl">Investments</div><div class="vsub">Treasury placements and yield analysis</div></div>
@@ -152,7 +152,7 @@
         <div class="card" id="investments-table-wrap"></div>
       </div>
 
-      <!-- CASH -->
+      
       <div class="view" id="view-cash">
         <div class="vhdr">
           <div><div class="vttl">Cash Position</div><div class="vsub">Bank balances and cash monitoring</div></div>
@@ -166,7 +166,7 @@
         <div class="card" id="cash-table-wrap"></div>
       </div>
 
-      <!-- EQUITY — DB-backed -->
+      
       <div class="view" id="view-equity">
         <div class="vhdr">
           <div><div class="vttl">Equity &amp; Capital Structure</div><div class="vsub">Share capital · Retained earnings · Capital adequacy</div></div>
@@ -178,7 +178,7 @@
         <div id="equity-detail"></div>
       </div>
 
-      <!-- LIQUIDITY -->
+      
       <div class="view" id="view-liquidity">
         <div class="vhdr">
           <div><div class="vttl">Liquidity Management</div><div class="vsub">Net liquidity · Cash flow forecast · Gap analysis</div></div>
@@ -189,7 +189,7 @@
         <div class="chart-2" id="liq-charts2"></div>
       </div>
 
-      <!-- TEAM -->
+      
       <div class="view" id="view-team">
         <div class="vhdr">
           <div><div class="vttl">Team Management</div><div class="vsub">Organisation treasury users</div></div>
@@ -199,7 +199,7 @@
         <div id="team-table"></div>
       </div>
 
-      <!-- SETTINGS -->
+      
       <div class="view" id="view-settings">
         <div class="vhdr"><div><div class="vttl">Settings</div><div class="vsub">Profile and account preferences</div></div></div>
         <div id="settings-form"></div>
@@ -209,7 +209,7 @@
   </div>
 </div>
 
-<!-- Modal -->
+
 <div id="modal-bg">
   <div class="modal" id="modal-box">
     <div class="mhdr">
@@ -221,7 +221,7 @@
   </div>
 </div>
 
-<!-- Export modal -->
+
 <div id="export-modal">
   <div class="modal" style="max-width:480px">
     <div class="mhdr"><div class="mttl">Export Board Report</div><button class="mclose" id="exp-close">×</button></div>
@@ -247,14 +247,8 @@
 
 <div id="toast"></div>
 
-<script src="../assets/treasury-script-eaffec40.js"></script>
+<script src="../assets/treasury-script-5f87b1c1.js"></script>
 
-<!-- Backend endpoint note for equity:
-  This frontend calls POST /treasury/equity with { shareCapital, retainedEarnings, otherReserves, costOfEquity }
-  and GET /treasury/equity to retrieve it. Add these two routes to your Express router (eis-recbackend):
-    router.get('/equity',  auth, async (req,res) => { const doc = await Equity.findOne({orgId: req.user.orgId||req.user._id}); res.json({equity: doc||null}); });
-    router.post('/equity', auth, async (req,res) => { const doc = await Equity.findOneAndUpdate({orgId: req.user.orgId||req.user._id}, {...req.body, orgId: req.user.orgId||req.user._id}, {upsert:true,new:true}); res.json({equity:doc}); });
-  Until the backend is deployed, saveEquity() gracefully falls back to localStorage.
--->
+
 </body>
 </html>
