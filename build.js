@@ -42,6 +42,14 @@ async function processPage(page) {
   const srcPath = path.join(SRC_DIR, page.dir, 'index.html');
   let html = fs.readFileSync(srcPath, 'utf8');
 
+  // Root page (page.dir === '') lives at docs/index.html, one level above
+  // docs/assets/, so "./assets/..." is correct. Every subpage (e.g.
+  // docs/portal/index.html) is one level DEEPER than docs/assets/, so it
+  // needs "../assets/...". This computes that automatically regardless of
+  // how deeply nested a page ever gets.
+  const depth = page.dir ? page.dir.split('/').filter(Boolean).length : 0;
+  const assetsPrefix = depth === 0 ? './assets/' : '../'.repeat(depth) + 'assets/';
+
   // 1. Extract & minify inline <style>...</style> blocks
   const styleRe = /<style>([\s\S]*?)<\/style>/g;
   let styleIdx = 0;
@@ -52,7 +60,7 @@ async function processPage(page) {
     const hash = hashOf(minified);
     const fname = `${page.name}-style${styleIdx > 1 ? styleIdx : ''}-${hash}.css`;
     styleReplacements.push({ fname, content: minified });
-    return `<link rel="stylesheet" href="./assets/${fname}">`;
+    return `<link rel="stylesheet" href="${assetsPrefix}${fname}">`;
   });
 
   // 2. Extract & minify inline <script>...</script> blocks (leaves CDN
@@ -78,7 +86,7 @@ async function processPage(page) {
     const hash = hashOf(minified);
     const fname = `${page.name}-script${task.idx > 1 ? task.idx : ''}-${hash}.js`;
     scriptReplacements.push({ fname, content: minified });
-    html = html.replace(task.placeholder, `<script src="./assets/${fname}"></script>`);
+    html = html.replace(task.placeholder, `<script src="${assetsPrefix}${fname}"></script>`);
   }
 
   const outHtmlDir = path.join(OUT_DIR, page.dir);
