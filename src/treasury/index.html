@@ -939,13 +939,13 @@ function renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt
     <tr class="sub"><td>Investments</td>${rI.b.map(v=>'<td style="color:var(--bl)">'+N(v)+'</td>').join('')}<td style="color:var(--bl);font-weight:600">${N(rI.total)}</td></tr>
     <tr class="sub"><td>Cash &amp; Equivalents</td>${rC.b.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(rC.total)}</td></tr>
     <tr class="tot-a"><td>TOTAL DEPLOYABLE ASSETS</td>${aBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(aTotal)}</td></tr>
-    <tr class="sec-hdr rd"><td colspan="9">FUNDING</td></tr>
+    <tr class="sec-hdr rd"><td colspan="9">FUNDED BY</td></tr>
     <tr class="sub"><td>Borrowings</td>${rB.b.map(v=>'<td style="color:var(--rd)">'+N(v)+'</td>').join('')}<td style="color:var(--rd);font-weight:600">${N(rB.total)}</td></tr>
-    <tr class="tot-l"><td>TOTAL FUNDING</td>${lBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(lTotal)}</td></tr>
+    <tr class="tot-l"><td>TOTAL BORROWINGS</td>${lBkts.map(v=>'<td>'+N(v)+'</td>').join('')}<td>${N(lTotal)}</td></tr>
     <tr class="gap-row"><td>LEADING / (GAP) — Cumulative</td>${gBkts.map(v=>`<td ${cc(v)}>${v!==0?'₦'+fN(v):'—'}</td>`).join('')}<td ${cc(gTotal)}>₦${fN(gTotal)}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">PERIOD CONTRIBUTION AS % OF TOTAL</td></tr>
     <tr class="pct-row"><td>Deployable Assets %</td>${aBkts.map(v=>'<td>'+(aTotal>0?(v/aTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>100%</td></tr>
-    <tr class="pct-row"><td>Funding %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
+    <tr class="pct-row"><td>BORROWINGS %</td>${lBkts.map(v=>'<td>'+(lTotal>0?(v/lTotal*100).toFixed(2)+'%':'—')+'</td>').join('')}<td>${lTotal>0?'100%':'—'}</td></tr>
     <tr class="sec-hdr dim"><td colspan="9">WEIGHTED AVERAGE COST OF FUNDS</td></tr>
     <tr class="wara-row"><td>WARA (Assets) %</td>${waraBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWARA)}</td></tr>
     <tr class="wacd-row"><td>WACD (Liabilities) %</td>${wacdBkts.map(v=>'<td>'+P(v)+'</td>').join('')}<td>${P(localWACD)}</td></tr>
