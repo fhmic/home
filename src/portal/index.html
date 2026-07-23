@@ -253,6 +253,12 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 /* user form modal */
 #user-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto}
 #user-modal.open{display:flex}
+#extend-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto}
+#extend-modal.open{display:flex}
+.ext-presets{display:flex;gap:8px;margin:2px 0 14px;flex-wrap:wrap}
+.ext-preset-btn{font-family:var(--mo);font-size:11px;padding:6px 12px;border-radius:6px;border:1px solid var(--b);background:transparent;color:var(--tx2);cursor:pointer}
+.ext-preset-btn:hover{border-color:var(--t);color:var(--t)}
+.ext-current{font-size:12px;color:var(--tx2);margin-bottom:14px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--b)}
 #team-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(5,13,26,.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto}
 #team-modal.open{display:flex}
 .um-card{background:var(--n2);border:1px solid var(--b2);border-radius:16px;width:100%;max-width:420px;padding:2rem;box-shadow:var(--sh)}
@@ -617,8 +623,8 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
       </div>
       <div style="overflow-x:auto;border:1px solid var(--b);border-radius:var(--r)">
         <table class="users-table">
-          <thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Type</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
-          <tbody id="users-tbody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr></tbody>
+          <thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Type</th><th>Role</th><th>Status</th><th>Access Expiry</th><th>Last Login</th><th>Actions</th></tr></thead>
+          <tbody id="users-tbody"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -697,6 +703,26 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
     <div class="um-row">
       <button class="um-cancel" id="um-cancel">Cancel</button>
       <button class="um-submit" id="um-submit">Create User</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EXTEND ACCESS MODAL (admin-only, adds days to a user's 30-day access) ══ -->
+<div id="extend-modal">
+  <div class="um-card ani">
+    <div class="um-title">Extend Portal Access</div>
+    <div class="ext-current" id="ext-current-info">Loading current access status…</div>
+    <div class="um-field"><label>Add Days</label><input class="um-inp" type="number" id="ext-days" min="1" max="3650" placeholder="e.g. 30"></div>
+    <div class="ext-presets">
+      <button type="button" class="ext-preset-btn" onclick="document.getElementById('ext-days').value=7">+7</button>
+      <button type="button" class="ext-preset-btn" onclick="document.getElementById('ext-days').value=30">+30</button>
+      <button type="button" class="ext-preset-btn" onclick="document.getElementById('ext-days').value=90">+90</button>
+      <button type="button" class="ext-preset-btn" onclick="document.getElementById('ext-days').value=365">+365</button>
+    </div>
+    <div class="um-err" id="ext-err"></div>
+    <div class="um-row">
+      <button class="um-cancel" id="ext-cancel">Cancel</button>
+      <button class="um-submit" id="ext-submit">Extend Access</button>
     </div>
   </div>
 </div>
@@ -1192,11 +1218,11 @@ function safeText(value){
 var _editId=null;
 async function loadUsers(){
   var tbody=document.getElementById('users-tbody');
-  tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">Loading...</td></tr>';
   try{
     var d=await apiFetch('/users');
     if(!d.users||!Array.isArray(d.users)||d.users.length===0){
-      tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">No users found.</td></tr>';
+      tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3);font-family:var(--mo);font-size:12px">No users found.</td></tr>';
       return;
     }
     tbody.innerHTML=d.users.map(function(u){
@@ -1205,6 +1231,16 @@ async function loadUsers(){
       var accType=u.accountType==='organisation'?('Corp'+(u.orgName?' · '+escapeHtml(u.orgName):'')):'Individual';
       var lastLogin='—';
       if(u.lastLogin){ try{ lastLogin=new Date(u.lastLogin).toLocaleDateString('en-GB'); }catch(e){ lastLogin='—'; } }
+      var expiryCell='<span style="color:var(--tx3)">—</span>';
+      if(role==='admin'){
+        expiryCell='<span style="color:var(--tx3);font-size:11px">No expiry</span>';
+      } else if(u.accessExpiry){
+        var expD=new Date(u.accessExpiry), nowD=new Date(), msLeft=expD-nowD, daysLeft=Math.ceil(msLeft/86400000);
+        var expStr=expD.toLocaleDateString('en-GB');
+        if(msLeft<=0) expiryCell='<span style="color:var(--rd);font-family:var(--mo);font-size:11px">EXPIRED · '+expStr+'</span>';
+        else if(daysLeft<=7) expiryCell='<span style="color:var(--am);font-family:var(--mo);font-size:11px">'+daysLeft+'d left · '+expStr+'</span>';
+        else expiryCell='<span style="color:var(--tx2);font-family:var(--mo);font-size:11px">'+daysLeft+'d left · '+expStr+'</span>';
+      }
       return '<tr>'+
         '<td style="font-family:var(--mo);font-size:12px">'+escapeHtml(username)+'</td>'+
         '<td>'+escapeHtml(name)+'</td>'+
@@ -1212,14 +1248,16 @@ async function loadUsers(){
         '<td style="font-size:11px;color:var(--tx3);font-family:var(--mo)">'+accType+'</td>'+
         '<td><span class="role-badge '+escapeHtml(role)+'">'+escapeHtml(role)+'</span></td>'+
         '<td><span class="sdot '+(active?'active':'inactive')+'"></span> '+(active?'Active':'Inactive')+'</td>'+
+        '<td>'+expiryCell+'</td>'+
         '<td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">'+lastLogin+'</td>'+
-        '<td style="display:flex;gap:6px">'+
+        '<td style="display:flex;gap:6px;flex-wrap:wrap">'+
           '<button class="act-btn" data-id="'+escapeHtml(id)+'" data-username="'+escapeHtml(username)+'" data-name="'+escapeHtml(name)+'" data-email="'+escapeHtml(email)+'" data-role="'+escapeHtml(role)+'" data-active="'+active+'" onclick="editUser(this.dataset.id,this.dataset.username,this.dataset.name,this.dataset.email,this.dataset.role,this.dataset.active===\'true\')">Edit</button>'+
+          (role==='admin' ? '' : '<button class="act-btn" style="border-color:var(--t)" data-id="'+escapeHtml(id)+'" data-username="'+escapeHtml(username)+'" onclick="openExtendModal(this.dataset.id,this.dataset.username)">Extend</button>')+
           '<button class="act-btn danger" data-id="'+escapeHtml(id)+'" data-username="'+escapeHtml(username)+'" onclick="delUser(this.dataset.id,this.dataset.username)">Delete</button>'+
         '</td>'+
       '</tr>';
     }).join('');
-  }catch(e){ tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--rd);font-family:var(--mo);font-size:12px">'+escapeHtml(e.message)+'</td></tr>'; }
+  }catch(e){ tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--rd);font-family:var(--mo);font-size:12px">'+escapeHtml(e.message)+'</td></tr>'; }
 }
 function showAdminMsg(msg,type){
   var el=document.getElementById('admin-msg');el.textContent=msg;el.className='admin-msg '+(type||'ok');
@@ -1283,6 +1321,43 @@ async function delUser(id,username){
   try{await apiFetch('/users/'+id,{method:'DELETE'});showAdminMsg('User deleted.');loadUsers();}
   catch(e){showAdminMsg(e.message,'err');}
 }
+
+// ══ EXTEND ACCESS (admin-only: add days to a user's 30-day portal access) ══
+var _extendId=null;
+function openExtendModal(id,username){
+  _extendId=id;
+  document.getElementById('ext-err').className='um-err';
+  document.getElementById('ext-days').value='';
+  document.getElementById('ext-current-info').textContent='Loading current access status for '+username+'…';
+  document.getElementById('extend-modal').classList.add('open');
+  apiFetch('/users').then(function(d){
+    var u=(d.users||[]).find(function(x){return x._id===id;});
+    if(!u){ document.getElementById('ext-current-info').textContent='User: '+username; return; }
+    var info='User: '+username+'. ';
+    if(u.accessExpiry){
+      var expD=new Date(u.accessExpiry),nowD=new Date(),daysLeft=Math.ceil((expD-nowD)/86400000);
+      info += (daysLeft<=0) ? ('Access EXPIRED on '+expD.toLocaleDateString('en-GB')+'.') : ('Currently expires in '+daysLeft+' day'+(daysLeft===1?'':'s')+' ('+expD.toLocaleDateString('en-GB')+').');
+    } else {
+      info += 'No access expiry currently set.';
+    }
+    document.getElementById('ext-current-info').textContent=info;
+  }).catch(function(){ document.getElementById('ext-current-info').textContent='User: '+username; });
+}
+document.getElementById('ext-cancel').addEventListener('click',function(){document.getElementById('extend-modal').classList.remove('open');_extendId=null;});
+document.getElementById('ext-submit').addEventListener('click',async function(){
+  var btn=this;var errEl=document.getElementById('ext-err');errEl.className='um-err';
+  var days=parseInt(document.getElementById('ext-days').value,10);
+  if(!days||days<1||days>3650){errEl.textContent='Enter a whole number of days between 1 and 3650.';errEl.className='um-err show';return;}
+  btn.disabled=true;btn.textContent='Extending...';
+  try{
+    var d=await apiFetch('/users/'+_extendId+'/extend-access',{method:'PATCH',body:JSON.stringify({days:days})});
+    document.getElementById('extend-modal').classList.remove('open');
+    _extendId=null;
+    showAdminMsg(d.message||('Access extended by '+days+' day'+(days===1?'':'s')+'.'));
+    loadUsers();
+  }catch(e){errEl.textContent=e.message;errEl.className='um-err show';}
+  finally{btn.disabled=false;btn.textContent='Extend Access';}
+});
 
 // ═══════════════════════════════════════════════════════════
 // ══ ADMIN PANEL — DOMAIN WHITELIST TAB ══
