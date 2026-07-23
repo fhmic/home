@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){try{var t=localStorage.getItem('fm_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>FM Markets — Global Intelligence | FM Finance Suite</title>
@@ -12,6 +14,8 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--n:#060e1e;--n2:#0a1628;--n3:#0f1f3d;--n4:#162747;--n5:#1c3057;--t:#00c9a7;--t2:#00a98e;--am:#f5a623;--rd:#e05252;--gr:#22c55e;--bl:#63b3ed;--pu:#a78bfa;--tx:#e8edf5;--tx2:#8fa3bf;--tx3:#4a6080;--tx4:#2a3f5f;--b:rgba(255,255,255,.06);--b2:rgba(255,255,255,.11);--b3:rgba(255,255,255,.18);--sf:rgba(255,255,255,.03);--sf2:rgba(255,255,255,.07);--mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif}
+html[data-theme="light"]{--n:#f7f9fc;--n2:#ffffff;--n3:#eef2f7;--n4:#e2e8f0;--n5:#cbd5e1;--t:#00876b;--t2:#007a63;--am:#b45309;--rd:#b91c1c;--gr:#15803d;--bl:#1d4ed8;--pu:#6d28d9;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--tx4:#cbd5e1;--b:rgba(0,0,0,.08);--b2:rgba(0,0,0,.14);--b3:rgba(0,0,0,.20);--sf:rgba(0,0,0,.03);--sf2:rgba(0,0,0,.06);}
+
 html{font-size:14px;scroll-behavior:smooth}
 body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;overflow-x:hidden;line-height:1.6}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(0,201,167,.04) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 80% 80%,rgba(99,179,237,.03) 0%,transparent 60%);pointer-events:none;z-index:0}
@@ -242,6 +246,8 @@ button,a,select,input{touch-action:manipulation}
 </style>
 </head>
 <body>
+<button id="fm-theme-toggle" onclick="fmToggleTheme()" aria-label="Toggle light/dark theme" style="position:fixed;top:14px;right:14px;z-index:99998;width:38px;height:38px;border-radius:50%;border:1px solid rgba(128,128,128,.35);background:rgba(120,120,120,.15);backdrop-filter:blur(6px);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:inherit">🌙</button>
+
 <a href="#_main" class="skip-link">Skip to main content</a>
 <div id="_tw" aria-label="Live market ticker" role="marquee"><div id="_tt"></div></div>
 <nav id="_nb" aria-label="Main navigation">
@@ -1341,6 +1347,42 @@ document.addEventListener('visibilitychange',function(){
 });
 
 window.addEventListener('load',_init);
+</script>
+<footer class="fm-legal-footer" style="border-top:1px solid rgba(255,255,255,.08);padding:1.3rem 1.4rem;text-align:center;margin-top:2rem;font-family:'IBM Plex Mono',monospace">
+  <nav style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;margin-bottom:.55rem">
+    <a href="/home/legal/terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Terms</a>
+    <a href="/home/legal/privacy/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy</a>
+    <a href="/home/legal/cookies/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Cookies</a>
+    <a href="/home/legal/disclaimer/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Disclaimer</a>
+    <a href="/home/legal/acceptable-use/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Acceptable Use</a>
+    <a href="/home/legal/ai-consent/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">AI Consent</a>
+    <a href="/home/legal/dpa/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">DPA</a>
+    <a href="/home/legal/data-processing-notice/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Data Processing Notice</a>
+    <a href="/home/legal/subscription-terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Subscription Terms</a>
+    <a href="/home/legal/consent-release/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Consent &amp; Release</a>
+    <a href="/home/legal/privacy-preferences/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy Preferences</a>
+  </nav>
+  <small style="color:#4a6080;font-size:.7rem">&copy; 2026 FM Finance Suite. All rights reserved.</small>
+</footer>
+<script>
+function fmApplyThemeIcon(){
+  var btn = document.getElementById('fm-theme-toggle');
+  if(!btn) return;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '☀️' : '🌙';
+}
+function fmToggleTheme(){
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if(isLight){
+    document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('fm_theme','dark'); }catch(e){}
+  } else {
+    document.documentElement.setAttribute('data-theme','light');
+    try{ localStorage.setItem('fm_theme','light'); }catch(e){}
+  }
+  fmApplyThemeIcon();
+}
+fmApplyThemeIcon();
 </script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){try{var t=localStorage.getItem('fm_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>FM — Bank Reconciliation Engine</title>
@@ -25,6 +27,8 @@
   --sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
   --sh2:0 4px 24px rgba(0,0,0,.5),0 12px 48px rgba(0,0,0,.3);
 }
+html[data-theme="light"]{--n:#f7f9fc;--n2:#ffffff;--n3:#eef2f7;--n4:#e2e8f0;--t:#00876b;--t2:#007a63;--t3:#006655;--td:rgba(0,135,107,.12);--tg:rgba(0,135,107,.05);--am:#b45309;--rd:#b91c1c;--gr:#15803d;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--b:rgba(0,0,0,.08);--b2:rgba(0,0,0,.14);--sf:rgba(0,0,0,.03);--sf2:rgba(0,0,0,.06);--sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);--sh2:0 4px 16px rgba(0,0,0,.10),0 12px 32px rgba(0,0,0,.08);}
+
 html{font-size:15px}
 body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6}
 #bar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:.75rem}
@@ -234,6 +238,8 @@ button,a,input,select{touch-action:manipulation}
 </style>
 </head>
 <body>
+<button id="fm-theme-toggle" onclick="fmToggleTheme()" aria-label="Toggle light/dark theme" style="position:fixed;top:14px;right:14px;z-index:99998;width:38px;height:38px;border-radius:50%;border:1px solid rgba(128,128,128,.35);background:rgba(120,120,120,.15);backdrop-filter:blur(6px);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:inherit">🌙</button>
+
 
 
 <div id="bar">
@@ -809,7 +815,17 @@ const auR=d._0x2934d.map(a=>({'Sheet':a.sheet,'Row':a.row,'Original Value':a.ori
 sht('Date Audit Log',auR.length?auR:[{'Sheet':'No data','Row':'','Original Value':'','Parsed Date':'','Comment':''}],[16,6,22,14,28]);
 XLSX.writeFile(wb,`FM-BankRecon-${ts}.xlsx`);
 }
+const PAL_DARK = { navy:[10,22,40], navy2:[22,39,71], teal:[0,201,167], tx:[232,237,245], tx2:[143,163,191], tx3:[74,96,128], tableBody:[200,210,230], amber:[245,166,35], divider:[255,255,255,15] };
+// Light-mode palette for PDF exports, used when the user has the light/
+// high-contrast UI mode on.
+const PAL_LIGHT = { navy:[238,242,247], navy2:[226,232,240], teal:[0,135,107], tx:[15,23,42], tx2:[71,85,105], tx3:[148,163,184], tableBody:[71,85,105], amber:[180,110,10], divider:[15,23,42,20] };
+function fmCurrentReportPalette(){
+  try{ return document.documentElement.getAttribute("data-theme")==="light" ? PAL_LIGHT : PAL_DARK; }
+  catch(e){ return PAL_DARK; }
+}
+let PAL = PAL_DARK;
 function _0x9a0b(d) {
+  PAL = fmCurrentReportPalette();
 const {jsPDF}=window.jspdf;
 const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
 const s=d.summary; const ts=new Date().toISOString().slice(0,10);
@@ -818,21 +834,21 @@ const fN=n=>n==null?'0.00':Number(n).toLocaleString('en-NG',{minimumFractionDigi
 let y=0;
 const ph=title=>{
 if(y>0) doc.addPage();
-doc.setFillColor(10,22,40); doc.rect(0,0,W,48,'F');
-doc.setFillColor(0,201,167); doc.rect(0,0,6,48,'F');
-doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(232,237,245);
+doc.setFillColor(...PAL.navy); doc.rect(0,0,W,48,'F');
+doc.setFillColor(...PAL.teal); doc.rect(0,0,6,48,'F');
+doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(...PAL.tx);
 doc.text('FM Bank Recon',22,30);
-doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(143,163,191);
+doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(...PAL.tx2);
 doc.text(title,22,43);
 doc.setFontSize(9); doc.text(`Generated: ${ts}`,W-20,30,{align:'right'});
 y=68;
 };
 const kv=(l,v,c)=>{
-doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(143,163,191); doc.text(l,26,y);
-doc.setFont('helvetica','bold'); doc.setTextColor(...(c||[232,237,245])); doc.text(String(v),W-20,y,{align:'right'}); y+=14;
+doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...PAL.tx2); doc.text(l,26,y);
+doc.setFont('helvetica','bold'); doc.setTextColor(...(c||PAL.tx)); doc.text(String(v),W-20,y,{align:'right'}); y+=14;
 };
-const sl=t=>{doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(0,201,167);doc.text(t.toUpperCase(),20,y);y+=14;};
-const dv=()=>{doc.setDrawColor(22,39,71);doc.setLineWidth(0.5);doc.line(20,y,W-20,y);y+=10;};
+const sl=t=>{doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...PAL.teal);doc.text(t.toUpperCase(),20,y);y+=14;};
+const dv=()=>{doc.setDrawColor(...PAL.navy2);doc.setLineWidth(0.5);doc.line(20,y,W-20,y);y+=10;};
 ph('Reconciliation Summary');
 const ip=s.integrity==='PASS';
 doc.setFillColor(ip?34:245,ip?197:166,ip?94:35,30);
@@ -864,12 +880,12 @@ kv('Add: Debit in BS not in GL','₦'+fN(s.totBD),[34,197,94]);
 kv('Less: Credit in BS not in GL','(₦'+fN(s.totBC)+')',[224,82,82]);
 kv('Add: Debit in GL not in BS','₦'+fN(s.totGD),[34,197,94]);
 kv('Less: Credit in GL not in BS','(₦'+fN(s.totGC)+')',[224,82,82]);
-y+=4; doc.setFillColor(22,39,71); doc.roundedRect(18,y-13,W-36,22,3,3,'F');
-doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(0,201,167);
+y+=4; doc.setFillColor(...PAL.navy2); doc.roundedRect(18,y-13,W-36,22,3,3,'F');
+doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...PAL.teal);
 doc.text('ADJUSTED BANK BALANCE',26,y); doc.text('₦'+fN(s.adjBal),W-26,y,{align:'right'}); y+=18;
-doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(143,163,191);
+doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...PAL.tx2);
 doc.text('Cashbook Balance',26,y);
-doc.setFont('helvetica','bold'); doc.setTextColor(232,237,245);
+doc.setFont('helvetica','bold'); doc.setTextColor(...PAL.tx);
 doc.text('₦'+fN(s.cashbookBal),W-20,y,{align:'right'}); y+=16;
 const vari=s.variance!=null?s.variance:Math.round((s.adjBal-s.cashbookBal)*100)/100;
 const rec=Math.abs(vari)<0.01;
@@ -882,7 +898,7 @@ doc.text(rec?'✓  RECONCILED':'✗  VARIANCE',26,y);
 doc.text(rec?'₦0.00':'₦'+fN(vari),W-26,y,{align:'right'});
 y+=24; dv();
 sl('Date Parsing'); kv('Dates Parsed OK',s.ok,[34,197,94]); if(s.fail) kv('Parse Failures',s.fail,[224,82,82]);
-doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(74,96,128);
+doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(...PAL.tx3);
 doc.text('Developed by Michael Felix Happy',W/2,doc.internal.pageSize.getHeight()-14,{align:'center'});
 const aTbl=(rows,tot,title,hcol,heads,bdy)=>{
 if(!rows.length) return;
@@ -890,10 +906,10 @@ ph(title);
 doc.autoTable({startY:y,margin:{left:20,right:20},
 head:[heads],
 body:[...rows.map((r,i)=>[i+1,...bdy(r)]),['','TOTAL',...heads.slice(2).map((_,k)=>k===0?fN(tot):'')]],
-headStyles:{fillColor:[10,22,40],textColor:hcol,fontSize:8,fontStyle:'bold'},
-bodyStyles:{fontSize:7.5,textColor:[200,210,230]},
+headStyles:{fillColor:PAL.navy,textColor:hcol,fontSize:8,fontStyle:'bold'},
+bodyStyles:{fontSize:7.5,textColor:PAL.tableBody},
 alternateRowStyles:{fillColor:[15,31,61]},
-styles:{fillColor:[10,22,40],lineColor:[255,255,255,15],lineWidth:0.3},
+styles:{fillColor:PAL.navy,lineColor:PAL.divider,lineWidth:0.3},
 didParseCell:c=>{if(c.row.index===c.table.body.length-1){c.cell.styles.fontStyle='bold';c.cell.styles.textColor=hcol;}}
 });
 };
@@ -913,10 +929,10 @@ ph('Date Audit Log');
 doc.autoTable({startY:y,margin:{left:20,right:20},
 head:[['Sheet','Row','Original Value','Parsed Date','Comment']],
 body:iss.map(a=>[a.sheet,a.row,a.original,a.parsed||'—',a.comment]),
-headStyles:{fillColor:[10,22,40],textColor:[245,166,35],fontSize:8,fontStyle:'bold'},
-bodyStyles:{fontSize:8,textColor:[200,210,230]},
+headStyles:{fillColor:PAL.navy,textColor:PAL.amber,fontSize:8,fontStyle:'bold'},
+bodyStyles:{fontSize:8,textColor:PAL.tableBody},
 alternateRowStyles:{fillColor:[15,31,61]},
-styles:{fillColor:[10,22,40],lineColor:[255,255,255,15],lineWidth:0.3}});
+styles:{fillColor:PAL.navy,lineColor:PAL.divider,lineWidth:0.3}});
 }
 doc.save(`FM-BankRecon-${ts}.pdf`);
 }
@@ -1105,6 +1121,42 @@ $('t-aud').innerHTML=h;
 }
 function _0x2561(m){return`<div class="ep"><div class="ei">✓</div>${m}</div>`;}
 document.getElementById('yr').textContent=new Date().getFullYear();
+</script>
+<footer class="fm-legal-footer" style="border-top:1px solid rgba(255,255,255,.08);padding:1.3rem 1.4rem;text-align:center;margin-top:2rem;font-family:'IBM Plex Mono',monospace">
+  <nav style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;margin-bottom:.55rem">
+    <a href="/home/legal/terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Terms</a>
+    <a href="/home/legal/privacy/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy</a>
+    <a href="/home/legal/cookies/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Cookies</a>
+    <a href="/home/legal/disclaimer/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Disclaimer</a>
+    <a href="/home/legal/acceptable-use/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Acceptable Use</a>
+    <a href="/home/legal/ai-consent/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">AI Consent</a>
+    <a href="/home/legal/dpa/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">DPA</a>
+    <a href="/home/legal/data-processing-notice/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Data Processing Notice</a>
+    <a href="/home/legal/subscription-terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Subscription Terms</a>
+    <a href="/home/legal/consent-release/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Consent &amp; Release</a>
+    <a href="/home/legal/privacy-preferences/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy Preferences</a>
+  </nav>
+  <small style="color:#4a6080;font-size:.7rem">&copy; 2026 FM Finance Suite. All rights reserved.</small>
+</footer>
+<script>
+function fmApplyThemeIcon(){
+  var btn = document.getElementById('fm-theme-toggle');
+  if(!btn) return;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '☀️' : '🌙';
+}
+function fmToggleTheme(){
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if(isLight){
+    document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('fm_theme','dark'); }catch(e){}
+  } else {
+    document.documentElement.setAttribute('data-theme','light');
+    try{ localStorage.setItem('fm_theme','light'); }catch(e){}
+  }
+  fmApplyThemeIcon();
+}
+fmApplyThemeIcon();
 </script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){try{var t=localStorage.getItem('fm_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();</script>
+
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>FM 360 — Live Job Intelligence | FM Job Portal</title>
@@ -20,6 +22,8 @@
   --di:'Syne',sans-serif;
   --sa:'Figtree',sans-serif;
 }
+html[data-theme="light"]{--bg:#f7f9fc;--bg2:#ffffff;--bg3:#eef2f7;--border:rgba(0,0,0,.08);--border-hi:rgba(0,135,107,.35);--accent:#00876b;--accent2:#007a63;--gold:#b45309;--text:#0f172a;--dim:rgba(15,23,42,.6);--faint:rgba(15,23,42,.32);--red:#b91c1c;--blue:#1d4ed8;--purple:#6d28d9;}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--sa);font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden}
@@ -248,6 +252,8 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 </style>
 </head>
 <body>
+<button id="fm-theme-toggle" onclick="fmToggleTheme()" aria-label="Toggle light/dark theme" style="position:fixed;top:14px;right:14px;z-index:99998;width:38px;height:38px;border-radius:50%;border:1px solid rgba(128,128,128,.35);background:rgba(120,120,120,.15);backdrop-filter:blur(6px);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:inherit">🌙</button>
+
 <div class="shell">
 
 <!-- FM NAV -->
@@ -735,6 +741,42 @@ async function triggerDebug(){
     el.innerHTML=html;
   }catch(e){el.innerHTML='<div style="color:var(--red)">Error: '+esc(String(e))+'</div>';}
 }
+</script>
+<footer class="fm-legal-footer" style="border-top:1px solid rgba(255,255,255,.08);padding:1.3rem 1.4rem;text-align:center;margin-top:2rem;font-family:'IBM Plex Mono',monospace">
+  <nav style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;margin-bottom:.55rem">
+    <a href="/home/legal/terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Terms</a>
+    <a href="/home/legal/privacy/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy</a>
+    <a href="/home/legal/cookies/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Cookies</a>
+    <a href="/home/legal/disclaimer/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Disclaimer</a>
+    <a href="/home/legal/acceptable-use/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Acceptable Use</a>
+    <a href="/home/legal/ai-consent/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">AI Consent</a>
+    <a href="/home/legal/dpa/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">DPA</a>
+    <a href="/home/legal/data-processing-notice/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Data Processing Notice</a>
+    <a href="/home/legal/subscription-terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Subscription Terms</a>
+    <a href="/home/legal/consent-release/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Consent &amp; Release</a>
+    <a href="/home/legal/privacy-preferences/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy Preferences</a>
+  </nav>
+  <small style="color:#4a6080;font-size:.7rem">&copy; 2026 FM Finance Suite. All rights reserved.</small>
+</footer>
+<script>
+function fmApplyThemeIcon(){
+  var btn = document.getElementById('fm-theme-toggle');
+  if(!btn) return;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '☀️' : '🌙';
+}
+function fmToggleTheme(){
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if(isLight){
+    document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('fm_theme','dark'); }catch(e){}
+  } else {
+    document.documentElement.setAttribute('data-theme','light');
+    try{ localStorage.setItem('fm_theme','light'); }catch(e){}
+  }
+  fmApplyThemeIcon();
+}
+fmApplyThemeIcon();
 </script>
 </body>
 </html>

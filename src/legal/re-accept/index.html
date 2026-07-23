@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Updated Terms — FM Finance Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--n:#060e1e;--n2:#0a1628;--n3:#0f1f3d;--t:#00c9a7;--tx:#e8edf5;--tx2:#8fa3bf;--tx3:#4a6080;--b:rgba(255,255,255,.08);--am:#f5a623}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--n);color:var(--tx);font-family:'DM Sans',sans-serif;line-height:1.6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.card{max-width:480px;width:100%;background:var(--n2);border:1px solid var(--b);border-radius:14px;padding:2rem}
+h1{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:.6rem}
+p{color:var(--tx2);font-size:.9rem;margin-bottom:1rem}
+.links{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.4rem}
+.links a{color:var(--t);font-size:.82rem;text-decoration:none;font-family:'IBM Plex Mono',monospace}
+.chk-row{display:flex;align-items:flex-start;gap:.6rem;background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:8px;padding:.9rem;margin-bottom:1.2rem}
+.chk-row input{margin-top:.2rem}
+.chk-row label{font-size:.85rem;color:var(--tx2)}
+button{width:100%;font-family:'IBM Plex Mono',monospace;font-size:.85rem;font-weight:600;padding:.8rem;border-radius:8px;border:none;background:var(--tx3);color:var(--tx);cursor:not-allowed;transition:.2s}
+button.ready{background:var(--t);color:var(--n);cursor:pointer}
+#err{color:var(--am);font-size:.8rem;margin-top:.7rem;display:none}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>We've updated our policies</h1>
+<p>Since you last accepted, we've updated one or more of the documents below. Please review and re-accept to continue.</p>
+<div class="links">
+<a href="../terms/" target="_blank">Terms of Service</a>
+<a href="../privacy/" target="_blank">Privacy Policy</a>
+<a href="../acceptable-use/" target="_blank">Acceptable Use Policy</a>
+</div>
+<div class="chk-row">
+  <input type="checkbox" id="agree-chk">
+  <label for="agree-chk">I have read and accept the updated Terms of Service, Privacy Policy, and Acceptable Use Policy.</label>
+</div>
+<button id="continue-btn">Continue</button>
+<div id="err">Please check the box above to continue.</div>
+</div>
+<script>
+// Bump this whenever a material change is made to Terms/Privacy/AUP.
+// Any account whose stored accepted version doesn't match this gets sent here.
+var CURRENT_TERMS_VERSION = '2026-07-23';
+
+function getNextUrl(){
+  var params = new URLSearchParams(window.location.search);
+  return params.get('next') || '/home/portal/';
+}
+
+var chk = document.getElementById('agree-chk');
+var btn = document.getElementById('continue-btn');
+var err = document.getElementById('err');
+
+chk.addEventListener('change', function(){
+  btn.classList.toggle('ready', chk.checked);
+  if (chk.checked) err.style.display = 'none';
+});
+
+btn.addEventListener('click', function(){
+  if (!chk.checked) { err.style.display = 'block'; return; }
+  try {
+    localStorage.setItem('fm_terms_accepted_version', CURRENT_TERMS_VERSION);
+    localStorage.setItem('fm_terms_accepted_at', new Date().toISOString());
+  } catch(e) {}
+  window.location.href = getNextUrl();
+});
+</script>
+</body>
+</html>

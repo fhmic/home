@@ -18,6 +18,8 @@
   --mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif;
   --sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
 }
+html[data-theme="light"]{--n:#f7f9fc;--n2:#ffffff;--n3:#eef2f7;--n4:#e2e8f0;--t:#00876b;--t2:#007a63;--td:rgba(0,135,107,.12);--tg:rgba(0,135,107,.05);--am:#b45309;--rd:#b91c1c;--gr:#15803d;--bl:#1d4ed8;--pu:#6d28d9;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--b:rgba(0,0,0,.08);--b2:rgba(0,0,0,.14);--sf:rgba(0,0,0,.03);--sf2:rgba(0,0,0,.06);--sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);}
+
 html{font-size:15px}
 body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6}
 #app{display:flex;min-height:100vh;flex-direction:column}
@@ -160,6 +162,8 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 </style>
 </head>
 <body>
+<button id="fm-theme-toggle" onclick="fmToggleTheme()" aria-label="Toggle light/dark theme" style="position:fixed;top:14px;right:14px;z-index:99998;width:38px;height:38px;border-radius:50%;border:1px solid rgba(128,128,128,.35);background:rgba(120,120,120,.15);backdrop-filter:blur(6px);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:inherit">🌙</button>
+
 <div id="app">
   <div id="topbar">
     <div class="logo"><div class="lm">FM</div>FM<span class="la">&nbsp;Treasury</span><span class="badge-flag">📊 CapMax</span></div>
@@ -435,6 +439,42 @@ function signOut(){
   window.location.href='../portal/';
 }
 
+</script>
+<footer class="fm-legal-footer" style="border-top:1px solid rgba(255,255,255,.08);padding:1.3rem 1.4rem;text-align:center;margin-top:2rem;font-family:'IBM Plex Mono',monospace">
+  <nav style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;margin-bottom:.55rem">
+    <a href="/home/legal/terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Terms</a>
+    <a href="/home/legal/privacy/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy</a>
+    <a href="/home/legal/cookies/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Cookies</a>
+    <a href="/home/legal/disclaimer/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Disclaimer</a>
+    <a href="/home/legal/acceptable-use/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Acceptable Use</a>
+    <a href="/home/legal/ai-consent/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">AI Consent</a>
+    <a href="/home/legal/dpa/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">DPA</a>
+    <a href="/home/legal/data-processing-notice/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Data Processing Notice</a>
+    <a href="/home/legal/subscription-terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Subscription Terms</a>
+    <a href="/home/legal/consent-release/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Consent &amp; Release</a>
+    <a href="/home/legal/privacy-preferences/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy Preferences</a>
+  </nav>
+  <small style="color:#4a6080;font-size:.7rem">&copy; 2026 FM Finance Suite. All rights reserved.</small>
+</footer>
+<script>
+function fmApplyThemeIcon(){
+  var btn = document.getElementById('fm-theme-toggle');
+  if(!btn) return;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '☀️' : '🌙';
+}
+function fmToggleTheme(){
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if(isLight){
+    document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('fm_theme','dark'); }catch(e){}
+  } else {
+    document.documentElement.setAttribute('data-theme','light');
+    try{ localStorage.setItem('fm_theme','light'); }catch(e){}
+  }
+  fmApplyThemeIcon();
+}
+fmApplyThemeIcon();
 </script>
 </body>
 </html>

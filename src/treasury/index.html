@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){try{var t=localStorage.getItem('fm_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>Treasury Intelligence — FM Finance Suite</title>
@@ -27,6 +29,8 @@
   --mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif;
   --sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
 }
+html[data-theme="light"]{--n:#f7f9fc;--n2:#ffffff;--n3:#eef2f7;--n4:#e2e8f0;--t:#00876b;--t2:#007a63;--td:rgba(0,135,107,.12);--tg:rgba(0,135,107,.05);--am:#b45309;--rd:#b91c1c;--gr:#15803d;--bl:#1d4ed8;--pu:#6d28d9;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--b:rgba(0,0,0,.08);--b2:rgba(0,0,0,.14);--sf:rgba(0,0,0,.03);--sf2:rgba(0,0,0,.06);--sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);}
+
 html{font-size:15px;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
 #app{display:flex;min-height:100vh;flex-direction:column}
@@ -254,6 +258,8 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
 </style>
 </head>
 <body>
+<button id="fm-theme-toggle" onclick="fmToggleTheme()" aria-label="Toggle light/dark theme" style="position:fixed;top:14px;right:14px;z-index:99998;width:38px;height:38px;border-radius:50%;border:1px solid rgba(128,128,128,.35);background:rgba(120,120,120,.15);backdrop-filter:blur(6px);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:inherit">🌙</button>
+
 <div id="app">
   <div id="topbar">
     <div class="logo">
@@ -409,7 +415,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
           <div><div class="vttl">Equity &amp; Capital Structure</div><div class="vsub">Share capital · Retained earnings · Capital adequacy</div></div>
           <button class="bp" onclick="openEquityModal()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Update Capital</button>
         </div>
-        <div class="nt-info">Capital structure: Share Capital, Retained Earnings and Other Reserves.</div>
+        <div class="nt-info">Capital structure is saved to your account database — shared across devices and team members automatically.</div>
         <div class="kpi-grid" id="equity-kpis"></div>
         <div class="chart-2" id="equity-charts"></div>
         <div id="equity-detail"></div>
@@ -1613,11 +1619,24 @@ async function saveSettings(){
 // All export functions live at module scope so they can
 // access TENOR_LBLS and all data caches directly.
 // ════════════════════════════════════════════════════
-const EXP_C = {
+const EXP_C_DARK = {
   teal:'00C9A7',navy:'0A1628',navy2:'0F1F3D',navy3:'162747',navy4:'1C3057',
   amber:'F5A623',red:'E05252',green:'22C55E',blue:'63B3ED',purple:'A78BFA',
   tx:'E8EDF5',tx2:'8FA3BF',tx3:'4A6080',white:'FFFFFF',black:'000000',
 };
+// Light-theme palette for the same slide deck, used when the user has the
+// light/high-contrast UI mode enabled — keeps exported reports readable for
+// anyone who finds the dark theme hard to read on-screen or in print.
+const EXP_C_LIGHT = {
+  teal:'00876B',navy:'FFFFFF',navy2:'F7F9FC',navy3:'EEF2F7',navy4:'E2E8F0',
+  amber:'B45309',red:'B91C1C',green:'15803D',blue:'1D4ED8',purple:'6D28D9',
+  tx:'0F172A',tx2:'475569',tx3:'94A3B8',white:'FFFFFF',black:'000000',
+};
+function fmCurrentReportTheme(){
+  try{ return document.documentElement.getAttribute('data-theme')==='light' ? EXP_C_LIGHT : EXP_C_DARK; }
+  catch(e){ return EXP_C_DARK; }
+}
+let EXP_C = EXP_C_DARK;
 
 function expFmt(n){ return (Number(n)||0).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function expPct(n){ return (Number(n)||0).toFixed(2)+'%'; }
@@ -1653,6 +1672,7 @@ function expSecDiv(slide,pres,x,y,w,label,accent){
 }
 
 async function exportBoardPPT(){
+  EXP_C = fmCurrentReportTheme();
   const pres = new PptxGenJS();
   pres.layout = 'LAYOUT_16x9';
   pres.title  = 'FM Treasury Board Report';
@@ -2245,5 +2265,41 @@ document.addEventListener('DOMContentLoaded', () => {
     router.post('/equity', auth, async (req,res) => { const doc = await Equity.findOneAndUpdate({orgId: req.user.orgId||req.user._id}, {...req.body, orgId: req.user.orgId||req.user._id}, {upsert:true,new:true}); res.json({equity:doc}); });
   Until the backend is deployed, saveEquity() gracefully falls back to localStorage.
 -->
+<footer class="fm-legal-footer" style="border-top:1px solid rgba(255,255,255,.08);padding:1.3rem 1.4rem;text-align:center;margin-top:2rem;font-family:'IBM Plex Mono',monospace">
+  <nav style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;margin-bottom:.55rem">
+    <a href="/home/legal/terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Terms</a>
+    <a href="/home/legal/privacy/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy</a>
+    <a href="/home/legal/cookies/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Cookies</a>
+    <a href="/home/legal/disclaimer/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Disclaimer</a>
+    <a href="/home/legal/acceptable-use/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Acceptable Use</a>
+    <a href="/home/legal/ai-consent/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">AI Consent</a>
+    <a href="/home/legal/dpa/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">DPA</a>
+    <a href="/home/legal/data-processing-notice/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Data Processing Notice</a>
+    <a href="/home/legal/subscription-terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Subscription Terms</a>
+    <a href="/home/legal/consent-release/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Consent &amp; Release</a>
+    <a href="/home/legal/privacy-preferences/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy Preferences</a>
+  </nav>
+  <small style="color:#4a6080;font-size:.7rem">&copy; 2026 FM Finance Suite. All rights reserved.</small>
+</footer>
+<script>
+function fmApplyThemeIcon(){
+  var btn = document.getElementById('fm-theme-toggle');
+  if(!btn) return;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '☀️' : '🌙';
+}
+function fmToggleTheme(){
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if(isLight){
+    document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('fm_theme','dark'); }catch(e){}
+  } else {
+    document.documentElement.setAttribute('data-theme','light');
+    try{ localStorage.setItem('fm_theme','light'); }catch(e){}
+  }
+  fmApplyThemeIcon();
+}
+fmApplyThemeIcon();
+</script>
 </body>
 </html>

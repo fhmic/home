@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Privacy Preferences — FM Finance Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--n:#060e1e;--n2:#0a1628;--n3:#0f1f3d;--t:#00c9a7;--tx:#e8edf5;--tx2:#8fa3bf;--tx3:#4a6080;--b:rgba(255,255,255,.08);--am:#f5a623}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--n);color:var(--tx);font-family:'DM Sans',sans-serif;line-height:1.7;min-height:100vh;display:flex;flex-direction:column}
+header{padding:1.1rem 1.6rem;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+.brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;color:var(--tx);text-decoration:none}
+.brand span{color:var(--t)}
+header a.back{color:var(--tx2);text-decoration:none;font-size:.85rem;font-family:'IBM Plex Mono',monospace}
+main{max-width:640px;margin:0 auto;padding:2.6rem 1.6rem 4rem;flex:1;width:100%}
+h1{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;margin-bottom:.5rem}
+p.lead{color:var(--tx2);font-size:.94rem;margin-bottom:2rem}
+.pref-row{background:var(--n2);border:1px solid var(--b);border-radius:10px;padding:1.1rem 1.3rem;margin-bottom:.9rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.pref-info h3{font-family:'Syne',sans-serif;font-size:.98rem;font-weight:700;margin-bottom:.25rem}
+.pref-info p{color:var(--tx3);font-size:.82rem}
+.switch{position:relative;width:46px;height:26px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--tx3);border-radius:20px;cursor:pointer;transition:.2s}
+.slider:before{content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.slider{background:var(--t)}
+input:checked+.slider:before{transform:translateX(20px)}
+input:disabled+.slider{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:.7rem;margin-top:1.6rem;flex-wrap:wrap}
+button{font-family:'IBM Plex Mono',monospace;font-size:.8rem;padding:.65rem 1.2rem;border-radius:8px;border:1px solid var(--b);background:transparent;color:var(--tx);cursor:pointer}
+button.primary{background:var(--t);color:var(--n);border-color:var(--t);font-weight:600}
+#saved-msg{color:var(--t);font-size:.82rem;font-family:'IBM Plex Mono',monospace;margin-top:.8rem;display:none}
+footer{border-top:1px solid var(--b);padding:1.4rem 1.6rem;text-align:center}
+footer nav{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;margin-bottom:.6rem}
+footer nav a{color:var(--tx3);text-decoration:none;font-size:.78rem;font-family:'IBM Plex Mono',monospace}
+footer nav a:hover{color:var(--t)}
+footer small{color:var(--tx3);font-size:.75rem}
+</style>
+</head>
+<body>
+<header>
+<a class="brand" href="/home/">FM<span> Finance Suite</span></a>
+<a class="back" href="/home/">&larr; Back to site</a>
+</header>
+<main>
+<h1>Privacy Preferences</h1>
+<p class="lead">Control what's stored in your browser for this site. Strictly necessary storage can't be turned off, since it's what keeps you signed in.</p>
+
+<div class="pref-row">
+  <div class="pref-info"><h3>Strictly necessary</h3><p>Session/login tokens. Always on.</p></div>
+  <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+</div>
+
+<div class="pref-row">
+  <div class="pref-info"><h3>Preferences</h3><p>Remembers your dark/light theme choice and display settings.</p></div>
+  <label class="switch"><input type="checkbox" id="pref-preferences" checked><span class="slider"></span></label>
+</div>
+
+<div class="pref-row">
+  <div class="pref-info"><h3>Analytics</h3><p>Helps us understand which features are used most. Off by default.</p></div>
+  <label class="switch"><input type="checkbox" id="pref-analytics"><span class="slider"></span></label>
+</div>
+
+<div class="pref-row">
+  <div class="pref-info"><h3>AI-assisted features</h3><p>Allow features like CapMax's recommendation engine to send relevant data to our AI provider when you use them. Turning this off disables those specific features.</p></div>
+  <label class="switch"><input type="checkbox" id="pref-ai" checked><span class="slider"></span></label>
+</div>
+
+<div class="actions">
+  <button class="primary" id="save-btn">Save preferences</button>
+  <button id="clear-btn">Clear all local data for this site</button>
+</div>
+<div id="saved-msg">Saved.</div>
+</main>
+<footer>
+<nav>
+<a href="../terms/">Terms</a>
+<a href="../privacy/">Privacy</a>
+<a href="../cookies/">Cookies</a>
+<a href="../disclaimer/">Disclaimer</a>
+<a href="../acceptable-use/">Acceptable Use</a>
+<a href="../ai-consent/">AI Consent</a>
+<a href="../dpa/">DPA</a>
+<a href="../data-processing-notice/">Data Processing Notice</a>
+<a href="../subscription-terms/">Subscription Terms</a>
+<a href="../consent-release/">Consent &amp; Release</a>
+</nav>
+<small>&copy; 2026 FM Finance Suite. All rights reserved.</small>
+</footer>
+<script>
+var KEY = 'fm_privacy_prefs';
+function loadPrefs(){
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if ('preferences' in saved) document.getElementById('pref-preferences').checked = saved.preferences;
+    if ('analytics' in saved) document.getElementById('pref-analytics').checked = saved.analytics;
+    if ('ai' in saved) document.getElementById('pref-ai').checked = saved.ai;
+  } catch(e) {}
+}
+function savePrefs(){
+  var prefs = {
+    preferences: document.getElementById('pref-preferences').checked,
+    analytics: document.getElementById('pref-analytics').checked,
+    ai: document.getElementById('pref-ai').checked,
+    updatedAt: new Date().toISOString()
+  };
+  localStorage.setItem(KEY, JSON.stringify(prefs));
+  var msg = document.getElementById('saved-msg');
+  msg.style.display = 'block';
+  setTimeout(function(){ msg.style.display = 'none'; }, 2500);
+}
+function clearAll(){
+  if (confirm('This clears all locally stored preferences and cached data for this site in this browser, including your saved theme choice. It does not delete your account or server-side data. Continue?')) {
+    localStorage.clear();
+    sessionStorage.clear();
+    alert('Local data cleared for this site.');
+    loadPrefs();
+  }
+}
+document.getElementById('save-btn').addEventListener('click', savePrefs);
+document.getElementById('clear-btn').addEventListener('click', clearAll);
+loadPrefs();
+</script>
+</body>
+</html>

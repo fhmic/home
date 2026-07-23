@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){try{var t=localStorage.getItem('fm_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>Receivables Tracker — FM Finance Suite</title>
@@ -24,6 +26,8 @@
   --mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif;
   --sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
 }
+html[data-theme="light"]{--n:#f7f9fc;--n2:#ffffff;--n3:#eef2f7;--n4:#e2e8f0;--t:#00876b;--t2:#007a63;--td:rgba(0,135,107,.12);--tg:rgba(0,135,107,.05);--am:#b45309;--rd:#b91c1c;--gr:#15803d;--bl:#1d4ed8;--pu:#6d28d9;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--b:rgba(0,0,0,.08);--b2:rgba(0,0,0,.14);--sf:rgba(0,0,0,.03);--sf2:rgba(0,0,0,.06);--sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);}
+
 html{font-size:15px}
 body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6}
 
@@ -333,6 +337,8 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 </style>
 </head>
 <body>
+<button id="fm-theme-toggle" onclick="fmToggleTheme()" aria-label="Toggle light/dark theme" style="position:fixed;top:14px;right:14px;z-index:99998;width:38px;height:38px;border-radius:50%;border:1px solid rgba(128,128,128,.35);background:rgba(120,120,120,.15);backdrop-filter:blur(6px);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:inherit">🌙</button>
+
 <div id="app">
   <div id="topbar">
     <div class="logo"><div class="lm">FM</div>FM <span class="la">&nbsp;Receivables</span>
@@ -2545,7 +2551,18 @@ async function generateAssumptionLog() {
   toast('Assumption log generated.');
 }
 
+const PAL_DARK = { navy:[10,22,40], navy3:[15,31,61], teal:[0,201,167], tx:[232,237,245], tx2:[143,163,191], tx3:[74,96,128], mutedOff:[200,210,230], divider:[255,255,255], dividerA:15 };
+// Light-mode palette for PDF exports, used when the user has the light/
+// high-contrast UI mode on — printed reports stay legible either way.
+const PAL_LIGHT = { navy:[238,242,247], navy3:[247,249,252], teal:[0,135,107], tx:[15,23,42], tx2:[71,85,105], tx3:[148,163,184], mutedOff:[100,116,139], divider:[15,23,42], dividerA:20 };
+function fmCurrentReportPalette(){
+  try{ return document.documentElement.getAttribute('data-theme')==='light' ? PAL_LIGHT : PAL_DARK; }
+  catch(e){ return PAL_DARK; }
+}
+let PAL = PAL_DARK;
+
 async function downloadAssumptionPDF() {
+  PAL = fmCurrentReportPalette();
   if(!lastAssumptionLog) { toast('Generate the log first.','err'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
@@ -2555,31 +2572,31 @@ async function downloadAssumptionPDF() {
   const baseECL = sensData.find(s=>s.shift===0)?.ecl || totalECL;
 
   
-  doc.setFillColor(10,22,40); doc.rect(0,0,W,60,'F');
-  doc.setFillColor(0,201,167); doc.rect(0,0,6,60,'F');
-  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(232,237,245);
+  doc.setFillColor(...PAL.navy); doc.rect(0,0,W,60,'F');
+  doc.setFillColor(...PAL.teal); doc.rect(0,0,6,60,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(...PAL.tx);
   doc.text('FM Finance Suite — IFRS 9 ECL Model',22,25);
-  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(143,163,191);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(...PAL.tx2);
   doc.text('Assumption Log & Model Documentation',22,40);
-  doc.setFontSize(9); doc.setTextColor(74,96,128);
+  doc.setFontSize(9); doc.setTextColor(...PAL.tx3);
   doc.text(`Generated: ${computedAt.toLocaleString('en-GB')} | Prepared by: ${userName}`, 22, 54);
 
   let y = 78;
 
   const sectionHeader = (title) => {
-    doc.setFillColor(15,31,61); doc.rect(20,y,W-40,18,'F');
-    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(0,201,167);
+    doc.setFillColor(...PAL.navy3); doc.rect(20,y,W-40,18,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...PAL.teal);
     doc.text(title, 26, y+12); y += 26;
   };
 
   const row = (label, value, highlight=false) => {
     if(y > 760) { doc.addPage(); y = 30; }
-    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(143,163,191);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...PAL.tx2);
     doc.text(label, 26, y);
     doc.setFont('helvetica', highlight?'bold':'normal');
-    doc.setTextColor(highlight?0:200, highlight?201:210, highlight?167:230);
+    doc.setTextColor(...(highlight?PAL.teal:PAL.mutedOff));
     doc.text(String(value), W-26, y, { align:'right' });
-    doc.setDrawColor(255,255,255,15); doc.line(26, y+4, W-26, y+4);
+    doc.setDrawColor(...PAL.divider,PAL.dividerA); doc.line(26, y+4, W-26, y+4);
     y += 16;
   };
 
@@ -2617,7 +2634,7 @@ async function downloadAssumptionPDF() {
   y += 8;
 
   sectionHeader('5. SENSITIVITY ANALYSIS — IFRS 7 §35G');
-  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(143,163,191);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...PAL.tx2);
   doc.text('Impact of uniform ±1%, ±2%, ±5% shift in all provision matrix rates on total ECL:', 26, y); y += 14;
 
   doc.autoTable({
@@ -2648,14 +2665,14 @@ async function downloadAssumptionPDF() {
 
   
   if(y > 700) { doc.addPage(); y = 30; }
-  doc.setFillColor(10,22,40); doc.rect(20,y,W-40,90,'F');
-  doc.setFillColor(0,201,167); doc.rect(20,y,3,90,'F');
-  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(0,201,167);
+  doc.setFillColor(...PAL.navy); doc.rect(20,y,W-40,90,'F');
+  doc.setFillColor(...PAL.teal); doc.rect(20,y,3,90,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...PAL.teal);
   doc.text('MANAGEMENT SIGN-OFF', 30, y+14);
-  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(143,163,191);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...PAL.tx2);
   doc.text('Prepared by: ' + userName, 30, y+28);
   doc.text('Date: ' + computedAt.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}), 30, y+40);
-  doc.setTextColor(74,96,128);
+  doc.setTextColor(...PAL.tx3);
   doc.text('Approved by: _________________________', 30, y+58);
   doc.text('Date: _________________________', 30, y+70);
   doc.text('Designation: _________________________', W/2, y+58);
@@ -2665,7 +2682,7 @@ async function downloadAssumptionPDF() {
   const pageCount = doc.internal.getNumberOfPages();
   for(let i=1; i<=pageCount; i++) {
     doc.setPage(i);
-    doc.setFont('helvetica','italic'); doc.setFontSize(7); doc.setTextColor(74,96,128);
+    doc.setFont('helvetica','italic'); doc.setFontSize(7); doc.setTextColor(...PAL.tx3);
     doc.text('FM Finance Suite — IFRS 9 ECL Model Documentation | Developed by Michael Felix Happy', W/2, doc.internal.pageSize.getHeight()-12, {align:'center'});
     doc.text(`Page ${i} of ${pageCount}`, W-20, doc.internal.pageSize.getHeight()-12, {align:'right'});
   }
@@ -2804,16 +2821,17 @@ async function exportAgeingXLSX() {
   XLSX.writeFile(wb, `FM-Ageing-${ts()}.xlsx`); toast('Excel export downloaded.');
 }
 async function exportAgeingPDF() {
+  PAL = fmCurrentReportPalette();
   if (!ageingCache) { await loadAgeing(); }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'landscape', unit:'pt', format:'a4' });
   const W = doc.internal.pageSize.getWidth();
   const N = n => Number(n||0).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
-  doc.setFillColor(10,22,40); doc.rect(0,0,W,48,'F');
-  doc.setFillColor(0,201,167); doc.rect(0,0,6,48,'F');
-  doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(232,237,245);
+  doc.setFillColor(...PAL.navy); doc.rect(0,0,W,48,'F');
+  doc.setFillColor(...PAL.teal); doc.rect(0,0,6,48,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(...PAL.tx);
   doc.text('EIS Receivables Manager',22,30);
-  doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(143,163,191);
+  doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(...PAL.tx2);
   doc.text('Receivables Ageing Report',22,43);
   doc.setFontSize(9); doc.text(`Generated: ${ts()}`,W-20,30,{align:'right'});
   const COLS=['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'];
@@ -2821,7 +2839,7 @@ async function exportAgeingPDF() {
   const grandTotal=Object.values(totals).reduce((s,v)=>s+v,0);
   const body=[...ageingCache.report.map(r=>[r.debtor.name,...COLS.map(k=>(r.ageing[k]||0)>0?'₦'+N(r.ageing[k]):'—'),'₦'+N(r.totalOutstanding)]),['TOTAL',...COLS.map(k=>'₦'+N(totals[k])),'₦'+N(grandTotal)]];
   doc.autoTable({ startY:64, margin:{left:20,right:20}, head:[['Debtor',...Object.values(BUCKET_LABELS),'Total Outstanding']], body, headStyles:{fillColor:[10,22,40],textColor:[0,201,167],fontSize:8,fontStyle:'bold'}, bodyStyles:{fontSize:8,textColor:[200,210,230]}, alternateRowStyles:{fillColor:[15,31,61]}, styles:{fillColor:[10,22,40],lineColor:[255,255,255,15],lineWidth:0.3}, columnStyles:{0:{cellWidth:80},...COLS.reduce((a,_,i)=>({...a,[i+1]:{halign:'right',cellWidth:60}}),{}),7:{halign:'right',cellWidth:70,fontStyle:'bold'}}, didParseCell:c=>{ if(c.row.index===c.table.body.length-1){c.cell.styles.fontStyle='bold';c.cell.styles.textColor=[0,201,167];} } });
-  doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(74,96,128);
+  doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(...PAL.tx3);
   doc.text('Developed by Michael Felix Happy · EIS Finance Suite', W/2, doc.internal.pageSize.getHeight()-12, {align:'center'});
   doc.save(`FM-Ageing-${ts()}.pdf`); toast('PDF export downloaded.');
 }
@@ -2863,6 +2881,42 @@ window.addEventListener('load', () => {
 });
 
   
+</script>
+<footer class="fm-legal-footer" style="border-top:1px solid rgba(255,255,255,.08);padding:1.3rem 1.4rem;text-align:center;margin-top:2rem;font-family:'IBM Plex Mono',monospace">
+  <nav style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;margin-bottom:.55rem">
+    <a href="/home/legal/terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Terms</a>
+    <a href="/home/legal/privacy/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy</a>
+    <a href="/home/legal/cookies/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Cookies</a>
+    <a href="/home/legal/disclaimer/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Disclaimer</a>
+    <a href="/home/legal/acceptable-use/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Acceptable Use</a>
+    <a href="/home/legal/ai-consent/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">AI Consent</a>
+    <a href="/home/legal/dpa/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">DPA</a>
+    <a href="/home/legal/data-processing-notice/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Data Processing Notice</a>
+    <a href="/home/legal/subscription-terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Subscription Terms</a>
+    <a href="/home/legal/consent-release/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Consent &amp; Release</a>
+    <a href="/home/legal/privacy-preferences/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy Preferences</a>
+  </nav>
+  <small style="color:#4a6080;font-size:.7rem">&copy; 2026 FM Finance Suite. All rights reserved.</small>
+</footer>
+<script>
+function fmApplyThemeIcon(){
+  var btn = document.getElementById('fm-theme-toggle');
+  if(!btn) return;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '☀️' : '🌙';
+}
+function fmToggleTheme(){
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if(isLight){
+    document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('fm_theme','dark'); }catch(e){}
+  } else {
+    document.documentElement.setAttribute('data-theme','light');
+    try{ localStorage.setItem('fm_theme','light'); }catch(e){}
+  }
+  fmApplyThemeIcon();
+}
+fmApplyThemeIcon();
 </script>
 </body>
 </html>

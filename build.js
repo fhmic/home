@@ -45,6 +45,18 @@ const PAGES = [
   { name: 'receivables', dir: 'receivables' },
   { name: 'recon', dir: 'recon' },
   { name: 'treasury', dir: 'treasury' },
+  { name: 'legal-terms', dir: 'legal/terms' },
+  { name: 'legal-privacy', dir: 'legal/privacy' },
+  { name: 'legal-cookies', dir: 'legal/cookies' },
+  { name: 'legal-disclaimer', dir: 'legal/disclaimer' },
+  { name: 'legal-acceptable-use', dir: 'legal/acceptable-use' },
+  { name: 'legal-ai-consent', dir: 'legal/ai-consent' },
+  { name: 'legal-dpa', dir: 'legal/dpa' },
+  { name: 'legal-data-processing-notice', dir: 'legal/data-processing-notice' },
+  { name: 'legal-subscription-terms', dir: 'legal/subscription-terms' },
+  { name: 'legal-consent-release', dir: 'legal/consent-release' },
+  { name: 'legal-privacy-preferences', dir: 'legal/privacy-preferences' },
+  { name: 'legal-re-accept', dir: 'legal/re-accept' },
 ];
 
 const PASSTHROUGH_FILES = ['img.jpg', 'pix.jpg'];

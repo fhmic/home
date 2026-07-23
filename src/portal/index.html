@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){try{var t=localStorage.getItem('fm_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>FM Resources Portal</title>
@@ -19,6 +21,8 @@
   --r:10px;--mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif;
   --sh:0 4px 24px rgba(0,0,0,.5),0 12px 48px rgba(0,0,0,.3);
 }
+html[data-theme="light"]{--n:#f7f9fc;--n2:#ffffff;--n3:#eef2f7;--n4:#e2e8f0;--t:#00876b;--t2:#007a63;--am:#b45309;--rd:#b91c1c;--gr:#15803d;--pu:#6d28d9;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--b:rgba(0,0,0,.08);--b2:rgba(0,0,0,.14);--sf:rgba(0,0,0,.03);--sf2:rgba(0,0,0,.06);--sh:0 4px 24px rgba(0,0,0,.10),0 12px 48px rgba(0,0,0,.08);}
+
 html{font-size:15px}
 body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6}
 .spin{width:14px;height:14px;border:2px solid rgba(10,22,40,.3);border-top-color:var(--n);border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
@@ -276,6 +280,8 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 </style>
 </head>
 <body>
+<button id="fm-theme-toggle" onclick="fmToggleTheme()" aria-label="Toggle light/dark theme" style="position:fixed;top:14px;right:14px;z-index:99998;width:38px;height:38px;border-radius:50%;border:1px solid rgba(128,128,128,.35);background:rgba(120,120,120,.15);backdrop-filter:blur(6px);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:inherit">🌙</button>
+
 
 <!-- Home link visible on login screen -->
 <a href="../" class="home-link" id="home-link">
@@ -370,6 +376,10 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
     <div class="ac-field"><label>Other Names</label><input class="ac-inp" type="text" id="su-other" placeholder="e.g. Felix Happy"></div>
     <div class="ac-field"><label>Email Address</label><input class="ac-inp" type="email" id="su-email" placeholder="e.g. felix@company.com"></div>
     <div class="ac-field"><label>Phone Number</label><input class="ac-inp" type="tel" id="su-phone" placeholder="e.g. 08012345678"></div>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin:2px 0 12px;font-size:12px;color:var(--tx2);line-height:1.5">
+      <input type="checkbox" id="su-consent" style="margin-top:3px">
+      <label for="su-consent">I agree to the <a href="/home/legal/terms/" target="_blank" style="color:var(--t)">Terms of Service</a>, <a href="/home/legal/privacy/" target="_blank" style="color:var(--t)">Privacy Policy</a>, and <a href="/home/legal/ai-consent/" target="_blank" style="color:var(--t)">AI Consent</a> notice.</label>
+    </div>
     <button class="ac-btn teal" id="su-btn"><span class="bt">Sign up →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Sending...</span></button>
     <button class="ac-btn ghost" id="su-back" type="button">← Back</button>
     <div class="ac-back">Already have access? <span id="su-to-login">Sign in</span></div>
@@ -417,6 +427,10 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
       </div>
       <div class="ac-field"><label>Description (optional)</label><input class="ac-inp" type="text" id="cor-desc" placeholder="What your company does"></div>
     </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin:2px 0 12px;font-size:12px;color:var(--tx2);line-height:1.5">
+      <input type="checkbox" id="cor-consent" style="margin-top:3px">
+      <label for="cor-consent">I agree to the <a href="/home/legal/terms/" target="_blank" style="color:var(--pu)">Terms of Service</a>, <a href="/home/legal/privacy/" target="_blank" style="color:var(--pu)">Privacy Policy</a>, <a href="/home/legal/dpa/" target="_blank" style="color:var(--pu)">Data Processing Agreement</a>, and <a href="/home/legal/ai-consent/" target="_blank" style="color:var(--pu)">AI Consent</a> notice on behalf of this organisation.</label>
+    </div>
     <button class="ac-btn teal" id="cor-btn" style="background:var(--pu)"><span class="bt">Create organisation →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Creating...</span></button>
     <button class="ac-btn ghost" id="cor-back" type="button">← Back</button>
   </div>
@@ -433,6 +447,10 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
     <div class="ac-field"><label>Other Names</label><input class="ac-inp" type="text" id="cj-other" placeholder="e.g. Felix Happy"></div>
     <div class="ac-field"><label>Work Email</label><input class="ac-inp" type="email" id="cj-email" disabled></div>
     <div class="ac-field"><label>Phone Number</label><input class="ac-inp" type="tel" id="cj-phone" placeholder="e.g. 08012345678"></div>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin:2px 0 12px;font-size:12px;color:var(--tx2);line-height:1.5">
+      <input type="checkbox" id="cj-consent" style="margin-top:3px">
+      <label for="cj-consent">I agree to the <a href="/home/legal/terms/" target="_blank" style="color:var(--pu)">Terms of Service</a>, <a href="/home/legal/privacy/" target="_blank" style="color:var(--pu)">Privacy Policy</a>, and <a href="/home/legal/ai-consent/" target="_blank" style="color:var(--pu)">AI Consent</a> notice.</label>
+    </div>
     <button class="ac-btn teal" id="cj-btn" style="background:var(--pu)"><span class="bt">Request to join →</span><span class="bl" style="display:none;align-items:center;gap:8px"><span class="spin"></span>Sending...</span></button>
     <button class="ac-btn ghost" id="cj-back" type="button">← Back</button>
   </div>
@@ -835,9 +853,11 @@ document.getElementById('cor-btn').addEventListener('click',async function(){
     orgDescription:document.getElementById('cor-desc').value.trim()
   };
   if(!body.surname||!body.otherNames||!body.phone||!body.orgName){showErr('cor-err','Please fill in all required fields.');return;}
+  if(!document.getElementById('cor-consent').checked){showErr('cor-err','Please accept the Terms, Privacy Policy, DPA, and AI Consent notice to continue.');return;}
   var btn=this;btnLoad(btn,true);
   try{
     var d=await apiFetch('/auth/register-org',{method:'POST',body:JSON.stringify(body)});
+    try{localStorage.setItem('fm_terms_accepted_version','2026-07-23');localStorage.setItem('fm_terms_accepted_at',new Date().toISOString());}catch(e){}
     showOk('cor-ok',d.message);
   }catch(e){showErr('cor-err',e.message);}
   finally{btnLoad(btn,false);}
@@ -855,9 +875,11 @@ document.getElementById('cj-btn').addEventListener('click',async function(){
     phone:document.getElementById('cj-phone').value.trim()
   };
   if(!body.surname||!body.otherNames||!body.phone){showErr('cj-err','Please fill in all required fields.');return;}
+  if(!document.getElementById('cj-consent').checked){showErr('cj-err','Please accept the Terms, Privacy Policy, and AI Consent notice to continue.');return;}
   var btn=this;btnLoad(btn,true);
   try{
     var d=await apiFetch('/auth/join-org',{method:'POST',body:JSON.stringify(body)});
+    try{localStorage.setItem('fm_terms_accepted_version','2026-07-23');localStorage.setItem('fm_terms_accepted_at',new Date().toISOString());}catch(e){}
     showOk('cj-ok',d.message);
   }catch(e){showErr('cj-err',e.message);}
   finally{btnLoad(btn,false);}
@@ -1079,9 +1101,11 @@ document.getElementById('su-btn').addEventListener('click',async function(){
   var eml=document.getElementById('su-email').value.trim();
   var ph=document.getElementById('su-phone').value.trim();
   if(!sur||!oth||!eml||!ph){showErr('su-err','Please fill in all fields.');return;}
+  if(!document.getElementById('su-consent').checked){showErr('su-err','Please accept the Terms, Privacy Policy, and AI Consent notice to continue.');return;}
   var btn=this;btnLoad(btn,true);
   try{
     var d=await apiFetch('/auth/signup',{method:'POST',body:JSON.stringify({surname:sur,otherNames:oth,email:eml,phone:ph})});
+    try{localStorage.setItem('fm_terms_accepted_version','2026-07-23');localStorage.setItem('fm_terms_accepted_at',new Date().toISOString());}catch(e){}
     showOk('su-ok',d.message);
     ['su-surname','su-other','su-email','su-phone'].forEach(function(id){document.getElementById(id).value='';});
   }catch(e){showErr('su-err',e.message);}
@@ -1470,6 +1494,42 @@ document.getElementById('tm-submit').addEventListener('click',async function(){
   }catch(e){errEl.textContent=e.message;errEl.className='um-err show';}
   finally{btn.disabled=false;btn.textContent='Send Invitation';}
 });
+</script>
+<footer class="fm-legal-footer" style="border-top:1px solid rgba(255,255,255,.08);padding:1.3rem 1.4rem;text-align:center;margin-top:2rem;font-family:'IBM Plex Mono',monospace">
+  <nav style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;margin-bottom:.55rem">
+    <a href="/home/legal/terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Terms</a>
+    <a href="/home/legal/privacy/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy</a>
+    <a href="/home/legal/cookies/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Cookies</a>
+    <a href="/home/legal/disclaimer/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Disclaimer</a>
+    <a href="/home/legal/acceptable-use/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Acceptable Use</a>
+    <a href="/home/legal/ai-consent/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">AI Consent</a>
+    <a href="/home/legal/dpa/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">DPA</a>
+    <a href="/home/legal/data-processing-notice/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Data Processing Notice</a>
+    <a href="/home/legal/subscription-terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Subscription Terms</a>
+    <a href="/home/legal/consent-release/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Consent &amp; Release</a>
+    <a href="/home/legal/privacy-preferences/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy Preferences</a>
+  </nav>
+  <small style="color:#4a6080;font-size:.7rem">&copy; 2026 FM Finance Suite. All rights reserved.</small>
+</footer>
+<script>
+function fmApplyThemeIcon(){
+  var btn = document.getElementById('fm-theme-toggle');
+  if(!btn) return;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '☀️' : '🌙';
+}
+function fmToggleTheme(){
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if(isLight){
+    document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('fm_theme','dark'); }catch(e){}
+  } else {
+    document.documentElement.setAttribute('data-theme','light');
+    try{ localStorage.setItem('fm_theme','light'); }catch(e){}
+  }
+  fmApplyThemeIcon();
+}
+fmApplyThemeIcon();
 </script>
 </body>
 </html>
