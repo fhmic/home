@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FM Markets — Global Intelligence | FM Finance Suite</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--n:#060e1e;--n2:#0a1628;--n3:#0f1f3d;--n4:#162747;--n5:#1c3057;--t:#00c9a7;--t2:#00a98e;--am:#f5a623;--rd:#e05252;--gr:#22c55e;--bl:#63b3ed;--pu:#a78bfa;--tx:#e8edf5;--tx2:#8fa3bf;--tx3:#4a6080;--tx4:#2a3f5f;--b:rgba(255,255,255,.06);--b2:rgba(255,255,255,.11);--b3:rgba(255,255,255,.18);--sf:rgba(255,255,255,.03);--sf2:rgba(255,255,255,.07);--mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;overflow-x:hidden;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(0,201,167,.04) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 80% 80%,rgba(99,179,237,.03) 0%,transparent 60%);pointer-events:none;z-index:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:absolute;top:-100px;left:16px;background:var(--t);color:var(--n);padding:8px 16px;border-radius:8px;font-weight:700;font-size:13px;z-index:9999;text-decoration:none;transition:top .2s}
+.skip-link:focus{top:8px}
+#_tw{background:var(--n2);border-bottom:1px solid var(--b2);height:36px;overflow:hidden;position:relative;display:flex;align-items:center;border-top:2px solid var(--t)}
+#_tt{display:flex;align-items:center;white-space:nowrap;animation:_tk 90s linear infinite;gap:0}
+#_tt:hover{animation-play-state:paused}
+@keyframes _tk{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+._ti{display:inline-flex;align-items:center;gap:6px;padding:0 24px;font-family:var(--mo);font-size:11px;border-right:1px solid var(--b);cursor:pointer}
+._ti:hover{background:var(--sf2)}
+._tn{color:var(--tx2);letter-spacing:.04em}
+._tv{color:var(--tx);font-weight:500}
+._tc.u{color:var(--gr)}._tc.d{color:var(--rd)}
+._td{width:5px;height:5px;border-radius:50%}
+._td.u{background:var(--gr);box-shadow:0 0 5px var(--gr)}
+._td.d{background:var(--rd);box-shadow:0 0 5px var(--rd)}
+#_nb{background:rgba(10,22,40,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--b2);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 1.75rem;position:sticky;top:0;z-index:200}
+._nl{font-family:var(--di);font-weight:800;font-size:17px;letter-spacing:-.04em;display:flex;align-items:center;gap:9px;color:var(--tx);text-decoration:none}
+._nm{width:30px;height:30px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--n);font-weight:800}
+._nc{display:flex;align-items:center;gap:2px}
+._nmi{padding:8px 14px;font-size:12px;font-family:var(--mo);color:var(--tx3);cursor:pointer;border-radius:8px;transition:all .2s;border:none;background:none;letter-spacing:.02em;min-height:36px}
+._nmi:hover{background:var(--sf2);color:var(--tx)}
+._nmi.on{background:var(--td,rgba(0,201,167,.13));color:var(--t);font-weight:600}
+._nr{display:flex;align-items:center;gap:7px}
+._nb2{display:flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--b2);border-radius:8px;padding:5px 11px;font-size:11px;font-family:var(--mo);color:var(--tx3);cursor:pointer;transition:all .2s;text-decoration:none;min-height:36px}
+._nb2:hover{background:var(--sf2);color:var(--tx)}
+._uc{display:flex;align-items:center;gap:5px;background:var(--sf);border:1px solid var(--b2);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--tx2);font-family:var(--mo)}
+._ld{width:6px;height:6px;border-radius:50%;background:var(--gr);animation:_pl 2s ease infinite}
+@keyframes _pl{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+._pg{display:none;position:relative;z-index:1;padding:1.5rem 2rem 3rem}
+._pg.on{display:block;animation:_fi .3s ease both}
+@keyframes _fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+._ph{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem}
+._pe{font-size:10px;font-family:var(--mo);color:var(--t);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+._pt{font-family:var(--di);font-size:26px;font-weight:800;letter-spacing:-.04em;line-height:1}
+._ps{font-size:11px;color:var(--tx3);font-family:var(--mo);margin-top:4px}
+._sh{font-family:var(--di);font-size:15px;font-weight:700;letter-spacing:-.03em;display:flex;align-items:center;gap:8px;margin-bottom:1rem}
+._sh::before{content:'';display:block;width:3px;height:18px;border-radius:2px}
+._sh.gl::before{background:var(--bl)}
+._sh.af::before{background:var(--am)}
+._sh.fx::before{background:var(--pu)}
+._sh.cr::before{background:var(--t)}
+._sh.ng::before{background:var(--gr)}
+._sh.sp::before{background:var(--am)}
+._sb{font-size:9px;font-family:var(--mo);padding:2px 8px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+._sb.lv{background:rgba(34,197,94,.15);color:var(--gr);border:1px solid rgba(34,197,94,.3)}
+._sb.dl{background:rgba(245,166,35,.15);color:var(--am);border:1px solid rgba(245,166,35,.3)}
+._sb.of{background:rgba(0,201,167,.15);color:var(--t);border:1px solid rgba(0,201,167,.3)}
+._cg{display:grid;gap:10px}
+._g2{grid-template-columns:repeat(2,1fr)}
+._g3{grid-template-columns:repeat(3,1fr)}
+._g4{grid-template-columns:repeat(4,1fr)}
+._g5{grid-template-columns:repeat(5,1fr)}
+._ga{grid-template-columns:repeat(auto-fit,minmax(155px,1fr))}
+._mc{background:var(--n2);border:1px solid var(--b2);border-radius:12px;padding:13px 15px;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+._mc:hover{border-color:var(--b3);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+._mc:active{transform:scale(.98)}
+._mc.u:hover{background:rgba(34,197,94,.04);border-color:rgba(34,197,94,.25)}
+._mc.d:hover{background:rgba(224,82,82,.04);border-color:rgba(224,82,82,.25)}
+._ml{font-size:9px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+._mn{font-size:11px;color:var(--tx2);margin-bottom:7px}
+._mv{font-family:var(--di);font-size:21px;font-weight:700;letter-spacing:-.03em;line-height:1}
+._mch{display:flex;align-items:center;gap:5px;margin-top:4px}
+._mp{font-family:var(--mo);font-size:11px;font-weight:600}
+._ma{font-family:var(--mo);font-size:10px;color:var(--tx3)}
+._mmi{height:34px;margin-top:7px;position:relative}
+._mmi canvas{position:absolute;inset:0}
+._mc.u ._mp{color:var(--gr)}._mc.d ._mp{color:var(--rd)}
+._mf{font-size:15px;position:absolute;top:11px;right:11px;opacity:.55}
+._twp{overflow-x:auto;border-radius:10px;border:1px solid var(--b);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--n3);color:var(--tx3);font-family:var(--mo);font-size:9px;letter-spacing:.07em;text-transform:uppercase;padding:9px 13px;text-align:left;border-bottom:1px solid var(--b);white-space:nowrap}
+thead th:not(:first-child){text-align:right}
+tbody td{padding:8px 13px;border-bottom:1px solid var(--b);vertical-align:middle}
+tbody td:not(:first-child){text-align:right;font-family:var(--mo);font-size:11px}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--sf);cursor:pointer}
+._tn2{font-weight:600;font-size:12px;color:var(--tx)}
+._ts2{font-size:10px;color:var(--tx3);margin-top:1px}
+._cp{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600}
+._cp.u{background:rgba(34,197,94,.12);color:var(--gr)}
+._cp.d{background:rgba(224,82,82,.12);color:var(--rd)}
+._sg{display:inline-flex;align-items:center;padding:2px 8px;border-radius:8px;font-size:9px;font-weight:700;font-family:var(--mo);white-space:nowrap}
+._sg.buy{background:rgba(34,197,94,.15);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
+._sg.sell{background:rgba(224,82,82,.15);color:var(--rd);border:1px solid rgba(224,82,82,.2)}
+._sg.neutral{background:rgba(255,255,255,.07);color:var(--tx3);border:1px solid var(--b)}
+._sg.strong-buy{background:rgba(0,201,167,.2);color:var(--t);border:1px solid rgba(0,201,167,.3)}
+._sg.strong-sell{background:rgba(153,27,27,.2);color:#fca5a5;border:1px solid rgba(153,27,27,.3)}
+._vb{display:inline-block;height:3px;border-radius:2px;background:var(--t);opacity:.5;vertical-align:middle;margin-left:4px}
+._pan{background:var(--n2);border:1px solid var(--b2);border-radius:12px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+._ph2{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+._pt2{font-family:var(--di);font-size:14px;font-weight:600}
+._ps2{font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:2px}
+._fxc{background:var(--n2);border:1px solid var(--b2);border-radius:11px;padding:13px 15px;transition:all .22s;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:11px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+._fxc:hover{border-color:var(--b3);background:var(--n3)}
+._fp{font-family:var(--mo);font-size:13px;font-weight:600;color:var(--tx);letter-spacing:.04em}
+._fd{font-size:10px;color:var(--tx3);margin-top:2px}
+._fbw{height:4px;background:var(--sf2);border-radius:2px;margin-top:6px;overflow:hidden}
+._fb{height:100%;border-radius:2px;transition:width .6s ease}
+._fv{font-family:var(--di);font-size:17px;font-weight:700;color:var(--tx);text-align:right}
+._fc{font-family:var(--mo);font-size:11px;text-align:right;margin-top:2px}
+._fc.u{color:var(--gr)}._fc.d{color:var(--rd)}
+._ff{font-size:19px}
+._cc{background:var(--n2);border:1px solid var(--b2);border-radius:12px;padding:13px 15px;transition:all .22s;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+._cc:hover{border-color:var(--b3);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+._cc:active{transform:scale(.98)}
+._ci{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:7px;font-weight:700;font-family:var(--mo)}
+._csy{font-family:var(--mo);font-size:9px;color:var(--tx3);letter-spacing:.08em;margin-bottom:2px;text-transform:uppercase}
+._cna{font-size:11px;color:var(--tx2);margin-bottom:5px}
+._cpr{font-family:var(--di);font-size:17px;font-weight:700;color:var(--tx);letter-spacing:-.02em}
+._cch{font-family:var(--mo);font-size:11px;font-weight:600;margin-top:3px}
+._cch.u{color:var(--gr)}._cch.d{color:var(--rd)}
+._cmc{font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:3px}
+._cmi{height:38px;margin-top:7px;position:relative}
+._cmi canvas{position:absolute;inset:0}
+._ngc{background:var(--n2);border:1px solid var(--b2);border-radius:12px;padding:15px 17px;position:relative;overflow:hidden;transition:all .22s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+._ngc:hover{border-color:var(--b3)}
+._ngc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px 0 0 2px}
+._ngc.mpr::before{background:var(--t)}
+._ngc.tbl::before{background:var(--am)}
+._ngc.mm::before{background:var(--bl)}
+._ngc.crr::before{background:var(--pu)}
+._ngc.inf::before{background:var(--rd)}
+._ngc.fxr::before{background:var(--gr)}
+._ngl{font-size:9px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;padding-left:7px}
+._ngt{font-size:12px;color:var(--tx2);margin-bottom:9px;padding-left:7px;line-height:1.3}
+._ngr{font-family:var(--di);font-size:30px;font-weight:800;letter-spacing:-.04em;padding-left:7px}
+._ngu{font-size:13px;font-weight:500;color:var(--tx2);margin-left:2px}
+._ngm{font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:5px;padding-left:7px;line-height:1.4}
+._ngs{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-family:var(--mo);color:var(--tx4);margin-top:3px;padding-left:7px;text-decoration:none;transition:color .2s}
+._ngs:hover{color:var(--tx2)}
+._ngc.mpr ._ngr{color:var(--t)}._ngc.tbl ._ngr{color:var(--am)}._ngc.mm ._ngr{color:var(--bl)}._ngc.crr ._ngr{color:var(--pu)}._ngc.inf ._ngr{color:var(--rd)}._ngc.fxr ._ngr{color:var(--gr)}
+._hg{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
+._hc{border-radius:5px;padding:8px 6px;text-align:center;cursor:pointer;transition:all .18s;position:relative}
+._hc:hover{transform:scale(1.06);z-index:2}
+._hs{font-family:var(--mo);font-size:9px;font-weight:600;display:block;margin-bottom:2px;text-transform:uppercase}
+._hv{font-family:var(--mo);font-size:10px;font-weight:700;display:block}
+.h5p{background:rgba(34,197,94,.35);color:#16a34a}.h2p{background:rgba(34,197,94,.2);color:#22c55e}.h1p{background:rgba(34,197,94,.1);color:#4ade80}.h0{background:rgba(255,255,255,.05);color:var(--tx3)}.h1n{background:rgba(224,82,82,.1);color:#f87171}.h2n{background:rgba(224,82,82,.2);color:#e05252}.h5n{background:rgba(224,82,82,.35);color:#c43e3e}
+._sph{display:grid;gap:4px}
+._spc{border-radius:5px;padding:7px 6px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+._spc:hover{transform:scale(1.03);z-index:3;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+._sps{font-family:var(--mo);font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;line-height:1.2}
+._spv{font-family:var(--mo);font-size:9px;font-weight:600;margin-top:2px;line-height:1}
+.sp5p{background:rgba(34,197,94,.4)}.sp2p{background:rgba(34,197,94,.25)}.sp1p{background:rgba(34,197,94,.12)}.sp0{background:rgba(255,255,255,.06)}.sp1n{background:rgba(224,82,82,.12)}.sp2n{background:rgba(224,82,82,.25)}.sp5n{background:rgba(224,82,82,.4)}
+._spsec{margin-bottom:.75rem}
+._sphdr{font-size:10px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;padding:3px 0;border-bottom:1px solid var(--b)}
+._modal{display:none;position:fixed;inset:0;background:rgba(5,12,24,.8);z-index:300;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+._modal.on{display:flex}
+._mbox{background:var(--n2);border:1px solid var(--b2);border-radius:14px;width:100%;max-width:680px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.6);overflow:hidden}
+._mhd{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;border-bottom:1px solid var(--b);flex-shrink:0}
+._mtt{font-family:var(--di);font-size:15px;font-weight:700}
+._mcl{width:28px;height:28px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-size:16px;transition:all .2s}
+._mcl:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
+._mbd{padding:1.4rem;overflow-y:auto;flex:1}
+._dtag{display:inline-flex;align-items:center;gap:4px;background:var(--sf);border:1px solid var(--b);border-radius:6px;padding:2px 8px;font-size:9px;font-family:var(--mo);color:var(--tx3)}
+._sep{height:1px;background:var(--b);margin:1.25rem 0}
+._rbtn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--b2);border-radius:8px;padding:6px 11px;font-size:10px;font-family:var(--mo);color:var(--tx3);cursor:pointer;transition:all .2s;min-height:36px}
+._rbtn:hover{background:var(--sf2);color:var(--tx);border-color:var(--b3)}
+._rbtn.spin svg{animation:_sp 1s linear infinite}
+@keyframes _sp{to{transform:rotate(360deg)}}
+._rbtn:active{transform:scale(.97)}
+._finput{width:100%;padding:9px 13px;background:var(--n3);border:1px solid var(--b2);border-radius:9px;color:var(--tx);font-family:var(--sa);font-size:13px;transition:border-color .2s;outline:none}
+._finput:focus{border-color:var(--t);box-shadow:0 0 0 2px rgba(0,201,167,.1)}
+._finput::placeholder{color:var(--tx3)}
+._fsel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238fa3bf' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px}
+._flbl{display:block;font-size:10px;font-family:var(--mo);color:var(--tx2);margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase}
+._fld{margin-bottom:.9rem}
+._fg{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+._nt{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:9px;padding:9px 13px;font-size:12px;color:var(--tx2);margin-bottom:.9rem;line-height:1.5}
+._ni{background:rgba(0,201,167,.07);border:1px solid rgba(0,201,167,.2);border-radius:9px;padding:9px 13px;font-size:12px;color:var(--tx2);margin-bottom:.9rem;line-height:1.5}
+._asb{display:flex;gap:5px}
+._ast{background:var(--n3);border:1px solid var(--b);padding:3px 10px;border-radius:20px;font-size:9px;font-family:var(--mo);color:var(--tx3);display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+footer{background:var(--n2);border-top:1px solid var(--b);padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+._fb2{font-family:var(--di);font-size:13px;font-weight:700;color:var(--t)}
+._fn{font-size:10px;color:var(--tx3);font-family:var(--mo);line-height:1.6;max-width:500px}
+._fli{display:flex;gap:16px}
+._fli a{font-size:10px;font-family:var(--mo);color:var(--tx3);text-decoration:none;transition:color .2s}
+._fli a:hover{color:var(--t)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--n2)}
+::-webkit-scrollbar-thumb{background:var(--n5);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--tx3)}
+@keyframes _shim{0%{background-position:-400px 0}100%{background-position:400px 0}}
+._sk{background:linear-gradient(90deg,var(--n3) 25%,var(--n4) 50%,var(--n3) 75%);background-size:800px 100%;animation:_shim 1.4s ease infinite;border-radius:6px;color:transparent!important;pointer-events:none}
+._sk *{visibility:hidden}
+:focus-visible{outline:2px solid var(--t);outline-offset:2px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}#_tt{animation:none}}
+@media(max-width:960px){._g5{grid-template-columns:repeat(3,1fr)}._g4{grid-template-columns:repeat(2,1fr)}._g3{grid-template-columns:repeat(2,1fr)}._hg{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:768px){.stock-split{grid-template-columns:1fr !important}}
+@media(max-width:600px){._pg{padding:1rem}._ga,._g2,._g3,._g4,._g5{grid-template-columns:1fr 1fr}._hg{grid-template-columns:repeat(3,1fr)}._fg{grid-template-columns:1fr}.stock-split{grid-template-columns:1fr !important}}
+button,a,select,input{touch-action:manipulation}
+@media(max-width:860px){
+  #_nb{padding:0 1rem;height:auto;min-height:52px;flex-wrap:wrap;row-gap:6px;padding-top:6px;padding-bottom:6px}
+  ._nl{font-size:15px;gap:7px}._nm{width:26px;height:26px}
+  ._nc{order:3;width:100%;justify-content:flex-start;gap:0;overflow-x:auto;scrollbar-width:none}
+  ._nc::-webkit-scrollbar{display:none}
+  ._nmi{padding:7px 11px;font-size:11px;flex-shrink:0}
+  ._nr{gap:5px}._ast{display:none}._uc span{display:none}._uc{padding:5px 7px}
+  ._pg{padding:1.25rem 1rem 2.5rem}._pt{font-size:21px}
+}
+@media(max-width:680px){
+  ._nb2 span{display:none}._nb2{padding:7px;gap:0}._nb2 svg{width:13px;height:13px}
+  ._ph{flex-direction:column;align-items:stretch}._ph>div:last-child{width:100%}
+  ._dtag{display:none}#_rfb{width:100%;justify-content:center}
+  ._sh{font-size:13px}._mv{font-size:18px}._ngr{font-size:24px}
+  ._sph[style]{grid-template-columns:repeat(3,1fr) !important}
+  ._mbox{max-height:94vh;border-radius:12px}._mhd{padding:1rem}._mbd{padding:1rem}
+  div[style*="grid-template-columns:190px 1fr"]{grid-template-columns:1fr !important;justify-items:center;text-align:center}
+  ._fld[style*="align-self:flex-end"]{align-self:stretch}
+  ._fld[style*="align-self:flex-end"] button{width:100%}
+  thead th{padding:7px 9px;font-size:8px}tbody td{padding:7px 9px}tbody td:not(:first-child){font-size:10px}
+  ._twp{font-size:11px}
+}
+@media(max-width:430px){
+  html{font-size:13px}#_tw{height:32px}._ti{padding:0 16px;font-size:10px}
+  ._nl{font-size:13px}._nlt{display:none}._nmi{padding:6px 9px;font-size:10px}
+  ._pe{font-size:9px}._pt{font-size:18px}
+  ._ga,._g2,._g3,._g4,._g5{grid-template-columns:1fr 1fr}._hg{grid-template-columns:repeat(2,1fr)}
+  ._mc,._cc{padding:11px 12px}._mv{font-size:16px}._cpr{font-size:15px}
+  ._ngc{padding:13px 14px}._ngr{font-size:21px}
+  ._fxc{grid-template-columns:auto 1fr auto;gap:7px;padding:11px 12px}
+  ._ff{font-size:16px}._fp{font-size:11px}._fv{font-size:14px}
+  ._sph[style]{grid-template-columns:repeat(2,1fr) !important}._spc{padding:6px 5px}
+  footer{flex-direction:column;align-items:flex-start;padding:1rem}._fli{flex-wrap:wrap;gap:10px 14px}
+}
+</style>
+</head>
+<body>
+<a href="#_main" class="skip-link">Skip to main content</a>
+<div id="_tw" aria-label="Live market ticker" role="marquee"><div id="_tt"></div></div>
+<nav id="_nb" aria-label="Main navigation">
+  <a href="../" class="_nl" aria-label="FM Markets home"><div class="_nm" aria-hidden="true">FM</div><span class="_nlt">FM <span style="color:var(--t);margin-left:4px">Markets</span></span></a>
+  <div class="_nc" role="tablist" aria-label="Market sections">
+    <button class="_nmi on" data-pg="home" role="tab" aria-selected="true" aria-controls="pg-home">Market</button>
+    <button class="_nmi" data-pg="forex" role="tab" aria-selected="false" aria-controls="pg-forex">Forex</button>
+    <button class="_nmi" data-pg="crypto" role="tab" aria-selected="false" aria-controls="pg-crypto">Crypto</button>
+  </div>
+  <div class="_nr">
+    <div class="_ast" id="_apibar">
+      <div class="_ld" aria-hidden="true"></div>
+      <span id="_as1" style="font-size:10px;color:var(--tx3)">Loading…</span>
+    </div>
+    <div class="_uc"><div class="_ld" aria-hidden="true"></div><span id="_un" style="font-family:var(--mo);font-size:11px">Live</span></div>
+    <a href="../portal/" class="_nb2" aria-label="Return to portal">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Portal</span>
+    </a>
+    <a href="../" class="_nb2" aria-label="Return to home">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span>
+    </a>
+    <button class="_nb2" id="_lo"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Sign out</span></button>
+  </div>
+</nav>
+
+<main id="_main">
+<div class="_pg on" id="pg-home" role="tabpanel" aria-labelledby="tab-home">
+  <div class="_ph">
+    <div>
+      <div class="_pe">FM Financial Intelligence Platform</div>
+      <div class="_pt">Global Market Intelligence</div>
+      <div class="_ps" id="_ts">Initialising…</div>
+    </div>
+    <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+      <div class="_dtag"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Indices ~15min delay</div>
+      <button class="_rbtn" id="_rfb" onclick="window._rf(this)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh All</button>
+    </div>
+  </div>
+  <div class="_sh gl">Global Stock Indices <span class="_sb dl">Delayed</span></div>
+  <div class="_cg _ga" id="_gi" role="list" aria-label="Global indices"></div>
+  <div class="_sh af" style="margin-top:1.75rem">African Exchanges <span class="_sb dl">Delayed</span></div>
+  <div class="_cg _ga" id="_ai" role="list" aria-label="African exchanges"></div>
+  <div class="_sep"></div>
+  <div class="_sh sp">S&amp;P 500 Heatmap — 1 Day Performance <span class="_sb lv">Live</span></div>
+  <div class="_ni">Tile size = market cap weight. Color = 1-day % change. Click any tile to view full stock detail.</div>
+  <div id="_spm" aria-label="S&P 500 heatmap by sector"></div>
+  <div class="_sep"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start" class="stock-split">
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+        <div class="_sh gl" style="margin:0">Top Stocks — Signal View</div>
+        <select class="_finput _fsel" id="_sflt" style="width:auto;padding:5px 28px 5px 9px;font-size:10px" onchange="window._bst()">
+          <option value="all">All Signals</option>
+          <option value="strong-buy">Strong Buy</option>
+          <option value="buy">Buy</option>
+          <option value="neutral">Neutral</option>
+          <option value="sell">Sell</option>
+          <option value="strong-sell">Strong Sell</option>
+        </select>
+      </div>
+      <div class="_twp">
+        <table aria-label="Top stocks with trading signals">
+          <thead><tr><th>Ticker</th><th>Last</th><th>Chg</th><th>%</th><th>Vol</th><th>Signal</th></tr></thead>
+          <tbody id="_stb"></tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+        <div class="_sh af" style="margin:0">NGX Top Stocks <span class="_sb dl" style="font-size:8px">NGX</span></div>
+        <div style="font-size:9px;font-family:var(--mo);color:var(--tx3);margin-top:2px">Live NGX API not publicly available — last known prices shown</div>
+        <div style="font-size:9px;font-family:var(--mo);color:var(--tx3)">Nigerian Exchange</div>
+      </div>
+      <div class="_twp">
+        <table aria-label="NGX top Nigerian stocks">
+          <thead><tr><th>Ticker</th><th>Price (₦)</th><th>Chg</th><th>%</th><th>Vol</th><th>Signal</th></tr></thead>
+          <tbody id="_ngxtb"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="_pg" id="pg-forex" role="tabpanel" aria-labelledby="tab-forex">
+  <div class="_ph">
+    <div>
+      <div class="_pe">Foreign Exchange Markets</div>
+      <div class="_pt">Forex Intelligence</div>
+      <div class="_ps">Live rates from open.er-api.com · NGN pairs from CBN</div>
+    </div>
+    <button class="_rbtn" onclick="window._rfx(this)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh Rates</button>
+  </div>
+  <div class="_cg _g2" id="_fxg" aria-label="Foreign exchange rate pairs"></div>
+  <div class="_sep"></div>
+  <div class="_sh fx" style="margin-bottom:1rem">Currency Performance Heatmap <span class="_sb lv">Live</span></div>
+  <div class="_pan">
+    <div class="_ph2"><div><div class="_pt2">24h vs USD Heatmap</div><div class="_ps2">Green = stronger vs USD · Red = weaker vs USD</div></div></div>
+    <div class="_hg" id="_fxhm" aria-label="Currency 24h heatmap"></div>
+  </div>
+  <div class="_sep"></div>
+  <div class="_sh fx" style="margin-bottom:1rem">Historical Currency Lookup <span class="_sb of">Free API</span></div>
+  <div class="_pan">
+    <div class="_ph2"><div><div class="_pt2">Check Any Currency Pair on Any Date</div><div class="_ps2">Powered by frankfurter.dev — free historical data, full CORS support</div></div></div>
+    <div class="_ni">Select a base currency, target currency, and date to retrieve the exact exchange rate on that day.</div>
+    <div class="_fg" style="align-items:flex-end">
+      <div class="_fld"><label class="_flbl" for="_hbase">Base Currency</label>
+        <select class="_finput _fsel" id="_hbase"><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="NGN">NGN — Nigerian Naira</option><option value="JPY">JPY — Japanese Yen</option><option value="CNY">CNY — Chinese Yuan</option><option value="ZAR">ZAR — South African Rand</option><option value="GHS">GHS — Ghanaian Cedi</option><option value="KES">KES — Kenyan Shilling</option><option value="EGP">EGP — Egyptian Pound</option><option value="CHF">CHF — Swiss Franc</option><option value="AUD">AUD — Australian Dollar</option><option value="CAD">CAD — Canadian Dollar</option><option value="BRL">BRL — Brazilian Real</option><option value="INR">INR — Indian Rupee</option><option value="SGD">SGD — Singapore Dollar</option><option value="NOK">NOK — Norwegian Krone</option><option value="SEK">SEK — Swedish Krona</option><option value="RUB">RUB — Russian Ruble</option></select>
+      </div>
+      <div class="_fld"><label class="_flbl" for="_htgt">Target Currency</label>
+        <select class="_finput _fsel" id="_htgt"><option value="NGN">NGN — Nigerian Naira</option><option value="USD" selected>USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option><option value="JPY">JPY — Japanese Yen</option><option value="CNY">CNY — Chinese Yuan</option><option value="ZAR">ZAR — South African Rand</option><option value="GHS">GHS — Ghanaian Cedi</option><option value="KES">KES — Kenyan Shilling</option><option value="EGP">EGP — Egyptian Pound</option><option value="CHF">CHF — Swiss Franc</option><option value="AUD">AUD — Australian Dollar</option><option value="CAD">CAD — Canadian Dollar</option><option value="BRL">BRL — Brazilian Real</option><option value="INR">INR — Indian Rupee</option><option value="RUB">RUB — Russian Ruble</option></select>
+      </div>
+      <div class="_fld"><label class="_flbl" for="_hdt">Date</label><input class="_finput" type="date" id="_hdt" max=""></div>
+      <div class="_fld" style="align-self:flex-end"><button class="_rbtn" style="background:var(--t);color:var(--n);border-color:var(--t);font-weight:700;width:100%;justify-content:center" onclick="window._lkup()">Look Up Rate</button></div>
+    </div>
+    <div id="_hres"></div>
+  </div>
+  <div class="_sep"></div>
+  <div class="_sh ng">Nigeria Official Rates <span class="_sb of">CBN/NBS · Auto-fetch</span></div>
+  <div class="_cg _g3" id="_ngr" role="list" aria-label="Nigeria official rates"></div>
+  <div style="margin-top:1.25rem">
+    <div class="_pan">
+      <div class="_ph2"><div><div class="_pt2">Nigeria Rate Environment — Historical Trend</div><div class="_ps2">MPR vs T-Bill (364d) vs Inflation — Jan 2024 to Jun 2026</div></div></div>
+      <div style="position:relative;height:250px"><canvas id="_ngch" role="img" aria-label="Nigeria interest rates historical chart"></canvas></div>
+    </div>
+  </div>
+  <div style="margin-top:1rem">
+    <div class="_twp">
+      <table aria-label="Nigeria fixed income rates">
+        <thead><tr><th>Instrument</th><th>Yield/Rate</th><th>Tenor</th><th>Bid/Ask</th><th>Last Auction</th><th>Notes</th></tr></thead>
+        <tbody id="_fit"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="_pg" id="pg-crypto" role="tabpanel" aria-labelledby="tab-crypto">
+  <div class="_ph">
+    <div>
+      <div class="_pe">Digital Asset Markets</div>
+      <div class="_pt">Cryptocurrency Intelligence</div>
+      <div class="_ps">Live prices · Updates every 60 seconds via CoinGecko</div>
+    </div>
+    <button class="_rbtn" onclick="window._rcy(this)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
+  </div>
+  <div class="_cg _g5" id="_cg" role="list" aria-label="Cryptocurrency prices"></div>
+  <div style="margin-top:1.25rem">
+    <div class="_pan">
+      <div class="_ph2"><div><div class="_pt2">Market Dominance</div><div class="_ps2">Market cap share — live from CoinGecko</div></div></div>
+      <div style="display:grid;grid-template-columns:190px 1fr;gap:20px;align-items:center">
+        <div style="position:relative;height:190px"><canvas id="_dmc" aria-label="Crypto dominance chart"></canvas></div>
+        <div id="_dml"></div>
+      </div>
+    </div>
+  </div>
+  <div class="_sep"></div>
+  <div class="_sh cr" style="margin-bottom:1rem">Crypto Ticker — Signal View <span class="_sb lv">Live</span></div>
+  <div class="_twp">
+    <table aria-label="Crypto ticker table">
+      <thead><tr><th>Symbol</th><th>Name</th><th>Price (USD)</th><th>24h Change</th><th>% Chg</th><th>Market Cap</th><th>Signal</th></tr></thead>
+      <tbody id="_ctb"></tbody>
+    </table>
+  </div>
+</div>
+</main>
+
+<div class="_modal" id="_sdm" role="dialog" aria-modal="true" aria-labelledby="_sdmt">
+  <div class="_mbox">
+    <div class="_mhd">
+      <div class="_mtt" id="_sdmt">Stock Detail</div>
+      <button class="_mcl" onclick="window._cm()" aria-label="Close modal">✕</button>
+    </div>
+    <div class="_mbd" id="_sdmb"></div>
+  </div>
+</div>
+
+<footer>
+  <div><div class="_fb2">FM Markets Intelligence</div><div class="_fn" style="margin-top:3px">Market data for informational purposes only. Indices delayed ~15min. Crypto live via CoinGecko. Forex via open.er-api.com. Nigeria rates auto-fetched from CBN/NBS. Not financial advice.</div></div>
+  <div class="_fli"><a href="https://cbn.gov.ng" target="_blank" rel="noopener">CBN</a><a href="https://nigerianstat.gov.ng" target="_blank" rel="noopener">NBS</a><a href="https://coingecko.com" target="_blank" rel="noopener">CoinGecko</a><a href="https://ngxgroup.com" target="_blank" rel="noopener">NGX</a></div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var _A='https://eis-recbackend.onrender.com/api';
+var _tok=sessionStorage.getItem('FM_token');
+if(!_tok){window.location.href='../portal/';return;}
+fetch(_A+'/auth/me',{headers:{'Authorization':'Bearer '+_tok}})
+  .then(function(r){return r.json();})
+  .then(function(d){if(d.success&&d.user){var e=document.getElementById('_un');if(e)e.textContent=d.user.name.split(' ')[0];}else{sessionStorage.removeItem('FM_token');window.location.href='../portal/';}})
+  .catch(function(){});
+document.getElementById('_lo').addEventListener('click',function(){if(!confirm('Sign out?'))return;sessionStorage.removeItem('FM_token');window.location.href='../portal/';});
+})();
+
+var _dci=null;
+var _ngchI=null;
+
+// ── PROXY + FETCH HELPERS ──────────────────────────────────────────
+var _px='https://corsproxy.io/?url=';
+var _PROXIES=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url='];
+
+function _proxyFetch(url,ms){
+  ms=ms||12000;
+  var last='';
+  var tryOne=function(proxy){
+    return fetch(proxy+encodeURIComponent(url),{signal:_sig(ms)})
+      .then(function(r){
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        var ct=r.headers.get('content-type')||'';
+        if(ct.includes('json')&&proxy.includes('allorigins'))
+          return r.json().then(function(j){return j.contents||'';});
+        return r.text();
+      });
+  };
+  return tryOne(_PROXIES[0]).catch(function(e){last=e.message;return tryOne(_PROXIES[1]);})
+    .catch(function(e){throw new Error('All proxies failed: '+last+' / '+e.message);});
+}
+
+var _fN=function(n,d){d=d==null?2:d;return Number(n).toLocaleString('en-NG',{minimumFractionDigits:d,maximumFractionDigits:d});};
+var _fNK=function(n){var a=Math.abs(n);if(a>=1e12)return(n/1e12).toFixed(2)+'T';if(a>=1e9)return(n/1e9).toFixed(2)+'B';if(a>=1e6)return(n/1e6).toFixed(2)+'M';if(a>=1e3)return(n/1e3).toFixed(1)+'K';return n.toFixed(2);};
+var _cc=function(v){return v>=0?'u':'d';};
+var _cs=function(v){return v>=0?'+':'';};
+var _ar=function(v){return v>=0?'▲':'▼';};
+var _ts=function(){return new Date().toISOString().slice(0,10);};
+function _sig(ms){try{var c=new AbortController();setTimeout(function(){try{c.abort();}catch(e){}},ms);return c.signal;}catch(e){return undefined;}}
+var _$=function(id){return document.getElementById(id);};
+
+function _sp(cv,data,col,fill){
+  if(!cv)return;
+  var ctx=cv.getContext('2d');
+  var w=cv.offsetWidth||200,h=cv.offsetHeight||36;
+  cv.width=w;cv.height=h;
+  var mn=Math.min.apply(null,data),mx=Math.max.apply(null,data),rng=mx-mn||1;
+  var pts=data.map(function(v,i){return{x:(i/(data.length-1))*w,y:h-((v-mn)/rng)*(h-4)-2};});
+  ctx.clearRect(0,0,w,h);
+  if(fill){ctx.beginPath();ctx.moveTo(pts[0].x,h);pts.forEach(function(p){ctx.lineTo(p.x,p.y);});ctx.lineTo(pts[pts.length-1].x,h);ctx.closePath();ctx.fillStyle=col+'22';ctx.fill();}
+  ctx.beginPath();pts.forEach(function(p,i){i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);});
+  ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.stroke();
+}
+function _gs(last,vol,pts){vol=vol||0.015;pts=pts||20;var a=[last];for(var i=1;i<pts;i++)a.unshift(a[0]*(1+(Math.random()-.5)*vol));return a;}
+
+// ── STATIC DATA ────────────────────────────────────────────────────
+var _GI=[
+  {id:'dow',   name:'Dow Jones',        flag:'🇺🇸',val:42860.12,chg:+184.3, pct:+0.43},
+  {id:'ndx',   name:'NASDAQ Composite', flag:'🇺🇸',val:19342.55,chg:+96.2,  pct:+0.50},
+  {id:'sp500', name:'S&P 500',          flag:'🇺🇸',val:5892.58, chg:+28.4,  pct:+0.48},
+  {id:'ftse',  name:'FTSE 100',         flag:'🇬🇧',val:8728.40, chg:-32.1,  pct:-0.37},
+  {id:'dax',   name:'DAX 40',           flag:'🇩🇪',val:23412.70,chg:+142.6, pct:+0.61},
+  {id:'nky',   name:'Nikkei 225',       flag:'🇯🇵',val:38640.22,chg:-88.5,  pct:-0.23},
+  {id:'sse',   name:'Shanghai SE',      flag:'🇨🇳',val:3418.84, chg:+24.7,  pct:+0.73},
+  {id:'snsx',  name:'BSE Sensex',       flag:'🇮🇳',val:82240.18,chg:+310.4, pct:+0.38},
+];
+var _AI=[
+  {id:'ngx',  name:'NGX All-Share',    flag:'🇳🇬',val:242323.52,chg:+802.48,pct:+0.33,extra:'MCap: ₦155.4T'},
+  {id:'jse',  name:'JSE All Share',    flag:'🇿🇦',val:87432.10, chg:-218.4, pct:-0.25,extra:'South Africa'},
+  {id:'gse',  name:'GSE Composite',   flag:'🇬🇭',val:4892.76,  chg:+34.2,  pct:+0.70,extra:'Ghana SE'},
+  {id:'nse',  name:'NSE 20 (Nairobi)',flag:'🇰🇪',val:1842.35,  chg:+12.8,  pct:+0.70,extra:'Kenya SE'},
+  {id:'egx',  name:'EGX 30 (Cairo)',  flag:'🇪🇬',val:31240.80, chg:+284.6, pct:+0.92,extra:'Egypt SE'},
+  {id:'brvm', name:'BRVM Composite',  flag:'🌍',  val:298.44,   chg:+1.8,   pct:+0.61,extra:'W.Africa Reg.'},
+];
+var _SP500=[
+  {s:'AAPL',n:'Apple',sec:'Tech',mc:290,pct:+1.2},{s:'MSFT',n:'Microsoft',sec:'Tech',mc:310,pct:+0.8},
+  {s:'NVDA',n:'NVIDIA',sec:'Tech',mc:280,pct:+3.4},{s:'AMZN',n:'Amazon',sec:'Consumer',mc:190,pct:+1.8},
+  {s:'GOOGL',n:'Alphabet',sec:'Tech',mc:220,pct:-0.4},{s:'META',n:'Meta',sec:'Tech',mc:160,pct:+2.1},
+  {s:'TSLA',n:'Tesla',sec:'Auto',mc:80,pct:-1.8},{s:'BRK',n:'Berkshire',sec:'Finance',mc:200,pct:+0.3},
+  {s:'LLY',n:'Eli Lilly',sec:'Health',mc:150,pct:+2.5},{s:'AVGO',n:'Broadcom',sec:'Tech',mc:140,pct:+1.1},
+  {s:'JPM',n:'JPMorgan',sec:'Finance',mc:130,pct:+0.7},{s:'WMT',n:'Walmart',sec:'Consumer',mc:120,pct:+0.2},
+  {s:'V',n:'Visa',sec:'Finance',mc:115,pct:+0.9},{s:'UNH',n:'UnitedHealth',sec:'Health',mc:110,pct:-0.6},
+  {s:'XOM',n:'ExxonMobil',sec:'Energy',mc:105,pct:+1.4},{s:'MA',n:'Mastercard',sec:'Finance',mc:100,pct:+0.5},
+  {s:'COST',n:'Costco',sec:'Consumer',mc:95,pct:+1.6},{s:'HD',n:'Home Depot',sec:'Consumer',mc:90,pct:-0.3},
+  {s:'PG',n:'Procter&G',sec:'Consumer',mc:85,pct:+0.1},{s:'NFLX',n:'Netflix',sec:'Tech',mc:82,pct:+4.2},
+  {s:'AMD',n:'AMD',sec:'Tech',mc:78,pct:+2.9},{s:'ORCL',n:'Oracle',sec:'Tech',mc:75,pct:+1.3},
+  {s:'ABBV',n:'AbbVie',sec:'Health',mc:72,pct:-0.8},{s:'MRK',n:'Merck',sec:'Health',mc:70,pct:+0.4},
+  {s:'KO',n:'Coca-Cola',sec:'Consumer',mc:68,pct:-0.2},{s:'BAC',n:'Bank of Am',sec:'Finance',mc:65,pct:+1.0},
+  {s:'CRM',n:'Salesforce',sec:'Tech',mc:62,pct:+0.7},{s:'CVX',n:'Chevron',sec:'Energy',mc:60,pct:+1.2},
+  {s:'ADBE',n:'Adobe',sec:'Tech',mc:55,pct:-1.1},{s:'PEP',n:'PepsiCo',sec:'Consumer',mc:50,pct:-0.5},
+];
+var _STOCKS=[
+  {sym:'AAPL',name:'Apple Inc',price:213.49,chg:+2.54,pct:+1.20,vol:58400000,sig:'buy'},
+  {sym:'MSFT',name:'Microsoft Corp',price:447.28,chg:+3.58,pct:+0.81,vol:22100000,sig:'strong-buy'},
+  {sym:'NVDA',name:'NVIDIA Corp',price:138.85,chg:+4.61,pct:+3.44,vol:312000000,sig:'strong-buy'},
+  {sym:'AMZN',name:'Amazon.com Inc',price:223.15,chg:+3.98,pct:+1.81,vol:35800000,sig:'buy'},
+  {sym:'GOOGL',name:'Alphabet Inc',price:182.34,chg:-0.74,pct:-0.40,vol:28400000,sig:'buy'},
+  {sym:'META',name:'Meta Platforms',price:618.42,chg:+12.98,pct:+2.14,vol:18200000,sig:'strong-buy'},
+  {sym:'TSLA',name:'Tesla Inc',price:248.23,chg:-4.52,pct:-1.79,vol:88600000,sig:'neutral'},
+  {sym:'BRK',name:'Berkshire Hath',price:478.20,chg:+1.44,pct:+0.30,vol:4200000,sig:'buy'},
+  {sym:'LLY',name:'Eli Lilly & Co',price:862.50,chg:+21.56,pct:+2.56,vol:5600000,sig:'strong-buy'},
+  {sym:'JPM',name:'JPMorgan Chase',price:268.44,chg:+1.88,pct:+0.71,vol:12800000,sig:'buy'},
+  {sym:'NFLX',name:'Netflix Inc',price:1148.92,chg:+47.88,pct:+4.35,vol:6200000,sig:'strong-buy'},
+  {sym:'AMD',name:'Adv Micro Dev',price:178.24,chg:+5.02,pct:+2.90,vol:68400000,sig:'buy'},
+  {sym:'XOM',name:'ExxonMobil',price:112.84,chg:+1.56,pct:+1.40,vol:22400000,sig:'buy'},
+  {sym:'WMT',name:'Walmart Inc',price:97.52,chg:+0.20,pct:+0.21,vol:14800000,sig:'neutral'},
+  {sym:'COST',name:'Costco Wholesale',price:974.18,chg:+15.58,pct:+1.63,vol:2800000,sig:'buy'},
+  {sym:'ORCL',name:'Oracle Corp',price:184.42,chg:+2.38,pct:+1.31,vol:9800000,sig:'buy'},
+  {sym:'ABBV',name:'AbbVie Inc',price:198.34,chg:-1.62,pct:-0.81,vol:7400000,sig:'neutral'},
+  {sym:'BAC',name:'Bank of America',price:44.88,chg:+0.44,pct:+0.99,vol:48600000,sig:'buy'},
+  {sym:'KO',name:'Coca-Cola Co',price:72.14,chg:-0.14,pct:-0.19,vol:18200000,sig:'neutral'},
+  {sym:'ADBE',name:'Adobe Inc',price:384.28,chg:-4.34,pct:-1.12,vol:4800000,sig:'sell'},
+];
+var _NGX=[
+  {sym:'MTNN',   name:'MTN Nigeria',      price:605.00, chg:+15.00,pct:+2.54,vol:12840000,sig:'buy',    sec:'Telecom'},
+  {sym:'DANGCEM',name:'Dangote Cement',   price:942.00, chg:-8.00, pct:-0.84,vol:4320000, sig:'neutral', sec:'Industry'},
+  {sym:'ZENITH', name:'Zenith Bank',      price:64.90,  chg:+2.10, pct:+3.34,vol:38200000,sig:'strong-buy',sec:'Banking'},
+  {sym:'AIRTEL', name:'Airtel Nigeria',   price:2140.00,chg:+30.00,pct:+1.42,vol:2100000, sig:'buy',    sec:'Telecom'},
+  {sym:'GTCO',   name:'GTCO Plc',         price:72.15,  chg:+1.95, pct:+2.78,vol:29400000,sig:'buy',    sec:'Banking'},
+  {sym:'BUAFOOD',name:'BUA Foods',        price:388.00, chg:-4.00, pct:-1.02,vol:6800000, sig:'neutral', sec:'Consumer'},
+  {sym:'SEPLAT', name:'Seplat Energy',    price:5100.00,chg:+120.0,pct:+2.41,vol:880000,  sig:'buy',    sec:'Oil & Gas'},
+  {sym:'FBNH',   name:'FBN Holdings',     price:35.80,  chg:+0.85, pct:+2.43,vol:44600000,sig:'buy',    sec:'Banking'},
+  {sym:'ACCESS', name:'Access Holdings',  price:28.40,  chg:+0.60, pct:+2.16,vol:52400000,sig:'buy',    sec:'Banking'},
+  {sym:'UBA',    name:'United Bank Africa',price:31.50, chg:+0.50, pct:+1.61,vol:36800000,sig:'buy',    sec:'Banking'},
+  {sym:'DANGSUGAR',name:'Dangote Sugar',  price:58.20,  chg:-1.20, pct:-2.02,vol:8400000, sig:'sell',   sec:'Consumer'},
+  {sym:'NESTLE', name:'Nestlé Nigeria',   price:1490.00,chg:+20.00,pct:+1.36,vol:480000,  sig:'neutral', sec:'Consumer'},
+];
+var _FXP=[
+  {f:'USD',t:'NGN',fl1:'🇺🇸',fl2:'🇳🇬',rate:1598.50,chg:+2.30, pct:+0.14,rng:[1550,1650],isN:true},
+  {f:'EUR',t:'NGN',fl1:'🇪🇺',fl2:'🇳🇬',rate:1742.80,chg:-5.20, pct:-0.30,rng:[1700,1800],isN:true},
+  {f:'GBP',t:'NGN',fl1:'🇬🇧',fl2:'🇳🇬',rate:2034.60,chg:+8.40, pct:+0.41,rng:[1980,2080],isN:true},
+  {f:'CNY',t:'NGN',fl1:'🇨🇳',fl2:'🇳🇬',rate:220.40, chg:+0.80, pct:+0.36,rng:[210,230],  isN:true},
+  {f:'CAD',t:'NGN',fl1:'🇨🇦',fl2:'🇳🇬',rate:1172.40,chg:+3.20, pct:+0.27,rng:[1120,1220],isN:true},
+  {f:'RUB',t:'NGN',fl1:'🇷🇺',fl2:'🇳🇬',rate:17.84,  chg:-0.12, pct:-0.67,rng:[15,21],    isN:true},
+  {f:'EUR',t:'USD',fl1:'🇪🇺',fl2:'🇺🇸',rate:1.0906, chg:-0.0012,pct:-0.11,rng:[1.07,1.12],isN:false},
+  {f:'GBP',t:'USD',fl1:'🇬🇧',fl2:'🇺🇸',rate:1.2722, chg:+0.0034,pct:+0.27,rng:[1.24,1.30],isN:false},
+  {f:'USD',t:'JPY',fl1:'🇺🇸',fl2:'🇯🇵',rate:157.42, chg:-0.28, pct:-0.18,rng:[153,162],  isN:false},
+  {f:'USD',t:'ZAR',fl1:'🇺🇸',fl2:'🇿🇦',rate:18.24,  chg:+0.14, pct:+0.77,rng:[17.5,19.5],isN:false},
+  {f:'USD',t:'GHS',fl1:'🇺🇸',fl2:'🇬🇭',rate:15.82,  chg:-0.08, pct:-0.50,rng:[15,17],    isN:false},
+  {f:'USD',t:'KES',fl1:'🇺🇸',fl2:'🇰🇪',rate:129.40, chg:+0.60, pct:+0.46,rng:[127,133],  isN:false},
+];
+var _FXH=[
+  {s:'NGN',c:+0.14},{s:'ZAR',c:+0.77},{s:'KES',c:+0.46},{s:'GHS',c:-0.50},{s:'EGP',c:-0.30},{s:'ETB',c:-0.22},
+  {s:'EUR',c:-0.11},{s:'GBP',c:+0.27},{s:'JPY',c:-0.18},{s:'CHF',c:+0.08},{s:'AUD',c:+0.33},{s:'CAD',c:-0.15},
+  {s:'CNY',c:+0.36},{s:'INR',c:+0.12},{s:'BRL',c:-0.42},{s:'MXN',c:+0.55},{s:'SGD',c:+0.19},{s:'HKD',c:-0.03},
+  {s:'RUB',c:-0.67},
+];
+var _CRYPTO=[
+  {s:'BTC',n:'Bitcoin',   ic:'₿',col:'#f7931a',price:105420,chg:+2340,pct:+2.27,mcap:'2.09T',dom:52,sig:'strong-buy'},
+  {s:'ETH',n:'Ethereum',  ic:'Ξ',col:'#627eea',price:3842,  chg:+128, pct:+3.44,mcap:'462B', dom:17,sig:'buy'},
+  {s:'BNB',n:'BNB',       ic:'B',col:'#f3ba2f',price:718,   chg:-12,  pct:-1.64,mcap:'104B', dom:4, sig:'neutral'},
+  {s:'XRP',n:'XRP',       ic:'X',col:'#00aae4',price:2.84,  chg:+0.12,pct:+4.41,mcap:'163B', dom:3, sig:'buy'},
+  {s:'SOL',n:'Solana',    ic:'S',col:'#9945ff',price:188.40,chg:+8.20,pct:+4.55,mcap:'88B',  dom:2, sig:'strong-buy'},
+  {s:'USDT',n:'Tether',   ic:'T',col:'#26a17b',price:1.00,  chg:0,    pct:+0.01,mcap:'144B', dom:5, sig:'neutral'},
+  {s:'ADA',n:'Cardano',   ic:'A',col:'#0033ad',price:0.892, chg:+0.034,pct:+3.96,mcap:'31B', dom:1, sig:'buy'},
+  {s:'AVAX',n:'Avalanche',ic:'V',col:'#e84142',price:42.18, chg:-1.20,pct:-2.77,mcap:'18B',  dom:1, sig:'sell'},
+  {s:'DOGE',n:'Dogecoin', ic:'D',col:'#c2a633',price:0.2214,chg:+0.008,pct:+3.75,mcap:'33B', dom:1, sig:'neutral'},
+  {s:'LINK',n:'Chainlink',ic:'L',col:'#2a5ada',price:19.84, chg:+0.88,pct:+4.64,mcap:'12B',  dom:1, sig:'buy'},
+];
+
+// ── NIGERIA RATES — latest known values as fallback ─────────────────
+var _NGR=[
+  {id:'mpr', cls:'mpr',lbl:'Monetary Policy Rate',   ttl:'CBN MPR',              rate:26.5, u:'%', meta:'MPC 305th Meeting — May 2026 · Auto-fetches on load',    src:'CBN',  url:'https://cbn.gov.ng',              chg:'SLF: 27.0% · SDF: 22.0%'},
+  {id:'t91', cls:'tbl',lbl:'T-Bill — 91 Day',        ttl:'NTB Stop Rate (91d)',  rate:16.28,u:'%', meta:'Primary Market Auction — 17 Jun 2026 · Auto-fetches on load',src:'CBN',  url:'https://cbn.gov.ng',              chg:'↑ from 15.95% (Mar 2026)'},
+  {id:'t182',cls:'tbl',lbl:'T-Bill — 182 Day',       ttl:'NTB Stop Rate (182d)', rate:16.62,u:'%', meta:'Primary Market Auction — 17 Jun 2026 · Auto-fetches on load',src:'CBN',  url:'https://cbn.gov.ng',              chg:'+3bps from Jun 3 2026 auction'},
+  {id:'t364',cls:'tbl',lbl:'T-Bill — 364 Day',       ttl:'NTB Stop Rate (364d)', rate:17.34,u:'%', meta:'Primary Market Auction — 17 Jun 2026 · Auto-fetches on load',src:'CBN',  url:'https://cbn.gov.ng',              chg:'+99bps from Jun 3 2026 · Largest single-tenor move in 2026'},
+  {id:'mm',  cls:'mm', lbl:'Money Market Rate',      ttl:'NIBOR Overnight',      rate:26.80,u:'%', meta:'Lagos interbank — Jun 2026',      src:'FMDQ', url:'https://fmdqgroup.com',           chg:'+30bps spread over MPR'},
+  {id:'crr', cls:'crr',lbl:'Cash Reserve Ratio',     ttl:'CRR (DMBs)',            rate:45.0, u:'%', meta:'MPC May 2026 · Auto-fetches on load',                    src:'CBN',  url:'https://cbn.gov.ng',              chg:'Merchant Banks: 16%'},
+  {id:'inf', cls:'inf',lbl:'Headline Inflation',     ttl:'CPI Year-on-Year',     rate:15.93,u:'%', meta:'NBS CPI — May 2026 (pub. 15 Jun 2026) · Auto-fetches on load',src:'NBS',  url:'https://nigerianstat.gov.ng',     chg:'↑ from 15.69% (Apr 2026) · Food: 16.96% · Core: 16.82%'},
+  {id:'fx',  cls:'fxr',lbl:'USD/NGN Official Rate',  ttl:'CBN Reference Rate',   rate:1598.50,u:'₦',meta:'I&E Window — Jun 5 2026',        src:'CBN',  url:'https://cbn.gov.ng',              chg:'Parallel: ~₦1,610'},
+  {id:'gdp', cls:'mm', lbl:'Real GDP Growth Rate',    ttl:'GDP Y-o-Y (Q1 2026)',  rate:3.89,u:'%', meta:'NBS GDP Report Q1 2026 — pub. 25 May 2026',    src:'NBS',  url:'https://nigerianstat.gov.ng',             chg:'↑ from 3.13% (Q1 2025) · FY 2025: 3.87%'},
+  {id:'liq', cls:'crr',lbl:'Liquidity Ratio',        ttl:'Min Liquidity Ratio',  rate:30.0, u:'%', meta:'Unchanged — MPC May 2026',        src:'CBN',  url:'https://cbn.gov.ng',              chg:'Unchanged'},
+];
+var _FIT=[
+  {inst:'NTB — 91 Day',   rate:'16.28%',ten:'91 days',  ba:'16.20%',la:'17 Jun 2026',note:'Oversubscribed · 2nd consecutive hike'},
+  {inst:'NTB — 182 Day',  rate:'16.62%',ten:'182 days', ba:'16.50%',la:'17 Jun 2026',note:'Oversubscribed · rates rising 2 auctions'},
+  {inst:'NTB — 364 Day',  rate:'17.34%',ten:'364 days', ba:'17.00%',la:'17 Jun 2026',note:'+99bps · 89% of total auction subscriptions'},
+  {inst:'FGN Bond 2yr',   rate:'17.80%',ten:'2 years',  ba:'17.60%',la:'Jun 2026',note:'Benchmark bond'},
+  {inst:'FGN Bond 5yr',   rate:'18.40%',ten:'5 years',  ba:'18.15%',la:'Jun 2026',note:'DMO tap issue'},
+  {inst:'FGN Bond 10yr',  rate:'19.20%',ten:'10 years', ba:'18.95%',la:'Jun 2026',note:'Long anchor rate'},
+  {inst:'Eurobond 2031',  rate:'8.75%', ten:'~5yr USD',  ba:'8.60%', la:'Jun 2026',note:'USD-denominated'},
+  {inst:'NIBOR O/N',      rate:'26.80%',ten:'Overnight', ba:'26.70%',la:'Jun 5 2026',note:'Above MPR'},
+  {inst:'NIBOR 30-day',   rate:'27.20%',ten:'30 days',  ba:'27.05%',la:'Jun 5 2026',note:'FMDQ platform'},
+  {inst:'Real GDP Growth (Q1 2026)',rate:'3.89%',ten:'YoY',ba:'Q4 2025: 4.07%',la:'25 May 2026',note:'NBS · Oil: 2.57% · Non-oil: 3.94%'},
+  {inst:'Commercial Paper',rate:'18–20%',ten:'90–180d',  ba:'Market',la:'Ongoing',  note:'OTC market'},
+];
+var _YHMAP={dow:'%5EDJI',ndx:'%5EIXIC',sp500:'%5EGSPC',ftse:'%5EFTSE',dax:'%5EGDAXI',nky:'%5EN225',sse:'000001.SS',snsx:'%5EBSESN',ngx:'%5ENGSEINDX',jse:'%5EJ203.JO',egx:'%5EEGX30'};
+var _CG_IDS='bitcoin,ethereum,binancecoin,ripple,solana,tether,cardano,avalanche-2,dogecoin,chainlink';
+var _CG_MAP={bitcoin:'BTC',ethereum:'ETH',binancecoin:'BNB',ripple:'XRP',solana:'SOL',tether:'USDT',cardano:'ADA','avalanche-2':'AVAX',dogecoin:'DOGE',chainlink:'LINK'};
+
+// ── RENDER HELPERS ──────────────────────────────────────────────────
+function _upd(){var e=_$('_ts');if(e)e.textContent='Updated: '+new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+' WAT';}
+
+function _btk(){
+  var items=[];
+  _GI.forEach(function(i){items.push({n:i.id.toUpperCase(),v:_fN(i.val,0),p:i.pct});});
+  _AI.forEach(function(i){items.push({n:i.id.toUpperCase(),v:_fN(i.val,2),p:i.pct});});
+  _CRYPTO.slice(0,5).forEach(function(c){items.push({n:c.s,v:'$'+_fNK(c.price),p:c.pct});});
+  _NGX.slice(0,4).forEach(function(s){items.push({n:s.sym,v:'₦'+_fN(s.price,2),p:s.pct});});
+  var mprItem=_NGR.find(function(r){return r.id==='mpr';});
+  var infItem=_NGR.find(function(r){return r.id==='inf';});
+  var fxItem =_NGR.find(function(r){return r.id==='fx';});
+  var t364   =_NGR.find(function(r){return r.id==='t364';});
+  if(fxItem) items.push({n:'USD/NGN',v:'₦'+_fN(fxItem.rate,2),p:+0.14});
+  if(mprItem)items.push({n:'MPR',v:mprItem.rate+'%',p:0});
+  if(t364)   items.push({n:'NTB 364d',v:t364.rate+'%',p:0});
+  if(infItem)items.push({n:'CPI',v:infItem.rate+'%',p:0});
+  var h=items.map(function(i){var c=i.p>=0?'u':'d';return'<div class="_ti" onclick="void(0)"><div class="_td '+c+'"></div><span class="_tn">'+i.n+'</span><span class="_tv">'+i.v+'</span><span class="_tc '+c+'">'+_cs(i.p)+i.p.toFixed(2)+'%</span></div>';}).join('');
+  var t=_$('_tt');if(t)t.innerHTML=h+h;
+}
+
+function _bgi_loading(){
+  var e=_$('_gi');if(e)e.innerHTML=Array(8).fill('<div class="_mc _sk" style="min-height:120px"></div>').join('');
+  var a=_$('_ai');if(a)a.innerHTML=Array(6).fill('<div class="_mc _sk" style="min-height:100px"></div>').join('');
+}
+function _bgi(){
+  var e=_$('_gi');if(!e)return;
+  e.innerHTML=_GI.map(function(s){
+    var c=_cc(s.pct);
+    return'<div class="_mc '+c+'" role="listitem" tabindex="0" aria-label="'+s.name+': '+_fN(s.val,2)+', '+_cs(s.pct)+s.pct.toFixed(2)+'%">'+'<div class="_mf" aria-hidden="true">'+s.flag+'</div><div class="_ml">'+s.id.toUpperCase()+'</div><div class="_mn">'+s.name+'</div><div class="_mv">'+_fN(s.val,2)+'</div><div class="_mch"><span class="_mp">'+_ar(s.pct)+' '+_cs(s.pct)+Math.abs(s.pct).toFixed(2)+'%</span><span class="_ma">'+_cs(s.chg)+_fN(s.chg,2)+'</span></div><div class="_mmi" aria-hidden="true"><canvas id="spk-'+s.id+'"></canvas></div></div>';
+  }).join('');
+  setTimeout(function(){_GI.forEach(function(s){var cv=_$('spk-'+s.id);if(cv){var c=s.pct>=0?'#22c55e':'#e05252';_sp(cv,_gs(s.val,.008,20),c,true);}});},80);
+}
+function _bai(){
+  var e=_$('_ai');if(!e)return;
+  e.innerHTML=_AI.map(function(s){
+    var c=_cc(s.pct);
+    return'<div class="_mc '+c+'" role="listitem" tabindex="0">'+'<div class="_mf" aria-hidden="true">'+s.flag+'</div><div class="_ml">'+s.id.toUpperCase()+'</div><div class="_mn">'+s.name+'</div><div class="_mv">'+_fN(s.val,2)+'</div><div class="_mch"><span class="_mp">'+_ar(s.pct)+' '+_cs(s.pct)+Math.abs(s.pct).toFixed(2)+'%</span><span class="_ma">'+_cs(s.chg)+_fN(s.chg,2)+'</span></div><div style="font-size:9px;color:var(--tx3);font-family:var(--mo);margin-top:4px">'+s.extra+'</div></div>';
+  }).join('');
+}
+function _bspm(){
+  var e=_$('_spm');if(!e)return;
+  var secs={};
+  _SP500.forEach(function(s){if(!secs[s.sec])secs[s.sec]=[];secs[s.sec].push(s);});
+  var secOrder=['Tech','Finance','Health','Consumer','Energy','Auto'];
+  var cols=['#60a5fa','#a78bfa','#34d399','#fb923c','#f87171','#fbbf24'];
+  var html='';
+  secOrder.forEach(function(sec,si){
+    var stocks=secs[sec];if(!stocks)return;
+    html+='<div class="_spsec"><div class="_sphdr" style="color:'+cols[si]+'">'+(sec)+' Sector</div><div class="_sph" style="grid-template-columns:repeat('+Math.min(stocks.length,6)+',1fr)">';
+    stocks.forEach(function(st){
+      var p=st.pct;
+      var cl=p>=3?'sp5p':p>=1?'sp2p':p>=0?'sp1p':p>=-1?'sp1n':p>=-3?'sp2n':'sp5n';
+      var tc=p>=0?'rgba(255,255,255,.9)':'rgba(255,255,255,.85)';
+      var sz=Math.max(st.mc/280,0.6);
+      html+='<div class="_spc '+cl+'" style="min-height:'+Math.max(sz*52,38)+'px;color:'+tc+'" onclick="window._sd(\''+st.s+'\',\''+st.n+'\')" title="'+st.n+': '+_cs(p)+p.toFixed(2)+'%"><span class="_sps">'+st.s+'</span><span class="_spv">'+_cs(p)+p.toFixed(2)+'%</span></div>';
+    });
+    html+='</div></div>';
+  });
+  e.innerHTML=html;
+}
+var _stall=_STOCKS.slice();
+function _bst(){
+  var e=_$('_stb');if(!e)return;
+  var flt=(_$('_sflt')||{}).value||'all';
+  var rows=flt==='all'?_stall:_stall.filter(function(s){return s.sig===flt;});
+  var mx=Math.max.apply(null,rows.map(function(r){return r.vol;}));
+  e.innerHTML=rows.map(function(s){
+    var c=_cc(s.pct);
+    var bw=Math.round((s.vol/mx)*40);
+    var sgcls=s.sig;
+    var sglab={'strong-buy':'↑↑ S.Buy','buy':'↑ Buy','neutral':'— Hold','sell':'↓ Sell','strong-sell':'↓↓ S.Sell'}[s.sig]||s.sig;
+    return'<tr onclick="window._sd(\''+s.sym+'\',\''+s.name+'\')" aria-label="'+s.name+'">'
+      +'<td><div class="_tn2" style="font-size:11px">'+s.sym+'</div></td>'
+      +'<td>'+_fN(s.price,2)+'</td>'
+      +'<td><span class="_cp '+c+'" style="font-size:9px;padding:1px 5px">'+_cs(s.chg)+_fN(Math.abs(s.chg),2)+'</span></td>'
+      +'<td><span class="_cp '+c+'" style="font-size:9px;padding:1px 5px">'+_cs(s.pct)+Math.abs(s.pct).toFixed(2)+'%</span></td>'
+      +'<td style="font-size:10px">'+_fNK(s.vol)+'<span class="_vb" style="width:'+bw+'px" aria-hidden="true"></span></td>'
+      +'<td><span class="_sg '+sgcls+'" style="font-size:8px;padding:2px 6px">'+sglab+'</span></td>'
+      +'</tr>';
+  }).join('');
+}
+function _bngxtb(){
+  var e=_$('_ngxtb');if(!e)return;
+  var mx=Math.max.apply(null,_NGX.map(function(r){return r.vol;}));
+  e.innerHTML=_NGX.map(function(s){
+    var c=_cc(s.pct);
+    var bw=Math.round((s.vol/mx)*40);
+    var sgcls=s.sig;
+    var sglab={'strong-buy':'↑↑ S.Buy','buy':'↑ Buy','neutral':'— Hold','sell':'↓ Sell','strong-sell':'↓↓ S.Sell'}[s.sig]||s.sig;
+    var pr=s.price>=1000?'₦'+_fNK(s.price):'₦'+_fN(s.price,2);
+    return'<tr onclick="window._sd(\''+s.sym+'\',\''+s.name+'\')" aria-label="'+s.name+'">'
+      +'<td><div class="_tn2" style="font-size:11px">'+s.sym+'</div><div style="font-size:9px;color:var(--tx3)">'+s.sec+'</div></td>'
+      +'<td style="color:var(--tx)">'+pr+'</td>'
+      +'<td><span class="_cp '+c+'" style="font-size:9px;padding:1px 5px">'+_cs(s.chg)+_fN(Math.abs(s.chg),2)+'</span></td>'
+      +'<td><span class="_cp '+c+'" style="font-size:9px;padding:1px 5px">'+_cs(s.pct)+Math.abs(s.pct).toFixed(2)+'%</span></td>'
+      +'<td style="font-size:10px">'+_fNK(s.vol)+'<span class="_vb" style="width:'+bw+'px" aria-hidden="true"></span></td>'
+      +'<td><span class="_sg '+sgcls+'" style="font-size:8px;padding:2px 6px">'+sglab+'</span></td>'
+      +'</tr>';
+  }).join('');
+}
+function _bfx(){
+  var e=_$('_fxg');if(!e)return;
+  var ngn=_FXP.filter(function(p){return p.isN;});
+  var intl=_FXP.filter(function(p){return !p.isN;});
+  function mkSec(title,pairs){
+    return'<div><div style="font-size:9px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px">'+title+'</div><div style="display:flex;flex-direction:column;gap:5px">'+pairs.map(function(p){
+      var c=_cc(p.pct);
+      var bp=Math.round(((p.rate-p.rng[0])/(p.rng[1]-p.rng[0]))*100);
+      var rv=p.f==='USD'&&p.t==='NGN'?'₦'+_fN(p.rate,2):p.rate>=100?_fN(p.rate,2):p.rate.toFixed(4);
+      return'<div class="_fxc"><div class="_ff">'+p.fl1+'</div><div><div class="_fp">'+p.f+'/'+p.t+'</div><div class="_fd">'+p.fl2+' '+p.f+' vs '+p.t+'</div><div class="_fbw"><div class="_fb" style="width:'+bp+'%;background:'+(p.pct>=0?'var(--gr)':'var(--rd)')+'"></div></div></div><div><div class="_fv">'+rv+'</div><div class="_fc '+c+'">'+_cs(p.pct)+Math.abs(p.pct).toFixed(2)+'%</div></div></div>';
+    }).join('')+'</div></div>';
+  }
+  e.innerHTML=mkSec('NGN Pairs (CBN Official)',ngn)+mkSec('Major International Pairs',intl);
+}
+function _bfxhm(){
+  var e=_$('_fxhm');if(!e)return;
+  e.innerHTML=_FXH.map(function(c){
+    var v=c.c;
+    var cl=v>=2?'h5p':v>=0.5?'h2p':v>0?'h1p':v===0?'h0':v>=-0.5?'h1n':v>=-2?'h2n':'h5n';
+    return'<div class="_hc '+cl+'" title="'+c.s+': '+_cs(v)+v.toFixed(2)+'% vs USD"><span class="_hs">'+c.s+'</span><span class="_hv">'+_cs(v)+Math.abs(v).toFixed(2)+'%</span></div>';
+  }).join('');
+}
+function _bcc(){
+  var e=_$('_cg');if(!e)return;
+  e.innerHTML=_CRYPTO.map(function(c){
+    var cl=_cc(c.pct);
+    var pr=c.price>=1000?'$'+_fN(c.price,0):c.price>=1?'$'+c.price.toFixed(2):'$'+c.price.toFixed(4);
+    return'<div class="_cc '+cl+'" role="listitem" tabindex="0" aria-label="'+c.n+': '+pr+', '+_cs(c.pct)+Math.abs(c.pct).toFixed(2)+'%">'+'<div class="_ci" style="background:'+c.col+'22;color:'+c.col+';border:1px solid '+c.col+'44" aria-hidden="true">'+c.ic+'</div><div class="_csy">'+c.s+'</div><div class="_cna">'+c.n+'</div><div class="_cpr">'+pr+'</div><div class="_cch '+cl+'">'+_ar(c.pct)+' '+_cs(c.pct)+Math.abs(c.pct).toFixed(2)+'%</div><div class="_cmc">MCap: $'+c.mcap+'</div><div class="_cmi" aria-hidden="true"><canvas id="csp-'+c.s+'"></canvas></div></div>';
+  }).join('');
+  setTimeout(function(){_CRYPTO.forEach(function(c){var cv=_$('csp-'+c.s);if(cv)_sp(cv,_gs(c.price,c.s==='USDT'?0.0001:0.03,20),c.col,true);});},100);
+}
+function _bctb(){
+  var e=_$('_ctb');if(!e)return;
+  e.innerHTML=_CRYPTO.map(function(c){
+    var cl=_cc(c.pct);
+    var pr=c.price>=1000?'$'+_fN(c.price,0):c.price>=1?'$'+c.price.toFixed(2):'$'+c.price.toFixed(4);
+    var sgcls=c.sig;
+    var sglab={'strong-buy':'Strong Buy','buy':'Buy','neutral':'Neutral','sell':'Sell','strong-sell':'Strong Sell'}[c.sig]||c.sig;
+    return'<tr><td><div class="_tn2" style="color:'+c.col+'">'+c.s+'</div></td><td>'+c.n+'</td><td>'+pr+'</td><td><span class="_cp '+cl+'">'+_cs(c.chg)+(Math.abs(c.chg)<1?c.chg.toFixed(4):_fN(Math.abs(c.chg),2))+'</span></td><td><span class="_cp '+cl+'">'+_cs(c.pct)+Math.abs(c.pct).toFixed(2)+'%</span></td><td style="color:var(--tx2)">$'+c.mcap+'</td><td><span class="_sg '+sgcls+'">'+sglab+'</span></td></tr>';
+  }).join('');
+}
+function _bdmc(){
+  if(_dci){_dci.destroy();_dci=null;}
+  var lb=_CRYPTO.slice(0,5).map(function(c){return c.s;});
+  var dt=_CRYPTO.slice(0,5).map(function(c){return c.dom;});
+  var ot=Math.max(0,+(100-dt.reduce(function(a,b){return a+b;},0)).toFixed(1));
+  lb.push('Others');dt.push(ot);
+  var cl=['#f7931a','#627eea','#f3ba2f','#00aae4','#9945ff','#4a6080'];
+  var cv=_$('_dmc');if(!cv)return;
+  _dci=new Chart(cv,{type:'doughnut',data:{labels:lb,datasets:[{data:dt,backgroundColor:cl,borderWidth:2,borderColor:'#0a1628'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': '+c.parsed.toFixed(1)+'%';}}}}}});
+  var le=_$('_dml');
+  if(le)le.innerHTML=lb.map(function(l,i){return'<div style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:2px;background:'+cl[i]+';flex-shrink:0"></span><span style="font-size:11px;color:var(--tx2);font-family:var(--mo)">'+l+'</span><span style="font-size:11px;font-weight:500;color:var(--tx);margin-left:auto">'+dt[i].toFixed(1)+'%</span></div>';}).join('');
+}
+function _bngr(){
+  var e=_$('_ngr');if(!e)return;
+  e.innerHTML=_NGR.map(function(r){
+    var rv=r.u==='₦'?'₦'+_fN(r.rate,2):_fN(r.rate,2);
+    return'<div class="_ngc '+r.cls+'" role="listitem" tabindex="0" aria-label="'+r.ttl+': '+rv+r.u+'. '+r.meta+'"><div class="_ngl">'+r.lbl+'</div><div class="_ngt">'+r.ttl+'</div><div class="_ngr">'+rv+'<span class="_ngu">'+(r.u==='₦'?'':r.u)+'</span></div><div class="_ngm">'+r.meta+'<br><span style="color:var(--tx4)">'+r.chg+'</span></div><a href="'+r.url+'" target="_blank" rel="noopener noreferrer" class="_ngs" aria-label="View at '+r.src+'"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Source: '+r.src+'</a></div>';
+  }).join('');
+}
+function _bngch(){
+  if(_ngchI){_ngchI.destroy();_ngchI=null;}
+  var lb=['Jan 24','Mar 24','May 24','Jul 24','Sep 24','Nov 24','Jan 25','Mar 25','May 25','Jul 25','Sep 25','Nov 25','Jan 26','Apr 26','Jun 26'];
+  var mpr=[18.75,22.75,24.75,26.25,27.25,27.50,27.50,27.50,27.50,27.50,27.00,27.00,27.00,26.50,26.50];
+  var tb=[17.00,20.00,22.00,23.00,23.50,23.00,22.60,20.00,18.00,16.50,15.88,16.00,16.20,15.95,17.34];
+  var inf=[29.90,33.20,33.69,34.19,32.70,34.60,34.80,33.20,26.50,22.80,32.15,24.90,26.00,15.69,15.93];
+  var cv=_$('_ngch');if(!cv)return;
+  _ngchI=new Chart(cv,{type:'line',data:{labels:lb,datasets:[{label:'MPR',data:mpr,borderColor:'#00c9a7',backgroundColor:'rgba(0,201,167,.08)',borderWidth:2,pointRadius:3,tension:.35,fill:false},{label:'T-Bill 364d',data:tb,borderColor:'#f5a623',backgroundColor:'rgba(245,166,35,.08)',borderWidth:2,pointRadius:3,tension:.35,fill:false},{label:'Inflation',data:inf,borderColor:'#e05252',backgroundColor:'rgba(224,82,82,.05)',borderWidth:2,borderDash:[5,4],pointRadius:3,tension:.35,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y.toFixed(2)+'%';}}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#4a6080',font:{size:10},maxRotation:45}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#4a6080',font:{size:10},callback:function(v){return v+'%';}},min:0,max:40}}}});
+  window._ngchI=_ngchI;
+}
+function _bfit(){
+  var e=_$('_fit');if(!e)return;
+  e.innerHTML=_FIT.map(function(r){return'<tr><td><div class="_tn2">'+r.inst+'</div></td><td style="color:var(--am);font-weight:600">'+r.rate+'</td><td style="color:var(--tx2)">'+r.ten+'</td><td style="color:var(--tx3)">'+r.ba+'</td><td style="color:var(--tx3);font-size:10px">'+r.la+'</td><td style="font-size:10px;color:var(--tx3)">'+r.note+'</td></tr>';}).join('');
+}
+
+// ── STOCK DETAIL MODAL ──────────────────────────────────────────────
+window._sd=function(sym,name){
+  var st=_STOCKS.find(function(s){return s.sym===sym;})||_SP500.find(function(s){return s.s===sym;});
+  var ng=_NGX.find(function(s){return s.sym===sym;});
+  var cr=_CRYPTO.find(function(c){return c.s===sym;});
+  var item=st||ng;
+  var m=_$('_sdm');var mb=_$('_sdmb');var mt=_$('_sdmt');
+  if(!m||!mb||!mt)return;
+  mt.textContent=(item?(item.sym||item.s):cr?cr.s:sym)+' — '+(name||'');
+  var price=item?(item.price||0):cr?cr.price:0;
+  var pct=item?(item.pct||0):cr?cr.pct:0;
+  var chg=item?(item.chg||0):cr?cr.chg:0;
+  var isNGX=!!ng&&!st;
+  var cl=_cc(pct);
+  var sig=item?item.sig:cr?cr.sig:'neutral';
+  var sglab={'strong-buy':'Strong Buy','buy':'Buy','neutral':'Neutral','sell':'Sell','strong-sell':'Strong Sell'}[sig]||'Neutral';
+  var canvasId='det-spk-'+sym;
+  mb.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem">'
+    +'<div><div style="font-family:var(--di);font-size:32px;font-weight:800;letter-spacing:-.04em">'+(cr?'$'+_fNK(price):isNGX?'₦'+(price>=1000?_fNK(price):_fN(price,2)):'$'+_fN(price,2))+'</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-top:4px"><span class="_cp '+cl+'" style="font-size:13px">'+_cs(chg)+_fN(Math.abs(chg),2)+'</span><span class="_cp '+cl+'" style="font-size:13px">'+_cs(pct)+Math.abs(pct).toFixed(2)+'%</span><span class="_sg '+sig+'">'+sglab+'</span></div></div>'
+    +'<div style="text-align:right"><div style="font-size:10px;color:var(--tx3);font-family:var(--mo)">'+sym+'</div><div style="font-size:12px;color:var(--tx2)">'+(cr?'Cryptocurrency':isNGX?'NGX — Nigerian Exchange':'US Equity')+'</div>'+(item&&item.vol?'<div style="font-size:11px;color:var(--tx3);font-family:var(--mo)">Vol: '+_fNK(item.vol)+'</div>':'')+(ng&&ng.sec?'<div style="font-size:11px;color:var(--tx3);font-family:var(--mo)">Sector: '+ng.sec+'</div>':'')+(cr?'<div style="font-size:11px;color:var(--tx3);font-family:var(--mo)">MCap: $'+cr.mcap+'</div>':'')+'</div></div>'
+    +'<div style="position:relative;height:120px;margin:8px 0;background:var(--n3);border-radius:9px;overflow:hidden"><canvas id="'+canvasId+'"></canvas></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:.75rem">'
+    +'<div style="background:var(--n3);border-radius:8px;padding:10px 13px"><div style="font-size:9px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">1-Day Change</div><div style="font-size:16px;font-weight:700;color:'+(pct>=0?'var(--gr)':'var(--rd)')+'">'+_cs(pct)+Math.abs(pct).toFixed(2)+'%</div></div>'
+    +'<div style="background:var(--n3);border-radius:8px;padding:10px 13px"><div style="font-size:9px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Signal</div><div style="margin-top:4px"><span class="_sg '+sig+'" style="font-size:11px">'+sglab+'</span></div></div>'
+    +(cr?'<div style="background:var(--n3);border-radius:8px;padding:10px 13px"><div style="font-size:9px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Market Cap</div><div style="font-size:15px;font-weight:700;color:var(--t)">$'+cr.mcap+'</div></div>':'')
+    +(cr?'<div style="background:var(--n3);border-radius:8px;padding:10px 13px"><div style="font-size:9px;font-family:var(--mo);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Dominance</div><div style="font-size:15px;font-weight:700;color:var(--pu)">'+cr.dom+'%</div></div>':'')
+    +'</div>'
+    +'<div style="margin-top:1rem;font-size:11px;color:var(--tx3);font-family:var(--mo);text-align:center">Chart shows illustrative 20-day price movement. Live charts available via your broker platform.</div>';
+  m.classList.add('on');
+  setTimeout(function(){var cv=_$(canvasId);if(cv){var c=pct>=0?'#22c55e':'#e05252';_sp(cv,_gs(price,.025,20),c,true);}},50);
+};
+window._cm=function(){var m=_$('_sdm');if(m)m.classList.remove('on');};
+_$('_sdm').addEventListener('click',function(e){if(e.target===this)window._cm();});
+
+// ── HISTORICAL FX LOOKUP ────────────────────────────────────────────
+window._lkup=async function(){
+  var base=(_$('_hbase')||{}).value||'USD';
+  var tgt=(_$('_htgt')||{}).value||'NGN';
+  var dt=(_$('_hdt')||{}).value;
+  var re=_$('_hres');
+  if(!dt){if(re)re.innerHTML='<div class="_nt">Please select a date.</div>';return;}
+  if(!re)return;
+  re.innerHTML='<div style="color:var(--tx3);font-family:var(--mo);font-size:12px;padding:12px 0">Fetching historical rate…</div>';
+  try{
+    var rate=null,src='';
+    var dobj=new Date(dt);
+    var dstr=dobj.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+    var hasNGN=(base==='NGN'||tgt==='NGN');
+    var hasRUB=(base==='RUB'||tgt==='RUB');
+    if(hasNGN){
+      var ngnResult=await _ngnHist(dt);
+      if(!ngnResult||!ngnResult.value){
+        var reason=ngnResult&&ngnResult.error?ngnResult.error:'Yahoo Finance has no USD/NGN data near this date';
+        throw new Error(reason);
+      }
+      var ngnRate=ngnResult.value;
+      var dateNote=ngnResult.daysOff>0?' (closest available: '+ngnResult.daysOff+' day(s) from requested date)':'';
+      if(base==='NGN'&&tgt==='USD'){rate=1/ngnRate;}
+      else if(base==='USD'&&tgt==='NGN'){rate=ngnRate;}
+      else if(base==='NGN'){
+        var usdToOther=await _frkRate(dt,'USD',tgt);
+        if(!usdToOther)throw new Error(tgt+' rate not available for this date');
+        rate=usdToOther/ngnRate;
+      } else {
+        var otherToUsd=await _frkRate(dt,base,'USD');
+        if(!otherToUsd)throw new Error(base+' rate not available for this date');
+        rate=otherToUsd*ngnRate;
+      }
+      src='Yahoo Finance (USD/NGN=X historical close)'+dateNote;
+    } else if(hasRUB){
+      var nonRub=base==='RUB'?tgt:base;
+      var url='https://open.er-api.com/v6/latest/'+nonRub;
+      var r=await fetch(url,{signal:_sig(10000)});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      var d=await r.json();
+      if(d.result!=='success')throw new Error(d['error-type']||'API error');
+      var rubRate=d.rates&&d.rates['RUB'];
+      if(!rubRate)throw new Error('RUB rate not available');
+      rate=(base==='RUB')?(1/rubRate):rubRate;
+      src='open.er-api.com (live rate — RUB not tracked historically due to data restrictions)';
+    } else {
+      rate=await _frkRate(dt,base,tgt,true);
+      src=_frkSrc;
+    }
+    if(!rate||!isFinite(rate))throw new Error('Rate not available for this pair on '+dt);
+    var formatted=rate>=100?_fN(rate,2):rate>=1?rate.toFixed(4):rate.toFixed(6);
+    var invRate=1/rate;
+    var invFmt=invRate>=100?_fN(invRate,2):invRate>=1?invRate.toFixed(4):invRate.toFixed(6);
+    re.innerHTML='<div style="background:var(--n3);border:1px solid rgba(0,201,167,.25);border-radius:10px;padding:20px 22px;margin-top:12px">'
+      +'<div style="font-size:10px;font-family:var(--mo);color:var(--t);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Historical Rate — '+dstr+'</div>'
+      +'<div style="font-family:var(--di);font-size:36px;font-weight:800;letter-spacing:-.04em;color:var(--tx)">1 '+base+' = <span style="color:var(--t)">'+formatted+'</span> '+tgt+'</div>'
+      +'<div style="font-size:13px;color:var(--tx2);margin-top:6px">Inverse: 1 '+tgt+' = '+invFmt+' '+base+'</div>'
+      +'<div style="font-size:10px;color:var(--tx3);font-family:var(--mo);margin-top:8px">Source: '+src+' · Date: '+dt+'</div>'
+      +'</div>';
+  }catch(e){re.innerHTML='<div class="_nt"><strong>Could not fetch rate.</strong> '+e.message+'<br><br>'
+        +'<strong>What this usually means:</strong><br>'
+        +'• Yahoo Finance has gaps in its USD/NGN=X feed — try a date a few days earlier or later<br>'
+        +'• A CORS proxy may be temporarily rate-limited — wait a moment and retry<br>'
+        +'• For non-NGN/RUB pairs, frankfurter.dev (ECB data) does not publish on weekends/holidays<br>'
+        +'• RUB only shows the current live rate (historical RUB data is restricted)'
+        +'</div>';}
+};
+var _frkSrc='frankfurter.dev (ECB reference rates)';
+async function _frkRate(dt,fromCur,toCur,allowFallback){
+  var url2='https://api.frankfurter.dev/v1/'+dt+'?base='+fromCur+'&symbols='+toCur;
+  var r2=await fetch(url2,{signal:_sig(10000)});
+  if(r2.ok){var d2=await r2.json();var rt=d2.rates&&d2.rates[toCur];if(rt){_frkSrc='frankfurter.dev (ECB reference rates)';return rt;}}
+  if(!allowFallback)return null;
+  var nearUrl='https://api.frankfurter.dev/v1/latest?base='+fromCur+'&symbols='+toCur;
+  var r3=await fetch(nearUrl,{signal:_sig(10000)});
+  if(!r3.ok)return null;
+  var d3=await r3.json();
+  _frkSrc='frankfurter.dev (latest rate — '+dt+' may be a weekend/holiday)';
+  return d3.rates&&d3.rates[toCur];
+}
+var _ngnCache={};
+async function _ngnHist(dt){
+  if(_ngnCache[dt]!==undefined)return _ngnCache[dt];
+  var target=new Date(dt).getTime()/1000;
+  var p1=Math.floor(target-21*86400);
+  var p2=Math.ceil(target+21*86400);
+  var hosts=['query2.finance.yahoo.com','query1.finance.yahoo.com'];
+  var proxies=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url='];
+  var lastErr='';
+  for(var pi=0;pi<proxies.length;pi++){
+    for(var hi=0;hi<hosts.length;hi++){
+      try{
+        var enc='https://'+hosts[hi]+'/v8/finance/chart/NGN%3DX?period1='+p1+'&period2='+p2+'&interval=1d';
+        var r=await fetch(proxies[pi]+encodeURIComponent(enc),{signal:_sig(9000)});
+        if(!r.ok){lastErr='HTTP '+r.status+' from '+hosts[hi];continue;}
+        var txt=await r.text();
+        var data;try{data=JSON.parse(txt);}catch(pe){lastErr='Non-JSON response';continue;}
+        var result=data&&data.chart&&data.chart.result&&data.chart.result[0];
+        if(!result){lastErr=(data&&data.chart&&data.chart.error&&data.chart.error.description)||'No result';continue;}
+        var ts=result.timestamp||[];
+        var closes=(result.indicators&&result.indicators.quote&&result.indicators.quote[0]&&result.indicators.quote[0].close)||[];
+        if(!ts.length){lastErr='Zero data points';continue;}
+        var bestIdx=-1,bestDiff=Infinity;
+        for(var i=0;i<ts.length;i++){if(closes[i]==null)continue;var diff=Math.abs(ts[i]-target);if(diff<bestDiff){bestDiff=diff;bestIdx=i;}}
+        if(bestIdx===-1){lastErr='All null';continue;}
+        _ngnCache[dt]={value:closes[bestIdx],daysOff:Math.round(bestDiff/86400)};
+        return _ngnCache[dt];
+      }catch(e){lastErr=e.message;continue;}
+    }
+  }
+  _ngnCache[dt]={value:null,daysOff:null,error:lastErr||'All proxies failed'};
+  return _ngnCache[dt];
+}
+(function(){var di=_$('_hdt');if(di){di.max=_ts();di.value=_ts();}})();
+
+// ════════════════════════════════════════════════════════════════════
+// NIGERIA LIVE DATA FETCHERS — AUTOMATED
+// Three independent fetchers with multi-proxy, multi-URL resilience.
+// Each falls back gracefully — the page never breaks.
+// ════════════════════════════════════════════════════════════════════
+
+// ── T-Bill rates from CBN ───────────────────────────────────────────
+async function _sTB(){
+  var urls=[
+    'https://www.cbn.gov.ng/rates/tBillsrates.asp',
+    'https://www.cbn.gov.ng/rates/GovtSecurities.html',
+    'https://www.cbn.gov.ng/rates/MacroIndicators.html'
+  ];
+  var html='';
+  for(var ui=0;ui<urls.length;ui++){
+    try{var h=await _proxyFetch(urls[ui],12000);if(h&&h.length>500){html=h;break;}}
+    catch(e){continue;}
+  }
+  if(!html||html.length<200)throw new Error('CBN T-Bill page unreachable');
+
+  var t91=null,t182=null,t364=null;
+
+  // Strategy A: table row parsing
+  var rows=html.match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)||[];
+  rows.forEach(function(row){
+    var cells=(row.match(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)||[])
+      .map(function(c){return c.replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').trim();});
+    var tc=cells.find(function(c){return /\b(91|182|364)\b/.test(c);});
+    var rc=cells.find(function(c){return /^\d{1,2}\.\d{2,4}$/.test(c);});
+    if(!tc||!rc)return;
+    var rate=parseFloat(rc);
+    if(isNaN(rate)||rate<5||rate>35)return;
+    if(/\b91\b/.test(tc)&&!t91)t91=rate;
+    if(/\b182\b/.test(tc)&&!t182)t182=rate;
+    if(/\b364\b/.test(tc)&&!t364)t364=rate;
+  });
+
+  // Strategy B: plain text regex
+  if(!t91||!t182||!t364){
+    var clean=html.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ');
+    var m91=clean.match(/\b91[\s\-Dd][^\d]{0,30}(\d{1,2}\.\d{2,4})/);
+    var m182=clean.match(/\b182[\s\-Dd][^\d]{0,30}(\d{1,2}\.\d{2,4})/);
+    var m364=clean.match(/\b364[\s\-Dd][^\d]{0,30}(\d{1,2}\.\d{2,4})/);
+    if(m91&&!t91)t91=parseFloat(m91[1]);
+    if(m182&&!t182)t182=parseFloat(m182[1]);
+    if(m364&&!t364)t364=parseFloat(m364[1]);
+  }
+
+  // Strategy C: Marginal Rate sequence (GovtSecurities layout)
+  if((!t91||!t182||!t364)&&html.length>500){
+    var clean2=html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
+    var marginals=[];
+    var mg,re2=/Marginal Rate[\s:]*([\d]{1,2}\.[\d]{2,4})/gi;
+    while((mg=re2.exec(clean2))!==null)marginals.push(parseFloat(mg[1]));
+    if(marginals.length>=3){
+      if(!t91)t91=marginals[0];
+      if(!t182)t182=marginals[1];
+      if(!t364)t364=marginals[2];
+    }
+  }
+
+  if(!t91&&!t182&&!t364)throw new Error('No T-Bill rates parsed from CBN');
+  var _v=function(v){if(!v)return null;return(v<5||v>35)?null:+v.toFixed(2);};
+  return{t91:_v(t91),t182:_v(t182),t364:_v(t364)};
+}
+
+// ── Inflation from NBS homepage ─────────────────────────────────────
+async function _sNBS(){
+  var urls=['https://nigerianstat.gov.ng/','https://www.nigerianstat.gov.ng/'];
+  var html='';
+  for(var ui=0;ui<urls.length;ui++){
+    // Try direct first (no CORS restriction on NBS homepage GET)
+    try{
+      var r=await fetch(urls[ui],{signal:_sig(9000)});
+      if(r.ok){html=await r.text();break;}
+    }catch(e){}
+    try{html=await _proxyFetch(urls[ui],10000);if(html&&html.length>200)break;}
+    catch(e){continue;}
+  }
+  if(!html||html.length<200)throw new Error('NBS page unreachable');
+
+  // Three regex strategies, most to least specific
+  var m=html.match(/Inflation Rate[^)]+\)\s*\(All-Items\)\s*([\d.,\s]+)/i);
+  if(!m)m=html.match(/Inflation Rate[^)]+\)\s*([\d.,\s]+)/i);
+  if(!m)m=html.match(/(\d{2}\.\d{1,2}(?:,\s*\d{1,2}\.\d{1,2}){4,})/);
+  if(!m)throw new Error('NBS inflation series not found');
+
+  var series=m[1].trim().split(',')
+    .map(function(v){return parseFloat(v.trim());})
+    .filter(function(v){return !isNaN(v)&&v>0&&v<100;});
+  if(series.length<2)throw new Error('NBS series too short');
+  var headline=series[series.length-1];
+  var prev=series[series.length-2];
+  if(headline<5||headline>80)throw new Error('NBS rate implausible: '+headline);
+  // Also try to parse GDP growth from the same page
+  var gdp=null,gdpPrev=null;
+  var gm=html.match(/GDP grew by\s*([\d.]+)%/i)||html.match(/GDP growth[^\d]{0,20}([\d.]+)%/i)||html.match(/Gross Domestic Product[^\d]{0,40}([\d.]+)%/i);
+  if(gm){gdp=parseFloat(gm[1]);if(gdp<0||gdp>20)gdp=null;}
+  return{headline:+headline.toFixed(2),prev:+prev.toFixed(2),series:series,gdp:gdp,gdpPrev:gdpPrev};
+}
+
+// ── MPR / CRR / Liquidity Ratio from CBN ───────────────────────────
+async function _sCBN(){
+  var urls=[
+    'https://www.cbn.gov.ng/MonetaryPolicy/decisions.asp',
+    'https://www.cbn.gov.ng/rates/MacroIndicators.html',
+    'https://www.cbn.gov.ng/'
+  ];
+  var html='';
+  for(var ui=0;ui<urls.length;ui++){
+    try{var h=await _proxyFetch(urls[ui],12000);if(h&&h.length>300){html=h;break;}}
+    catch(e){continue;}
+  }
+  if(!html||html.length<200)throw new Error('CBN MPR page unreachable');
+
+  var clean=html.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ');
+  var mpr=null,crr=null,liq=null;
+
+  var mprPatterns=[
+    /Monetary Policy Rate[^.]{0,80}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
+    /\bMPR\b[^.]{0,40}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
+    /\bMPR\b[^.]{0,30}?(\d{1,2}(?:\.\d{1,2})?)\s*%/i,
+    /policy rate[^.]{0,50}?(\d{1,2}(?:\.\d{1,2})?)\s*%/i,
+    /policy rate[^.]{0,50}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
+  ];
+  for(var i=0;i<mprPatterns.length;i++){var mm=clean.match(mprPatterns[i]);if(mm){mpr=parseFloat(mm[1]);break;}}
+
+  var crrPatterns=[
+    /Cash Reserve Require?ment[^.]{0,80}?(\d{1,3}(?:\.\d{1,2})?)\s*per\s*cent/i,
+    /\bCRR\b[^.]{0,40}?(\d{1,3}(?:\.\d{1,2})?)\s*per\s*cent/i,
+    /\bCRR\b[^.]{0,30}?(\d{1,3}(?:\.\d{1,2})?)\s*%/i,
+  ];
+  for(var i=0;i<crrPatterns.length;i++){var mc2=clean.match(crrPatterns[i]);if(mc2){crr=parseFloat(mc2[1]);break;}}
+
+  var liqPatterns=[
+    /[Ll]iquidity\s*[Rr]atio[^.]{0,80}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
+    /[Ll]iquidity\s*[Rr]atio[^.]{0,40}?(\d{1,2}(?:\.\d{1,2})?)\s*%/i,
+  ];
+  for(var i=0;i<liqPatterns.length;i++){var ml2=clean.match(liqPatterns[i]);if(ml2){liq=parseFloat(ml2[1]);break;}}
+
+  if(!mpr)throw new Error('MPR not found in CBN page');
+  if(mpr<15||mpr>35)throw new Error('MPR out of plausible range: '+mpr);
+  return{mpr:+mpr.toFixed(2),crr:crr?+crr.toFixed(2):null,liq:liq?+liq.toFixed(2):null,
+    slf:+(mpr+0.5).toFixed(2),sdf:+(mpr-4.5).toFixed(2)};
+}
+
+// ── Apply fetched data to _NGR, _FIT and chart ──────────────────────
+function _apNG(p){
+  var mpc=p.mpc,infl=p.infl,tbill=p.tbill;
+
+  if(mpc&&mpc.mpr){
+    var mi=_NGR.find(function(r){return r.id==='mpr';});
+    if(mi){mi.rate=mpc.mpr;mi.meta='MPC — auto-fetched · cbn.gov.ng';
+      mi.chg='SLF: '+(mpc.slf||'—')+'% · SDF: '+(mpc.sdf||'—')+'%';}
+    var ci=_NGR.find(function(r){return r.id==='crr';});
+    if(ci&&mpc.crr){ci.rate=mpc.crr;ci.meta='CRR — auto-fetched · cbn.gov.ng';}
+    var li=_NGR.find(function(r){return r.id==='liq';});
+    if(li&&mpc.liq){li.rate=mpc.liq;li.meta='Liquidity Ratio — auto-fetched · cbn.gov.ng';}
+  }
+
+  if(infl&&infl.headline){
+    var ii=_NGR.find(function(r){return r.id==='inf';});
+    if(ii){
+      ii.rate=infl.headline;
+      ii.meta='NBS CPI — auto-fetched · nigerianstat.gov.ng';
+      ii.chg=infl.prev
+        ?(infl.headline>=infl.prev?'↑':'↓')+' from '+infl.prev.toFixed(2)+'% prev month'
+        :'Live from NBS';
+    }
+    // Update last point on historical chart if rendered
+    if(window._ngchI){
+      var inflDs=window._ngchI.data.datasets.find(function(d){return d.label==='Inflation';});
+      if(inflDs){inflDs.data[inflDs.data.length-1]=infl.headline;window._ngchI.update();}
+    }
+    // Update GDP card if parsed from NBS page
+    if(infl.gdp){
+      var gi2=_NGR.find(function(r){return r.id==='gdp';});
+      if(gi2){gi2.rate=infl.gdp;gi2.meta='NBS GDP — auto-fetched · nigerianstat.gov.ng';
+        gi2.chg=infl.gdpPrev?'Prev: '+infl.gdpPrev.toFixed(2)+'%':'Latest NBS quarterly GDP';}
+    }
+  }
+
+  if(tbill){
+    var tmap={t91:'t91',t182:'t182',t364:'t364'};
+    var tenorLabel={t91:'91 days',t182:'182 days',t364:'364 days'};
+    Object.keys(tmap).forEach(function(k){
+      if(!tbill[k])return;
+      var ni=_NGR.find(function(r){return r.id===tmap[k];});
+      if(ni){ni.rate=tbill[k];ni.meta='NTB Stop Rate — auto-fetched · cbn.gov.ng';
+        ni.chg='Latest CBN primary market auction';}
+      var fi=_FIT.find(function(r){return r.ten===tenorLabel[k];});
+      if(fi){fi.rate=tbill[k].toFixed(2)+'%';fi.la='Latest';fi.ba=(tbill[k]-0.10).toFixed(2)+'%';}
+    });
+    // Update last point on historical chart
+    if(tbill.t364&&window._ngchI){
+      var tbDs=window._ngchI.data.datasets.find(function(d){return d.label==='T-Bill 364d';});
+      if(tbDs){tbDs.data[tbDs.data.length-1]=tbill.t364;window._ngchI.update();}
+    }
+  }
+
+  _bngr();_bfit();_btk();
+}
+
+// ── Per-source status display in API bar ────────────────────────────
+function _ngSts(results){
+  var icons=results.map(function(r){return r.status==='fulfilled'?'✓':'✗';});
+  var labels=['MPR','Infl','TBill'];
+  var el=_$('_as1');if(!el)return;
+  el.innerHTML=icons.map(function(ic,i){
+    return'<span style="color:'+(ic==='✓'?'var(--gr)':'var(--rd)')+'">'+ic+'</span>\u00a0'+labels[i];
+  }).join('<span style="color:var(--tx4)"> · </span>');
+}
+
+// ── Cache + orchestrator ────────────────────────────────────────────
+var _ngCache={data:null,ts:0};
+var _NG_TTL=4*60*60*1000; // 4 hours
+
+async function _fNG(force){
+  if(!force&&_ngCache.data&&(Date.now()-_ngCache.ts)<_NG_TTL){
+    _apNG(_ngCache.data);
+    return true;
+  }
+  var res=await Promise.allSettled([_sCBN(),_sNBS(),_sTB()]);
+  _ngSts(res);
+
+  var mpc  =res[0].status==='fulfilled'?res[0].value:null;
+  var infl =res[1].status==='fulfilled'?res[1].value:null;
+  var tbill=res[2].status==='fulfilled'?res[2].value:null;
+
+  res.forEach(function(r,i){
+    if(r.status==='rejected')
+      console.warn(['CBN MPR','NBS Infl','CBN TBill'][i]+' failed:',r.reason&&r.reason.message);
+  });
+
+  var any=mpc||infl||tbill;
+  if(any){
+    _ngCache={data:{mpc:mpc,infl:infl,tbill:tbill},ts:Date.now()};
+    _apNG({mpc:mpc,infl:infl,tbill:tbill});
+  }
+  return !!any;
+}
+
+// ── LIVE DATA FETCHERS (Crypto, FX, Indices) ────────────────────────
+async function _fCI(){
+  try{
+    var url='https://api.coingecko.com/api/v3/simple/price?ids='+_CG_IDS+'&vs_currencies=usd&include_24hr_change=true&include_market_cap=true';
+    var r=await fetch(url,{signal:_sig(9000)});
+    if(!r.ok)throw new Error('CG '+r.status);
+    var data=await r.json();
+    Object.entries(_CG_MAP).forEach(function(e){
+      var cgId=e[0],sym=e[1];
+      var d=data[cgId];if(!d)return;
+      var item=_CRYPTO.find(function(c){return c.s===sym;});
+      if(!item)return;
+      var prev=item.price;
+      item.price=d.usd;item.chg=+(d.usd-prev).toFixed(4);item.pct=+(d.usd_24h_change||0).toFixed(2);
+      item.mcap=_fNK(d.usd_market_cap||0);
+    });
+    var gr=await fetch('https://api.coingecko.com/api/v3/global',{signal:_sig(9000)});
+    if(gr.ok){
+      var gd=await gr.json();
+      var pct=gd.data&&gd.data.market_cap_percentage||{};
+      ['BTC','ETH','BNB','XRP','SOL','USDT','ADA','AVAX','DOGE'].forEach(function(k){
+        var item=_CRYPTO.find(function(c){return c.s===k;});
+        if(item)item.dom=+(pct[k.toLowerCase()]||item.dom).toFixed(1);
+      });
+    }
+    _bcc();_bctb();_bdmc();_btk();
+    return true;
+  }catch(e){console.warn('CG fail:',e.message);return false;}
+}
+
+async function _fFX(){
+  try{
+    var r=await fetch('https://open.er-api.com/v6/latest/USD',{signal:_sig(9000)});
+    if(!r.ok)throw new Error('ER '+r.status);
+    var d=await r.json();
+    if(d.result!=='success')throw new Error('ER err');
+    var rates=d.rates;
+    _FXP.forEach(function(p){
+      var lr=null;
+      if(p.f==='USD'){lr=rates[p.t];}
+      else if(p.t==='USD'){lr=1/rates[p.f];}
+      else if(rates[p.f]&&rates[p.t]){lr=rates[p.t]/rates[p.f];}
+      if(lr&&isFinite(lr)){
+        var pv=p.rate;
+        p.rate=+(lr.toFixed(lr>=100?2:4));
+        p.chg=+(p.rate-pv).toFixed(4);
+        p.pct=pv>0?+((p.rate-pv)/pv*100).toFixed(2):0;
+        p.rng=[Math.min(p.rng[0],p.rate*0.97),Math.max(p.rng[1],p.rate*1.03)];
+      }
+    });
+    _FXH.forEach(function(item){
+      var pr=_FXP.find(function(p){return p.f==='USD'&&p.t===item.s;});
+      if(pr){item.c=pr.pct;return;}
+      var xr=_FXP.find(function(p){return p.f===item.s&&p.t==='NGN';});
+      if(xr){item.c=xr.pct;}
+    });
+    if(rates['NGN']){
+      var nr=+rates['NGN'].toFixed(2);
+      var nx=_NGR.find(function(r){return r.id==='fx';});
+      if(nx){nx.rate=nr;nx.meta='I&E (live via ExchangeRate-API)';}
+    }
+    _bfx();_bfxhm();_bngr();_btk();
+    return true;
+  }catch(e){console.warn('FX fail:',e.message);return false;}
+}
+
+async function _fIdx(){
+  var _yprox=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url='];
+  async function _tryIdx(yh){
+    var hosts=['query2.finance.yahoo.com','query1.finance.yahoo.com'];
+    for(var pi=0;pi<_yprox.length;pi++){
+      for(var hi=0;hi<hosts.length;hi++){
+        try{
+          var enc='https://'+hosts[hi]+'/v8/finance/chart/'+yh+'?interval=1d&range=5d';
+          var r=await fetch(_yprox[pi]+encodeURIComponent(enc),{signal:_sig(8000)});
+          if(!r.ok)continue;
+          var ct=r.headers.get('content-type')||'';
+          if(!ct.includes('json'))continue;
+          var data=await r.json();
+          if(data&&data.chart&&data.chart.result&&data.chart.result[0])return data;
+        }catch(e){continue;}
+      }
+    }
+    throw new Error('yahoo unavailable for '+yh);
+  }
+  var res=await Promise.allSettled(Object.entries(_YHMAP).map(async function(en){
+    var id=en[0],yh=en[1];
+    var data=await _tryIdx(yh);
+    var re=data&&data.chart&&data.chart.result&&data.chart.result[0];
+    if(!re)throw new Error('no result');
+    var meta=re.meta;
+    var price=meta.regularMarketPrice||meta.previousClose;
+    var prev=meta.previousClose||meta.regularMarketPreviousClose;
+    var ch=+(price-prev).toFixed(2);
+    var pt=prev>0?+((ch/prev)*100).toFixed(2):0;
+    return{id:id,price:+price.toFixed(2),chg:ch,pct:pt};
+  }));
+  var lc=0;
+  res.forEach(function(r){
+    if(r.status!=='fulfilled')return;
+    var v=r.value;lc++;
+    var gi=_GI.find(function(i){return i.id===v.id;});
+    if(gi){gi.val=v.price;gi.chg=v.chg;gi.pct=v.pct;}
+    var ai=_AI.find(function(i){return i.id===v.id;});
+    if(ai){ai.val=v.price;ai.chg=v.chg;ai.pct=v.pct;}
+  });
+  if(lc>0){_bgi();_bai();_btk();}
+}
+
+function _mktSt(){
+  var now=new Date();var day=now.getUTCDay();var h=(now.getUTCHours()+1)%24;var mn=now.getUTCMinutes();
+  var wd=day>=1&&day<=5;var op=wd&&(h>9||(h===9&&mn>=30))&&h<14;
+  var el=document.querySelector('[data-mktst]');
+  if(el){el.textContent=op?'NGX Open':'NGX Closed';el.style.color=op?'var(--gr)':'var(--tx3)';}
+}
+
+document.querySelectorAll('._nmi').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var pg=btn.getAttribute('data-pg');
+    document.querySelectorAll('._nmi').forEach(function(b){b.classList.remove('on');b.setAttribute('aria-selected','false');});
+    document.querySelectorAll('._pg').forEach(function(p){p.classList.remove('on');});
+    btn.classList.add('on');btn.setAttribute('aria-selected','true');
+    var pgEl=_$('pg-'+pg);if(pgEl)pgEl.classList.add('on');
+    if(pg==='crypto'&&!_dci)setTimeout(_bdmc,100);
+    if(pg==='forex'&&!_ngchI)setTimeout(_bngch,100);
+  });
+});
+
+// Refresh buttons — force=true bypasses 4h cache
+window._rf=async function(btn){btn.classList.add('spin');btn.disabled=true;try{await Promise.allSettled([_fCI(),_fFX(),_fIdx(),_fNG(true)]);_upd();_mktSt();}finally{btn.classList.remove('spin');btn.disabled=false;}};
+window._rfx=async function(btn){btn.classList.add('spin');btn.disabled=true;try{await Promise.allSettled([_fFX(),_fNG(true)]);_upd();}finally{btn.classList.remove('spin');btn.disabled=false;}};
+window._rcy=async function(btn){btn.classList.add('spin');btn.disabled=true;try{await _fCI();_upd();}finally{btn.classList.remove('spin');btn.disabled=false;}};
+
+async function _init(){
+  _btk();_bgi();_bai();_bst();_bngxtb();_bfx();_bfxhm();_bcc();_bctb();_bngr();_bfit();_bspm();_mktSt();_upd();
+  setTimeout(function(){_bdmc();_bngch();},250);
+  _bgi_loading();
+  setTimeout(async function(){await Promise.allSettled([_fCI(),_fFX(),_fIdx(),_fNG(false)]);_upd();},600);
+  // Recurring auto-refresh intervals
+  setInterval(_fCI,60*1000);
+  setInterval(_fFX,5*60*1000);
+  setInterval(_fIdx,3*60*1000);
+  setInterval(function(){_fNG(true);},4*60*60*1000);
+  setInterval(_mktSt,60*1000);
+}
+
+// Auto-refresh Nigeria rates when returning to tab after 30+ min away
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'){
+    var stale=!_ngCache.data||(Date.now()-_ngCache.ts)>30*60*1000;
+    if(stale)_fNG(true).catch(function(){});
+  }
+});
+
+window.addEventListener('load',_init);
+</script>
+</body>
+</html>

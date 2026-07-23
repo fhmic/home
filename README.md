@@ -20,12 +20,38 @@ folder: **/docs**.
 Edit files under `src/` (web UI is fine), commit to `main`. CI rebuilds
 `docs/` within about a minute and the live site updates.
 
-## What this protects against
+## What this actually does
 
-View-source / browser devtools on the live site only ever show the
-generated shell in `docs/`: thin HTML + minified, hash-named CSS/JS files
-under `docs/assets/`. The readable logic in `src/` is not what ships to
-visitors' browsers — though note `src/` is still browsable on github.com
-itself since this repo is public. If hiding the source from GitHub
-browsing too ever matters later, that requires a private repo (and a
-paid GitHub plan for Pages-from-private, or a separate deploy target).
+Each page's `<body>` markup is captured as a string and folded into that
+page's JS bundle, then injected into a single empty `<div>` at runtime via
+`.innerHTML` — the same technique SPA frameworks (React/Vite, e.g. this
+project's own `fm-portal`) use to keep "view source" nearly empty. The
+shipped HTML shell for every page is now in the same ~15-25 line range as
+a Vite/React build's shell, instead of showing the full page markup.
+
+On top of that:
+- JS is run through `javascript-obfuscator` (hex-renamed identifiers,
+  control-flow flattening, base64-encoded string array) rather than just
+  minified — the sample output looks like `_0x17d4c2=...`, not readable
+  code.
+- CSS is minified via `clean-css`.
+- All HTML comments are stripped from the shipped output.
+- Every `onclick`/`onchange`/`oninput`/etc. attribute's target function
+  name is auto-detected from the source and explicitly protected from
+  renaming, so those handlers keep working exactly as before — verified
+  by simulating every page in a headless DOM and confirming the injected
+  markup renders and every handler name survives.
+
+## Two honest limits, still true regardless of any of this
+
+1. **This raises the bar, it doesn't make the code secret.** Anything
+   that runs in a visitor's browser must be sent to that browser in full,
+   plain-text, parseable form — obfuscation makes it unpleasant to read,
+   not impossible to eventually reverse. The only real way to keep logic
+   truly secret is to move it server-side (your Express backend) and have
+   the frontend just call an endpoint.
+2. **This repo is public**, so `src/` (the readable version) is still
+   browsable on github.com itself, even though it's never what ships to
+   the live site's visitors. If that needs to be hidden too, the repo
+   itself needs to be private (which has its own tradeoffs — see prior
+   conversation history for why that path was set aside).
