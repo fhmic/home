@@ -921,7 +921,13 @@ function renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt
   const contribs   = aBkts.map((a,i)=>{ const sp=spreadBkts[i]; return sp!=null?(a*(sp/100)):null; });
 
   // Expose for export
-  window.latestMaturity = { aBkts, lBkts, waraBkts, wacdBkts, spreadBkts, contribs, aTotal, lTotal, gBkts, gTotal };
+  window.latestMaturity = {
+    aBkts, lBkts, waraBkts, wacdBkts, spreadBkts, contribs, aTotal, lTotal, gBkts, gTotal,
+    debtorsBkts: rD.b, debtorsTotal: rD.total,
+    investBkts: rI.b, investTotal: rI.total,
+    cashBkts: rC.b, cashTotal: rC.total,
+    borrowBkts: rB.b, borrowTotal: rB.total,
+  };
 
   const TH = '<th>'+TENOR_LBLS.join('</th><th>')+'</th>';
   const liabPct = localWARA - localWACD;
@@ -1772,26 +1778,40 @@ all15.forEach((k,i)=>expKpiCard(s2,pres,sx2+(i%6)*(cW2+g2),sy2+Math.floor(i/6)*(
   // ── SLIDE 4b: ASSET & LIABILITY MATURITY PROFILE TABLE ──────
   const s4b=pres.addSlide(); s4b.background={color:EXP_C.navy};
   expTopBand(s4b,pres,'Asset & Liability Maturity Profile (₦)','Cumulative Tenor Gap — figures in Naira');
-  // Full maturity table: Asset rows, Liability rows, Gap row
+  // Full maturity table: Risk Assets, Investments, Cash, Total Assets,
+  // Borrowings, Total Funding, Cumulative Gap — same rows as the on-screen
+  // dashboard's Asset & Liability Maturity Profile table.
+  const debB=(mm.debtorsBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const invB=(mm.investBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const cshB=(mm.cashBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const brwB=(mm.borrowBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
   const matHdr=[
     [{text:'Category',options:{bold:true,color:EXP_C.teal,fill:{color:EXP_C.navy4}}},
      ...tL.map(t=>({text:t,options:{bold:true,color:EXP_C.teal,align:'center',fill:{color:EXP_C.navy4}}})),
      {text:'TOTAL',options:{bold:true,color:EXP_C.teal,align:'center',fill:{color:EXP_C.navy4}}}]
   ];
   const fN2=v=>v===0?'—':'₦'+(Math.round(v/1000)).toLocaleString()+'k';
+  const rowOf=(label,bkts,total,color,bold)=>[
+    {text:label,options:{bold:!!bold,color}},
+    ...bkts.map(v=>({text:fN2(v),options:{color,align:'right'}})),
+    {text:fN2(total),options:{bold:true,color,align:'right'}},
+  ];
   const matRows=[
-    [{text:'Assets (₦)',options:{bold:true,color:EXP_C.teal}},...aB.map(v=>({text:fN2(v),options:{color:EXP_C.teal,align:'right'}})),{text:fN2(aB.reduce((s,v)=>s+v,0)),options:{bold:true,color:EXP_C.teal,align:'right'}}],
-    [{text:'Liabilities (₦)',options:{bold:true,color:EXP_C.red}},...lB.map(v=>({text:fN2(v),options:{color:EXP_C.red,align:'right'}})),{text:fN2(lB.reduce((s,v)=>s+v,0)),options:{bold:true,color:EXP_C.red,align:'right'}}],
-    [{text:'Cumulative Gap',options:{bold:true,color:EXP_C.white}},...gB.map(v=>({text:'₦'+(Math.round(v/1000)).toLocaleString()+'k',options:{bold:true,color:v>=0?EXP_C.green:EXP_C.red,align:'right'}})),{text:'₦'+(Math.round((mm.gTotal||0)/1000)).toLocaleString()+'k',options:{bold:true,color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,align:'right'}}],
-    [{text:'Signal',options:{bold:true,color:EXP_C.tx2}},...gB.map(v=>({text:v>=0?'LEADING':'DEFICIT',options:{bold:true,color:v>=0?EXP_C.green:EXP_C.red,align:'center'}})),{text:(mm.gTotal||0)>=0?'SURPLUS':'DEFICIT',options:{bold:true,color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,align:'center'}}],
+    rowOf('Risk Assets (Debtors)',debB,mm.debtorsTotal||0,EXP_C.teal),
+    rowOf('Investments',invB,mm.investTotal||0,EXP_C.blue),
+    rowOf('Cash & Equivalents',cshB,mm.cashTotal||0,EXP_C.tx2),
+    rowOf('TOTAL DEPLOYABLE ASSETS',aB,aB.reduce((s,v)=>s+v,0),EXP_C.teal,true),
+    rowOf('Borrowings',brwB,mm.borrowTotal||0,EXP_C.red),
+    rowOf('TOTAL FUNDING BASE',lB,lB.reduce((s,v)=>s+v,0),EXP_C.red,true),
+    [{text:'LEADING / (GAP) — Cumulative',options:{bold:true,color:EXP_C.white}},...gB.map(v=>({text:'₦'+(Math.round(v/1000)).toLocaleString()+'k',options:{bold:true,color:v>=0?EXP_C.green:EXP_C.red,align:'right'}})),{text:'₦'+(Math.round((mm.gTotal||0)/1000)).toLocaleString()+'k',options:{bold:true,color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,align:'right'}}],
   ];
   const matTblData=[...matHdr,...matRows];
   const colCount=tL.length+2; // category + 6 tenors + total = 8
   const colWArr=[1.6,...tL.map(()=>0.98),1.0];
-  s4b.addTable(matTblData,{x:0.2,y:1.15,w:9.6,h:2.2,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:8.5,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.42,colW:colWArr});
+  s4b.addTable(matTblData,{x:0.2,y:1.15,w:9.6,h:3.15,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:8,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.39,colW:colWArr});
   // Legend note
   s4b.addText('Note: Values shown in ₦ Thousands (k). Cumulative Gap = running total of Assets minus Liabilities across tenors. LEADING = asset-funded; DEFICIT = funding shortfall.',
-    {x:0.2,y:3.55,w:9.6,h:0.45,fontSize:7.5,color:EXP_C.tx3,fontFace:'Arial',italic:true,wrap:true});
+    {x:0.2,y:4.4,w:9.6,h:0.55,fontSize:7.5,color:EXP_C.tx3,fontFace:'Arial',italic:true,wrap:true});
   expFooter(s4b,pres,5,TOTAL);
 
   // ── SLIDE 5: WARA / WACD SPREAD ──────────────────────────────
@@ -1839,12 +1859,13 @@ all15.forEach((k,i)=>expKpiCard(s2,pres,sx2+(i%6)*(cW2+g2),sy2+Math.floor(i/6)*(
   if(_invCache.length>7) invTbl.push(['+ '+(_invCache.length-7)+' more','','','','']);
   invTbl.push([{text:'TOTAL',options:{bold:true}},'',expFmtM(m.totalInv||0),{text:expPct(m.avgIY||0)+' avg',options:{color:EXP_C.green}},'']);
   s7.addTable(invTbl,{x:0.2,y:1.42,w:4.65,h:3.85,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:8,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.34,align:'left',colW:[1.45,1.1,0.72,0.52,0.86]});
-  expSecDiv(s7,pres,5.15,1.12,4.65,'BORROWINGS SCHEDULE',EXP_C.red);
+  expSecDiv(s7,pres,5.15,1.12,4.65,'BORROWINGS SCHEDULE — TOP 10 LENDERS',EXP_C.red);
   const borTbl=[[{text:'Lender',options:{bold:true,color:EXP_C.red}},{text:'Type',options:{bold:true,color:EXP_C.red}},{text:'Outstanding',options:{bold:true,color:EXP_C.red}},{text:'Rate',options:{bold:true,color:EXP_C.red}},{text:'Maturity',options:{bold:true,color:EXP_C.red}}]];
-  _borrowCache.slice(0,7).forEach(b=>borTbl.push([(b.lender||'').substring(0,14),(b.type||'').substring(0,12),expFmtM(b.outstanding),b.interestRate+'%',b.noMaturity?'On demand':fD(b.maturityDate)]));
-  if(_borrowCache.length>7) borTbl.push(['+ '+(_borrowCache.length-7)+' more','','','','']);
-  borTbl.push([{text:'TOTAL',options:{bold:true}},'',expFmtM(m.totalDebt||0),{text:expPct(m.wacd||0)+' avg',options:{color:EXP_C.red}},'']);
-  s7.addTable(borTbl,{x:5.15,y:1.42,w:4.65,h:3.85,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:8,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.34,align:'left',colW:[1.4,1.1,0.85,0.52,0.78]});
+  const borSorted=[..._borrowCache].sort((a,b)=>(b.outstanding||0)-(a.outstanding||0));
+  borSorted.slice(0,10).forEach(b=>borTbl.push([(b.lender||'').substring(0,14),(b.type||'').substring(0,12),expFmtM(b.outstanding),b.interestRate+'%',b.noMaturity?'On demand':fD(b.maturityDate)]));
+  if(borSorted.length>10) borTbl.push(['+ '+(borSorted.length-10)+' more (by size)','','','','']);
+  borTbl.push([{text:'TOTAL (ALL LENDERS)',options:{bold:true}},'',expFmtM(m.totalDebt||0),{text:expPct(m.wacd||0)+' avg',options:{color:EXP_C.red}},'']);
+  s7.addTable(borTbl,{x:5.15,y:1.42,w:4.65,h:3.85,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:7.5,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.29,align:'left',colW:[1.4,1.1,0.85,0.52,0.78]});
   expFooter(s7,pres,8,TOTAL);
 
   // ── SLIDE 8: BOARD ADVISORY (Assessment) ─────────────────────
