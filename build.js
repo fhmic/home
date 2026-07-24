@@ -59,7 +59,7 @@ const PAGES = [
   { name: 'legal-re-accept', dir: 'legal/re-accept' },
 ];
 
-const PASSTHROUGH_FILES = ['img.jpg', 'pix.jpg'];
+const PASSTHROUGH_FILES = ['img.jpg', 'pix.jpg', 'robots.txt', 'sitemap.xml'];
 
 const JS_KEYWORDS = new Set([
   'if', 'else', 'return', 'this', 'void', 'new', 'typeof', 'window',
