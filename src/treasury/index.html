@@ -981,36 +981,36 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
   const cr        = totalAssets>0 ? totalEquity/totalAssets*100 : 0;
 
   // ── Financial Optimisation Assessment points ─────────────────
-  if(spread>5)      pts.push({c:'gr',t:`Strong net interest spread of ${spread.toFixed(2)}% — entity earns comfortably above cost of funds.`});
-  else if(spread>0) pts.push({c:'am',t:`Net interest spread of ${spread.toFixed(2)}% is thin. Consider repricing assets or securing cheaper funding.`});
-  else              pts.push({c:'rd',t:`Negative net interest spread (${spread.toFixed(2)}%) — entity pays more on liabilities than it earns on assets. Immediate corrective action required.`});
+  if(spread>5)      pts.push({c:'gr',t:`Net interest spread of ${spread.toFixed(2)}% is strong, clearing the cost of funds with room to spare.`});
+  else if(spread>0) pts.push({c:'am',t:`Net interest spread of ${spread.toFixed(2)}% is thin. Reprice assets or negotiate cheaper funding before the buffer erodes further.`});
+  else              pts.push({c:'rd',t:`Net interest spread is negative at ${spread.toFixed(2)}%. The business is paying more on its liabilities than it earns on its assets, and that needs correcting now.`});
 
   if(wacc>0){
-    if(wara>=wacc+2)  pts.push({c:'gr',t:`WARA (${pct(wara)}) exceeds WACC (${pct(wacc)}) by ${(wara-wacc).toFixed(2)}pp — positive EVA. Entity creates shareholder value.`});
-    else if(wara<wacc)pts.push({c:'rd',t:`WARA (${pct(wara)}) is below WACC (${pct(wacc)}) — entity is destroying economic value. Immediate asset repricing required.`});
-    else              pts.push({c:'am',t:`WARA (${pct(wara)}) marginally above WACC (${pct(wacc)}). At EVA break-even — improving asset yields will strengthen value creation.`});
+    if(wara>=wacc+2)  pts.push({c:'gr',t:`WARA of ${pct(wara)} clears WACC of ${pct(wacc)} by ${(wara-wacc).toFixed(2)}pp. That's a positive EVA position: the entity is creating shareholder value.`});
+    else if(wara<wacc)pts.push({c:'rd',t:`WARA of ${pct(wara)} sits below WACC of ${pct(wacc)}. The entity is destroying economic value at the current rate, and asset repricing needs to happen without delay.`});
+    else              pts.push({c:'am',t:`WARA of ${pct(wara)} is only marginally above WACC of ${pct(wacc)}, putting the entity near EVA break-even. Lifting asset yields from here will meaningfully strengthen value creation.`});
   }
 
-  if(debtorPct>80)       pts.push({c:'am',t:`Risk assets at ${debtorPct.toFixed(0)}% of portfolio — very high concentration. Maintain a minimum 10–15% liquidity buffer in short-term investments.`});
-  else if(debtorPct>50)  pts.push({c:'gr',t:`Risk asset (debtor) book at ${debtorPct.toFixed(0)}% of total assets — ideal allocation for a finance company. Higher-yield risk assets offset borrowing costs. Keep ECL model current.`});
-  else if(debtorPct>0)   pts.push({c:'am',t:`Risk assets at only ${debtorPct.toFixed(0)}% of portfolio — below optimal for a finance company. Scale the loans/debtor to leverage borrowings at higher yields than fixed deposits.`});
+  if(debtorPct>80)       pts.push({c:'am',t:`Risk assets make up ${debtorPct.toFixed(0)}% of the portfolio, a concentration high enough to warrant a liquidity cushion. Hold a minimum 10–15% of assets in short-term investments as a buffer.`});
+  else if(debtorPct>50)  pts.push({c:'gr',t:`The risk asset book sits at ${debtorPct.toFixed(0)}% of total assets, a sound allocation for a finance company. These higher-yield exposures are earning their keep offsetting borrowing costs. Keep the ECL model current to protect that position.`});
+  else if(debtorPct>0)   pts.push({c:'am',t:`Risk assets account for only ${debtorPct.toFixed(0)}% of the portfolio, below where a finance company should sit. Grow the loan book so borrowings are working at yields above what fixed deposits pay.`});
 
   if(totalInv>0){
-    if(avgIY>wacd+2)   pts.push({c:'gr',t:`Investment yield (${pct(avgIY)}) exceeds WACD by ${(avgIY-wacd).toFixed(2)}pp — surplus liquidity deployed at positive spreads.`});
-    else if(avgIY<wacd)pts.push({c:'am',t:`Investment yield (${pct(avgIY)}) below WACD (${pct(wacd)}) — idle liquidity earns less than funding cost. Finance companies should prioritise risk assets over fixed deposits as higher asset yields cover borrowing costs more effectively.`});
+    if(avgIY>wacd+2)   pts.push({c:'gr',t:`Investment yield of ${pct(avgIY)} clears WACD by ${(avgIY-wacd).toFixed(2)}pp. Surplus liquidity is earning a positive spread.`});
+    else if(avgIY<wacd)pts.push({c:'am',t:`Investment yield of ${pct(avgIY)} is below WACD of ${pct(wacd)}. Idle liquidity is earning less than it costs to fund, and that gap closes fastest by prioritising risk assets over fixed deposits, since asset yields cover borrowing costs far more effectively.`});
   }
-  if(cashPct>25) pts.push({c:'am',t:`${cashPct.toFixed(0)}% of assets (${fmt(totalCash)}) sit as idle cash. Deploy excess into 91-day T-Bills or short-term FDs.`});
+  if(cashPct>25) pts.push({c:'am',t:`${cashPct.toFixed(0)}% of assets, ${fmt(totalCash)}, sits idle in cash. Put the excess to work in 91-day T-Bills or short-term fixed deposits.`});
 
-  if(lever>8)        pts.push({c:'rd',t:`Debt/Equity of ${lever.toFixed(2)}× is very high — approaching regulatory limits. Monitor capital adequacy ratios closely.`});
-  else if(lever>3)   pts.push({c:'gr',t:`Debt/Equity of ${lever.toFixed(2)}× reflects adequate leverage for a finance company. Borrowings fund risk assets which earn higher returns to offset funding costs.`});
-  else if(lever>1.5) pts.push({c:'am',t:`Debt/Equity of ${lever.toFixed(2)}× is moderate for a finance company. Consider scaling debt utilisation to grow the risk asset book.`});
-  else if(lever<0.5&&totalDebt>0) pts.push({c:'am',t:`Low leverage (${lever.toFixed(2)}×) — finance companies typically operate at 3–6× to optimise ROE. Consider scaling borrowings to fund risk assets.`});
+  if(lever>8)        pts.push({c:'rd',t:`Debt/Equity of ${lever.toFixed(2)}× is high, close to regulatory limits. Capital adequacy ratios need close monitoring from here.`});
+  else if(lever>3)   pts.push({c:'gr',t:`Debt/Equity of ${lever.toFixed(2)}× is appropriate for a finance company. Borrowings are funding risk assets that earn well above their cost.`});
+  else if(lever>1.5) pts.push({c:'am',t:`Debt/Equity of ${lever.toFixed(2)}× is moderate for a finance company. There's room to scale debt utilisation and grow the risk asset book further.`});
+  else if(lever<0.5&&totalDebt>0) pts.push({c:'am',t:`Leverage is low at ${lever.toFixed(2)}×. Finance companies typically run at 3–6× to optimise ROE, so there's headroom to scale borrowings and fund additional risk assets.`});
 
-  if(totalEquity===0) pts.push({c:'rd',t:'No equity data entered. Go to Equity & Capital to enter share capital — essential for WACC computation.'});
-  else pts.push(cr<10?{c:'rd',t:`Capital ratio of ${cr.toFixed(1)}% is thin. Target ≥ 20% to maintain regulatory headroom.`}:{c:'gr',t:`Capital ratio of ${cr.toFixed(1)}% indicates adequate capitalisation and remains a key strength.`});
+  if(totalEquity===0) pts.push({c:'rd',t:'No equity data has been entered yet. Add share capital under Equity & Capital, since it is essential to computing WACC.'});
+  else pts.push(cr<10?{c:'rd',t:`Capital ratio of ${cr.toFixed(1)}% is thin. Target at least 20% to preserve regulatory headroom.`}:{c:'gr',t:`Capital ratio of ${cr.toFixed(1)}% reflects adequate capitalisation and remains a key strength of the balance sheet.`});
 
   const s3 = _debtorCache.filter(d=>getStage(d._id)===3);
-  if(s3.length>0){ const s3amt=s3.reduce((s,d)=>s+d.totalOutstanding,0); pts.push({c:'rd',t:`${s3.length} debtor${s3.length>1?'s':''} (${fmt(s3amt)}) are Stage 3. Ensure full ECL provisions are recognised and escalate recovery immediately.`}); }
+  if(s3.length>0){ const s3amt=s3.reduce((s,d)=>s+d.totalOutstanding,0); pts.push({c:'rd',t:`${s3.length} debtor${s3.length>1?'s':''} totalling ${fmt(s3amt)} are classified Stage 3. Recognise the full ECL provision and escalate recovery without delay.`}); }
 
   // ── Board Recommendations — structured Observation / Recommendation / Rationale ──
   let recNum = 0;
@@ -1022,9 +1022,9 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     recItems.push({
       n: recNum,
       title: 'Address Negative Net Interest Spread Urgently',
-      obs:   `Current net interest spread is ${spread.toFixed(2)}% — the entity is paying more on its liabilities than it earns on its assets, which directly erodes profitability.`,
-      rec:   `Immediately reprice debtor/loan facilities upward. Target a minimum debtor yield of WACD + 5% (i.e. ≥ ${(wacd+5).toFixed(1)}%) to cover ECL charges and generate positive spread. Simultaneously, explore renegotiating the highest-cost borrowing facilities.`,
-      rat:   `Every basis point of negative spread compounds against equity. Restoring a positive NIS of at least 2–3% is the single most impactful lever available to management at this time.`,
+      obs:   `Net interest spread currently sits at ${spread.toFixed(2)}%. The entity is paying more on its liabilities than it earns on its assets, and that gap is eroding profitability directly.`,
+      rec:   `Reprice debtor and loan facilities upward immediately. Target a minimum debtor yield of WACD + 5% (≥ ${(wacd+5).toFixed(1)}%) to cover ECL charges and restore positive spread. In parallel, renegotiate the highest-cost borrowing facilities.`,
+      rat:   `Every basis point of negative spread compounds against equity. Restoring a positive spread of at least 2–3% is the single highest-impact lever management has right now.`,
       dot:   'rd'
     });
   } else if(spread<2){
@@ -1032,9 +1032,9 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     recItems.push({
       n: recNum,
       title: 'Reprice Assets to Widen Interest Spread',
-      obs:   `Net interest spread of ${spread.toFixed(2)}% is thin and provides minimal buffer against credit losses and operating costs.`,
+      obs:   `Net interest spread of ${spread.toFixed(2)}% is thin and leaves minimal buffer against credit losses and operating costs.`,
       rec:   `Target a minimum debtor yield of WACD + 5% (≥ ${(wacd+5).toFixed(1)}%) across new and renewed facilities. Review pricing on floating-rate exposures and introduce risk-adjusted pricing tiers.`,
-      rat:   `A wider spread of at least 3–5% is the industry benchmark for sustainable profitability in a lending-focused finance company. Thin spreads leave the business exposed to any uptick in credit losses or funding costs.`,
+      rat:   `A spread of at least 3–5% is the industry benchmark for sustainable profitability in a lending-focused finance company. A thinner spread leaves the business exposed to any uptick in credit losses or funding costs.`,
       dot:   'am'
     });
   }
@@ -1045,9 +1045,9 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     recItems.push({
       n: recNum,
       title: 'Re-optimise Asset Allocation Towards Risk Assets',
-      obs:   `Risk assets (debtors/loans) represent only ${debtorPct.toFixed(0)}% of total deployable assets. The remaining ${(100-debtorPct).toFixed(0)}% is held in lower-yielding investments and cash.`,
-      rec:   `Set a strategic target of 60–70% risk asset concentration. Channel new borrowing drawdowns primarily into the loans rather than fixed deposits or money market placements.`,
-      rat:   `Risk assets command yields significantly above the cost of borrowing, unlike fixed deposits which typically earn below WACD. Re-allocating from investments to loans will directly improve WARA and widen the interest spread.`,
+      obs:   `Risk assets (debtors and loans) represent only ${debtorPct.toFixed(0)}% of total deployable assets. The remaining ${(100-debtorPct).toFixed(0)}% sits in lower-yielding investments and cash.`,
+      rec:   `Set a strategic target of 60–70% risk asset concentration. Channel new borrowing drawdowns primarily into the loan book rather than fixed deposits or money market placements.`,
+      rat:   `Risk assets command yields well above the cost of borrowing, unlike fixed deposits, which typically earn below WACD. Shifting the mix from investments to loans will lift WARA directly and widen the interest spread.`,
       dot:   'am'
     });
   } else if(debtorPct>80){
@@ -1055,9 +1055,9 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     recItems.push({
       n: recNum,
       title: 'Maintain Minimum Liquidity Buffer',
-      obs:   `Risk asset concentration at ${debtorPct.toFixed(0)}% of total assets is very high, leaving limited liquid assets as a buffer.`,
-      rec:   `Maintain a minimum 10–15% of total assets in short-term liquid instruments (91-day T-Bills, overnight placements) as a structural liquidity reserve.`,
-      rat:   `Regulatory and operational resilience requires sufficient liquidity to meet short-term obligations without forced asset sales. A 10–15% buffer preserves optionality while not materially diluting WARA.`,
+      obs:   `Risk asset concentration at ${debtorPct.toFixed(0)}% of total assets is very high, leaving a thin liquid buffer.`,
+      rec:   `Maintain a minimum 10–15% of total assets in short-term liquid instruments, such as 91-day T-Bills or overnight placements, as a structural liquidity reserve.`,
+      rat:   `Regulatory and operational resilience requires enough liquidity to meet short-term obligations without forced asset sales. A 10–15% buffer preserves that optionality without materially diluting WARA.`,
       dot:   'am'
     });
   }
@@ -1068,9 +1068,9 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     recItems.push({
       n: recNum,
       title: 'Redeploy Sub-WACD Liquidity into Higher-Yield Instruments',
-      obs:   `Investment yield of ${pct(avgIY)} is below WACD of ${pct(wacd)} — the entity is effectively subsidising its liquidity position at a net cost.`,
-      rec:   `Redeploy excess liquidity from low-yield placements into the risk asset (loan/debtor) book, which commands rates significantly above money market and fixed deposit yields. Where loan demand is insufficient, retain fixed deposits and money market instruments as the secondary option — note that these typically yield above FGN T-Bill rates and should be maintained as the liquidity buffer rather than replaced by government securities.`,
-      rat:   `Idle liquidity deployed below funding cost is a drag on ROE. Even a 100–200bp improvement in investment yield will contribute meaningfully to WARA and EVA.`,
+      obs:   `Investment yield of ${pct(avgIY)} sits below WACD of ${pct(wacd)}. The entity is effectively subsidising its own liquidity position at a net cost.`,
+      rec:   `Redeploy excess liquidity from low-yield placements into the risk asset book, which commands rates well above money market and fixed deposit yields. Where loan demand falls short, keep fixed deposits and money market instruments as the fallback rather than government securities. These typically yield above FGN T-Bill rates and should remain the liquidity buffer of choice.`,
+      rat:   `Idle liquidity earning below funding cost is a direct drag on ROE. Even a 100–200bp improvement in investment yield contributes meaningfully to WARA and EVA.`,
       dot:   'am'
     });
   }
@@ -1082,8 +1082,8 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
       n: recNum,
       title: 'Sustain and Strengthen Positive EVA Position',
       obs:   `WARA of ${pct(wara)} exceeds WACC of ${pct(wacc)} by ${(wara-wacc).toFixed(2)}pp, confirming the entity is generating value above its cost of capital.`,
-      rec:   `Protect this margin by defending asset yields on renewals and resisting pressure to reduce rates in competitive bids. Target WARA ≥ WACC + 3pp as a standing internal benchmark.`,
-      rat:   `Positive EVA is the foundation of long-term equity value creation. It remains a key strength and should not be eroded during balance sheet expansion.`,
+      rec:   `Protect this margin by defending asset yields on renewals and resisting pressure to cut rates in competitive bids. Hold WARA ≥ WACC + 3pp as a standing internal benchmark.`,
+      rat:   `Positive EVA is the foundation of long-term equity value creation. It is a key strength and should not be given up during balance sheet expansion.`,
       dot:   'gr'
     });
   } else if(wacc>0 && wara<wacc){
@@ -1091,9 +1091,9 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     recItems.push({
       n: recNum,
       title: 'Restore Positive EVA Through Asset Yield Improvement',
-      obs:   `WARA of ${pct(wara)} is below WACC of ${pct(wacc)}, indicating the entity is currently destroying economic value.`,
-      rec:   `Target WARA ≥ ${(Math.ceil(wacc+1)).toFixed(1)}% through a combination of asset repricing, portfolio mix shift towards higher-yield risk assets, and cost-of-funds reduction.`,
-      rat:   `Sustained negative EVA erodes book value over time. Restoring positive EVA is a board-level priority that protects shareholder interests and supports future capital raising.`,
+      obs:   `WARA of ${pct(wara)} is below WACC of ${pct(wacc)}, meaning the entity is currently destroying economic value.`,
+      rec:   `Target WARA ≥ ${(Math.ceil(wacc+1)).toFixed(1)}% through a combination of asset repricing, a mix shift towards higher-yield risk assets, and cost-of-funds reduction.`,
+      rat:   `Sustained negative EVA erodes book value over time. Restoring positive EVA is a board-level priority that protects shareholder interests and future capital-raising options.`,
       dot:   'rd'
     });
   }
@@ -1105,9 +1105,9 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
       recItems.push({
         n: recNum,
         title: 'Strengthen Capital Base',
-        obs:   `Capital ratio of ${cr.toFixed(1)}% is below the 20% internal benchmark — the balance sheet is thinly capitalised relative to total assets.`,
-        rec:   `Prioritise profit retention over dividend distribution until the capital ratio reaches ≥ 20%. Evaluate a rights issue or preference share offer to inject fresh equity.`,
-        rat:   `A stronger capital base expands borrowing headroom, reduces the cost of funds, and provides a larger buffer against unexpected credit losses.`,
+        obs:   `Capital ratio of ${cr.toFixed(1)}% is below the 20% internal benchmark. The balance sheet is thinly capitalised relative to total assets.`,
+        rec:   `Prioritise profit retention over dividend distribution until the capital ratio reaches at least 20%. Evaluate a rights issue or preference share offer to inject fresh equity.`,
+        rat:   `A stronger capital base expands borrowing headroom, lowers the cost of funds, and provides a larger buffer against unexpected credit losses.`,
         dot:   'rd'
       });
     } else {
@@ -1115,9 +1115,9 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
       recItems.push({
         n: recNum,
         title: 'Maintain Prudent Leverage While Scaling',
-        obs:   `Debt-to-equity of ${lever.toFixed(2)}× is within acceptable levels for a finance company, and capital ratio of ${cr.toFixed(1)}% provides adequate headroom.`,
-        rec:   `Gradually increase leverage in line with asset growth, ensuring borrowings are channelled into higher-yielding risk assets rather than low-yield placements. Target a D/E ceiling of 6–7× before seeking fresh equity.`,
-        rat:   `The current leverage headroom supports balance sheet expansion without undue financial strain. Capital adequacy remains a key strength and should not be eroded during expansion.`,
+        obs:   `Debt-to-equity of ${lever.toFixed(2)}× is within acceptable levels for a finance company, and a capital ratio of ${cr.toFixed(1)}% provides adequate headroom.`,
+        rec:   `Increase leverage gradually in line with asset growth, ensuring borrowings are channelled into higher-yielding risk assets rather than low-yield placements. Target a D/E ceiling of 6–7× before seeking fresh equity.`,
+        rat:   `Current leverage headroom supports balance sheet expansion without undue financial strain. Capital adequacy is a key strength and should not be eroded during that expansion.`,
         dot:   'gr'
       });
     }
@@ -1129,9 +1129,9 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     recItems.push({
       n: recNum,
       title: 'Deploy Excess Cash to Reduce Earnings Drag',
-      obs:   `${cashPct.toFixed(0)}% of total assets (${fmt(totalCash)}) is held as idle cash — earning zero or near-zero return while funded by interest-bearing borrowings.`,
+      obs:   `${cashPct.toFixed(0)}% of total assets (${fmt(totalCash)}) is held as idle cash, earning zero or near-zero return while funded by interest-bearing borrowings.`,
       rec:   `Deploy a minimum of 70% of excess cash (above a 10% liquidity reserve) into 91-day FGN Treasury Bills (~${Math.min(avgIY||20,21).toFixed(1)}% p.a.) or short-term commercial paper within the next 30 days.`,
-      rat:   `Cash drag directly suppresses WARA and widens the gap between asset returns and funding costs. Even a partial deployment into T-Bills can improve WARA by 50–100bp.`,
+      rat:   `Cash drag directly suppresses WARA and widens the gap between asset returns and funding costs. Even a partial deployment into T-Bills can lift WARA by 50–100bp.`,
       dot:   'am'
     });
   }
@@ -1144,8 +1144,8 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
       n: recNum,
       title: 'Accelerate Recovery of Stage 3 Exposures',
       obs:   `${s3.length} debtor${s3.length>1?'s':''} totalling ${fmt(s3amt)} are classified Stage 3 (credit-impaired), requiring lifetime ECL provisioning.`,
-      rec:   `Escalate recovery on all Stage 3 accounts — engage a collections agency or initiate legal recovery proceedings within 60 days. Ensure full IFRS 9 lifetime ECL provisions are recognised in the current reporting period.`,
-      rat:   `Unresolved Stage 3 exposures continue to accrue interest income that may never be recovered, inflating WARA optically while understating true credit losses. Swift resolution protects capital and improves ECL coverage ratios.`,
+      rec:   `Escalate recovery on all Stage 3 accounts. Engage a collections agency or initiate legal recovery proceedings within 60 days, and ensure full IFRS 9 lifetime ECL provisions are recognised in the current reporting period.`,
+      rat:   `Unresolved Stage 3 exposures keep accruing interest income that may never be recovered, inflating WARA optically while understating true credit losses. Swift resolution protects capital and improves ECL coverage.`,
       dot:   'rd'
     });
   }
@@ -1163,7 +1163,7 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
   if(cashPct>25)   concerns.push('deploying idle cash');
   const posStr  = positives.length>0 ? `building on its ${positives.join(', ')}` : 'addressing key structural gaps';
   const conStr  = concerns.length>0  ? concerns.join(', and ') : 'sustaining current performance metrics';
-  const conclusion = `Management should prioritise ${conStr}, while ${posStr}. Execution discipline and speed are critical to prevent further earnings dilution and to position the company for sustainable profitability.`;
+  const conclusion = `Management's priority is ${conStr}, ${posStr}. The board should expect visible progress within the next reporting cycle: delay on these items compounds the earnings impact and pushes sustainable profitability further out of reach.`;
 
   // ── Render HTML ──────────────────────────────────────────────
   let html = '';
