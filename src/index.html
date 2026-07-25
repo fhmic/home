@@ -2,23 +2,26 @@
 <html lang="en">
 <head>
 <script>(function(){try{var t=localStorage.getItem('fm_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();</script>
-<meta name="google-site-verification" content="Vx0XgExhvFF6m8Q7d3SQwnGMBHfnlUJaHcHgLzziug0" />
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Felix Happy Michael | ACA, FMVA | Finance Consultant</title>
+<title>Felix Happy Michael — ACA, FMVA | Finance Leader</title>
 <meta name="description" content="Felix Happy Michael, ACA FMVA: Chartered Accountant, financial strategist, and FinTech builder based in Lagos, Nigeria. Financial reporting, tax strategy, and custom finance software.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://fhmic.github.io/home/">
 <meta property="og:type" content="profile">
-<meta property="og:title" content="Felix Happy Michael | ACA, FMVA | Finance Consultant">
+<meta property="og:title" content="Felix Happy Michael — ACA, FMVA | Finance Leader">
 <meta property="og:description" content="Felix Happy Michael, ACA FMVA: Chartered Accountant, financial strategist, and FinTech builder based in Lagos, Nigeria. Financial reporting, tax strategy, and custom finance software.">
 <meta property="og:url" content="https://fhmic.github.io/home/">
 <meta property="og:site_name" content="FM Finance Suite">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Felix Happy Michael | ACA, FMVA | Finance Consultant">
+<meta name="twitter:title" content="Felix Happy Michael — ACA, FMVA | Finance Leader">
 <meta name="twitter:description" content="Felix Happy Michael, ACA FMVA: Chartered Accountant, financial strategist, and FinTech builder based in Lagos, Nigeria. Financial reporting, tax strategy, and custom finance software.">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Felix Happy Michael", "jobTitle": "Chartered Accountant & Financial Strategist", "url": "https://fhmic.github.io/home/", "sameAs": []}</script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='12' fill='%230a1628'>FM</text></svg>">
+<!-- Replace REPLACE_WITH_YOUR_GSC_CODE with the code Google Search Console gives you at search.google.com/search-console → Settings → Ownership verification → HTML tag -->
+<meta name="google-site-verification" content="REPLACE_WITH_YOUR_GSC_CODE">
+<link rel="preload" as="image" href="pix.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
@@ -282,6 +285,12 @@ section{padding:clamp(3.5rem,6vw,6rem) clamp(1.25rem,5vw,3rem);position:relative
 .app-chip{display:flex;align-items:center;gap:9px;background:var(--n4);border:1px solid var(--b3);border-radius:10px;padding:10px 18px;font-size:12.5px;color:var(--tx2);transition:all .25s}
 .app-chip svg{width:16px;height:16px;flex-shrink:0;stroke:var(--t)}
 .app-chip:hover{border-color:var(--t);color:var(--t);transform:translateY(-3px)}
+.port-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin:2rem 0;text-align:left}
+.port-card{background:var(--n4);border:1px solid var(--b3);border-radius:12px;padding:1.2rem 1.3rem;transition:all .25s}
+.port-card:hover{border-color:var(--t);transform:translateY(-3px)}
+.port-card h3{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--tx);margin-bottom:.5rem}
+.port-card h3 svg{width:17px;height:17px;flex-shrink:0;stroke:var(--t)}
+.port-card p{font-size:12.5px;color:var(--tx2);line-height:1.55;margin:0}
 .port-sub{font-size:14px;color:var(--tx2);line-height:1.75;margin-bottom:0}
 
 /* CONTACT */
@@ -372,14 +381,14 @@ footer{padding:1.5rem clamp(1.25rem,5vw,3rem);border-top:1px solid var(--b);disp
 
     <!-- Profile photo — top center -->
     <div class="hero-photo-wrap">
-      <img src="pix.jpg" alt="Felix Happy Michael" class="hero-photo">
+      <img src="pix.jpg" alt="Felix Happy Michael" class="hero-photo" width="420" height="479" fetchpriority="high">
     </div>
 
     <!-- All text content below, centered, full-width -->
     <div class="hero-content">
       <div class="hero-eyebrow">
         <span class="eyebrow-dot"></span>
-        Finance Consultant &nbsp;·&nbsp; FinTech Builder
+        Finance Leader &nbsp;·&nbsp; FinTech Builder
       </div>
       <div class="hero-name-block">
         <h1 class="hero-name">Felix H. <span style="color:var(--t);text-shadow:0 0 20px rgba(0,201,167,.6),0 0 40px rgba(0,201,167,.3)">Michael</span></h1>
@@ -609,12 +618,27 @@ footer{padding:1.5rem clamp(1.25rem,5vw,3rem);border-top:1px solid var(--b);disp
       <div class="s-label reveal" style="justify-content:center">Portfolio</div>
       <h2 class="s-title reveal" style="text-align:center">Tools &amp; Applications</h2>
       <p class="port-sub reveal">Bespoke financial tools built from deep domain expertise. Sign in to access the full suite.</p>
-      <div class="port-apps reveal reveal-d1">
-        <div class="app-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Live Job Search Engine</div>
-        <div class="app-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Bank Reconciliation Engine</div>
-        <div class="app-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>Receivables Tracker</div>
-        <div class="app-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Treasury Intelligence Platform</div>
-        <div class="app-chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Capital Market &amp; FX Console</div>
+      <div class="port-cards reveal reveal-d1">
+        <div class="port-card">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>CapitalMax</h3>
+          <p>An enterprise-grade Nigerian investment platform for building and tracking portfolios: NGX watchlists, dividend calendars, risk analytics, and AI-assisted rebalancing recommendations.</p>
+        </div>
+        <div class="port-card">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Treasury Intelligence</h3>
+          <p>WACC/WACD analysis and asset-liability maturity profiling for treasury teams, with board-ready reports exported straight to PowerPoint and PDF.</p>
+        </div>
+        <div class="port-card">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>Receivables Tracker</h3>
+          <p>Debtor ageing and IFRS 9 ECL staging for finance teams managing collections, with exports to PDF and Excel for audit and board reporting.</p>
+        </div>
+        <div class="port-card">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Bank Reconciliation Engine</h3>
+          <p>Automated bank-to-GL reconciliation with variance tracking, built to cut a manual multi-day process down to minutes.</p>
+        </div>
+        <div class="port-card">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>FM 360 Job Intelligence</h3>
+          <p>Live job market tracking for finance and accounting roles, built for professionals monitoring the market for their next move.</p>
+        </div>
       </div>
       <a href="portal/" class="btn-cta btn-primary reveal reveal-d2" style="display:inline-flex;margin:0 auto">
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
