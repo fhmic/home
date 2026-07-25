@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://fhmic.github.io/home/</loc><priority>1.0</priority></url>
-  <url><loc>https://fhmic.github.io/home/capmax/</loc><priority>0.8</priority></url>
-  <url><loc>https://fhmic.github.io/home/gmi/</loc><priority>0.7</priority></url>
-  <url><loc>https://fhmic.github.io/home/job/</loc><priority>0.7</priority></url>
-  <url><loc>https://fhmic.github.io/home/receivables/</loc><priority>0.7</priority></url>
-  <url><loc>https://fhmic.github.io/home/recon/</loc><priority>0.7</priority></url>
-  <url><loc>https://fhmic.github.io/home/treasury/</loc><priority>0.7</priority></url>
-  <url><loc>https://fhmic.github.io/home/legal/terms/</loc><priority>0.3</priority></url>
-  <url><loc>https://fhmic.github.io/home/legal/privacy/</loc><priority>0.3</priority></url>
+  <url><loc>https://fhmic.github.io/home/</loc><lastmod>2026-07-25</lastmod><priority>1.0</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/capmax/</loc><lastmod>2026-07-25</lastmod><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/gmi/</loc><lastmod>2026-07-25</lastmod><priority>0.7</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/job/</loc><lastmod>2026-07-25</lastmod><priority>0.7</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/receivables/</loc><lastmod>2026-07-25</lastmod><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/recon/</loc><lastmod>2026-07-25</lastmod><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/treasury/</loc><lastmod>2026-07-25</lastmod><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/terms/</loc><lastmod>2026-06-15</lastmod><priority>0.4</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/privacy/</loc><lastmod>2026-06-15</lastmod><priority>0.4</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/cookies/</loc><lastmod>2026-06-15</lastmod><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/disclaimer/</loc><lastmod>2026-06-15</lastmod><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/acceptable-use/</loc><lastmod>2026-06-15</lastmod><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/ai-consent/</loc><lastmod>2026-06-15</lastmod><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/dpa/</loc><lastmod>2026-06-15</lastmod><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/data-processing-notice/</loc><lastmod>2026-06-15</lastmod><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/subscription-terms/</loc><lastmod>2026-06-15</lastmod><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/consent-release/</loc><lastmod>2026-06-15</lastmod><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/privacy-preferences/</loc><lastmod>2026-06-15</lastmod><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://fhmic.github.io/home/legal/re-accept/</loc><lastmod>2026-06-15</lastmod><priority>0.2</priority><changefreq>yearly</changefreq></url>
 </urlset>
