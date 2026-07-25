@@ -6,12 +6,46 @@ import os, re
 ROOT = os.path.dirname(os.path.abspath(__file__))
 LAST_UPDATED = "23 July 2026"
 
+SITE_URL = "https://fhmic.github.io/home"
+SITE_NAME = "FM Finance Suite"
+
+SEO_META = """\
+<meta name="description" content="{desc}">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="{url}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{desc}">
+<meta property="og:url" content="{url}">
+<meta property="og:site_name" content="{site_name}">
+<meta property="og:locale" content="en_NG">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{title}">
+<meta name="twitter:description" content="{desc}">
+<script type="application/ld+json">{{"@context":"https://schema.org","@type":"WebPage","name":"{title}","description":"{desc}","url":"{url}","isPartOf":{{"@type":"WebSite","name":"{site_name}","url":"{site_url}"}}}}</script>
+"""
+
+DESCRIPTIONS = {
+    "terms": "Terms of Service governing use of FM Finance Suite, including Treasury Intelligence, Receivables Tracker, CapMax, and all other finance tools.",
+    "privacy": "Privacy Policy explaining how FM Finance Suite collects, uses, and protects personal data in compliance with the Nigeria Data Protection Act.",
+    "cookies": "Cookie Policy describing the cookies and local storage used by FM Finance Suite for authentication, preferences, and analytics.",
+    "disclaimer": "Disclaimer: FM Finance Suite tools are decision-support aids, not financial, tax, or legal advice. Review before relying on outputs.",
+    "acceptable-use": "Acceptable Use Policy defining prohibited activities when using FM Finance Suite, including data protection, security, and fair use rules.",
+    "ai-consent": "AI Consent & Disclosure explaining how AI-assisted features work, what data is sent, and your choices regarding AI-powered tools.",
+    "dpa": "Data Processing Agreement for Corporate accounts using FM Finance Suite, consistent with the Nigeria Data Protection Act framework.",
+    "data-processing-notice": "Data Processing Notice summarising how FM Finance Suite handles personal data, including lawful basis, retention, and your data rights.",
+    "subscription-terms": "Subscription Terms for paid features of FM Finance Suite, including billing, cancellation, and refund policies.",
+    "consent-release": "Consent & Release acknowledging the terms, policies, and disclaimers governing your use of FM Finance Suite.",
+}
+
 TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>{title} — FM Finance Suite</title>
+{seo}
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -267,9 +301,13 @@ PAGES["re-accept"] = ("Updated Terms — Please Re-Accept", None)  # special: in
 for slug, (title, content) in PAGES.items():
     if content is None:
         continue  # handled separately (interactive pages)
+    slug_path = slug.replace("-", "/")  # e.g. "acceptable-use" -> "acceptable-use" (single segment)
+    url = f"{SITE_URL}/legal/{slug}/"
+    desc = DESCRIPTIONS.get(slug, f"{title} — {SITE_NAME}")
+    seo = SEO_META.format(title=title, desc=desc, url=url, site_name=SITE_NAME, site_url=SITE_URL)
     out_dir = os.path.join(ROOT, slug)
     os.makedirs(out_dir, exist_ok=True)
-    html = TEMPLATE.format(title=title, last_updated=LAST_UPDATED, content=content)
+    html = TEMPLATE.format(title=title, seo=seo, last_updated=LAST_UPDATED, content=content)
     with open(os.path.join(out_dir, "index.html"), "w") as f:
         f.write(html)
     print(f"wrote {slug}/index.html ({len(html)} bytes)")
