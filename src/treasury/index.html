@@ -909,16 +909,26 @@ async function loadDashboardAsOf(dateStr){
   $('dash-kpis').innerHTML = '<div class="loading-row">Loading…</div>';
   $('advisory-content').innerHTML = '<div class="loading-row">Analysing…</div>';
 
+  const showAsOfError = (msg) => {
+    toast(msg, 'err');
+    $('dash-ts').innerHTML = '<span style="color:#e05252;font-weight:700">⚠ Could not load report as at '+dateStr+'</span> — showing live data below instead. '+msg;
+    _asOfMode = false; _asOfDate = null;
+    const badge=$('asof-badge'); if(badge) badge.style.display='none';
+    const liveBtn=$('dash-live-btn'); if(liveBtn) liveBtn.disabled=true;
+    renderDashboardState(new Date(), false, null);
+  };
+
   let res;
   try{ res = await api('/treasury/asof?date='+dateStr); }
   catch(e){
-    toast(e.message || 'The /treasury/asof endpoint is not deployed yet — see backend setup notes.', 'err');
-    $('dash-ts').textContent = 'As at ' + new Date().toLocaleString('en-GB');
+    const msg = (!e.message || e.message==='No response.')
+      ? 'The /api/treasury/asof endpoint returned no data — has the updated server.js been deployed to Render yet?'
+      : e.message;
+    showAsOfError(msg);
     return;
   }
   if(!res || res.success===false || (!res.cash && !res.borrowings && !res.investments)){
-    toast('No treasury records exist on or before '+dateStr+' yet.', 'err');
-    $('dash-ts').textContent = 'As at ' + new Date().toLocaleString('en-GB');
+    showAsOfError('No treasury records exist on or before '+dateStr+' yet.');
     return;
   }
 
@@ -1047,6 +1057,8 @@ function renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt
   });
   const spreadBkts = waraBkts.map((w,i) => w!=null ? w-(wacdBkts[i]??0) : null);
   const contribs   = aBkts.map((a,i)=>{ const sp=spreadBkts[i]; return sp!=null?(a*(sp/100)):null; });
+  const liabPct = localWARA - localWACD;
+  const liabCurrency = aTotal * (liabPct/100);
 
   // Expose for export
   window.latestMaturity = {
@@ -1055,12 +1067,10 @@ function renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt
     investBkts: rI.b, investTotal: rI.total,
     cashBkts: rC.b, cashTotal: rC.total,
     borrowBkts: rB.b, borrowTotal: rB.total,
+    totalWARA: localWARA, totalWACD: localWACD, nisPct: liabPct, nisAmount: liabCurrency,
   };
 
   const TH = '<th>'+TENOR_LBLS.join('</th><th>')+'</th>';
-  const liabPct = localWARA - localWACD;
-  const liabCurrency = aTotal * (liabPct/100);
-
   tbl.innerHTML = `<thead><tr><th>TENOR</th>${TH}<th>TOTAL</th></tr></thead><tbody>
     <tr class="sec-hdr"><td colspan="9">DEPLOYABLE ASSETS</td></tr>
     <tr class="sub"><td>Risk Assets (Debtors)</td>${rD.b.map(v=>'<td style="color:var(--t)">'+N(v)+'</td>').join('')}<td style="color:var(--t);font-weight:600">${N(rD.total)}</td></tr>
@@ -2023,16 +2033,26 @@ all15.forEach((k,i)=>expKpiCard(s2,pres,sx2+(i%6)*(cW2+g2),sy2+Math.floor(i/6)*(
     rowOf('Cash & Equivalents',cshB,mm.cashTotal||0,EXP_C.tx2),
     rowOf('TOTAL DEPLOYABLE ASSETS',aB,aB.reduce((s,v)=>s+v,0),EXP_C.teal,true),
     rowOf('Borrowings',brwB,mm.borrowTotal||0,EXP_C.red),
-    rowOf('TOTAL FUNDING BASE',lB,lB.reduce((s,v)=>s+v,0),EXP_C.red,true),
+    rowOf('TOTAL DEBT',lB,lB.reduce((s,v)=>s+v,0),EXP_C.red,true),
     [{text:'LEADING / (GAP) — Cumulative',options:{bold:true,color:EXP_C.white}},...gB.map(v=>({text:'₦'+(Math.round(v/1000)).toLocaleString()+'k',options:{bold:true,color:v>=0?EXP_C.green:EXP_C.red,align:'right'}})),{text:'₦'+(Math.round((mm.gTotal||0)/1000)).toLocaleString()+'k',options:{bold:true,color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,align:'right'}}],
   ];
+  const aTot2=aB.reduce((s,v)=>s+v,0), lTot2=lB.reduce((s,v)=>s+v,0);
+  const pctRow=(label,bkts,tot,totalPct)=>[
+    {text:label,options:{color:EXP_C.tx2}},
+    ...bkts.map(v=>({text:tot>0?(v/tot*100).toFixed(1)+'%':'—',options:{color:EXP_C.tx3,align:'right'}})),
+    {text:totalPct,options:{bold:true,color:EXP_C.tx2,align:'right'}},
+  ];
+  matRows.push(pctRow('Deployable Assets %',aB,aTot2,'100%'));
+  matRows.push(pctRow('Debts %',lB,lTot2,lTot2>0?'100%':'—'));
+  const wA2=(mm.waraBkts||new Array(6).fill(null)), wF2=(mm.wacdBkts||new Array(6).fill(null));
+  matRows.push([{text:'WARA (Assets) %',options:{color:EXP_C.teal}},...wA2.map(v=>({text:v==null?'—':v.toFixed(2)+'%',options:{color:EXP_C.teal,align:'right'}})),{text:mm.totalWARA!=null?mm.totalWARA.toFixed(2)+'%':'—',options:{bold:true,color:EXP_C.teal,align:'right'}}]);
+  matRows.push([{text:'WACD (Liabilities) %',options:{color:EXP_C.amber}},...wF2.map(v=>({text:v==null?'—':v.toFixed(2)+'%',options:{color:EXP_C.amber,align:'right'}})),{text:mm.totalWACD!=null?mm.totalWACD.toFixed(2)+'%':'—',options:{bold:true,color:EXP_C.amber,align:'right'}}]);
+  const nisOk=(mm.nisPct||0)>=0;
+  matRows.push([{text:'NIS: Surplus/(Deficit) WARA − WACD',options:{bold:true,color:EXP_C.white}},...tL.map(()=>({text:'—',options:{color:EXP_C.tx3,align:'right'}})),{text:(nisOk?'+':'')+(mm.nisPct||0).toFixed(2)+'% ('+(nisOk?'+':'')+'₦'+expFmt(mm.nisAmount||0)+')',options:{bold:true,color:nisOk?EXP_C.green:EXP_C.red,align:'right',fontSize:7}}]);
   const matTblData=[...matHdr,...matRows];
   const colCount=tL.length+2; // category + 6 tenors + total = 8
-  const colWArr=[1.6,...tL.map(()=>0.98),1.0];
-  s4b.addTable(matTblData,{x:0.2,y:1.15,w:9.6,h:3.15,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:8,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.39,colW:colWArr});
-  // Legend note
-  s4b.addText('Note: Values shown in ₦ Thousands (k). Cumulative Gap = running total of Assets minus Liabilities across tenors. LEADING = asset-funded; DEFICIT = funding shortfall.',
-    {x:0.2,y:4.4,w:9.6,h:0.55,fontSize:7.5,color:EXP_C.tx3,fontFace:'Arial',italic:true,wrap:true});
+  const colWArr=[2.1,...tL.map(()=>0.88),1.0];
+  s4b.addTable(matTblData,{x:0.2,y:1.05,w:9.6,h:4.15,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:6.8,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.315,colW:colWArr,valign:'middle'});
   expFooter(s4b,pres,5,TOTAL);
 
   // ── SLIDE 5: WARA / WACD SPREAD ──────────────────────────────
@@ -2222,18 +2242,31 @@ async function exportDashboardExcel(){
   ws1['!cols'] = [{wch:32},{wch:20}];
   XLSX.utils.book_append_sheet(wb, ws1, 'Dashboard Summary');
 
-  // Sheet 2: Maturity profile
+  // Sheet 2: Maturity profile — mirrors every row of the on-screen
+  // Asset & Liability Maturity Profile table exactly.
   const headers = ['Row', ...TENOR_LBLS, 'TOTAL'];
+  const pct1 = (v,tot) => tot>0 ? +((v/tot)*100).toFixed(2) : null;
   const matRows = [
+    ['DEPLOYABLE ASSETS', ...TENOR_LBLS.map(()=>null), null],
+    ['Risk Assets (Debtors)',   ...(mm.debtorsBkts||[]).map(v=>Number(v)||0), Number(mm.debtorsTotal)||0],
+    ['Investments',             ...(mm.investBkts||[]).map(v=>Number(v)||0), Number(mm.investTotal)||0],
+    ['Cash & Equivalents',      ...(mm.cashBkts||[]).map(v=>Number(v)||0), Number(mm.cashTotal)||0],
     ['TOTAL DEPLOYABLE ASSETS', ...(mm.aBkts||[]).map(v=>Number(v)||0), Number(mm.aTotal)||0],
-    ['TOTAL FUNDING BASE',      ...(mm.lBkts||[]).map(v=>Number(v)||0), Number(mm.lTotal)||0],
-    ['Cumulative Gap',          ...(mm.gBkts||[]).map(v=>Number(v)||0), Number(mm.gTotal)||0],
-    ['WARA (Assets) %',         ...(mm.waraBkts||[]).map(v=>v==null?null:+(v.toFixed(2))), null],
-    ['WACD (Liabilities) %',    ...(mm.wacdBkts||[]).map(v=>v==null?null:+(v.toFixed(2))), null],
-    ['Spread %',                ...(mm.spreadBkts||[]).map(v=>v==null?null:+(v.toFixed(2))), null],
+    ['DEBTS', ...TENOR_LBLS.map(()=>null), null],
+    ['Borrowings',              ...(mm.borrowBkts||[]).map(v=>Number(v)||0), Number(mm.borrowTotal)||0],
+    ['TOTAL DEBT',              ...(mm.lBkts||[]).map(v=>Number(v)||0), Number(mm.lTotal)||0],
+    ['LEADING / (GAP) — Cumulative', ...(mm.gBkts||[]).map(v=>Number(v)||0), Number(mm.gTotal)||0],
+    ['PERIOD CONTRIBUTION AS % OF TOTAL', ...TENOR_LBLS.map(()=>null), null],
+    ['Deployable Assets %', ...(mm.aBkts||[]).map(v=>pct1(v,mm.aTotal)), 100],
+    ['Debts %',             ...(mm.lBkts||[]).map(v=>pct1(v,mm.lTotal)), mm.lTotal>0?100:null],
+    ['NET INTEREST SPREAD', ...TENOR_LBLS.map(()=>null), null],
+    ['WARA (Assets) %',         ...(mm.waraBkts||[]).map(v=>v==null?null:+(v.toFixed(2))), mm.totalWARA!=null?+mm.totalWARA.toFixed(2):null],
+    ['WACD (Liabilities) %',    ...(mm.wacdBkts||[]).map(v=>v==null?null:+(v.toFixed(2))), mm.totalWACD!=null?+mm.totalWACD.toFixed(2):null],
+    ['NIS: Surplus/(Deficit) WARA − WACD', ...TENOR_LBLS.map(()=>null), mm.nisPct!=null?+mm.nisPct.toFixed(2):null],
+    ['NIS: Surplus/(Deficit) (₦)',         ...TENOR_LBLS.map(()=>null), mm.nisAmount!=null?Math.round(mm.nisAmount):null],
   ];
   const ws2 = XLSX.utils.aoa_to_sheet([headers, ...matRows]);
-  ws2['!cols'] = [{wch:26}, ...new Array(6).fill({wch:14}), {wch:14}];
+  ws2['!cols'] = [{wch:32}, ...new Array(6).fill({wch:14}), {wch:14}];
   XLSX.utils.book_append_sheet(wb, ws2, 'Maturity Profile');
 
   // Sheet 3: Borrowings
@@ -2293,6 +2326,41 @@ async function exportDashboardPDF(){
   const dotChar = p => p.c==='gr'?'●':p.c==='rd'?'●':'●';
   const dotCol  = p => p.c==='gr'?'#166534':p.c==='rd'?'#991b1b':'#92400e';
 
+  const mm = window.latestMaturity || {};
+  const pN = v => (v==null) ? '—' : (v>0 ? '₦'+expFmt(v) : '—');
+  const pP = v => (v==null) ? '—' : v.toFixed(2)+'%';
+  const matHeadCells = TENOR_LBLS.map(t=>`<th style="border:1px solid #ccc;padding:4px 5px;text-align:right;background:#f0f0f0;color:#000;font-size:9px">${t}</th>`).join('');
+  const matRow = (label, vals, total, opts={}) => `<tr style="${opts.bg?'background:'+opts.bg+';':''}">
+    <td style="border:1px solid #ddd;padding:4px 6px;font-weight:${opts.bold?700:500};color:${opts.color||'#000'};font-size:9.5px">${label}</td>
+    ${vals.map(v=>`<td style="border:1px solid #ddd;padding:4px 5px;text-align:right;color:${opts.color||'#000'};font-size:9px">${opts.pct?pP(v):pN(v)}</td>`).join('')}
+    <td style="border:1px solid #ddd;padding:4px 5px;text-align:right;font-weight:700;color:${opts.color||'#000'};font-size:9.5px">${opts.pct?pP(total):pN(total)}</td>
+  </tr>`;
+  const matSecRow = label => `<tr><td colspan="${TENOR_LBLS.length+2}" style="padding:5px 6px;font-weight:700;font-size:9.5px;color:#000;background:#e8e8e8;border:1px solid #ccc">${label}</td></tr>`;
+  const aTot=mm.aTotal||0, lTot=mm.lTotal||0;
+  const pct1=(v,t)=>t>0?(v/t*100):null;
+  const nisOk=(mm.nisPct||0)>=0;
+  const maturityTableHtml = `
+    <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:8px;border-bottom:1px solid #ccc;padding-bottom:4px">Asset &amp; Liability Maturity Profile (₦) — Cumulative Tenor Gap</div>
+    <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin-bottom:20px">
+      <tr><th style="border:1px solid #ccc;padding:4px 6px;text-align:left;background:#f0f0f0;color:#000;font-size:9px">TENOR</th>${matHeadCells}<th style="border:1px solid #ccc;padding:4px 5px;text-align:right;background:#f0f0f0;color:#000;font-size:9px">TOTAL</th></tr>
+      ${matSecRow('DEPLOYABLE ASSETS')}
+      ${matRow('Risk Assets (Debtors)', mm.debtorsBkts||[], mm.debtorsTotal||0)}
+      ${matRow('Investments', mm.investBkts||[], mm.investTotal||0, {color:'#1d4ed8'})}
+      ${matRow('Cash &amp; Equivalents', mm.cashBkts||[], mm.cashTotal||0)}
+      ${matRow('TOTAL DEPLOYABLE ASSETS', mm.aBkts||[], aTot, {bold:true,bg:'#eefaf6'})}
+      ${matSecRow('DEBTS')}
+      ${matRow('Borrowings', mm.borrowBkts||[], mm.borrowTotal||0, {color:'#b91c1c'})}
+      ${matRow('TOTAL DEBT', mm.lBkts||[], lTot, {bold:true,bg:'#fdecec',color:'#b91c1c'})}
+      ${matRow('LEADING / (GAP) — Cumulative', mm.gBkts||[], mm.gTotal||0, {bold:true})}
+      ${matSecRow('PERIOD CONTRIBUTION AS % OF TOTAL')}
+      ${matRow('Deployable Assets %', (mm.aBkts||[]).map(v=>pct1(v,aTot)), 100, {pct:true})}
+      ${matRow('Debts %', (mm.lBkts||[]).map(v=>pct1(v,lTot)), lTot>0?100:null, {pct:true})}
+      ${matSecRow('NET INTEREST SPREAD')}
+      ${matRow('WARA (Assets) %', mm.waraBkts||[], mm.totalWARA, {pct:true})}
+      ${matRow('WACD (Liabilities) %', mm.wacdBkts||[], mm.totalWACD, {pct:true})}
+      <tr><td style="border:1px solid #ddd;padding:4px 6px;font-weight:700;font-size:9.5px;color:#000">NIS: Surplus/(Deficit) WARA − WACD</td>${TENOR_LBLS.map(()=>'<td style="border:1px solid #ddd;padding:4px 5px;text-align:right;font-size:9px;color:#666">—</td>').join('')}<td style="border:1px solid #ddd;padding:4px 5px;text-align:right;font-weight:700;font-size:9.5px;color:${nisOk?'#166534':'#991b1b'}">${(nisOk?'+':'')+(mm.nisPct||0).toFixed(2)}% (${(nisOk?'+':'')}₦${expFmt(mm.nisAmount||0)})</td></tr>
+    </table>`;
+
   tmp.innerHTML = `
     <div style="border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:18px">
       <div style="font-size:18px;font-weight:700;color:#000">FM Finance Suite — Treasury Intelligence Report</div>
@@ -2303,6 +2371,8 @@ async function exportDashboardPDF(){
     <table cellpadding="6" cellspacing="0" style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:11.5px">
       ${kpis.map(([k,v],i)=>`<tr style="background:${i%2===0?'#f7f7f7':'#ffffff'}"><td style="font-weight:600;color:#000;border:1px solid #ddd;width:55%">${k}</td><td style="color:#000;border:1px solid #ddd;font-weight:500">${v}</td></tr>`).join('')}
     </table>
+
+    ${maturityTableHtml}
 
     <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:8px;border-bottom:1px solid #ccc;padding-bottom:4px">Financial Optimisation Assessment</div>
     ${(a.pts||[]).map(p=>`<div style="display:flex;gap:8px;margin-bottom:7px;align-items:flex-start"><span style="color:${dotCol(p)};flex-shrink:0;font-size:14px;line-height:1.4">${dotChar(p)}</span><span style="color:#000;font-size:11.5px">${p.t}</span></div>`).join('')||'<p style="color:#000">No assessment available.</p>'}
