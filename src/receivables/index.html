@@ -1374,14 +1374,21 @@ async function loadAgeingAsOf(dateStr) {
   if (new Date(dateStr) > new Date()) { toast('Pick today or an earlier date.', 'err'); return; }
   if (_effFromAR && dateStr < _effFromAR) { toast('Data is only available from '+_effFromAR+' onward.', 'err'); return; }
   $('ageing-table').innerHTML = '<div class="loading-row">Reconstructing ageing as at '+dateStr+'…</div>';
+  const showAgAsOfError = (msg) => {
+    toast(msg, 'err');
+    $('ageing-ts').innerHTML = '<span style="color:#e05252;font-weight:700">⚠ Could not load report as at '+dateStr+'</span>';
+    $('ageing-table').innerHTML = empty(msg);
+  };
   let res;
   try { res = await api('/receivables/asof?date='+dateStr); }
-  catch(e) { toast(e.message || 'The /receivables/asof endpoint is not deployed yet — see backend setup notes.', 'err'); $('ageing-table').innerHTML = empty('Could not load as-of report.'); return; }
-  if (!res || res.success===false || !res.report) {
-    toast('No invoices existed on or before '+dateStr+' yet.', 'err');
-    $('ageing-table').innerHTML = empty('No records available for that date yet.');
+  catch(e) {
+    const msg = (!e.message || e.message==='No response.')
+      ? 'The /api/receivables/asof endpoint returned no data — has the updated server.js been deployed to Render yet?'
+      : e.message;
+    showAgAsOfError(msg);
     return;
   }
+  if (!res || res.success===false || !res.report) { showAgAsOfError('No invoices existed on or before '+dateStr+' yet.'); return; }
   ageingCache = { report: res.report || [] };
   _agAsOfMode = true; _agAsOfDate = dateStr;
   window.currentAgeingAsOf = { isHistorical:true, asOfDate:new Date(dateStr) };
