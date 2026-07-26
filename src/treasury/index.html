@@ -355,8 +355,8 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
           <div style="display:flex;align-items:center;gap:8px">
             <div id="asof-badge" style="display:none;font-size:10px;font-weight:700;letter-spacing:.04em;padding:4px 9px;border-radius:20px;background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">HISTORICAL VIEW</div>
             <input class="finput" type="date" id="dash-asof" style="width:150px;padding:7px 10px" title="View treasury position as at a specific date">
-            <button class="bp" id="dash-asof-btn" onclick="loadDashboardAsOf($('dash-asof').value)">View As-Of</button>
-            <button class="bp" style="background:transparent;border:1px solid var(--bd)" id="dash-live-btn" onclick="$('dash-asof').value='';loadDashboard();" disabled>Back to Live</button>
+            <button class="bp" id="dash-asof-btn" onclick="handleViewAsOfClick()">View As-Of</button>
+            <button class="bp" style="background:transparent;border:1px solid var(--bd)" id="dash-live-btn" onclick="handleBackToLiveClick()" disabled>Back to Live</button>
             <button class="bp" onclick="loadDashboard()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
           </div>
         </div>
@@ -899,6 +899,8 @@ async function loadDashboard(){
 // The picker is bounded below by _effFrom (the baseline date the books were
 // first fully entered, set once in Settings) since nothing before that date
 // can be reliably reconstructed, and above by today.
+function handleViewAsOfClick(){ loadDashboardAsOf($('dash-asof').value); }
+function handleBackToLiveClick(){ $('dash-asof').value=''; loadDashboard(); }
 async function loadDashboardAsOf(dateStr){
   if(!dateStr){ toast('Pick a date first.', 'err'); return; }
   const chosen = new Date(dateStr);
