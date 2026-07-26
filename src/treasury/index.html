@@ -976,6 +976,16 @@ function renderDashboardState(asOfDate, isHistorical, meta){
   window.currentAsOf = { isHistorical, asOfDate: today, meta };
   $('dash-ts').textContent = 'As at ' + today.toLocaleDateString('en-GB', {day:'2-digit',month:'long',year:'numeric'}) + (isHistorical ? '  •  reconstructed from dated records  (debtors shown at current balance)' : '  (' + new Date().toLocaleTimeString('en-GB') + ')');
 
+  // Run the maturity ladder first — it's the single source of truth for the
+  // NIS-in-naira figure (Net Interest Margin), computed off the unrounded
+  // WARA/WACD spread across the full tenor ladder. Both the dashboard KPI
+  // card below and every export read the same numbers from here.
+  try { renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt, wacd, avgIY, avgDR, wara); }
+  catch(e){ console.error('renderMaturityTable failed:', e); $('maturity-tbl').innerHTML = '<tr><td colspan="9" class="loading-row">⚠ '+e.message+'</td></tr>'; }
+  const mmEarly = window.latestMaturity || {};
+  const nisAmount = mmEarly.nisAmount || 0;
+  const nisPct    = mmEarly.nisPct != null ? mmEarly.nisPct : spread;
+
   const invAccrual = totalEstAccrual(_invCache, 'principal', today, 'dateInvested');
   const debtAccrual = totalEstAccrual(_borrowCache, 'outstanding', today, 'valueDate');
   const accrualSub = (est) => est.amount>0 ? `+ ~₦${fmt(est.amount)} est. accrual (${est.maxDays}d unposted)` : 'Investment Value';
@@ -989,6 +999,7 @@ function renderDashboardState(asOfDate, isHistorical, meta){
     {l:'Total Funding Base',      v:fmt(totalCapital),            c:'rd',         sub:'Debt + Equity'},
     {l:'Total Borrowings',        v:fmt(totalDebt),               c:'bl',         sub:debtAccrualSub(debtAccrual)},
     {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'bl',         sub:'Capital + Retained Earnings'},
+    {l:'Net Interest Margin (₦)', v:(nisAmount>=0?'+':'')+fmt(nisAmount), c:nisAmount>=0?'gr':'rd', sub:'Assets × (WARA − WACD) = '+fmt(totalAssets)+' × '+(nisPct>=0?'+':'')+nisPct.toFixed(2)+'%'},
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks" title="Estimated only — computed live from the posted rate and days since the last posted figure. Not a confirmed/posted balance.">${k.sub}</div></div>`).join('');
 
   $('dash-wacc').innerHTML = [
@@ -999,21 +1010,18 @@ function renderDashboardState(asOfDate, isHistorical, meta){
     {l:'Net Int. Spread',     v:(spread>=0?'+':'')+pct(spread),    c:spread>=0?'gr':'rd', sub:'MIS: WARA − WACD'},
     {l:'Economic Value Added', v:(evaSig>=0?'+':'')+pct(evaSig),    c:evaSig>=0?'gr':'rd', sub:'EVA: WARA − WACC'},
     {l:'Debt / Equity',       v:lever.toFixed(2)+'×',              c:lever>8?'rd':lever>3?'gr':lever>1.5?'am':'gr', sub:'Financial leverage'},
-    {l:'Equity / Assets',     v:pct(eta),                          c:eta<0.1?'rd':eta<0.3?'am':'gr',sub:'Equity ÷ Deployable Assets'},   
-    {l:'Debt / Assets',       v:pct(dta),                          c:dta>0.8?'rd':dta>0.6?'am':'gr', sub:'Debt ÷ Deployable Assets'},
+    {l:'Equity / Assets',     v:pct(eta*100),                      c:eta<0.1?'rd':eta<0.3?'am':'gr',sub:'Equity ÷ Deployable Assets'},   
+    {l:'Debt / Assets',       v:pct(dta*100),                      c:dta>0.8?'rd':dta>0.6?'am':'gr', sub:'Debt ÷ Deployable Assets'},
     {l:'Debtor Yield',        v:pct(avgDR),                        c:'am', sub:'Avg implied rate on debtors'},
     {l:'Investment Yield',    v:pct(avgIY),                        c:'gr', sub:'Weighted avg investment return'},
     {l:'Cost of Equity (Ke)', v:pct(eq.costOfEquity),              c:'pu', sub:'Required shareholder return'},
     
   ].map(k=>`<div class="wacc-card ${k.c}"><div class="wc-lbl">${k.l}</div><div class="wc-val">${k.v}</div><div class="wc-sub">${k.sub}</div></div>`).join('');
 
- try { renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt, wacd, avgIY, avgDR, wara); }
-  catch(e){ console.error('renderMaturityTable failed:', e); $('maturity-tbl').innerHTML = '<tr><td colspan="9" class="loading-row">⚠ '+e.message+'</td></tr>'; }
-
   try { renderDashCharts(totalDebtors, totalInv, totalCash, totalDebt, totalEquity, avgDR, avgIY, wacd, eq.costOfEquity); }
   catch(e){ console.error('renderDashCharts failed:', e); }
 
-  try { renderAdvisory({ totalAssets, totalDebt, totalEquity, totalDebtors, totalInv, totalCash, wacc, wacd, wara, spread, avgIY, avgDR, lever }); }
+  try { renderAdvisory({ totalAssets, totalDebt, totalEquity, totalDebtors, totalInv, totalCash, wacc, wacd, wara, spread, avgIY, avgDR, lever, eta, dta, nisPct, nisAmount }); }
   catch(e){ console.error('renderAdvisory failed:', e); $('advisory-content').innerHTML = '<div class="ep" style="padding:1rem"><div class="ei">⚠</div>'+e.message+' — check console.</div>'; }
 }
 
@@ -1110,7 +1118,7 @@ function renderDashCharts(totalDebtors, totalInv, totalCash, totalDebt, totalEqu
 // ════════════════════════════════════════════════════
 // ADVISORY PANEL
 // ════════════════════════════════════════════════════
-function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever}){
+function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever,eta,dta,nisPct,nisAmount}){
   const el = $('advisory-content'); if(!el) return;
   const pts=[], recs=[];
   const debtorPct = totalAssets>0 ? totalDebtors/totalAssets*100 : 0;
@@ -1261,7 +1269,25 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     }
   }
 
-  // 6. Idle cash
+  // 6. Net Interest Margin (₦) — the naira value of the WARA − WACD spread
+  // applied across the full deployable asset base (same figure shown on the
+  // dashboard KPI card and the maturity ladder's total column).
+  if(totalAssets>0){
+    recNum++;
+    const nisOk = (nisPct||0)>=0;
+    recItems.push({
+      n: recNum,
+      title: nisOk ? 'Protect the Positive Net Interest Margin' : 'Close the Negative Net Interest Margin',
+      obs:   `The net interest margin in naira terms is ${nisOk?'+':''}${fmt(nisAmount||0)} — the ${nisOk?'+':''}${(nisPct||0).toFixed(2)}% WARA − WACD spread applied across ${fmt(totalAssets)} of deployable assets.`,
+      rec:   nisOk
+        ? `Defend this margin on renewals and new drawdowns. Every 10bp of spread lost is worth roughly ${fmt(totalAssets*0.001)} in annualised margin at the current asset base — treat spread erosion as a board-level metric, not just a rate metric.`
+        : `Close the gap by repricing assets upward and refinancing the highest-cost facilities first. At the current asset base, each 10bp of spread recovered is worth roughly ${fmt(totalAssets*0.001)} in annualised margin.`,
+      rat:   `Percentage spread alone understates what's at stake once it's applied to the full asset base — expressing it in naira makes the true earnings impact of rate decisions explicit for the board.`,
+      dot:   nisOk ? 'gr' : 'rd'
+    });
+  }
+
+  // 7. Idle cash
   if(cashPct>25){
     recNum++;
     recItems.push({
@@ -1274,7 +1300,7 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     });
   }
 
-  // 7. Stage 3 debtors
+  // 8. Stage 3 debtors
   if(s3.length>0){
     const s3amt=s3.reduce((s,d)=>s+d.totalOutstanding,0);
     recNum++;
@@ -1326,7 +1352,7 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
   }
   if(!html) html = '<div class="ep" style="padding:1rem"><div class="ei">📊</div>Enter borrowings, investments, cash and equity data to generate the advisory.</div>';
   el.innerHTML = html;
-  window.latestAssessment = { pts, recs, recItems, conclusion, metrics:{ totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever } };
+  window.latestAssessment = { pts, recs, recItems, conclusion, metrics:{ totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever,eta,dta,nisPct,nisAmount } };
 }
 
 // ════════════════════════════════════════════════════
@@ -1957,9 +1983,11 @@ async function exportBoardPPT(){
     {l:'WACD',                   v:expPct(m.wacd),                                  s:'Weighted avg cost of debt',   acc:EXP_C.purple  },
     {l:'WACC',                   v:expPct(m.wacc),                                  s:'Cost of capital',             acc:EXP_C.teal},
     {l:'NET INT. SPREAD',        v:(sp>=0?'+':'')+expPct(sp),                       s:'NIS: WARA − WACD',            acc:sp>=0?EXP_C.green:EXP_C.red},
+    {l:'NET INTEREST MARGIN (₦)',v:(m.nisAmount>=0?'+':'')+expFmtM(m.nisAmount||0), s:'Assets × (WARA − WACD)',      acc:(m.nisAmount||0)>=0?EXP_C.green:EXP_C.red},
     {l:'Economic Value Added',   v:(evS>=0?'+':'')+expPct(evS),                     s:'EVA: WARA − WACC',            acc:evS>=0?EXP_C.green:EXP_C.red},
     {l:'DEBT / EQUITY',          v:lvr.toFixed(2)+'×',                              s:'Financial leverage',          acc:lvr>8?EXP_C.red:lvr>3?EXP_C.green:EXP_C.amber},
     {l:'DEBT / ASSETS',          v:expPct(m.totalAssets>0?(m.totalDebt/m.totalAssets)*100:0), s:'Debt ÷ Deployable Assets', acc:EXP_C.purple},
+    {l:'EQUITY / ASSETS',        v:expPct((m.eta||0)*100),                          s:'Equity ÷ Deployable Assets',  acc:EXP_C.purple},
     {l:'DEBTOR YIELD',           v:expPct(m.avgDR),                                 s:'Avg implied rate on debtors', acc:EXP_C.teal },
     {l:'INVESTMENT YIELD',       v:expPct(m.avgIY),                                 s:'Weighted avg investment yield',acc:EXP_C.purple },
     {l:'COST OF EQUITY (Ke)',    v:expPct(m.eq?.costOfEquity||_equityData.costOfEquity||20), s:'Required shareholder return', acc:EXP_C.teal},
@@ -2236,7 +2264,11 @@ async function exportDashboardExcel(){
     ['WACD (%)', Number(m.wacd)||0],
     ['WARA (%)', Number(m.wara)||0],
     ['Net Interest Spread (%)', Number(m.spread)||0],
+    ['Net Interest Margin (₦)', Number(m.nisAmount)||0],
+    ['  Formula: Total Deployable Assets × (WARA − WACD)', `${Number(m.totalAssets)||0} × ${(Number(m.nisPct)||0).toFixed(2)}%`],
     ['Debt/Equity Ratio (×)', Number(m.lever)||0],
+    ['Equity/Assets (%)', Number((m.eta||0)*100)],
+    ['Debt/Assets (%)', Number((m.dta||0)*100)],
   ];
   const ws1 = XLSX.utils.aoa_to_sheet(dash);
   ws1['!cols'] = [{wch:32},{wch:20}];
@@ -2317,8 +2349,10 @@ async function exportDashboardPDF(){
     ['WACD',expPct(m.wacd)],
     ['WACC',expPct(m.wacc)],
     ['Net Interest Spread',(m.spread>=0?'+':'')+expPct(m.spread)],
+    ['Net Interest Margin (₦)',(m.nisAmount>=0?'+':'')+expFmtM(m.nisAmount||0)+'  [Assets × (WARA − WACD) = '+expFmtM(m.totalAssets)+' × '+(m.nisPct>=0?'+':'')+expPct(m.nisPct||0)+']'],
     ['EVA Signal',((m.wara||0)-(m.wacc||0)>=0?'+':'')+expPct((m.wara||0)-(m.wacc||0))],
     ['Debt / Equity Ratio',(m.lever||0).toFixed(2)+'×'],
+    ['Equity / Assets',expPct((m.eta||0)*100)],
     ['Debtor Yield',expPct(m.avgDR)],
     ['Investment Yield',expPct(m.avgIY)],
   ];
