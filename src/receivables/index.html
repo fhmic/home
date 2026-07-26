@@ -458,6 +458,10 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
         <div class="vhdr">
           <div><div class="vttl">Ageing Report</div><div class="vsub" id="ageing-ts">—</div></div>
           <div class="vacts">
+            <div id="ag-asof-badge" style="display:none;font-size:10px;font-weight:700;letter-spacing:.04em;padding:4px 9px;border-radius:20px;background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">HISTORICAL VIEW</div>
+            <input class="finput" type="date" id="ag-asof" style="width:150px;padding:7px 10px" title="View receivables ageing as at a specific date">
+            <button onclick="loadAgeingAsOf($('ag-asof').value)">View As-Of</button>
+            <button id="ag-live-btn" style="opacity:.6" onclick="$('ag-asof').value='';loadAgeing();" disabled>Back to Live</button>
             <button onclick="exportAgeingXLSX()">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Export Excel
             </button>
@@ -922,6 +926,8 @@ const $  = id => document.getElementById(id);
 const fN = n  => n == null || isNaN(n) ? '0.00' : Number(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fD = d  => !d ? '—' : new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 const ts = () => new Date().toISOString().slice(0,10);
+function agAsOfFileTag(){ const s=window.currentAgeingAsOf; return (s&&s.isHistorical) ? s.asOfDate.toISOString().slice(0,10) : ts(); }
+function agAsOfLabel(){ const s=window.currentAgeingAsOf; if(!s||!s.isHistorical) return 'Generated: '+new Date().toLocaleString('en-GB'); return 'As at '+s.asOfDate.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})+' (Historical Snapshot)'; }
 
 function toast(msg, type='ok') {
   const el = $('toast'); el.textContent = (type==='ok'?'✓  ':'⚠  ') + msg;
@@ -1175,21 +1181,28 @@ async function saveInvoice(debtorId, debtorName) {
 }
 function openPaymentModal(invId, invNo, balance) {
   if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
+  const todayStr0 = new Date().toISOString().slice(0,10);
   openModal('Record Payment — ' + invNo, `
     <div class="merr" id="pay-err"></div>
     <p style="font-size:13px;color:var(--tx2);margin-bottom:1rem">Current outstanding balance: <strong style="color:var(--rd)">₦${fN(balance)}</strong></p>
-    <div class="fld"><label>Payment Amount (₦) *</label><input class="finput" type="number" id="pay-amt" min="0" step="0.01" placeholder="0.00" value="${balance}"></div>`,
+    <div class="fld"><label>Payment Amount (₦) *</label><input class="finput" type="number" id="pay-amt" min="0" step="0.01" placeholder="0.00" value="${balance}"></div>
+    <div class="fld"><label>Payment Date *</label><input class="finput" type="date" id="pay-date" value="${todayStr0}" max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The date this payment was received. Required for as-of ageing reports.</div></div>`,
     `<button onclick="closeModal()">Cancel</button>
      <button class="bp" onclick="recordPayment('${invId}',${balance})"><span id="pay-save-txt">Record Payment</span></button>`);
 }
 async function recordPayment(invId, currentBalance) {
   const err = $('pay-err'); err.classList.remove('on');
   const amt = parseFloat($('pay-amt').value);
+  const payDate = $('pay-date')?.value;
   if (!amt || amt <= 0) { err.textContent='Enter a valid payment amount.'; err.classList.add('on'); return; }
+  if (!payDate) { err.textContent='Payment date is required.'; err.classList.add('on'); return; }
   $('pay-save-txt').textContent = 'Saving…';
   try {
     const inv = await api('/invoices/'+invId);
     await api('/invoices/'+invId, { method:'PUT', body:JSON.stringify({ amountPaid: (inv.invoice?.amountPaid||0) + amt }) });
+    // Record the dated payment so ageing-as-of reports can reconstruct the
+    // outstanding balance correctly for any date, not just "now".
+    await api('/invoices/'+invId+'/payments', { method:'POST', body:JSON.stringify({ amount:amt, paymentDate:payDate }) }).catch(e=>console.warn('Payment history not saved (endpoint may not exist yet):',e.message));
     toast('Payment recorded.'); closeModal(); loadDebtors();
   } catch(e) { err.textContent=e.message; err.classList.add('on'); $('pay-save-txt').textContent='Record Payment'; }
 }
@@ -1331,14 +1344,51 @@ async function doImport() {
 
 
 let ageingCache = null;
+let _agAsOfMode = false, _agAsOfDate = null;
+var _effFromAR = null; // baseline effective date (shared org-wide setting with Treasury)
+async function fetchEffectiveFromAR(){
+  try{ const d=await api('/treasury/settings/effective-date'); if(d && d.effectiveFrom) _effFromAR = d.effectiveFrom.slice(0,10); }
+  catch(e){ /* endpoint not deployed yet */ }
+  const el=$('ag-asof'); if(el){ if(_effFromAR) el.min=_effFromAR; el.max=new Date().toISOString().slice(0,10); }
+}
 async function loadAgeing() {
   $('ageing-table').innerHTML = '<div class="loading-row">Generating ageing report…</div>';
+  _agAsOfMode = false; _agAsOfDate = null; window.currentAgeingAsOf = null;
+  const badge=$('ag-asof-badge'); if(badge) badge.style.display='none';
+  const liveBtn=$('ag-live-btn'); if(liveBtn) liveBtn.disabled=true;
+  const asofInput=$('ag-asof'); if(asofInput) asofInput.value='';
+  fetchEffectiveFromAR();
   try {
     const d = await api('/invoices/ageing-report');
     ageingCache = d;
-    $('ageing-ts').textContent = 'Generated ' + new Date().toLocaleString('en-GB');
+    $('ageing-ts').textContent = 'As at ' + new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) + '  (' + new Date().toLocaleTimeString('en-GB') + ')';
     renderAgeingTable(d.report);
   } catch(e) { $('ageing-table').innerHTML = `<div class="nt">⚠ ${e.message}</div>`; }
+}
+// Reconstructs the ageing report as at a chosen date from each invoice's
+// payment history (dated per-payment, see recordPayment below) rather than
+// a periodic snapshot — so any date from the baseline onward is answerable,
+// not just days someone happened to open the report.
+async function loadAgeingAsOf(dateStr) {
+  if (!dateStr) { toast('Pick a date first.', 'err'); return; }
+  if (new Date(dateStr) > new Date()) { toast('Pick today or an earlier date.', 'err'); return; }
+  if (_effFromAR && dateStr < _effFromAR) { toast('Data is only available from '+_effFromAR+' onward.', 'err'); return; }
+  $('ageing-table').innerHTML = '<div class="loading-row">Reconstructing ageing as at '+dateStr+'…</div>';
+  let res;
+  try { res = await api('/receivables/asof?date='+dateStr); }
+  catch(e) { toast(e.message || 'The /receivables/asof endpoint is not deployed yet — see backend setup notes.', 'err'); $('ageing-table').innerHTML = empty('Could not load as-of report.'); return; }
+  if (!res || res.success===false || !res.report) {
+    toast('No invoices existed on or before '+dateStr+' yet.', 'err');
+    $('ageing-table').innerHTML = empty('No records available for that date yet.');
+    return;
+  }
+  ageingCache = { report: res.report || [] };
+  _agAsOfMode = true; _agAsOfDate = dateStr;
+  window.currentAgeingAsOf = { isHistorical:true, asOfDate:new Date(dateStr) };
+  const badge=$('ag-asof-badge'); if(badge) badge.style.display='';
+  const liveBtn=$('ag-live-btn'); if(liveBtn) liveBtn.disabled=false;
+  $('ageing-ts').textContent = 'As at ' + new Date(dateStr).toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) + '  •  historical reconstruction';
+  renderAgeingTable(ageingCache.report);
 }
 function renderAgeingTable(report) {
   if (!report.length) { $('ageing-table').innerHTML = empty('No outstanding invoices to report.'); return; }
