@@ -352,7 +352,13 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
       <div class="view on" id="view-dashboard">
         <div class="vhdr">
           <div><div class="vttl">Executive Dashboard</div><div class="vsub" id="dash-ts">—</div></div>
-          <button class="bp" onclick="loadDashboard()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div id="asof-badge" style="display:none;font-size:10px;font-weight:700;letter-spacing:.04em;padding:4px 9px;border-radius:20px;background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">HISTORICAL VIEW</div>
+            <input class="finput" type="date" id="dash-asof" style="width:150px;padding:7px 10px" title="View treasury position as at a specific date">
+            <button class="bp" id="dash-asof-btn" onclick="loadDashboardAsOf($('dash-asof').value)">View As-Of</button>
+            <button class="bp" style="background:transparent;border:1px solid var(--bd)" id="dash-live-btn" onclick="$('dash-asof').value='';loadDashboard();" disabled>Back to Live</button>
+            <button class="bp" onclick="loadDashboard()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
+          </div>
         </div>
         <div class="kpi-grid" id="dash-kpis"><div class="loading-row">Loading…</div></div>
         <div class="wacc-grid" id="dash-wacc"></div>
@@ -538,6 +544,20 @@ var _equityData   = { shareCapital:0, retainedEarnings:0, otherReserves:0, costO
 var _loanFilter   = 'all';
 var _charts       = {};
 var _dashLoaded   = false; // prevent double-loads on first paint
+// ── As-Of / Snapshot state ──
+var _asOfMode     = false;   // true when viewing a historical snapshot
+var _asOfDate     = null;    // 'YYYY-MM-DD' currently displayed, or null = live
+var _asOfMeta     = null;    // { snapshotDate, capturedAt } for the active snapshot
+var _effFrom      = null;    // 'YYYY-MM-DD' baseline — earliest date as-of reporting is allowed
+async function fetchEffectiveFrom(){
+  try{ const d=await api('/treasury/settings/effective-date'); if(d && d.effectiveFrom) _effFrom = d.effectiveFrom.slice(0,10); }
+  catch(e){ /* endpoint not deployed yet — no floor enforced client-side until it is */ }
+  applyEffFromToPickers();
+}
+function applyEffFromToPickers(){
+  const today = new Date().toISOString().slice(0,10);
+  ['dash-asof'].forEach(id=>{ const el=$(id); if(!el) return; if(_effFrom) el.min=_effFrom; el.max=today; });
+}
 
 // ════════════════════════════════════════════════════
 // AUTH — runs immediately, non-blocking
@@ -574,7 +594,12 @@ const fmt = n => { const v=Number(n)||0; if(Math.abs(v)>=1e9)return'₦'+(v/1e9)
 const pct = n => (Number(n)||0).toFixed(2) + '%';
 const fD  = d => !d ? '—' : new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 const ts  = () => new Date().toISOString().slice(0,10);
-const todayStr = () => new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+const todayStr = () => {
+  const s = window.currentAsOf;
+  const d = (s && s.isHistorical) ? s.asOfDate : new Date();
+  const base = d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  return (s && s.isHistorical) ? ('As at '+base) : base;
+};
 
 async function api(ep, opts = {}){
   const tok = sessionStorage.getItem('FM_token');
@@ -779,6 +804,7 @@ function renderEquity(){
 
 function openEquityModal(){
   const e = _equityData;
+  const todayStr0 = new Date().toISOString().slice(0,10);
   openModal('Update Equity & Capital',
     `<div class="merr" id="eq-err"></div>
      <div class="nt-info" style="margin-bottom:.9rem">Saved to your account database — shared across all team members and devices.</div>
@@ -790,6 +816,7 @@ function openEquityModal(){
        <div class="fld"><label>Other Reserves (₦)</label><input class="finput" type="number" id="eq-res" value="${e.otherReserves}" min="0" step="1000000" placeholder="0"></div>
        <div class="fld"><label>Cost of Equity — Ke (%)</label><input class="finput" type="number" id="eq-ke" value="${e.costOfEquity}" min="0" max="100" step="0.5" placeholder="e.g. 24"></div>
      </div>
+     <div class="fld"><label>Effective Date *</label><input class="finput" type="date" id="eq-effdate" value="${todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The date this capital structure is true as at. Required for as-of reporting.</div></div>
      <div class="nt" style="font-size:11px"><strong>Ke guidance (Nigeria):</strong> Risk-free rate (91-day T-Bill ~20–22%) + equity risk premium 3–7% = 23–27%. MFBs/fintech: 20–25%.</div>`,
     `<button onclick="closeModal()">Cancel</button>
      <button class="bp" onclick="saveEquity()"><span id="eq-save-txt">Save Capital Data</span></button>`
@@ -800,11 +827,15 @@ async function saveEquity(){
   const err = $('eq-err'); err.classList.remove('on');
   const sc = parseFloat($('eq-cap').value) || 0;
   if(!sc){ err.textContent = 'Share capital is required.'; err.classList.add('on'); return; }
+  const effDate = $('eq-effdate')?.value;
+  if(!effDate){ err.textContent = 'Effective date is required.'; err.classList.add('on'); return; }
+  if(_effFrom && effDate<_effFrom){ err.textContent = 'Effective date cannot be before the baseline ('+_effFrom+').'; err.classList.add('on'); return; }
   const payload = {
     shareCapital:     sc,
     retainedEarnings: parseFloat($('eq-ret').value) || 0,
     otherReserves:    parseFloat($('eq-res').value) || 0,
-    costOfEquity:     parseFloat($('eq-ke').value)  || 20
+    costOfEquity:     parseFloat($('eq-ke').value)  || 20,
+    effectiveDate:    effDate
   };
   $('eq-save-txt').textContent = 'Saving…';
   // Always persist to localStorage immediately so refresh never loses data
@@ -813,6 +844,7 @@ async function saveEquity(){
 
   try {
     await api('/treasury/equity', { method:'POST', body:JSON.stringify(payload) });
+    await api('/treasury/equity/history', { method:'POST', body:JSON.stringify(payload) }).catch(e=>console.warn('History not saved (endpoint may not exist yet):',e.message));
     closeModal();
     toast('Capital data saved to database.');
     renderEquity();
@@ -834,17 +866,82 @@ async function loadDashboard(){
   $('dash-ts').textContent = 'Loading…';
   $('dash-kpis').innerHTML = '<div class="loading-row">Loading…</div>';
   $('advisory-content').innerHTML = '<div class="loading-row">Analysing…</div>';
+  _asOfMode = false; _asOfDate = null; _asOfMeta = null;
+  const badge=$('asof-badge'); if(badge) badge.style.display='none';
+  const liveBtn=$('dash-live-btn'); if(liveBtn) liveBtn.disabled=true;
+  const asofInput=$('dash-asof'); if(asofInput) asofInput.value='';
 
   // Parallel fetches — equity included
   await Promise.all([
     fetchReceivables(),
     fetchEquity(),
+    fetchEffectiveFrom(),
     api('/treasury/borrowings').then(d => { if(d.borrowings?.length) _borrowCache = d.borrowings; }).catch(()=>{}),
     api('/treasury/investments').then(d => { if(d.investments?.length) _invCache = d.investments; }).catch(()=>{}),
     api('/treasury/cash').then(d => { if(d.accounts?.length) _cashCache = d.accounts; }).catch(()=>{}),
   ]);
 
-  const today      = new Date();
+  renderDashboardState(new Date(), false, null);
+
+  _dashLoaded = true;
+}
+
+// ════════════════════════════════════════════════════
+// AS-OF (HISTORICAL) DASHBOARD
+// ════════════════════════════════════════════════════
+// Every cash/borrowing/investment/equity update now carries an "Effective
+// Date" (see the save*() functions below) and is stored as a dated version
+// against its entity, never overwritten. To view the treasury position as at
+// any date D, the backend returns — per entity — the latest version whose
+// effective date is <= D. Entities with no version on/before D didn't exist
+// yet as of that date and are correctly excluded.
+//
+// The picker is bounded below by _effFrom (the baseline date the books were
+// first fully entered, set once in Settings) since nothing before that date
+// can be reliably reconstructed, and above by today.
+async function loadDashboardAsOf(dateStr){
+  if(!dateStr){ toast('Pick a date first.', 'err'); return; }
+  const chosen = new Date(dateStr);
+  if(chosen > new Date()){ toast('Pick today or an earlier date.', 'err'); return; }
+  if(_effFrom && dateStr < _effFrom){ toast('Data is only available from '+_effFrom+' onward. Set an earlier baseline in Settings if you have earlier records.', 'err'); return; }
+
+  $('dash-ts').textContent = 'Loading as-of position…';
+  $('dash-kpis').innerHTML = '<div class="loading-row">Loading…</div>';
+  $('advisory-content').innerHTML = '<div class="loading-row">Analysing…</div>';
+
+  let res;
+  try{ res = await api('/treasury/asof?date='+dateStr); }
+  catch(e){
+    toast(e.message || 'The /treasury/asof endpoint is not deployed yet — see backend setup notes.', 'err');
+    $('dash-ts').textContent = 'As at ' + new Date().toLocaleString('en-GB');
+    return;
+  }
+  if(!res || res.success===false || (!res.cash && !res.borrowings && !res.investments)){
+    toast('No treasury records exist on or before '+dateStr+' yet.', 'err');
+    $('dash-ts').textContent = 'As at ' + new Date().toLocaleString('en-GB');
+    return;
+  }
+
+  _cashCache     = res.cash        || [];
+  _borrowCache   = res.borrowings  || [];
+  _invCache      = res.investments || [];
+  _equityData    = res.equity      || _equityData;
+  // Debtors/portfolio (loans) currently have no effective-dated history —
+  // they still reflect the live position. Flagged in the UI subtitle below.
+
+  _asOfMode = true; _asOfDate = dateStr;
+  _asOfMeta = { asOf:dateStr };
+
+  const badge=$('asof-badge'); if(badge) badge.style.display='';
+  const liveBtn=$('dash-live-btn'); if(liveBtn) liveBtn.disabled=false;
+
+  renderDashboardState(chosen, true, _asOfMeta);
+}
+
+// Shared renderer — used by both the live dashboard and historical as-of views.
+// `asOfDate` is the point-in-time reference used for maturity/tenor bucketing.
+function renderDashboardState(asOfDate, isHistorical, meta){
+  const today = asOfDate;
   const totalDebtors = _debtorCache.reduce((s,d) => s+d.totalOutstanding, 0);
   const totalInv   = _invCache.reduce((s,i) => s+i.principal, 0);
   const totalCash  = _cashCache.filter(a => a.currency==='NGN').reduce((s,a) => s+a.balance, 0);
@@ -865,9 +962,9 @@ async function loadDashboard(){
   const evaSig= wara - wacc;
   const dta   = totalAssets > 0 ? totalDebt/totalAssets : 0;
   const eta = totalAssets > 0 ? totalEquity/totalAssets : 0;
-  
 
-  $('dash-ts').textContent = 'As at ' + new Date().toLocaleString('en-GB');
+  window.currentAsOf = { isHistorical, asOfDate: today, meta };
+  $('dash-ts').textContent = 'As at ' + today.toLocaleDateString('en-GB', {day:'2-digit',month:'long',year:'numeric'}) + (isHistorical ? '  •  reconstructed from dated records  (debtors shown at current balance)' : '  (' + new Date().toLocaleTimeString('en-GB') + ')');
 
   $('dash-kpis').innerHTML = [
     {l:'Total Deployable Assets', v:fmt(totalAssets),             c:'tl', ac:true, sub:'Loans + Inv + Cash'},
@@ -903,8 +1000,6 @@ async function loadDashboard(){
 
   try { renderAdvisory({ totalAssets, totalDebt, totalEquity, totalDebtors, totalInv, totalCash, wacc, wacd, wara, spread, avgIY, avgDR, lever }); }
   catch(e){ console.error('renderAdvisory failed:', e); $('advisory-content').innerHTML = '<div class="ep" style="padding:1rem"><div class="ei">⚠</div>'+e.message+' — check console.</div>'; }
-
-  _dashLoaded = true;
 }
 
 // ════════════════════════════════════════════════════
@@ -1333,6 +1428,7 @@ async function bulkDeleteCash(){ const ids=[...document.querySelectorAll('.cash-
 
 function openBorrowingModal(id){
   const x=id?_borrowCache.find(b=>b._id===id):null; const isOE=x?.noMaturity||false;
+  const todayStr0 = new Date().toISOString().slice(0,10);
   openModal(x?'Edit Facility':'Add Facility',
     `<div class="merr" id="bw-err"></div>
     <div class="fg"><div class="fld"><label>Borrowing ID *</label><input class="finput" id="bw-id" value="${x?.borrowingId||''}"></div><div class="fld"><label>Lender *</label><input class="finput" id="bw-lender" value="${x?.lender||''}"></div></div>
@@ -1341,6 +1437,7 @@ function openBorrowingModal(id){
     <div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="bw-rate" value="${x?.interestRate||''}"></div><div class="fld"><label>Tenor (months)</label><input class="finput" type="number" id="bw-tenor" value="${x?.tenorMonths||''}"></div></div>
     <div class="fg"><div class="fld"><label>Value Date</label><input class="finput" type="date" id="bw-vdate" value="${x?.valueDate?.slice(0,10)||''}"></div><div class="fld"><label>Accrued Interest (₦)</label><input class="finput" type="number" id="bw-accrued" value="${x?.accruedInterest||0}" min="0"></div></div>
     <div class="fld" id="bw-mat-wrap" style="${isOE?'display:none':''}"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="${x?.maturityDate?.slice(0,10)||''}"></div>
+    <div class="fld"><label>Outstanding Balance Effective Date *</label><input class="finput" type="date" id="bw-effdate" value="${todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The date the Outstanding figure above is true as at.</div></div>
     <div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="bw-nomat" ${isOE?'checked':''} style="accent-color:var(--pu)" onchange="toggleBwMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended / No fixed maturity</span></label></div>`,
     `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing('${x?x._id:''}')"><span id="bw-sv">${x?'Save Changes':'Add Facility'}</span></button>`);
 }
@@ -1348,10 +1445,19 @@ function toggleBwMat(cb){ const w=$('bw-mat-wrap'); if(w) w.style.display=cb.che
 async function saveBorrowing(id){
   const err=$('bw-err'); err.classList.remove('on');
   const noMat=$('bw-nomat')?.checked||false;
-  const p={borrowingId:$('bw-id').value.trim(),lender:$('bw-lender').value.trim(),type:$('bw-type').value,repayment:$('bw-rep').value,principal:+$('bw-prin').value,outstanding:+$('bw-out').value,interestRate:+$('bw-rate').value,tenorMonths:+$('bw-tenor').value,noMaturity:noMat,valueDate:$('bw-vdate').value||null,accruedInterest:+($('bw-accrued')?.value||0),maturityDate:noMat?null:($('bw-mat')?.value||null)};
+  const effDate=$('bw-effdate')?.value;
+  if(!effDate){err.textContent='Effective date is required.';err.classList.add('on');return;}
+  if(_effFrom && effDate<_effFrom){err.textContent='Effective date cannot be before the baseline ('+_effFrom+').';err.classList.add('on');return;}
+  const p={borrowingId:$('bw-id').value.trim(),lender:$('bw-lender').value.trim(),type:$('bw-type').value,repayment:$('bw-rep').value,principal:+$('bw-prin').value,outstanding:+$('bw-out').value,interestRate:+$('bw-rate').value,tenorMonths:+$('bw-tenor').value,noMaturity:noMat,valueDate:$('bw-vdate').value||null,accruedInterest:+($('bw-accrued')?.value||0),maturityDate:noMat?null:($('bw-mat')?.value||null),effectiveDate:effDate};
   if(!p.borrowingId||!p.lender){err.textContent='ID and lender required.';err.classList.add('on');return;}
   $('bw-sv').textContent='Saving…';
-  try{ if(id) await api('/treasury/borrowings/'+id,{method:'PUT',body:JSON.stringify(p)}); else await api('/treasury/borrowings',{method:'POST',body:JSON.stringify(p)}); closeModal();toast(id?'Updated.':'Added.');loadBorrowings(); }
+  try{
+    let facId=id;
+    if(id) await api('/treasury/borrowings/'+id,{method:'PUT',body:JSON.stringify(p)});
+    else { const created=await api('/treasury/borrowings',{method:'POST',body:JSON.stringify(p)}); facId=created?.borrowing?._id; }
+    if(facId) await api('/treasury/borrowings/'+facId+'/history',{method:'POST',body:JSON.stringify({outstanding:p.outstanding,accruedInterest:p.accruedInterest,effectiveDate:effDate})}).catch(e=>console.warn('History not saved (endpoint may not exist yet):',e.message));
+    closeModal();toast(id?'Updated.':'Added.');loadBorrowings();
+  }
   catch(e){err.textContent=e.message;err.classList.add('on');$('bw-sv').textContent=id?'Save Changes':'Add Facility';}
 }
 async function deleteBorrowing(id){ if(!confirm('Delete this facility?'))return; try{await api('/treasury/borrowings/'+id,{method:'DELETE'});toast('Deleted.');loadBorrowings();}catch(e){toast(e.message,'err');} }
@@ -1407,6 +1513,7 @@ function renderInvestments(){
 }
 function openInvestmentModal(id){
   const i=id?_invCache.find(x=>x._id===id):null; const isOE=i?.noMaturity||false;
+  const todayStr0 = new Date().toISOString().slice(0,10);
   openModal(i?'Edit Investment':'Add Investment',
     `<div class="merr" id="iv-err"></div>
     <div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="${i?.investmentId||''}"></div><div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="${i?.counterparty||''}"></div></div>
@@ -1414,6 +1521,7 @@ function openInvestmentModal(id){
     <div class="fg"><div class="fld"><label>Principal (₦) *</label><input class="finput" type="number" id="ii-prin" value="${i?.principal||''}"></div><div class="fld"><label>Rate (%)</label><input class="finput" type="number" id="ii-rate" value="${i?.interestRate||''}"></div></div>
     <div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="${i?.dateInvested?.slice(0,10)||''}"></div><div class="fld" id="ii-days-wrap"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="${i?.tenorDays||''}"></div></div>
     <div class="fld" id="ii-mat-wrap" style="${isOE?'display:none':''}"><label>Maturity Date</label><input class="finput" type="date" id="ii-matdate" value="${i?.maturityDate?.slice(0,10)||''}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">Leave blank to auto-compute from tenor.</div></div>
+    <div class="fld"><label>Principal Effective Date *</label><input class="finput" type="date" id="ii-effdate" value="${i?todayStr0:(i?.dateInvested?.slice(0,10)||todayStr0)}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The date the Principal above is true as at (e.g. after a top-up or partial redemption).</div></div>
     <div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="ii-nomat" ${isOE?'checked':''} style="accent-color:var(--pu)" onchange="toggleInvMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended (MMF, on-demand)</span></label></div>`,
     `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment('${i?i._id:''}')"><span id="ii-sv">${i?'Save Changes':'Add Investment'}</span></button>`);
   if(i?.type==='Money Market Fund'||i?.type==='Notice Deposit'||i?.type==='Other Open-ended'){ const cb=$('ii-nomat'); if(cb&&!cb.checked){cb.checked=true;toggleInvMat(cb);} }
@@ -1426,10 +1534,19 @@ async function saveInvestment(id){
   const explicitMat=$('ii-matdate')?.value;
   const computedMat=(dInv&&days)?new Date(new Date(dInv).getTime()+days*86400000).toISOString().slice(0,10):null;
   const maturityDate=noMat?null:(explicitMat||computedMat);
-  const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-prin').value,interestRate:+$('ii-rate').value,dateInvested:dInv,tenorDays:days,noMaturity:noMat,maturityDate};
+  const effDate=$('ii-effdate')?.value;
+  if(!effDate){err.textContent='Principal effective date is required.';err.classList.add('on');return;}
+  if(_effFrom && effDate<_effFrom){err.textContent='Effective date cannot be before the baseline ('+_effFrom+').';err.classList.add('on');return;}
+  const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-prin').value,interestRate:+$('ii-rate').value,dateInvested:dInv,tenorDays:days,noMaturity:noMat,maturityDate,effectiveDate:effDate};
   if(!p.investmentId||!p.counterparty||!p.principal){err.textContent='ID, counterparty and principal required.';err.classList.add('on');return;}
   $('ii-sv').textContent='Saving…';
-  try{ if(id) await api('/treasury/investments/'+id,{method:'PUT',body:JSON.stringify(p)}); else await api('/treasury/investments',{method:'POST',body:JSON.stringify(p)}); closeModal();toast(id?'Updated.':'Added.');loadInvestments(); }
+  try{
+    let invId=id;
+    if(id) await api('/treasury/investments/'+id,{method:'PUT',body:JSON.stringify(p)});
+    else { const created=await api('/treasury/investments',{method:'POST',body:JSON.stringify(p)}); invId=created?.investment?._id; }
+    if(invId) await api('/treasury/investments/'+invId+'/history',{method:'POST',body:JSON.stringify({principal:p.principal,effectiveDate:effDate})}).catch(e=>console.warn('History not saved (endpoint may not exist yet):',e.message));
+    closeModal();toast(id?'Updated.':'Added.');loadInvestments();
+  }
   catch(e){err.textContent=e.message;err.classList.add('on');$('ii-sv').textContent=id?'Save Changes':'Add Investment';}
 }
 async function deleteInvestment(id){ if(!confirm('Delete this investment?'))return; try{await api('/treasury/investments/'+id,{method:'DELETE'});toast('Deleted.');loadInvestments();}catch(e){toast(e.message,'err');} }
@@ -1477,20 +1594,32 @@ function renderCash(){
 }
 function openCashModal(id){
   const a=id?_cashCache.find(x=>x._id===id):null;
+  const todayStr0 = new Date().toISOString().slice(0,10);
   openModal(a?'Edit Account':'Add Account',
     `<div class="merr" id="ca-err"></div>
     <div class="fg"><div class="fld"><label>Account ID *</label><input class="finput" id="ca-id" value="${a?.accountId||''}"></div><div class="fld"><label>Bank Name *</label><input class="finput" id="ca-bank" value="${a?.bank||''}"></div></div>
     <div class="fg"><div class="fld"><label>Account Number</label><input class="finput" id="ca-acct" value="${a?.accountNo||''}"></div><div class="fld"><label>Type</label><select class="finput" id="ca-type">${['Current','Savings','Dom (USD)','Dom (EUR)'].map(t=>`<option ${a?.type===t?'selected':''}>${t}</option>`).join('')}</select></div></div>
     <div class="fg"><div class="fld"><label>Currency</label><select class="finput" id="ca-ccy">${['NGN','USD','EUR','GBP'].map(t=>`<option ${a?.currency===t?'selected':''}>${t}</option>`).join('')}</select></div><div class="fld"><label>Balance</label><input class="finput" type="number" id="ca-bal" value="${a?.balance||0}" min="0" step="0.01"></div></div>
+    <div class="fld"><label>Effective Date *</label><input class="finput" type="date" id="ca-effdate" value="${todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The date this balance is true as at. Required for as-of reporting.</div></div>
     <div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ca-rest" ${a?.restricted?'checked':''} style="accent-color:var(--t)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo);text-transform:none;letter-spacing:0">Mark as Restricted</span></label></div>`,
     `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash('${a?a._id:''}')"><span id="ca-sv">${a?'Save Changes':'Add Account'}</span></button>`);
 }
 async function saveCash(id){
   const err=$('ca-err'); err.classList.remove('on');
-  const p={accountId:$('ca-id').value.trim(),bank:$('ca-bank').value.trim(),accountNo:$('ca-acct').value.trim(),type:$('ca-type').value,currency:$('ca-ccy').value,balance:+$('ca-bal').value,restricted:$('ca-rest').checked};
+  const effDate=$('ca-effdate')?.value;
+  if(!effDate){err.textContent='Effective date is required.';err.classList.add('on');return;}
+  if(_effFrom && effDate<_effFrom){err.textContent='Effective date cannot be before the baseline ('+_effFrom+'). Update it in Settings if needed.';err.classList.add('on');return;}
+  const p={accountId:$('ca-id').value.trim(),bank:$('ca-bank').value.trim(),accountNo:$('ca-acct').value.trim(),type:$('ca-type').value,currency:$('ca-ccy').value,balance:+$('ca-bal').value,restricted:$('ca-rest').checked,effectiveDate:effDate};
   if(!p.accountId||!p.bank){err.textContent='Account ID and bank required.';err.classList.add('on');return;}
   $('ca-sv').textContent='Saving…';
-  try{ if(id) await api('/treasury/cash/'+id,{method:'PUT',body:JSON.stringify(p)}); else await api('/treasury/cash',{method:'POST',body:JSON.stringify(p)}); closeModal();toast(id?'Updated.':'Added.');loadCash(); }
+  try{
+    let acctId=id;
+    if(id) await api('/treasury/cash/'+id,{method:'PUT',body:JSON.stringify(p)});
+    else { const created=await api('/treasury/cash',{method:'POST',body:JSON.stringify(p)}); acctId=created?.account?._id; }
+    // Record this balance as a dated version so as-of reports can reconstruct it correctly.
+    if(acctId) await api('/treasury/cash/'+acctId+'/history',{method:'POST',body:JSON.stringify({balance:p.balance,effectiveDate:effDate})}).catch(e=>console.warn('History not saved (endpoint may not exist yet):',e.message));
+    closeModal();toast(id?'Updated.':'Added.');loadCash();
+  }
   catch(e){err.textContent=e.message;err.classList.add('on');$('ca-sv').textContent=id?'Save Changes':'Add Account';}
 }
 async function deleteCash(id){ if(!confirm('Delete this account?'))return; try{await api('/treasury/cash/'+id,{method:'DELETE'});toast('Deleted.');loadCash();}catch(e){toast(e.message,'err');} }
@@ -1631,8 +1760,26 @@ async function loadSettings(){
       <div class="fld"><label>Account Type</label><div style="font-family:var(--mo);font-size:12px;color:var(--t);padding:7px 11px;background:var(--n3);border:1px solid var(--b);border-radius:var(--r)">${isOrg?'🏢 Organisation Account':'👤 Individual Account'}</div></div></div>`+
       (isOrg?`<div class="card" style="margin-bottom:.9rem"><div class="section-ttl">Organisation Profile</div>
         <div class="fg"><div class="fld"><label>Organisation Name</label><input class="finput" id="s-orgname" value="${org.name||''}"></div><div class="fld"><label>Domain</label><input class="finput" id="s-domain" value="${org.domain||''}"></div></div></div>`:'')+
+      `<div class="card" style="margin-bottom:.9rem"><div class="section-ttl">As-Of Reporting</div>
+        <div class="merr" id="eff-err"></div>
+        <p style="font-size:12px;color:var(--tx2);margin-bottom:.7rem">The date your books were first fully entered (cash, borrowings, investments, equity). Point-in-time reports can be pulled for this date onward, but not before it — the app has no reliable data prior to this baseline.</p>
+        <div class="fg"><div class="fld"><label>Data Effective From</label><input class="finput" type="date" id="s-efffrom" value="${_effFrom||''}"></div>
+        <div class="fld" style="display:flex;align-items:flex-end"><button class="bp" onclick="saveEffectiveFrom()"><span id="eff-sv">Save Baseline Date</span></button></div></div></div>`+
       '<div style="display:flex;justify-content:flex-end"><button class="bp" onclick="saveSettings()"><span id="set-sv">Save Settings</span></button></div>';
   }catch(e){ $('settings-form').innerHTML='<div class="nt">⚠ '+e.message+'</div>'; }
+}
+async function saveEffectiveFrom(){
+  const v = $('s-efffrom')?.value;
+  const err=$('eff-err'); if(err) err.classList.remove('on');
+  if(!v){ if(err){err.textContent='Pick a date.';err.classList.add('on');} return; }
+  $('eff-sv').textContent='Saving…';
+  try{
+    await api('/treasury/settings/effective-date',{method:'PUT',body:JSON.stringify({effectiveFrom:v})});
+    _effFrom = v;
+    applyEffFromToPickers();
+    toast('Baseline effective date saved. As-of reports now start from '+v+'.');
+  }catch(e){ if(err){err.textContent=e.message||'Could not save — is the /treasury/settings/effective-date endpoint deployed?';err.classList.add('on');} }
+  finally{ const t=$('eff-sv'); if(t) t.textContent='Save Baseline Date'; }
 }
 async function saveSettings(){
   const err=$('set-err'),ok=$('set-ok');
@@ -1672,6 +1819,16 @@ function fmCurrentReportTheme(){
 }
 let EXP_C = EXP_C_DARK;
 
+function asOfLabel(){
+  const s = window.currentAsOf;
+  if(!s || !s.isHistorical) return 'As at ' + new Date().toLocaleString('en-GB');
+  return 'As at ' + s.asOfDate.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) + ' (Historical Snapshot)';
+}
+function asOfFileTag(){
+  const s = window.currentAsOf;
+  const d = (s && s.isHistorical) ? s.asOfDate : new Date();
+  return d.toISOString().slice(0,10);
+}
 function expFmt(n){ return (Number(n)||0).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function expPct(n){ return (Number(n)||0).toFixed(2)+'%'; }
 function expFmtM(n){ const v=Number(n)||0; if(Math.abs(v)>=1e9)return'₦'+(v/1e9).toFixed(2)+'B'; if(Math.abs(v)>=1e6)return'₦'+(v/1e6).toFixed(2)+'M'; if(Math.abs(v)>=1e3)return'₦'+(v/1e3).toFixed(1)+'K'; return'₦'+v.toFixed(2); }
@@ -1997,7 +2154,7 @@ all15.forEach((k,i)=>expKpiCard(s2,pres,sx2+(i%6)*(cW2+g2),sy2+Math.floor(i/6)*(
   s9.addText('FM Finance Suite  ·  Generated '+D+'  ·  Prepared by: '+userName,{x:0,y:5.33,w:10,h:0.29,fontSize:7.5,color:EXP_C.tx3,align:'center',fontFace:'Arial',margin:0});
   expFooter(s9,pres,recSlideNum,dynamicTotal);
 
-  return pres.writeFile({ fileName:'FM_Treasury_Board_'+ts()+'.pptx' });
+  return pres.writeFile({ fileName:'FM_Treasury_Board_AsAt_'+asOfFileTag()+'.pptx' });
 }
 
 async function exportDashboardExcel(){
@@ -2009,6 +2166,7 @@ async function exportDashboardExcel(){
   // Sheet 1: Dashboard summary
   const dash = [
     ['FM Finance Suite — Treasury Dashboard Export'],
+    [asOfLabel()],
     ['Generated', new Date().toLocaleString('en-GB')],
     [''],
     ['Metric','Value'],
@@ -2069,7 +2227,7 @@ async function exportDashboardExcel(){
     XLSX.utils.book_append_sheet(wb, ws5, 'Cash');
   }
 
-  XLSX.writeFile(wb, 'FM_Treasury_Dashboard_'+ts()+'.xlsx');
+  XLSX.writeFile(wb, 'FM_Treasury_Dashboard_AsAt_'+asOfFileTag()+'.xlsx');
 }
 
 async function exportDashboardPDF(){
@@ -2102,7 +2260,7 @@ async function exportDashboardPDF(){
   tmp.innerHTML = `
     <div style="border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:18px">
       <div style="font-size:18px;font-weight:700;color:#000">FM Finance Suite — Treasury Intelligence Report</div>
-      <div style="font-size:11px;color:#333;margin-top:4px">Generated: ${new Date().toLocaleString('en-GB')} &nbsp;|&nbsp; Prepared by: ${_user?.name||'—'} &nbsp;|&nbsp; ${_user?.orgName||_user?.name||'—'}</div>
+      <div style="font-size:11px;color:#333;margin-top:4px">${asOfLabel()} &nbsp;|&nbsp; Generated: ${new Date().toLocaleString('en-GB')} &nbsp;|&nbsp; Prepared by: ${_user?.name||'—'} &nbsp;|&nbsp; ${_user?.orgName||_user?.name||'—'}</div>
     </div>
 
     <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:8px;border-bottom:1px solid #ccc;padding-bottom:4px">Executive Summary — Key Performance Indicators</div>
@@ -2142,7 +2300,7 @@ async function exportDashboardPDF(){
     pdf.addImage(img,'PNG',0,-yPos,pw,ph_full);
     yPos += pageH;
   }
-  pdf.save('FM_Treasury_Report_'+ts()+'.pdf');
+  pdf.save('FM_Treasury_Report_AsAt_'+asOfFileTag()+'.pdf');
   tmp.remove();
 }
 
