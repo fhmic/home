@@ -1001,10 +1001,10 @@ function renderDashboardState(asOfDate, isHistorical, meta){
     {l:'Total Funding Base',      v:fmt(totalCapital),            c:'rd',         sub:'Debt + Equity'},
     {l:'Total Borrowings',        v:fmt(totalDebt),               c:'bl',         sub:debtAccrualSub(debtAccrual)},
     {l:'Equity & Reserves',       v:fmt(totalEquity),             c:'bl',         sub:'Capital + Retained Earnings'},
-    {l:'Net Interest Margin (₦)', v:(nisAmount>=0?'+':'')+fmt(nisAmount), c:nisAmount>=0?'gr':'rd', sub:'Assets × (WARA − WACD) = '+fmt(totalAssets)+' × '+(nisPct>=0?'+':'')+nisPct.toFixed(2)+'%'},
-  ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks" title="Estimated only — computed live from the posted rate and days since the last posted figure. Not a confirmed/posted balance.">${k.sub}</div></div>`).join('');
+    ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks" title="Estimated only — computed live from the posted rate and days since the last posted figure. Not a confirmed/posted balance.">${k.sub}</div></div>`).join('');
 
   $('dash-wacc').innerHTML = [
+    {l:'Net Interest Margin (₦)', v:(nisAmount>=0?'+':'')+fmt(nisAmount), c:nisAmount>=0?'gr':'rd', sub:'Assets × (WARA − WACD) = '+fmt(totalAssets)+' × '+(nisPct>=0?'+':'')+nisPct.toFixed(2)+'%'},
     {l:'Net Asset Cover',     v:fmt(totalAssets-totalDebt),   c:totalAssets>totalDebt?'gr':'rd', sub:'Assets − Liabilities'},
     {l:'WARA',                v:pct(wara),                         c:'am', sub:'Return on earning assets'},
     {l:'WACD',                v:pct(wacd),                         c:'bl', sub:'Weighted avg cost of debt'},
