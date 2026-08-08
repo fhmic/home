@@ -854,7 +854,7 @@ function openEquityModal(){
        <div class="fld"><label>Other Reserves (₦)</label><input class="finput" type="number" id="eq-res" value="${e.otherReserves}" min="0" step="1000000" placeholder="0"></div>
        <div class="fld"><label>Cost of Equity — Ke (%)</label><input class="finput" type="number" id="eq-ke" value="${e.costOfEquity}" min="0" max="100" step="0.5" placeholder="e.g. 24"></div>
      </div>
-     <div class="fld"><label>Reporting Date *</label><input class="finput" type="date" id="eq-effdate" value="${todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The period this capital structure is reported as at. Required for as-of reporting.</div></div>
+     <div class="fld"><label>Effective Date *</label><input class="finput" type="date" id="eq-effdate" value="${todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The period this capital structure is reported as at. Required for as-of reporting.</div></div>
      <div class="nt" style="font-size:11px"><strong>Ke guidance (Nigeria):</strong> Risk-free rate (91-day T-Bill ~20–22%) + equity risk premium 3–7% = 23–27%. MFBs/fintech: 20–25%.</div>`,
     `<button onclick="closeModal()">Cancel</button>
      <button class="bp" onclick="saveEquity()"><span id="eq-save-txt">Save Capital Data</span></button>`
@@ -866,14 +866,14 @@ async function saveEquity(){
   const sc = parseFloat($('eq-cap').value) || 0;
   if(!sc){ err.textContent = 'Share capital is required.'; err.classList.add('on'); return; }
   const effDate = $('eq-effdate')?.value;
-  if(!effDate){ err.textContent = 'Reporting date is required.'; err.classList.add('on'); return; }
-  if(_effFrom && effDate<_effFrom){ err.textContent = 'Reporting date cannot be before the baseline ('+_effFrom+').'; err.classList.add('on'); return; }
+  if(!effDate){ err.textContent = 'Effective date is required.'; err.classList.add('on'); return; }
+  if(_effFrom && effDate<_effFrom){ err.textContent = 'Effective date cannot be before the baseline ('+_effFrom+').'; err.classList.add('on'); return; }
   const payload = {
     shareCapital:     sc,
     retainedEarnings: parseFloat($('eq-ret').value) || 0,
     otherReserves:    parseFloat($('eq-res').value) || 0,
     costOfEquity:     parseFloat($('eq-ke').value)  || 20,
-    reportingDate:    effDate
+    effectiveDate:    effDate
   };
   $('eq-save-txt').textContent = 'Saving…';
   // Always persist to localStorage immediately so refresh never loses data
@@ -927,11 +927,11 @@ async function loadDashboard(){
 // ════════════════════════════════════════════════════
 // AS-OF (HISTORICAL) DASHBOARD
 // ════════════════════════════════════════════════════
-// Every cash/borrowing/investment/equity update now carries a "Reporting
+// Every cash/borrowing/investment/equity update now carries an "Effective
 // Date" (see the save*() functions below) and is stored as a dated version
 // against its entity, never overwritten. To view the treasury position as at
 // any date D, the backend returns — per entity — the latest version whose
-// reporting date is <= D. Entities with no version on/before D didn't exist
+// effective date is <= D. Entities with no version on/before D didn't exist
 // yet as of that date and are correctly excluded.
 //
 // The picker is bounded below by _effFrom (the baseline date the books were
@@ -1358,7 +1358,7 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
       n: recNum,
       title: 'Accelerate Recovery of Stage 3 Exposures',
       obs:   `${s3.length} debtor${s3.length>1?'s':''} totalling ${fmt(s3amt)} are classified Stage 3 (credit-impaired), requiring lifetime ECL provisioning.`,
-      rec:   `Escalate recovery on all Stage 3 accounts. Engage a collections agency or initiate legal recovery proceedings within 60 days, and ensure full IFRS 9 lifetime ECL provisions are recognised in the current reporting period.`,
+      rec:   `Escalate recovery on all Stage 3 accounts. Engage a collections agency or initiate legal recovery proceedings within 60 days, and ensure full IFRS 9 lifetime ECL provisions are recognised in the current effective date.`,
       rat:   `Unresolved Stage 3 exposures keep accruing interest income that may never be recovered, inflating WARA optically while understating true credit losses. Swift resolution protects capital and improves ECL coverage.`,
       dot:   'rd'
     });
@@ -1400,4 +1400,1390 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     html += `<div class="advisory-conclusion"><div class="advisory-conclusion-label">Conclusion</div><div class="advisory-conclusion-text">${conclusion}</div></div>`;
     html += '</div>';
   }
-  if(!html) html = '<div class="ep" style="padding:1rem"><div class="ei">📊</div>Enter borrowings, investments, cash and equity data to generate the ad
+  if(!html) html = '<div class="ep" style="padding:1rem"><div class="ei">📊</div>Enter borrowings, investments, cash and equity data to generate the advisory.</div>';
+  el.innerHTML = html;
+  window.latestAssessment = { pts, recs, recItems, conclusion, metrics:{ totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever,eta,dta,nisPct,nisAmount } };
+}
+
+// ════════════════════════════════════════════════════
+// DEBTOR BOOK
+// ════════════════════════════════════════════════════
+async function loadLoans(){
+  $('loans-kpis').innerHTML = '<div class="loading-row">Loading…</div>';
+  await fetchReceivables(true); // force refresh
+  renderLoanKPIs(); renderLoanChart(); renderLoanTable();
+}
+function renderLoanKPIs(){
+  const d=_debtorCache, total=d.reduce((s,x)=>s+x.totalOutstanding,0);
+  const s1=d.filter(x=>getStage(x._id)===1), s2=d.filter(x=>getStage(x._id)===2), s3=d.filter(x=>getStage(x._id)===3);
+  $('loans-kpis').innerHTML=[
+    {l:'Total Debtors/Loans',        v:fmt(total),                              c:'tl',ac:true,sub:d.length+' debtors'},
+    {l:'Stage 1 — Performing',     v:fmt(s1.reduce((s,x)=>s+x.totalOutstanding,0)), c:'gr', sub:s1.length+' debtors'},
+    {l:'Stage 2 — Watchlist',      v:fmt(s2.reduce((s,x)=>s+x.totalOutstanding,0)), c:'am', sub:s2.length+' debtors'},
+    {l:'Stage 3 — Non-Performing', v:fmt(s3.reduce((s,x)=>s+x.totalOutstanding,0)), c:'rd', sub:s3.length+' debtors'},
+  ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
+}
+function renderLoanChart(){
+  const ag={current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'181_270':0,'271_365':0,'365_plus':0};
+  _debtorCache.forEach(d=>Object.keys(ag).forEach(k=>{ag[k]+=(d.ageing[k]||0);}));
+  setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','181-270d','271-365d','365+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#00c9a7','#63b3ed','#fbbf24','#f5a623','#e05252','#dc2626','#7c2d12'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}}),60);
+}
+function setLoanFilter(btn,stage){
+  document.querySelectorAll('#loan-filters button').forEach(b=>b.style.cssText='');
+  btn.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';
+  _loanFilter=stage; renderLoanTable();
+}
+const BCLS={current:'pg','1_30':'pg','31_60':'pa','61_90':'pr','91_180':'pr','181_270':'pr','271_365':'pdark','365_plus':'pdark'};
+const BLBL={current:'Current','1_30':'1-30d','31_60':'31-60d','61_90':'61-90d','91_180':'91-180d','181_270':'181-270d','271_365':'271-365d','365_plus':'365+d'};
+function renderLoanTable(){
+  let data = _debtorCache;
+  if(_loanFilter!=='all') data=data.filter(d=>getStage(d._id)===+_loanFilter);
+  const q=($('loan-search')?.value||'').toLowerCase();
+  if(q) data=data.filter(d=>d.name.toLowerCase().includes(q)||(d.email||'').toLowerCase().includes(q));
+  if(!data.length){ $('loans-table').innerHTML=empty('No debtors match the current filter.'); return; }
+  const sc=s=>s===1?'ps1':s===2?'ps2':'ps3';
+  $('loans-table').innerHTML=`<div class="tw"><table>
+    <thead><tr><th>Debtor</th><th>Email</th><th class="nm">Outstanding (₦)</th><th>Oldest Bucket</th><th>Stage</th><th>Invoices</th><th>Risk</th></tr></thead>
+    <tbody>`+data.map(d=>{
+      const stage=getStage(d._id);
+      const hb=['365_plus','271_365','181_270','91_180','61_90','31_60','1_30','current'].find(k=>((d.ageing||{})[k]||0)>0)||'current';
+      const rs=d.collectionScore||0;
+      return`<tr><td><strong>${d.name}</strong>${d.contactPerson?`<div style="font-size:10px;color:var(--tx3)">${d.contactPerson}</div>`:''}</td>
+        <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${d.email||'—'}</td>
+        <td class="nm">₦${fN(d.totalOutstanding)}</td>
+        <td><span class="pl ${BCLS[hb]||'pa'}">${BLBL[hb]}</span></td>
+        <td><span class="pl ${sc(stage)}">Stage ${stage}</span></td>
+        <td class="nm">${d.invoiceCount}</td>
+        <td><span class="pl ${rs>5000?'pr':rs>1000?'pa':'pg'}">${rs>5000?'High':rs>1000?'Medium':'Low'}</span></td></tr>`;
+    }).join('')+
+    `</tbody><tr class="trt"><td colspan="2">TOTAL</td><td class="nm">₦${fN(data.reduce((s,d)=>s+d.totalOutstanding,0))}</td><td colspan="4"></td></tr></table></div>
+    <div style="margin-top:.4rem;font-size:11px;color:var(--tx3);font-family:var(--mo)">${data.length} debtors shown</div>`;
+}
+
+// ════════════════════════════════════════════════════
+// BORROWINGS (unchanged from original, stripped redundant comments)
+// ════════════════════════════════════════════════════
+function bwTenorLabel(x){
+  if(x.tenorDays!=null && x.tenorDays!=='') return x.tenorDays+'d';
+  if(x.tenorMonths) return Math.round(x.tenorMonths*30.44)+'d';
+  return '—';
+}
+async function loadBorrowings(){
+  $('borrowings-kpis').innerHTML='<div class="loading-row">Loading…</div>';
+  try{ const d=await api('/treasury/borrowings'); if(d.borrowings?.length) _borrowCache=normalizeBorrowings(d.borrowings); }catch(e){}
+  renderBorrowings();
+}
+function renderBorrowings(){
+  const b=_borrowCache,total=b.reduce((s,x)=>s+normNum(x.outstanding),0);
+  const wacd=total>0?b.reduce((a,x)=>a+(normNum(x.outstanding)/total)*normNum(x.interestRate),0):0;
+  const nearest=b.filter(x=>!x.noMaturity).slice().sort((a,c)=>new Date(a.maturityDate)-new Date(c.maturityDate))[0];
+  $('borrowings-kpis').innerHTML=[
+    {l:'Total Debt',v:fmt(total),c:'rd',sub:b.length+' facilities'},
+    {l:'WACD',v:pct(wacd),c:'am',sub:'Weighted avg cost of debt'},
+    {l:'Next Maturity',v:nearest?fD(nearest.maturityDate):'—',c:'bl',sub:nearest?nearest.lender:'No dated maturity'},
+    {l:'Open-ended',v:b.filter(x=>x.noMaturity).length,c:'pu',sub:'Demand / no fixed maturity'},
+  ].map(k=>`<div class="kpi ${k.c}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
+  const now=new Date(); const typeMap={};
+  b.forEach(x=>{typeMap[x.type]=(typeMap[x.type]||0)+normNum(x.outstanding);});
+  $('borrowings-charts').innerHTML='<div class="chart-box"><div class="card-label">Debt Maturity Profile</div><canvas id="ch-bwm" height="170"></canvas></div><div class="chart-box"><div class="card-label">Debt by Type</div><canvas id="ch-bwt" height="170"></canvas></div>';
+  setTimeout(()=>{
+    const md=b.map(x=>({n:x.lender.split(' ')[0],v:normNum(x.outstanding),d:x.noMaturity?0:Math.max(0,(new Date(x.maturityDate)-now)/86400000)})).sort((a,c)=>a.d-c.d);
+    mkChart('ch-bwm',{type:'bar',data:{labels:md.map(x=>x.n),datasets:[{data:md.map(x=>x.v),backgroundColor:md.map(x=>x.noMaturity?'#a78bfa':x.d<180?'#e05252':x.d<360?'#f5a623':'#00c9a7'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-bwt',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+  },60);
+  const rows=b.map(x=>`<tr>
+    <td style="width:30px"><input type="checkbox" class="row-chk bw-chk" value="${x._id}"></td>
+    <td style="font-family:var(--mo);color:var(--t)">${x.borrowingId}</td>
+    <td><strong>${x.lender}</strong>${x.noMaturity?'<div style="font-size:9px;font-family:var(--mo);color:var(--pu)">OPEN-ENDED</div>':''}</td>
+    <td style="color:var(--tx2)">${x.type}</td>
+    <td class="nm">${fmt(normNum(x.outstanding))}</td>
+    <td class="nm" style="color:${normNum(x.interestRate)>20?'#e05252':normNum(x.interestRate)>16?'#f5a623':'#22c55e'}">${x.interestRate}%</td>
+    <td class="nm">${x.noMaturity?'Open-ended':bwTenorLabel(x)}</td>
+    <td style="color:var(--tx2)">${x.repayment}</td>
+    <td style="font-family:var(--mo);color:${x.noMaturity?'var(--pu)':'var(--tx2)'}">${x.noMaturity?'On demand':fD(x.maturityDate)}</td>
+    <td class="nm" style="color:var(--am)">${normNum(x.accruedInterest)>0?fmt(normNum(x.accruedInterest)):'—'}${(()=>{const est=estAccrual(normNum(x.outstanding),normNum(x.interestRate),lastPostedDate(x,new Date(),'valueDate'),new Date());return est.amount>0?`<div style="font-size:9px;font-family:var(--mo);color:var(--tx3)" title="Estimated only — not posted">+~${fmt(est.amount)} est (${est.days}d)</div>`:'';})()}</td>
+    <td><div style="display:flex;gap:3px">
+      <button class="bsm" onclick="openBorrowingModal('${x._id}')" style="padding:3px 7px" title="Edit"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+      <button class="bsm bd" onclick="deleteBorrowing('${x._id}')" style="padding:3px 7px" title="Delete"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+    </div></td></tr>`).join('');
+  $('borrowings-table-wrap').innerHTML=
+    `<div class="bulk-bar" id="bw-bulk"><span id="bw-bulk-cnt">0 selected</span><button class="bd bsm" onclick="bulkDeleteBorrowings()">Delete Selected</button><button class="bsm" onclick="clearBulkBw()">Clear</button></div>
+    <div class="card-label">Borrowings Schedule</div><div class="tw"><table>
+    <thead><tr><th style="width:30px"><input type="checkbox" class="row-chk" id="bw-chk-all" onchange="toggleAllChk(this,'.bw-chk','bw-bulk','bw-bulk-cnt')"></th><th>ID</th><th>Lender</th><th>Type</th><th class="nm">Outstanding</th><th class="nm">Rate</th><th class="nm">Tenor (days)</th><th>Repayment</th><th>Maturity</th><th class="nm">Accrued Int.</th><th></th></tr></thead>
+    <tbody>${rows}<tr class="trt"><td></td><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">${fmt(total)}</td><td class="nm">${pct(wacd)}</td><td colspan="5"></td></tr></tbody></table></div>`;
+  document.querySelectorAll('.bw-chk').forEach(c=>c.addEventListener('change',()=>updateBulkBar('.bw-chk','bw-bulk','bw-bulk-cnt')));
+}
+function toggleAllChk(master,sel,barId,cntId){ document.querySelectorAll(sel).forEach(c=>{c.checked=master.checked;}); updateBulkBar(sel,barId,cntId); }
+function updateBulkBar(sel,barId,cntId){ const n=document.querySelectorAll(sel+':checked').length; const bar=$(barId),cnt=$(cntId); if(bar)bar.classList.toggle('on',n>0); if(cnt)cnt.textContent=n+' selected'; }
+function clearBulkBw(){ document.querySelectorAll('.bw-chk').forEach(c=>c.checked=false); const a=$('bw-chk-all'); if(a)a.checked=false; updateBulkBar('.bw-chk','bw-bulk','bw-bulk-cnt'); }
+function clearBulkInv(){ document.querySelectorAll('.inv-chk').forEach(c=>c.checked=false); const a=$('inv-chk-all'); if(a)a.checked=false; updateBulkBar('.inv-chk','inv-bulk','inv-bulk-cnt'); }
+function clearBulkCash(){ document.querySelectorAll('.cash-chk').forEach(c=>c.checked=false); const a=$('cash-chk-all'); if(a)a.checked=false; updateBulkBar('.cash-chk','cash-bulk','cash-bulk-cnt'); }
+async function bulkDeleteBorrowings(){ const ids=[...document.querySelectorAll('.bw-chk:checked')].map(c=>c.value); if(!ids.length)return; if(!confirm('Delete '+ids.length+' facilit'+(ids.length>1?'ies':'y')+'?'))return; for(const id of ids){try{await api('/treasury/borrowings/'+id,{method:'DELETE'});}catch(e){}} toast(ids.length+' deleted.'); loadBorrowings(); }
+async function bulkDeleteInvestments(){ const ids=[...document.querySelectorAll('.inv-chk:checked')].map(c=>c.value); if(!ids.length)return; if(!confirm('Delete '+ids.length+' investment'+(ids.length>1?'s':'')+'?'))return; for(const id of ids){try{await api('/treasury/investments/'+id,{method:'DELETE'});}catch(e){}} toast(ids.length+' deleted.'); loadInvestments(); }
+async function bulkDeleteCash(){ const ids=[...document.querySelectorAll('.cash-chk:checked')].map(c=>c.value); if(!ids.length)return; if(!confirm('Delete '+ids.length+' account'+(ids.length>1?'s':'')+'?'))return; for(const id of ids){try{await api('/treasury/cash/'+id,{method:'DELETE'});}catch(e){}} toast(ids.length+' deleted.'); loadCash(); }
+
+function openBorrowingModal(id){
+  const x=id?_borrowCache.find(b=>b._id===id):null; const isOE=x?.noMaturity||false;
+  const todayStr0 = new Date().toISOString().slice(0,10);
+  const tenorVal = x ? (x.tenorDays!=null ? x.tenorDays : (x.tenorMonths?Math.round(x.tenorMonths*30.44):'')) : '';
+  openModal(x?'Edit Facility':'Add Facility',
+    `<div class="merr" id="bw-err"></div>
+    <div class="fg"><div class="fld"><label>Borrowing ID *</label><input class="finput" id="bw-id" value="${x?.borrowingId||''}"></div><div class="fld"><label>Lender *</label><input class="finput" id="bw-lender" value="${x?.lender||''}"></div></div>
+    <div class="fg"><div class="fld"><label>Type</label><select class="finput" id="bw-type">${['Term Loan','Overdraft Facility','On-lending Facility','SME Fund','Wholesale Borrowing','Intercompany Loan','Target/Savings Plan','Demand Deposit'].map(t=>`<option ${x?.type===t?'selected':''}>${t}</option>`).join('')}</select></div><div class="fld"><label>Repayment</label><select class="finput" id="bw-rep">${['Monthly','Quarterly','Bullet','Revolving','Semi-annual','On Demand','Flexible'].map(t=>`<option ${x?.repayment===t?'selected':''}>${t}</option>`).join('')}</select></div></div>
+    <div class="fg"><div class="fld"><label>Principal (₦)</label><input class="finput" type="number" id="bw-prin" value="${x?.principal||''}"></div><div class="fld"><label>Outstanding (₦)</label><input class="finput" type="number" id="bw-out" value="${x?.outstanding||''}"></div></div>
+    <div class="fg"><div class="fld"><label>Interest Rate (%)</label><input class="finput" type="number" id="bw-rate" value="${x?.interestRate||''}"></div><div class="fld"><label>Tenor (days)</label><input class="finput" type="number" id="bw-tenor" value="${tenorVal}" placeholder="e.g. 365"></div></div>
+    <div class="fg"><div class="fld"><label>Value Date</label><input class="finput" type="date" id="bw-vdate" value="${x?.valueDate?.slice(0,10)||''}"></div><div class="fld"><label>Accrued Interest (₦)</label><input class="finput" type="number" id="bw-accrued" value="${x?.accruedInterest||0}" min="0"></div></div>
+    <div class="fld" id="bw-mat-wrap" style="${isOE?'display:none':''}"><label>Maturity Date</label><input class="finput" type="date" id="bw-mat" value="${x?.maturityDate?.slice(0,10)||''}"></div>
+    <div class="fld"><label>Outstanding Balance Effective Date *</label><input class="finput" type="date" id="bw-effdate" value="${todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The period the Outstanding figure above is reported as at (distinct from the Value Date, which is when the facility was drawn down).</div></div>
+    <div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="bw-nomat" ${isOE?'checked':''} style="accent-color:var(--pu)" onchange="toggleBwMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended / No fixed maturity</span></label></div>`,
+    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveBorrowing('${x?x._id:''}')"><span id="bw-sv">${x?'Save Changes':'Add Facility'}</span></button>`);
+}
+function toggleBwMat(cb){ const w=$('bw-mat-wrap'); if(w) w.style.display=cb.checked?'none':''; }
+async function saveBorrowing(id){
+  const err=$('bw-err'); err.classList.remove('on');
+  const noMat=$('bw-nomat')?.checked||false;
+  const effDate=$('bw-effdate')?.value;
+  if(!effDate){err.textContent='Effective date is required.';err.classList.add('on');return;}
+  if(_effFrom && effDate<_effFrom){err.textContent='Effective date cannot be before the baseline ('+_effFrom+').';err.classList.add('on');return;}
+  const p={borrowingId:$('bw-id').value.trim(),lender:$('bw-lender').value.trim(),type:$('bw-type').value,repayment:$('bw-rep').value,principal:+$('bw-prin').value,outstanding:+$('bw-out').value,interestRate:+$('bw-rate').value,tenorDays:+$('bw-tenor').value,noMaturity:noMat,valueDate:$('bw-vdate').value||null,accruedInterest:+($('bw-accrued')?.value||0),maturityDate:noMat?null:($('bw-mat')?.value||null),effectiveDate:effDate};
+  if(!p.borrowingId||!p.lender){err.textContent='ID and lender required.';err.classList.add('on');return;}
+  $('bw-sv').textContent='Saving…';
+  try{
+    let facId=id;
+    if(id) await api('/treasury/borrowings/'+id,{method:'PUT',body:JSON.stringify(p)});
+    else { const created=await api('/treasury/borrowings',{method:'POST',body:JSON.stringify(p)}); facId=created?.borrowing?._id; }
+    if(facId) await api('/treasury/borrowings/'+facId+'/history',{method:'POST',body:JSON.stringify({outstanding:p.outstanding,accruedInterest:p.accruedInterest,effectiveDate:effDate})}).catch(e=>console.warn('History not saved (endpoint may not exist yet):',e.message));
+    closeModal();toast(id?'Updated.':'Added.');loadBorrowings();
+  }
+  catch(e){err.textContent=e.message;err.classList.add('on');$('bw-sv').textContent=id?'Save Changes':'Add Facility';}
+}
+async function deleteBorrowing(id){ if(!confirm('Delete this facility?'))return; try{await api('/treasury/borrowings/'+id,{method:'DELETE'});toast('Deleted.');loadBorrowings();}catch(e){toast(e.message,'err');} }
+
+// ════════════════════════════════════════════════════
+// INVESTMENTS
+// ════════════════════════════════════════════════════
+async function loadInvestments(){
+  $('investments-kpis').innerHTML='<div class="loading-row">Loading…</div>';
+  try{ const d=await api('/treasury/investments'); if(d.investments?.length) _invCache=normalizeInvestments(d.investments); }catch(e){}
+  renderInvestments();
+}
+function renderInvestments(){
+  const inv=_invCache,total=inv.reduce((s,i)=>s+i.principal,0);
+  const fixedInv=inv.filter(i=>!i.noMaturity&&i.maturityDate);
+  const interest=fixedInv.reduce((a,i)=>a+i.principal*(i.interestRate/100)*(i.tenorDays/365),0);
+  const openEndedInv=inv.filter(i=>i.noMaturity);
+  const avgY=total>0?inv.reduce((a,i)=>a+(i.principal/total)*i.interestRate,0):0;
+  $('investments-kpis').innerHTML=[
+    {l:'Portfolio Value',        v:fmt(total),    c:'tl',ac:true,sub:inv.length+' instruments'},
+    {l:'Projected Interest (Fixed)',v:fmt(interest),c:'am',sub:fixedInv.length+' dated instruments'},
+    {l:'Weighted Avg Yield',     v:pct(avgY),    c:'gr',sub:'WARA on investments'},
+    {l:'Open-ended Holdings',    v:fmt(openEndedInv.reduce((s,i)=>s+i.principal,0)),c:'pu',sub:openEndedInv.length+' (MMF)'},
+  ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
+  const typeMap={}; inv.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
+  $('investments-charts').innerHTML='<div class="chart-box"><div class="card-label">Maturity Ladder</div><canvas id="ch-ivl" height="170"></canvas></div><div class="chart-box"><div class="card-label">Portfolio Mix</div><canvas id="ch-ivm" height="170"></canvas></div>';
+  setTimeout(()=>{
+    mkChart('ch-ivl',{type:'bar',data:{labels:fixedInv.map(i=>i.counterparty.split(' ')[0]),datasets:[{label:'Principal',data:fixedInv.map(i=>i.principal),backgroundColor:'#00c9a7',stack:'a'},{label:'Interest',data:fixedInv.map(i=>+(i.principal*(i.interestRate/100)*(i.tenorDays/365)).toFixed(2)),backgroundColor:'#f5a623',borderRadius:4,stack:'a'}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}},y:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-ivm',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+  },60);
+  const rows=inv.map(i=>{ const isOE=i.noMaturity||!i.maturityDate; const projInt=isOE?null:i.principal*(i.interestRate/100)*(i.tenorDays/365);
+    return`<tr><td style="width:30px"><input type="checkbox" class="row-chk inv-chk" value="${i._id}"></td>
+      <td style="font-family:var(--mo);color:var(--t)">${i.investmentId}</td>
+      <td><strong>${i.counterparty}</strong>${isOE?'<div style="font-size:9px;color:var(--pu)">OPEN-ENDED</div>':''}</td>
+      <td style="color:var(--tx2)">${i.type}</td><td class="nm">${fmt(i.principal)}</td>
+      <td class="nm" style="color:#22c55e">${i.interestRate}%</td>
+      <td class="nm">${isOE?'Open-ended':i.tenorDays+'d'}</td>
+      <td style="color:var(--tx2)">${fD(i.dateInvested)}</td>
+      <td style="color:${isOE?'var(--pu)':'var(--tx2)'}">${isOE?'On demand':fD(i.maturityDate)}</td>
+      <td class="nm" style="color:${isOE?'var(--tx3)':'#f5a623'}">${isOE?'Variable':fmt(projInt)}${(()=>{const est=estAccrual(i.principal,i.interestRate,lastPostedDate(i,new Date(),'dateInvested'),new Date());return est.amount>0?`<div style="font-size:9px;font-family:var(--mo);color:var(--tx3)" title="Estimated only — not posted, computed from days since last recorded principal">~${fmt(est.amount)} earned to date (${est.days}d)</div>`:'';})()}</td>
+      <td><div style="display:flex;gap:3px">
+        <button class="bsm" onclick="openInvestmentModal('${i._id}')" style="padding:3px 7px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+        <button class="bsm bd" onclick="deleteInvestment('${i._id}')" style="padding:3px 7px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+      </div></td></tr>`;
+  }).join('');
+  $('investments-table-wrap').innerHTML=
+    `<div class="bulk-bar" id="inv-bulk"><span id="inv-bulk-cnt">0 selected</span><button class="bd bsm" onclick="bulkDeleteInvestments()">Delete Selected</button><button class="bsm" onclick="clearBulkInv()">Clear</button></div>
+    <div class="nt-info" style="margin-bottom:.65rem;font-size:11px">💡 Open-ended instruments (MMF, Notice Deposits) show variable interest.</div>
+    <div class="card-label">Investment Schedule</div><div class="tw"><table>
+    <thead><tr><th style="width:30px"><input type="checkbox" class="row-chk" id="inv-chk-all" onchange="toggleAllChk(this,'.inv-chk','inv-bulk','inv-bulk-cnt')"></th><th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest</th><th></th></tr></thead>
+    <tbody>${rows}<tr class="trt"><td></td><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">${fmt(total)}</td><td class="nm">${pct(avgY)}</td><td colspan="5"></td></tr></tbody></table></div>`;
+  document.querySelectorAll('.inv-chk').forEach(c=>c.addEventListener('change',()=>updateBulkBar('.inv-chk','inv-bulk','inv-bulk-cnt')));
+}
+function openInvestmentModal(id){
+  const i=id?_invCache.find(x=>x._id===id):null; const isOE=i?.noMaturity||false;
+  const todayStr0 = new Date().toISOString().slice(0,10);
+  openModal(i?'Edit Investment':'Add Investment',
+    `<div class="merr" id="iv-err"></div>
+    <div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="${i?.investmentId||''}"></div><div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="${i?.counterparty||''}"></div></div>
+    <div class="fld"><label>Type</label><select class="finput" id="ii-type" onchange="onInvTypeChange(this)">${['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper','Money Market Fund','Notice Deposit','Other Open-ended'].map(t=>`<option ${i?.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div class="fg"><div class="fld"><label>Principal (₦) *</label><input class="finput" type="number" id="ii-prin" value="${i?.principal||''}"></div><div class="fld"><label>Rate (%)</label><input class="finput" type="number" id="ii-rate" value="${i?.interestRate||''}"></div></div>
+    <div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="${i?.dateInvested?.slice(0,10)||''}"></div><div class="fld" id="ii-days-wrap"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="${i?.tenorDays||''}"></div></div>
+    <div class="fld" id="ii-mat-wrap" style="${isOE?'display:none':''}"><label>Maturity Date</label><input class="finput" type="date" id="ii-matdate" value="${i?.maturityDate?.slice(0,10)||''}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">Leave blank to auto-compute from tenor.</div></div>
+    <div class="fld"><label>Principal Effective Date *</label><input class="finput" type="date" id="ii-effdate" value="${i?todayStr0:(i?.dateInvested?.slice(0,10)||todayStr0)}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The period the Principal above is reported as at (distinct from Date Invested, which is when the placement began).</div></div>
+    <div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="ii-nomat" ${isOE?'checked':''} style="accent-color:var(--pu)" onchange="toggleInvMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended (MMF, on-demand)</span></label></div>`,
+    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment('${i?i._id:''}')"><span id="ii-sv">${i?'Save Changes':'Add Investment'}</span></button>`);
+  if(i?.type==='Money Market Fund'||i?.type==='Notice Deposit'||i?.type==='Other Open-ended'){ const cb=$('ii-nomat'); if(cb&&!cb.checked){cb.checked=true;toggleInvMat(cb);} }
+}
+function toggleInvMat(cb){ const w=$('ii-mat-wrap'); if(w) w.style.display=cb.checked?'none':''; }
+function onInvTypeChange(sel){ const cb=$('ii-nomat'); if(!cb) return; if(['Money Market Fund','Notice Deposit','Other Open-ended'].includes(sel.value)){cb.checked=true;toggleInvMat(cb);} }
+async function saveInvestment(id){
+  const err=$('iv-err'); err.classList.remove('on');
+  const noMat=$('ii-nomat')?.checked||false; const dInv=$('ii-date').value; const days=+($('ii-days')?.value||0);
+  const explicitMat=$('ii-matdate')?.value;
+  const computedMat=(dInv&&days)?new Date(new Date(dInv).getTime()+days*86400000).toISOString().slice(0,10):null;
+  const maturityDate=noMat?null:(explicitMat||computedMat);
+  const effDate=$('ii-effdate')?.value;
+  if(!effDate){err.textContent='Principal effective date is required.';err.classList.add('on');return;}
+  if(_effFrom && effDate<_effFrom){err.textContent='Effective date cannot be before the baseline ('+_effFrom+').';err.classList.add('on');return;}
+  const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-prin').value,interestRate:+$('ii-rate').value,dateInvested:dInv,tenorDays:days,noMaturity:noMat,maturityDate,effectiveDate:effDate};
+  if(!p.investmentId||!p.counterparty||!p.principal){err.textContent='ID, counterparty and principal required.';err.classList.add('on');return;}
+  $('ii-sv').textContent='Saving…';
+  try{
+    let invId=id;
+    if(id) await api('/treasury/investments/'+id,{method:'PUT',body:JSON.stringify(p)});
+    else { const created=await api('/treasury/investments',{method:'POST',body:JSON.stringify(p)}); invId=created?.investment?._id; }
+    if(invId) await api('/treasury/investments/'+invId+'/history',{method:'POST',body:JSON.stringify({principal:p.principal,effectiveDate:effDate})}).catch(e=>console.warn('History not saved (endpoint may not exist yet):',e.message));
+    closeModal();toast(id?'Updated.':'Added.');loadInvestments();
+  }
+  catch(e){err.textContent=e.message;err.classList.add('on');$('ii-sv').textContent=id?'Save Changes':'Add Investment';}
+}
+async function deleteInvestment(id){ if(!confirm('Delete this investment?'))return; try{await api('/treasury/investments/'+id,{method:'DELETE'});toast('Deleted.');loadInvestments();}catch(e){toast(e.message,'err');} }
+
+// ════════════════════════════════════════════════════
+// CASH
+// ════════════════════════════════════════════════════
+async function loadCash(){
+  $('cash-kpis').innerHTML='<div class="loading-row">Loading…</div>';
+  try{ const d=await api('/treasury/cash'); if(d.accounts?.length) _cashCache=normalizeCash(d.accounts); }catch(e){}
+  renderCash();
+}
+function renderCash(){
+  const ca=_cashCache,ngn=ca.filter(a=>a.currency==='NGN'),usd=ca.filter(a=>a.currency==='USD');
+  const totalNGN=ngn.reduce((s,a)=>s+a.balance,0),unres=ngn.filter(a=>!a.restricted).reduce((s,a)=>s+a.balance,0);
+  $('cash-kpis').innerHTML=[
+    {l:'Total NGN Cash',v:fmt(totalNGN),c:'tl',ac:true,sub:'All NGN accounts'},
+    {l:'Unrestricted',v:fmt(unres),c:'gr',sub:'Available for deployment'},
+    {l:'Restricted',v:fmt(totalNGN-unres),c:'rd',sub:'Encumbered/pledged'},
+    {l:'FX Holdings (USD)',v:fmt(usd.reduce((s,a)=>s+a.balance,0)),c:'am',sub:'USD accounts'},
+  ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
+  $('cash-charts').innerHTML='<div class="chart-box"><div class="card-label">Cash by Bank (NGN)</div><canvas id="ch-cbn" height="170"></canvas></div><div class="chart-box"><div class="card-label">Restricted vs Unrestricted</div><canvas id="ch-crs" height="170"></canvas></div>';
+  setTimeout(()=>{
+    mkChart('ch-cbn',{type:'bar',data:{labels:ngn.map(a=>a.bank.split(' ')[0]),datasets:[{data:ngn.map(a=>a.balance),backgroundColor:ngn.map((a,i)=>a.restricted?'#e05252':PAL[i%PAL.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-crs',{type:'doughnut',data:{labels:['Unrestricted','Restricted'],datasets:[{data:[unres||0.01,totalNGN-unres||0.01],backgroundColor:['#22c55e','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+  },60);
+  const rows=ca.map(a=>`<tr>
+    <td style="width:30px"><input type="checkbox" class="row-chk cash-chk" value="${a._id}"></td>
+    <td style="font-family:var(--mo);color:var(--t)">${a.accountId}</td><td><strong>${a.bank}</strong></td>
+    <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${a.accountNo}</td>
+    <td style="color:var(--tx2)">${a.type}</td>
+    <td style="color:${a.currency==='USD'?'#f5a623':'inherit'}">${a.currency}</td>
+    <td class="nm">${fmt(a.balance)}</td>
+    <td><span class="pl ${a.restricted?'pr':'pg'}">${a.restricted?'🔒 Restricted':'✓ Available'}</span></td>
+    <td><div style="display:flex;gap:3px">
+      <button class="bsm" onclick="openCashModal('${a._id}')" style="padding:3px 7px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+      <button class="bsm bd" onclick="deleteCash('${a._id}')" style="padding:3px 7px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+    </div></td></tr>`).join('');
+  $('cash-table-wrap').innerHTML=
+    `<div class="bulk-bar" id="cash-bulk"><span id="cash-bulk-cnt">0 selected</span><button class="bd bsm" onclick="bulkDeleteCash()">Delete Selected</button><button class="bsm" onclick="clearBulkCash()">Clear</button></div>
+    <div class="card-label">Bank Account Balances</div><div class="tw"><table>
+    <thead><tr><th style="width:30px"><input type="checkbox" class="row-chk" id="cash-chk-all" onchange="toggleAllChk(this,'.cash-chk','cash-bulk','cash-bulk-cnt')"></th><th>Account ID</th><th>Bank</th><th>Account No.</th><th>Type</th><th>CCY</th><th class="nm">Balance</th><th>Status</th><th></th></tr></thead>
+    <tbody>${rows}<tr class="trt"><td></td><td colspan="5" style="text-align:right">TOTAL NGN</td><td class="nm">${fmt(totalNGN)}</td><td colspan="2"></td></tr></tbody></table></div>`;
+  document.querySelectorAll('.cash-chk').forEach(c=>c.addEventListener('change',()=>updateBulkBar('.cash-chk','cash-bulk','cash-bulk-cnt')));
+}
+function openCashModal(id){
+  const a=id?_cashCache.find(x=>x._id===id):null;
+  const todayStr0 = new Date().toISOString().slice(0,10);
+  openModal(a?'Edit Account':'Add Account',
+    `<div class="merr" id="ca-err"></div>
+    <div class="fg"><div class="fld"><label>Account ID *</label><input class="finput" id="ca-id" value="${a?.accountId||''}"></div><div class="fld"><label>Bank Name *</label><input class="finput" id="ca-bank" value="${a?.bank||''}"></div></div>
+    <div class="fg"><div class="fld"><label>Account Number</label><input class="finput" id="ca-acct" value="${a?.accountNo||''}"></div><div class="fld"><label>Type</label><select class="finput" id="ca-type">${['Current','Savings','Dom (USD)','Dom (EUR)'].map(t=>`<option ${a?.type===t?'selected':''}>${t}</option>`).join('')}</select></div></div>
+    <div class="fg"><div class="fld"><label>Currency</label><select class="finput" id="ca-ccy">${['NGN','USD','EUR','GBP'].map(t=>`<option ${a?.currency===t?'selected':''}>${t}</option>`).join('')}</select></div><div class="fld"><label>Balance</label><input class="finput" type="number" id="ca-bal" value="${a?.balance||0}" min="0" step="0.01"></div></div>
+    <div class="fld"><label>Effective Date *</label><input class="finput" type="date" id="ca-effdate" value="${todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The period this balance is reported as at. Required for as-of reporting.</div></div>
+    <div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="ca-rest" ${a?.restricted?'checked':''} style="accent-color:var(--t)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo);text-transform:none;letter-spacing:0">Mark as Restricted</span></label></div>`,
+    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveCash('${a?a._id:''}')"><span id="ca-sv">${a?'Save Changes':'Add Account'}</span></button>`);
+}
+async function saveCash(id){
+  const err=$('ca-err'); err.classList.remove('on');
+  const effDate=$('ca-effdate')?.value;
+  if(!effDate){err.textContent='Effective date is required.';err.classList.add('on');return;}
+  if(_effFrom && effDate<_effFrom){err.textContent='Effective date cannot be before the baseline ('+_effFrom+'). Update it in Settings if needed.';err.classList.add('on');return;}
+  const p={accountId:$('ca-id').value.trim(),bank:$('ca-bank').value.trim(),accountNo:$('ca-acct').value.trim(),type:$('ca-type').value,currency:$('ca-ccy').value,balance:+$('ca-bal').value,restricted:$('ca-rest').checked,effectiveDate:effDate};
+  if(!p.accountId||!p.bank){err.textContent='Account ID and bank required.';err.classList.add('on');return;}
+  $('ca-sv').textContent='Saving…';
+  try{
+    let acctId=id;
+    if(id) await api('/treasury/cash/'+id,{method:'PUT',body:JSON.stringify(p)});
+    else { const created=await api('/treasury/cash',{method:'POST',body:JSON.stringify(p)}); acctId=created?.account?._id; }
+    // Record this balance as a dated version so as-of reports can reconstruct it correctly.
+    if(acctId) await api('/treasury/cash/'+acctId+'/history',{method:'POST',body:JSON.stringify({balance:p.balance,effectiveDate:effDate})}).catch(e=>console.warn('History not saved (endpoint may not exist yet):',e.message));
+    closeModal();toast(id?'Updated.':'Added.');loadCash();
+  }
+  catch(e){err.textContent=e.message;err.classList.add('on');$('ca-sv').textContent=id?'Save Changes':'Add Account';}
+}
+async function deleteCash(id){ if(!confirm('Delete this account?'))return; try{await api('/treasury/cash/'+id,{method:'DELETE'});toast('Deleted.');loadCash();}catch(e){toast(e.message,'err');} }
+
+// ════════════════════════════════════════════════════
+// LIQUIDITY
+// ════════════════════════════════════════════════════
+async function loadLiquidity(){
+  $('liq-kpis').innerHTML='<div class="loading-row">Computing…</div>';
+  if(!_debtorCache.length) await fetchReceivables();
+  await Promise.all([
+    _borrowCache.length?Promise.resolve():api('/treasury/borrowings').then(d=>{if(d.borrowings?.length)_borrowCache=normalizeBorrowings(d.borrowings);}).catch(()=>{}),
+    _invCache.length?Promise.resolve():api('/treasury/investments').then(d=>{if(d.investments?.length)_invCache=normalizeInvestments(d.investments);}).catch(()=>{}),
+    _cashCache.length?Promise.resolve():api('/treasury/cash').then(d=>{if(d.accounts?.length)_cashCache=normalizeCash(d.accounts);}).catch(()=>{}),
+  ]);
+  const totalCash=_cashCache.filter(a=>a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
+  const totalInv=_invCache.reduce((s,i)=>s+i.principal,0);
+  const totalDebt=_borrowCache.reduce((s,b)=>s+b.outstanding,0);
+  const totalDebtors=_debtorCache.reduce((s,d)=>s+d.totalOutstanding,0);
+  const netLiq=totalCash+totalInv-totalDebt*.1;
+  const liqRatio=Math.max(totalDebt*.2+totalDebtors*.1,1);
+  const liqPct=(totalCash+totalInv)/liqRatio*100;
+  $('liq-kpis').innerHTML=[
+    {l:'Net Liquidity',v:fmt(netLiq),c:'tl',ac:true,sub:'Cash+Inv−10% Debt'},
+    {l:'Liquidity Ratio',v:pct(liqPct),c:liqPct>100?'gr':'am',sub:'Liquid assets / Short obligations'},
+    {l:'30-Day Cash Forecast',v:fmt(totalCash+totalDebtors*.08-totalDebt*.02),c:'bl',sub:'Estimated 30d net cash'},
+    {l:'90-Day Gap',v:fmt(totalCash+totalDebtors*.14-totalDebt*.13),c:totalCash>totalDebt*.1?'gr':'rd',sub:'3-month liquidity position'},
+  ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
+  const liqF=[{p:'Now',n:totalCash,c:totalCash},{p:'30d',n:totalDebtors*.08-totalDebt*.02,c:totalCash+totalDebtors*.08-totalDebt*.02},{p:'60d',n:totalDebtors*.06-totalDebt*.03,c:totalCash+totalDebtors*.14-totalDebt*.05},{p:'90d',n:-totalDebt*.08,c:totalCash+totalDebtors*.14-totalDebt*.13},{p:'120d',n:totalDebtors*.12,c:totalCash+totalDebtors*.26-totalDebt*.13},{p:'150d',n:totalInv*.15,c:totalCash+totalDebtors*.26+totalInv*.15-totalDebt*.13},{p:'180d',n:totalDebtors*.10,c:totalCash+totalDebtors*.36+totalInv*.15-totalDebt*.13}];
+  const gapD=['0-7d','8-30d','31-60d','61-90d','91-180d','181-365d'].map((p,i)=>({p,in:[totalDebtors*.04,totalDebtors*.08,totalDebtors*.12,totalDebtors*.05,totalDebtors*.15,totalDebtors*.20][i],out:[totalDebt*.02,totalDebt*.05,totalDebt*.04,totalDebt*.08,totalDebt*.03,totalDebt*.05][i]}));
+  $('liq-charts2').innerHTML='<div class="chart-box"><div class="card-label">Liquidity Gap</div><canvas id="ch-lqg" height="170"></canvas></div><div class="chart-box"><div class="card-label">Sources &amp; Obligations</div><div id="liq-src-inner" style="margin-top:.5rem"></div></div>';
+  setTimeout(()=>{
+    mkChart('ch-liq-forecast',{type:'line',data:{labels:liqF.map(d=>d.p),datasets:[{label:'Net Flow',data:liqF.map(d=>d.n),borderColor:'#00c9a7',backgroundColor:'rgba(0,201,167,.08)',fill:true,tension:.4,pointBackgroundColor:'#00c9a7',pointRadius:3},{label:'Cumulative',data:liqF.map(d=>d.c),borderColor:'#63b3ed',fill:false,tension:.3,borderDash:[5,5],pointBackgroundColor:'#63b3ed',pointRadius:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-lqg',{type:'bar',data:{labels:gapD.map(d=>d.p),datasets:[{label:'Inflows',data:gapD.map(d=>d.in),backgroundColor:'#22c55e',borderRadius:4},{label:'Outflows',data:gapD.map(d=>d.out),backgroundColor:'#e05252',borderRadius:4}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    const unres=_cashCache.filter(a=>!a.restricted&&a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
+    const shortInv=_invCache.filter(i=>i.noMaturity||(i.tenorDays>0&&i.tenorDays<=90)).reduce((s,i)=>s+i.principal,0);
+    const el=$('liq-src-inner');
+    if(el)el.innerHTML=[[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Liquid Investments (<90d)','#63b3ed'],[fmt(totalDebtors*.12),'Debtor Collections (est.)','#22c55e']].map(([v,l,c])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:7px"><div style="width:3px;height:13px;border-radius:2px;background:${c}"></div><span style="font-size:12px;color:var(--tx2)">${l}</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:${c}">${v}</span></div>`).join('')+
+      '<div style="font-size:11px;color:var(--tx3);font-family:var(--mo);padding:7px 0">Near-term Obligations:</div>'+
+      [[fmt(totalDebt*.12),'Debt Maturities (<90d)','#e05252'],[fmt(totalDebt*.05),'Estimated Interest (90d)','#f5a623']].map(([v,l,c])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:7px"><div style="width:3px;height:13px;border-radius:2px;background:${c}"></div><span style="font-size:12px;color:var(--tx2)">${l}</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:${c}">${v}</span></div>`).join('');
+  },80);
+}
+
+// ════════════════════════════════════════════════════
+// UPLOAD (borrowings / investments / cash)
+// ════════════════════════════════════════════════════
+// Every upload template includes a 'effective_date' column so past-period
+// data (e.g. the Jan/Feb/Mar month-end borrowing schedule) can be uploaded
+// against the correct effective date, distinct from the transaction date
+// (value_date / date_invested). effective_date is NEVER assumed to be the
+// date the file happens to be uploaded — it must come from the row itself,
+// or from the explicit default the person picks in the upload dialog.
+// Backend contract: for each row, use that row's effective_date if present;
+// otherwise fall back to the 'defaultEffectiveDate' form field sent by the
+// upload dialog; there is no implicit "today" fallback on the backend side —
+// the dialog itself requires a default to be chosen before it will submit.
+// The effective date should be written to the same dated-history table the
+// manual Add/Edit forms use, so as-of reporting reconstructs correctly
+// regardless of upload path.
+const UPLOAD_TPLS={
+  borrowings:{label:'Borrowings',filename:'FM_Borrowings_Template.xlsx',sheetName:'Borrowings',headers:['borrowing_id','lender_name','interest_rate','tenor_days','principal','accrued_interest','outstanding','value_date','maturity_date','effective_date','borrowing_type','repayment_schedule','no_maturity'],samples:[['BW-001','FCMB Ltd',19.5,730,500000000,0,420000000,'01/07/2023','30/06/2025','31/01/2026','Term Loan','Monthly',false]],notes:['borrowing_id: Unique (e.g. BW-001)','lender_name','interest_rate: annual % as a plain number','tenor_days: tenor in DAYS (e.g. 365 for one year, 730 for two years)','principal / outstanding / accrued_interest: PLAIN numbers only — no ₦ symbol, no commas (e.g. 500000000, not ₦500,000,000)','ALL DATE COLUMNS use dd/mm/yyyy format (e.g. 31/01/2026) — not yyyy-mm-dd, not mm/dd/yyyy','value_date: dd/mm/yyyy — the date the facility was drawn down / originated','maturity_date: dd/mm/yyyy (blank if no_maturity=true)','effective_date: dd/mm/yyyy — the EFFECTIVE DATE that the outstanding balance in this row belongs to (e.g. 31/01/2026 for a January month-end schedule). This is independent of value_date — a facility drawn on the 5th can be reported as at the 30th. This is NOT automatically the date you upload the file; leave it blank only to fall back to the default effective date chosen in the upload dialog.','borrowing_type: Term Loan|Overdraft|On-lending|SME Fund|Wholesale|Target/Savings Plan|Demand Deposit','repayment_schedule: Monthly|Quarterly|Bullet|Revolving|On Demand|Flexible','no_maturity: true | false']},
+  investments:{label:'Investments',filename:'FM_Investments_Template.xlsx',sheetName:'Investments',headers:['investment_id','company_name','investment_type','principal_amount','interest_rate','date_invested','number_of_days','no_maturity','effective_date'],samples:[['INV-001','Access Bank Plc','Fixed Deposit',300000000,22,'01/03/2024',180,false,'31/01/2026'],['INV-002','ARM Funds','Money Market Fund',50000000,19.5,'01/05/2024',0,true,'01/02/2026']],notes:['investment_id: Unique','investment_type: Fixed Deposit|Treasury Bills|Government Security|Commercial Paper|Money Market Fund|Notice Deposit','principal_amount: PLAIN numbers only — no ₦ symbol, no commas','interest_rate: annual % as a plain number','ALL DATE COLUMNS use dd/mm/yyyy format (e.g. 31/01/2026) — not yyyy-mm-dd, not mm/dd/yyyy','date_invested: dd/mm/yyyy — when the placement began','number_of_days: 0 for open-ended','no_maturity: true for MMF','effective_date: dd/mm/yyyy — the EFFECTIVE DATE that the principal in this row belongs to, independent of date_invested. This is NOT automatically the date you upload the file; leave it blank only to fall back to the default effective date chosen in the upload dialog.']},
+  cash:{label:'Cash Balances',filename:'FM_Cash_Template.xlsx',sheetName:'Cash',headers:['account_id','bank','account_number','type','currency','balance','restricted','effective_date'],samples:[['CA-001','Access Bank Plc','001-234567-001','Current','NGN',124500000,false,'31/01/2026']],notes:['account_id: Unique','type: Current|Savings|Dom (USD)|Dom (EUR)','currency: NGN|USD|EUR|GBP','balance: PLAIN number only — no ₦ symbol, no commas','restricted: true|false','effective_date: dd/mm/yyyy — the EFFECTIVE DATE that the balance in this row belongs to. This is NOT automatically the date you upload the file; leave it blank only to fall back to the default effective date chosen in the upload dialog.']},
+};
+function downloadSampleTemplate(module){
+  const tpl=UPLOAD_TPLS[module]; if(!tpl) return;
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet([tpl.headers,...tpl.samples]);
+  ws['!cols']=tpl.headers.map(h=>({wch:Math.max(h.length+4,16)}));
+  XLSX.utils.book_append_sheet(wb,ws,tpl.sheetName);
+  const wi=XLSX.utils.aoa_to_sheet([['FM Treasury — '+tpl.label+' Upload Template'],[''],['COLUMN GUIDE'],...tpl.notes.map(n=>['  • '+n])]);
+  wi['!cols']=[{wch:70}]; XLSX.utils.book_append_sheet(wb,wi,'Instructions');
+  XLSX.writeFile(wb,tpl.filename); toast('Template downloaded — '+tpl.filename);
+}
+function openUploadModal(module){
+  const tpl=UPLOAD_TPLS[module];
+  const todayStr0 = new Date().toISOString().slice(0,10);
+  openModal('Upload '+tpl.label,
+    `<div style="background:var(--td);border:1px solid rgba(0,201,167,.25);border-radius:var(--r);padding:13px 15px;margin-bottom:1.1rem">
+      <div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:7px">Step 1 — Download the template</div>
+      <button onclick="downloadSampleTemplate('${module}')" style="background:var(--t);border-color:var(--t);color:var(--n);font-weight:600;padding:6px 14px;font-size:12px">⬇ Download ${tpl.filename}</button>
+    </div>
+    <div style="background:var(--sf);border:1px solid var(--b2);border-radius:var(--r);padding:13px 15px;margin-bottom:.9rem">
+      <div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:9px">Step 2 — Set the effective date</div>
+      <div class="fld" style="margin-bottom:0"><label>Default Effective Date *</label><input class="finput" type="date" id="upload-effdate" value="" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}" placeholder="Select a date"></div>
+      <div style="font-size:11px;color:var(--tx3);margin-top:6px;font-family:var(--mo)">This is the effective date the data belongs to — NOT automatically today's date, and not the same as value_date/date_invested. It's used only for rows that don't have their own <strong>effective_date</strong> filled in. To upload several past periods (e.g. Jan, Feb, Mar month-end schedules) in one file, fill the effective_date column per row instead — it overrides this default.</div>
+    </div>
+    <div style="background:var(--sf);border:1px solid var(--b2);border-radius:var(--r);padding:13px 15px;margin-bottom:.9rem">
+      <div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:9px">Step 3 — Upload your file</div>
+      <label class="drop-zone"><div style="font-size:1.75rem;margin-bottom:7px">📂</div><div style="font-size:13px;font-weight:500;margin-bottom:3px">Tap to browse</div><div style="font-size:11px;color:var(--tx3)" id="upload-fname">Accepts .xlsx, .xls, .csv</div><input type="file" accept=".csv,.xlsx,.xls" id="upload-file" style="display:none" onchange="handleUploadFile(this)"></label>
+    </div>
+    <div id="upload-log" style="display:none;margin-top:.9rem"></div>`,
+    `<button onclick="closeModal()">Cancel</button><button class="bp" id="upload-submit" onclick="doUpload('${module}')" disabled><span id="upload-txt">Import</span></button>`);
+}
+function handleUploadFile(inp){ if(!inp.files[0])return; $('upload-fname').textContent=inp.files[0].name; $('upload-submit').disabled=false; }
+async function doUpload(module){
+  const file=$('upload-file')?.files[0]; if(!file) return;
+  const defEff=$('upload-effdate')?.value;
+  if(!defEff){
+    $('upload-log').style.display='block';
+    $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:#e05252">✗</span><span style="color:var(--tx2)">Please select a default effective date before uploading — this is never assumed automatically.</span></div></div>';
+    return;
+  }
+  if(_effFrom && defEff<_effFrom){
+    $('upload-log').style.display='block';
+    $('upload-log').innerHTML='<div class="ulog"><div class="ulog-row"><span style="color:#e05252">✗</span><span style="color:var(--tx2)">Effective date cannot be before the baseline ('+_effFrom+').</span></div></div>';
+    return;
+  }
+  $('upload-txt').textContent='Uploading…'; $('upload-submit').disabled=true;
+  $('upload-log').style.display='block';
+  $('upload-log').innerHTML=`<div class="ulog"><div class="ulog-row"><span style="color:var(--t)">→</span><span style="color:var(--tx2)">Parsing ${file.name}…</span></div></div>`;
+  try{
+    const fd=new FormData(); fd.append('file',file); fd.append('defaultEffectiveDate',defEff);
+    const d=await apiForm('/treasury/'+module+'/upload',fd);
+    $('upload-log').innerHTML=`<div class="ulog"><div class="ulog-row"><span style="color:#22c55e">✓</span><span style="color:var(--tx2)">${d.inserted} records imported (effective date ${defEff} unless overridden per row).</span></div>`+
+      (d.errors?.length?d.errors.slice(0,5).map(e=>`<div class="ulog-row"><span style="color:#f5a623">⚠</span><span style="color:var(--tx2)">${e.error}</span></div>`).join(''):'')+'</div>'+
+      '<button class="bp" style="margin-top:.65rem;width:100%" onclick="closeModal()">Done</button>';
+    toast(d.inserted+' records imported.');
+    ({borrowings:loadBorrowings,investments:loadInvestments,cash:loadCash}[module]||function(){})();
+  }catch(e){
+    $('upload-log').innerHTML=`<div class="ulog"><div class="ulog-row"><span style="color:#e05252">✗</span><span style="color:var(--tx2)">${e.message}</span></div></div>`;
+    $('upload-txt').textContent='Import'; $('upload-submit').disabled=false;
+  }
+}
+
+// ════════════════════════════════════════════════════
+// TEAM
+// ════════════════════════════════════════════════════
+async function loadTeam(){
+  $('team-table').innerHTML='<div class="loading-row">Loading team…</div>';
+  try{
+    const d=await api('/org/team');
+    if(!d.members?.length){ $('team-table').innerHTML=empty('No team members yet.'); return; }
+    $('team-table').innerHTML='<div class="tw"><table><thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th></th></tr></thead><tbody>'+
+      d.members.map(m=>'<tr><td><strong>'+m.name+'</strong></td><td style="font-family:var(--mo);font-size:11px">'+m.username+'</td><td style="font-size:12px;color:var(--tx2)">'+m.email+'</td><td><span class="team-role-badge '+(m.orgRole==='admin'?'team-role-admin':'team-role-member')+'">'+m.orgRole+'</span></td><td style="font-size:12px"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:'+(m.active?'#22c55e':'#e05252')+'"></span>'+(m.active?'Active':'Inactive')+'</span></td><td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">'+(m.lastLogin?fD(m.lastLogin):'Never')+'</td><td><button class="bsm bd" onclick="removeTeamMember(\''+m._id+'\')" style="padding:4px 10px">Remove</button></td></tr>').join('')+
+      '</tbody></table></div>';
+  }catch(e){ $('team-table').innerHTML='<div class="nt">⚠ '+e.message+'</div>'; }
+}
+function openTeamMemberModal(){
+  openModal('Add Team Member',
+    `<div class="merr" id="tm-err"></div><div class="nt-info" style="margin-bottom:.9rem">The new member will receive a confirmation email to set their password.</div>
+    <div class="fg"><div class="fld"><label>Full Name *</label><input class="finput" id="tm-name" placeholder="e.g. Adaeze Obi"></div><div class="fld"><label>Email *</label><input class="finput" type="email" id="tm-email" placeholder="adaeze@company.com"></div></div>
+    <div class="fld"><label>Role</label><select class="finput" id="tm-role"><option value="member">Member</option><option value="admin">Admin</option></select></div>`,
+    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveTeamMember()"><span id="tm-sv">Send Invitation</span></button>`);
+}
+async function saveTeamMember(){
+  const err=$('tm-err'); err.classList.remove('on');
+  const p={name:$('tm-name').value.trim(),email:$('tm-email').value.trim(),orgRole:$('tm-role').value};
+  if(!p.name||!p.email){err.textContent='Name and email are required.';err.classList.add('on');return;}
+  $('tm-sv').textContent='Sending…';
+  try{ await api('/org/team',{method:'POST',body:JSON.stringify(p)}); closeModal();toast('Invitation sent to '+p.email);loadTeam(); }
+  catch(e){err.textContent=e.message;err.classList.add('on');$('tm-sv').textContent='Send Invitation';}
+}
+async function removeTeamMember(id){ if(!confirm('Remove this member?'))return; try{await api('/org/team/'+id,{method:'DELETE'});toast('Removed.');loadTeam();}catch(e){toast(e.message,'err');} }
+
+// ════════════════════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════════════════════
+async function loadSettings(){
+  $('settings-form').innerHTML='<div class="loading-row">Loading…</div>';
+  try{
+    const d=await api('/org/profile');
+    const u=d.user||{},org=d.org||{},isOrg=u.accountType==='organisation'||!!u.orgId;
+    $('settings-form').innerHTML=
+      `<div class="card" style="margin-bottom:.9rem"><div class="section-ttl">Account Information</div>
+      <div class="merr" id="set-err"></div><div class="mok" id="set-ok"></div>
+      <div class="fg"><div class="fld"><label>Full Name</label><input class="finput" id="s-name" value="${u.name||''}"></div><div class="fld"><label>Email</label><input class="finput" value="${u.email||''}" disabled style="opacity:.5"></div></div>
+      <div class="fld"><label>Account Type</label><div style="font-family:var(--mo);font-size:12px;color:var(--t);padding:7px 11px;background:var(--n3);border:1px solid var(--b);border-radius:var(--r)">${isOrg?'🏢 Organisation Account':'👤 Individual Account'}</div></div></div>`+
+      (isOrg?`<div class="card" style="margin-bottom:.9rem"><div class="section-ttl">Organisation Profile</div>
+        <div class="fg"><div class="fld"><label>Organisation Name</label><input class="finput" id="s-orgname" value="${org.name||''}"></div><div class="fld"><label>Domain</label><input class="finput" id="s-domain" value="${org.domain||''}"></div></div></div>`:'')+
+      `<div class="card" style="margin-bottom:.9rem"><div class="section-ttl">As-Of Reporting</div>
+        <div class="merr" id="eff-err"></div>
+        <p style="font-size:12px;color:var(--tx2);margin-bottom:.7rem">The date your books were first fully entered (cash, borrowings, investments, equity). Point-in-time reports can be pulled for this date onward, but not before it — the app has no reliable data prior to this baseline.</p>
+        <div class="fg"><div class="fld"><label>Data Effective From</label><input class="finput" type="date" id="s-efffrom" value="${_effFrom||''}"></div>
+        <div class="fld" style="display:flex;align-items:flex-end"><button class="bp" onclick="saveEffectiveFrom()"><span id="eff-sv">Save Baseline Date</span></button></div></div></div>`+
+      '<div style="display:flex;justify-content:flex-end"><button class="bp" onclick="saveSettings()"><span id="set-sv">Save Settings</span></button></div>';
+  }catch(e){ $('settings-form').innerHTML='<div class="nt">⚠ '+e.message+'</div>'; }
+}
+async function saveEffectiveFrom(){
+  const v = $('s-efffrom')?.value;
+  const err=$('eff-err'); if(err) err.classList.remove('on');
+  if(!v){ if(err){err.textContent='Pick a date.';err.classList.add('on');} return; }
+  $('eff-sv').textContent='Saving…';
+  try{
+    await api('/treasury/settings/effective-date',{method:'PUT',body:JSON.stringify({effectiveFrom:v})});
+    _effFrom = v;
+    applyEffFromToPickers();
+    toast('Baseline effective date saved. As-of reports now start from '+v+'.');
+  }catch(e){ if(err){err.textContent=e.message||'Could not save — is the /treasury/settings/effective-date endpoint deployed?';err.classList.add('on');} }
+  finally{ const t=$('eff-sv'); if(t) t.textContent='Save Baseline Date'; }
+}
+async function saveSettings(){
+  const err=$('set-err'),ok=$('set-ok');
+  if(err)err.classList.remove('on'); if(ok)ok.classList.remove('on');
+  $('set-sv').textContent='Saving…';
+  try{
+    const p={name:$('s-name')?.value.trim()};
+    if($('s-orgname'))p.orgName=$('s-orgname').value.trim();
+    if($('s-domain'))p.orgDomain=$('s-domain').value.trim();
+    await api('/org/profile',{method:'PUT',body:JSON.stringify(p)});
+    if(ok){ok.textContent='✓ Settings saved.';ok.classList.add('on');} toast('Settings saved.');
+  }catch(e){if(err){err.textContent=e.message;err.classList.add('on');}}
+  finally{ const t=$('set-sv'); if(t) t.textContent='Save Settings'; }
+}
+
+// ════════════════════════════════════════════════════
+// EXPORT ENGINE — Full board-ready PPT + Excel + PDF
+// All export functions live at module scope so they can
+// access TENOR_LBLS and all data caches directly.
+// ════════════════════════════════════════════════════
+const EXP_C_DARK = {
+  teal:'00C9A7',navy:'0A1628',navy2:'0F1F3D',navy3:'162747',navy4:'1C3057',
+  amber:'F5A623',red:'E05252',green:'22C55E',blue:'63B3ED',purple:'A78BFA',
+  tx:'E8EDF5',tx2:'8FA3BF',tx3:'4A6080',white:'FFFFFF',black:'000000',
+};
+// Light-theme palette for the same slide deck, used when the user has the
+// light/high-contrast UI mode enabled — keeps exported reports readable for
+// anyone who finds the dark theme hard to read on-screen or in print.
+const EXP_C_LIGHT = {
+  teal:'00876B',navy:'FFFFFF',navy2:'F7F9FC',navy3:'EEF2F7',navy4:'E2E8F0',
+  amber:'B45309',red:'B91C1C',green:'15803D',blue:'1D4ED8',purple:'6D28D9',
+  tx:'0F172A',tx2:'475569',tx3:'94A3B8',white:'FFFFFF',black:'000000',
+};
+function fmCurrentReportTheme(){
+  try{ return document.documentElement.getAttribute('data-theme')==='light' ? EXP_C_LIGHT : EXP_C_DARK; }
+  catch(e){ return EXP_C_DARK; }
+}
+let EXP_C = EXP_C_DARK;
+
+function asOfLabel(){
+  const s = window.currentAsOf;
+  if(!s || !s.isHistorical) return 'As at ' + new Date().toLocaleString('en-GB');
+  return 'As at ' + s.asOfDate.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) + ' (Historical Snapshot)';
+}
+function asOfFileTag(){
+  const s = window.currentAsOf;
+  const d = (s && s.isHistorical) ? s.asOfDate : new Date();
+  return d.toISOString().slice(0,10);
+}
+// ── Estimated accrual overlay ───────────────────────────────────────────
+// Nothing in this system auto-accrues interest day to day — outstanding/
+// principal only change when someone posts a dated update. This computes a
+// clearly-labelled ESTIMATE of interest earned/owed since the last posted
+// figure, using simple Actual/365, so users can see the drift between
+// updates without it being mistaken for a confirmed, posted balance.
+// `refDate` is "today" in live mode, or the selected as-of date in historical mode.
+function lastPostedDate(record, refDate, fallbackField){
+  if(_asOfMode && record._effAsAt) return new Date(record._effAsAt);
+  const hist = record.history;
+  if(Array.isArray(hist) && hist.length){
+    const dates = hist.map(h=>new Date(h.asAt)).filter(d=>d<=refDate);
+    if(dates.length) return new Date(Math.max(...dates));
+  }
+  if(record[fallbackField]) return new Date(record[fallbackField]);
+  return new Date(record.createdAt || refDate);
+}
+function estAccrual(principalOrOutstanding, ratePct, sinceDate, refDate){
+  const days = Math.max(0, Math.floor((refDate - sinceDate) / 86400000));
+  if(days===0 || !ratePct || !principalOrOutstanding) return { days, amount:0 };
+  return { days, amount: principalOrOutstanding * (ratePct/100) * (days/365) };
+}
+function totalEstAccrual(cache, balanceField, refDate, fallbackField){
+  let sum=0, anyDays=0;
+  cache.forEach(r=>{
+    const since = lastPostedDate(r, refDate, fallbackField);
+    const est = estAccrual(r[balanceField], r.interestRate, since, refDate);
+    sum += est.amount; if(est.days>anyDays) anyDays=est.days;
+  });
+  return { amount: sum, maxDays: anyDays };
+}
+function expFmt(n){ return (Number(n)||0).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function expPct(n){ return (Number(n)||0).toFixed(2)+'%'; }
+function expFmtM(n){ const v=Number(n)||0; if(Math.abs(v)>=1e9)return'₦'+(v/1e9).toFixed(2)+'B'; if(Math.abs(v)>=1e6)return'₦'+(v/1e6).toFixed(2)+'M'; if(Math.abs(v)>=1e3)return'₦'+(v/1e3).toFixed(1)+'K'; return'₦'+v.toFixed(2); }
+function expMakeShadow(){ return {type:'outer',color:EXP_C.black,blur:8,offset:3,angle:45,opacity:0.18}; }
+
+function expKpiCard(slide,pres,x,y,w,h,label,value,sub,accent){
+  accent=accent||EXP_C.teal;
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE,{x,y,w,h,fill:{color:EXP_C.navy3},line:{color:EXP_C.navy4},rectRadius:0.08,shadow:expMakeShadow()});
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:x+0.01,y:y+0.1,w:0.04,h:h-0.2,fill:{color:accent},line:{color:accent},rectRadius:0.02});
+  slide.addText(label,{x:x+0.12,y:y+0.09,w:w-0.18,h:0.22,fontSize:7,color:EXP_C.tx3,fontFace:'Arial',margin:0,charSpacing:1});
+  slide.addText(value,{x:x+0.12,y:y+0.28,w:w-0.18,h:0.48,fontSize:16,bold:true,color:accent,fontFace:'Cambria',margin:0});
+  if(sub) slide.addText(sub,{x:x+0.12,y:y+0.73,w:w-0.18,h:0.2,fontSize:7.5,color:EXP_C.tx2,fontFace:'Arial',margin:0});
+}
+
+function expTopBand(slide,pres,title,subtitle){
+  slide.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:1.0,fill:{color:EXP_C.navy2},line:{color:EXP_C.navy2}});
+  slide.addShape(pres.shapes.OVAL,{x:0.32,y:0.25,w:0.5,h:0.5,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
+  slide.addText('FM',{x:0.32,y:0.25,w:0.5,h:0.5,fontSize:10,bold:true,color:EXP_C.navy,align:'center',valign:'middle',margin:0});
+  slide.addText(title,{x:1.0,y:0.08,w:7.6,h:0.52,fontSize:18,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
+  if(subtitle) slide.addText(subtitle,{x:1.0,y:0.60,w:7.6,h:0.28,fontSize:8.5,color:EXP_C.tx2,fontFace:'Arial',margin:0});
+  slide.addText(todayStr(),{x:7.5,y:0.08,w:2.3,h:0.3,fontSize:8,color:EXP_C.tx3,align:'right',fontFace:'Arial',margin:0});
+}
+function expFooter(slide,pres,n,total){
+  slide.addShape(pres.shapes.RECTANGLE,{x:0,y:5.33,w:10,h:0.295,fill:{color:EXP_C.navy2},line:{color:EXP_C.navy2}});
+  slide.addText('FM Finance Suite — Treasury Intelligence  |  CONFIDENTIAL',{x:0.3,y:5.34,w:8,h:0.25,fontSize:7.5,color:EXP_C.tx3,fontFace:'Arial',margin:0});
+  slide.addText(n+' / '+total,{x:9.2,y:5.34,w:0.6,h:0.25,fontSize:7.5,color:EXP_C.tx3,align:'right',fontFace:'Arial',margin:0});
+}
+function expSecDiv(slide,pres,x,y,w,label,accent){
+  accent=accent||EXP_C.teal;
+  slide.addShape(pres.shapes.RECTANGLE,{x,y,w,h:0.01,fill:{color:accent},line:{color:accent}});
+  slide.addText(label,{x,y:y+0.04,w,h:0.2,fontSize:7.5,color:accent,bold:true,fontFace:'Arial',margin:0,charSpacing:2});
+}
+
+async function exportBoardPPT(){
+  EXP_C = fmCurrentReportTheme();
+  const pres = new PptxGenJS();
+  pres.layout = 'LAYOUT_16x9';
+  pres.title  = 'FM Treasury Board Report';
+  pres.author = _user?.name || '—';
+  pres.company= _user?.orgName || 'Organisation';
+
+  const a  = window.latestAssessment || {};
+  const m  = a.metrics || {};
+  const mm = window.latestMaturity  || {};
+  const orgName  = _user?.orgName || 'Organisation';
+  const userName = _user?.name    || '—';
+  const TOTAL    = 11;
+  const D = todayStr();
+  const tL = ['≤30d','≤60d','≤90d','≤180d','≤270d','≤365d+'];
+
+  // ── SLIDE 1: COVER ──────────────────────────────────────────
+  const s1=pres.addSlide(); s1.background={color:EXP_C.navy};
+  s1.addShape(pres.shapes.OVAL,{x:6.5,y:-1.5,w:5.5,h:5.5,fill:{color:EXP_C.teal,transparency:90},line:{color:EXP_C.teal,transparency:90}});
+  s1.addShape(pres.shapes.OVAL,{x:7.8,y:2.8,w:3,h:3,fill:{color:EXP_C.blue,transparency:92},line:{color:EXP_C.blue,transparency:92}});
+  s1.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:0.7,w:0.65,h:0.65,fill:{color:EXP_C.teal},line:{color:EXP_C.teal},rectRadius:0.1});
+  s1.addText('FM',{x:0.6,y:0.7,w:0.65,h:0.65,fontSize:13,bold:true,color:EXP_C.navy,align:'center',valign:'middle',margin:0});
+  s1.addText(orgName + '— Treasury Intelligence',{x:1.42,y:0.82,w:6.5,h:0.4,fontSize:11,color:EXP_C.teal,fontFace:'Cambria',margin:0});
+  s1.addText('Treasury Report',{x:0.6,y:1.6,w:9,h:0.9,fontSize:46,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
+  s1.addText('Board Presentation',{x:0.6,y:2.45,w:9,h:0.62,fontSize:28,color:EXP_C.teal,fontFace:'Cambria',margin:0,italic:true});
+  s1.addShape(pres.shapes.RECTANGLE,{x:0.6,y:3.18,w:3.5,h:0.022,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
+  s1.addText('Prepared: '+D+'  |  Prepared by: '+userName,{x:0.6,y:3.58,w:7,h:0.28,fontSize:9.5,color:EXP_C.tx2,fontFace:'Arial',margin:0});
+  s1.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:4.48,w:1.5,h:0.32,fill:{color:EXP_C.navy3},line:{color:EXP_C.navy4},rectRadius:0.1});
+  s1.addText('CONFIDENTIAL',{x:0.6,y:4.48,w:1.5,h:0.32,fontSize:7.5,bold:true,color:EXP_C.amber,align:'center',valign:'middle',fontFace:'Arial',margin:0,charSpacing:1.5});
+  s1.addNotes('Welcome the board. Key items: net interest spread, WACC vs WARA (EVA signal), debtor staging, and recommendations.');
+
+  // ── SLIDE 2: EXECUTIVE SUMMARY — all 15 KPIs, 3 rows × 5 cols ──
+  const s2=pres.addSlide(); s2.background={color:EXP_C.navy};
+  expTopBand(s2,pres,'Executive Summary','Top-line portfolio metrics — all figures in Naira (₦)');
+  const sp=m.spread||0; const evS=(m.wara||0)-(m.wacc||0); const lvr=m.lever||0;
+  const all15=[
+    {l:'TOTAL DEPLOYABLE ASSETS', v:expFmtM(m.totalAssets),                             s:'Loans + Inv + Cash',            acc:EXP_C.amber  },
+    {l:'RISK ASSETS',             v:expFmtM(m.totalDebtors),                            s:'Outstanding Loans',             acc:EXP_C.blue  },
+    {l:'INVESTMENT',              v:expFmtM(m.totalInv),                                s:'Investment Value',              acc:EXP_C.blue  },
+    {l:'CASH & BANK',             v:expFmtM(m.totalCash),                               s:'Cash & Cash Equivalents',       acc:EXP_C.blue},
+    {l:'TOTAL FUNDING BASE',      v:expFmtM((m.totalEquity||0)+(m.totalDebt||0)),       s:'Debt + Equity',                 acc:EXP_C.amber  },
+    {l:'TOTAL BORROWINGS',        v:expFmtM(m.totalDebt),                               s:_borrowCache.length+' facilities', acc:EXP_C.blue },
+    {l:'EQUITY & RESERVES',       v:expFmtM(m.totalEquity),                             s:'Capital + Retained Earnings',   acc:EXP_C.blue },
+    {l:'NET ASSET COVER',        v:expFmtM((m.totalAssets||0)-(m.totalDebt||0)),   s:'Assets − Liabilities',        acc:(m.totalAssets||0)>(m.totalDebt||0)?EXP_C.green:EXP_C.red},
+    {l:'WARA',                   v:expPct(m.wara),                                  s:'Return on earning assets',    acc:EXP_C.teal },
+    {l:'WACD',                   v:expPct(m.wacd),                                  s:'Weighted avg cost of debt',   acc:EXP_C.purple  },
+    {l:'WACC',                   v:expPct(m.wacc),                                  s:'Cost of capital',             acc:EXP_C.teal},
+    {l:'NET INT. SPREAD',        v:(sp>=0?'+':'')+expPct(sp),                       s:'NIS: WARA − WACD',            acc:sp>=0?EXP_C.green:EXP_C.red},
+    {l:'NET INTEREST MARGIN (₦)',v:(m.nisAmount>=0?'+':'')+expFmtM(m.nisAmount||0), s:'Assets × (WARA − WACD)',      acc:(m.nisAmount||0)>=0?EXP_C.green:EXP_C.red},
+    {l:'Economic Value Added',   v:(evS>=0?'+':'')+expPct(evS),                     s:'EVA: WARA − WACC',            acc:evS>=0?EXP_C.green:EXP_C.red},
+    {l:'DEBT / EQUITY',          v:lvr.toFixed(2)+'×',                              s:'Financial leverage',          acc:lvr>8?EXP_C.red:lvr>3?EXP_C.green:EXP_C.amber},
+    {l:'DEBT / ASSETS',          v:expPct(m.totalAssets>0?(m.totalDebt/m.totalAssets)*100:0), s:'Debt ÷ Deployable Assets', acc:EXP_C.purple},
+    {l:'EQUITY / ASSETS',        v:expPct((m.eta||0)*100),                          s:'Equity ÷ Deployable Assets',  acc:EXP_C.purple},
+    {l:'DEBTOR YIELD',           v:expPct(m.avgDR),                                 s:'Avg implied rate on debtors', acc:EXP_C.teal },
+    {l:'INVESTMENT YIELD',       v:expPct(m.avgIY),                                 s:'Weighted avg investment yield',acc:EXP_C.purple },
+    {l:'COST OF EQUITY (Ke)',    v:expPct(m.eq?.costOfEquity||_equityData.costOfEquity||20), s:'Required shareholder return', acc:EXP_C.teal},
+  ];
+  // TO (4 rows × 6 cols = 24 slots, fits 22 comfortably):
+const cW2=1.55, cH2=0.88, g2=0.04, sx2=0.18, sy2=1.1;
+all15.forEach((k,i)=>expKpiCard(s2,pres,sx2+(i%6)*(cW2+g2),sy2+Math.floor(i/6)*(cH2+0.07),cW2,cH2,k.l,k.v,k.s,k.acc));
+  expFooter(s2,pres,2,TOTAL);
+  s2.addNotes('All 15 dashboard KPIs. Key: Net Asset Cover and NIS must be positive. EVA Signal confirms value creation. D/E >3× is normal for a finance company funding risk assets.');
+
+  // ── SLIDE 3: CAPITAL STRUCTURE & WACC ───────────────────────
+  const s3=pres.addSlide(); s3.background={color:EXP_C.navy};
+  expTopBand(s3,pres,'Capital Structure & WACC','Cost of capital decomposition');
+  const V=(m.totalEquity||0)+(m.totalDebt||0);
+  s3.addChart(pres.charts.PIE,[{name:'Capital',labels:['Equity & Reserves','Borrowings'],values:[Math.max(m.totalEquity||0.01,0.01),Math.max(m.totalDebt||0.01,0.01)]}],{x:0.25,y:1.12,w:4.3,h:3.45,chartColors:[EXP_C.green,EXP_C.red],showPercent:true,showLegend:true,legendPos:'b',chartArea:{fill:{color:EXP_C.navy3}},dataLabelColor:EXP_C.white,dataLabelFontSize:11});
+  expSecDiv(s3,pres,4.85,1.12,4.9,'WACC COMPONENT BUILD-UP');
+  const waccTbl=[
+    [{text:'Component',options:{bold:true,color:EXP_C.teal}},{text:'Amount',options:{bold:true,color:EXP_C.teal}},{text:'Weight',options:{bold:true,color:EXP_C.teal}},{text:'Rate',options:{bold:true,color:EXP_C.teal}},{text:'Weighted',options:{bold:true,color:EXP_C.teal}}],
+    ['Equity & Reserves',expFmtM(m.totalEquity),V>0?(m.totalEquity/V*100).toFixed(1)+'%':'—',(_equityData.costOfEquity||20)+'%',V>0?((m.totalEquity/V)*(_equityData.costOfEquity||20)).toFixed(2)+'%':'—'],
+    ['Borrowings (pre-tax)',expFmtM(m.totalDebt),V>0?(m.totalDebt/V*100).toFixed(1)+'%':'—',expPct(m.wacd),V>0?((m.totalDebt/V)*(m.wacd||0)).toFixed(2)+'%':'—'],
+    ['Tax Shield (30%)','—','—','×0.70',V>0?(-(m.totalDebt/V)*(m.wacd||0)*0.30).toFixed(2)+'%':'—'],
+    [{text:'WACC (Final)',options:{bold:true,color:EXP_C.teal}},'—','100%','—',{text:expPct(m.wacc),options:{bold:true,color:EXP_C.teal}}],
+  ];
+  s3.addTable(waccTbl,{x:4.85,y:1.42,w:4.9,h:2.4,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:9,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.42,align:'center',colW:[1.5,1.0,0.7,0.7,0.9]});
+  const evaSig=(m.wara||0)>=(m.wacc||0);
+  s3.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:4.85,y:3.95,w:4.9,h:0.7,fill:{color:evaSig?EXP_C.green:EXP_C.red,transparency:90},line:{color:evaSig?EXP_C.green:EXP_C.red},rectRadius:0.08});
+  s3.addText([{text:'EVA Signal: ',options:{color:EXP_C.tx2}},{text:evaSig?'POSITIVE — Value Creating ▲':'NEGATIVE — Value Destroying ▼',options:{color:evaSig?EXP_C.green:EXP_C.red,bold:true}},{text:'   WARA '+expPct(m.wara)+' vs WACC '+expPct(m.wacc),options:{color:EXP_C.tx3}}],{x:4.85,y:3.95,w:4.9,h:0.7,fontSize:9.5,fontFace:'Arial',align:'center',valign:'middle',margin:0});
+  expFooter(s3,pres,3,TOTAL);
+
+  // ── SLIDE 4: MATURITY PROFILE ────────────────────────────────
+  const s4=pres.addSlide(); s4.background={color:EXP_C.navy};
+  expTopBand(s4,pres,'Asset & Liability Maturity Profile','Cumulative tenor gap — funding adequacy');
+  const aB=(mm.aBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const lB=(mm.lBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const gB=(mm.gBkts||new Array(6).fill(0)).map(v=>Number(v)||0);
+  // Y-axis in thousands for readability
+  const aB_k=aB.map(v=>Math.round(v/1000)); const lB_k=lB.map(v=>Math.round(v/1000));
+  s4.addText('₦ Thousands',{x:0.2,y:1.0,w:2,h:0.18,fontSize:7,color:EXP_C.tx3,fontFace:'Arial',italic:true});
+  s4.addChart(pres.charts.BAR,[{name:'Assets',labels:tL,values:aB_k},{name:'Liabilities',labels:tL,values:lB_k}],{x:0.2,y:1.12,w:6.1,h:3.55,barDir:'col',barGrouping:'clustered',chartColors:[EXP_C.teal,EXP_C.red],chartArea:{fill:{color:EXP_C.navy3}},catAxisLabelColor:EXP_C.tx2,valAxisLabelColor:EXP_C.tx2,valAxisNumFmt:'#,##0',valGridLine:{color:EXP_C.navy4,size:0.5},catGridLine:{style:'none'},showLegend:true,legendPos:'b'});
+  expSecDiv(s4,pres,6.55,1.12,3.2,'CUMULATIVE GAP',EXP_C.blue);
+  const gapTbl=[[{text:'Tenor',options:{bold:true,color:EXP_C.teal}},{text:'Gap (₦)',options:{bold:true,color:EXP_C.teal}},{text:'Signal',options:{bold:true,color:EXP_C.teal}}]];
+  tL.forEach((t,i)=>{const g=gB[i]; gapTbl.push([t,'₦'+expFmt(g),{text:g>=0?'LEADING':'DEFICIT',options:{color:g>=0?EXP_C.green:EXP_C.red,bold:true}}]);});
+  gapTbl.push([{text:'TOTAL',options:{bold:true}},'₦'+expFmt(mm.gTotal||0),{text:(mm.gTotal||0)>=0?'SURPLUS':'DEFICIT',options:{color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,bold:true}}]);
+  s4.addTable(gapTbl,{x:6.55,y:1.42,w:3.2,h:3.2,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:9,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.37,align:'center',colW:[0.75,1.3,1.15]});
+  expFooter(s4,pres,4,TOTAL);
+
+  // ── SLIDE 4b: ASSET & LIABILITY MATURITY PROFILE TABLE ──────
+  const s4b=pres.addSlide(); s4b.background={color:EXP_C.navy};
+  expTopBand(s4b,pres,'Asset & Liability Maturity Profile (₦)','Cumulative Tenor Gap — figures in Naira');
+  // Full maturity table: Risk Assets, Investments, Cash, Total Assets,
+  // Borrowings, Total Funding, Cumulative Gap — same rows as the on-screen
+  // dashboard's Asset & Liability Maturity Profile table.
+  const debB=(mm.debtorsBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const invB=(mm.investBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const cshB=(mm.cashBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const brwB=(mm.borrowBkts||new Array(6).fill(0)).map(v=>Math.round(Number(v)||0));
+  const matHdr=[
+    [{text:'Category',options:{bold:true,color:EXP_C.teal,fill:{color:EXP_C.navy4}}},
+     ...tL.map(t=>({text:t,options:{bold:true,color:EXP_C.teal,align:'center',fill:{color:EXP_C.navy4}}})),
+     {text:'TOTAL',options:{bold:true,color:EXP_C.teal,align:'center',fill:{color:EXP_C.navy4}}}]
+  ];
+  const fN2=v=>v===0?'—':'₦'+(Math.round(v/1000)).toLocaleString()+'k';
+  const rowOf=(label,bkts,total,color,bold)=>[
+    {text:label,options:{bold:!!bold,color}},
+    ...bkts.map(v=>({text:fN2(v),options:{color,align:'right'}})),
+    {text:fN2(total),options:{bold:true,color,align:'right'}},
+  ];
+  const matRows=[
+    rowOf('Risk Assets (Debtors)',debB,mm.debtorsTotal||0,EXP_C.teal),
+    rowOf('Investments',invB,mm.investTotal||0,EXP_C.blue),
+    rowOf('Cash & Equivalents',cshB,mm.cashTotal||0,EXP_C.tx2),
+    rowOf('TOTAL DEPLOYABLE ASSETS',aB,aB.reduce((s,v)=>s+v,0),EXP_C.teal,true),
+    rowOf('Borrowings',brwB,mm.borrowTotal||0,EXP_C.red),
+    rowOf('TOTAL DEBT',lB,lB.reduce((s,v)=>s+v,0),EXP_C.red,true),
+    [{text:'LEADING / (GAP) — Cumulative',options:{bold:true,color:EXP_C.white}},...gB.map(v=>({text:'₦'+(Math.round(v/1000)).toLocaleString()+'k',options:{bold:true,color:v>=0?EXP_C.green:EXP_C.red,align:'right'}})),{text:'₦'+(Math.round((mm.gTotal||0)/1000)).toLocaleString()+'k',options:{bold:true,color:(mm.gTotal||0)>=0?EXP_C.green:EXP_C.red,align:'right'}}],
+  ];
+  const aTot2=aB.reduce((s,v)=>s+v,0), lTot2=lB.reduce((s,v)=>s+v,0);
+  const pctRow=(label,bkts,tot,totalPct)=>[
+    {text:label,options:{color:EXP_C.tx2}},
+    ...bkts.map(v=>({text:tot>0?(v/tot*100).toFixed(1)+'%':'—',options:{color:EXP_C.tx3,align:'right'}})),
+    {text:totalPct,options:{bold:true,color:EXP_C.tx2,align:'right'}},
+  ];
+  matRows.push(pctRow('Deployable Assets %',aB,aTot2,'100%'));
+  matRows.push(pctRow('Debts %',lB,lTot2,lTot2>0?'100%':'—'));
+  const wA2=(mm.waraBkts||new Array(6).fill(null)), wF2=(mm.wacdBkts||new Array(6).fill(null));
+  matRows.push([{text:'WARA (Assets) %',options:{color:EXP_C.teal}},...wA2.map(v=>({text:v==null?'—':v.toFixed(2)+'%',options:{color:EXP_C.teal,align:'right'}})),{text:mm.totalWARA!=null?mm.totalWARA.toFixed(2)+'%':'—',options:{bold:true,color:EXP_C.teal,align:'right'}}]);
+  matRows.push([{text:'WACD (Liabilities) %',options:{color:EXP_C.amber}},...wF2.map(v=>({text:v==null?'—':v.toFixed(2)+'%',options:{color:EXP_C.amber,align:'right'}})),{text:mm.totalWACD!=null?mm.totalWACD.toFixed(2)+'%':'—',options:{bold:true,color:EXP_C.amber,align:'right'}}]);
+  const nisOk=(mm.nisPct||0)>=0;
+  const spB2=(mm.spreadBkts||new Array(6).fill(null)), coB2=(mm.contribs||new Array(6).fill(null));
+  matRows.push([{text:'NIS: Surplus/(Deficit) WARA − WACD',options:{bold:true,color:EXP_C.white}},...spB2.map((sp,i)=>{
+      if(sp==null) return {text:'—',options:{color:EXP_C.tx3,align:'right'}};
+      const ok=sp>=0, amt=coB2[i]||0;
+      return {text:(ok?'+':'')+sp.toFixed(2)+'% ('+(ok?'+':'')+fN2(amt)+')',options:{color:ok?EXP_C.green:EXP_C.red,align:'right',fontSize:6}};
+    }),{text:(nisOk?'+':'')+(mm.nisPct||0).toFixed(2)+'% ('+(nisOk?'+':'')+'₦'+expFmt(mm.nisAmount||0)+')',options:{bold:true,color:nisOk?EXP_C.green:EXP_C.red,align:'right',fontSize:7}}]);
+  const matTblData=[...matHdr,...matRows];
+  const colCount=tL.length+2; // category + 6 tenors + total = 8
+  const colWArr=[2.1,...tL.map(()=>0.88),1.0];
+  s4b.addTable(matTblData,{x:0.2,y:1.05,w:9.6,h:4.15,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:6.8,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.315,colW:colWArr,valign:'middle'});
+  expFooter(s4b,pres,5,TOTAL);
+
+  // ── SLIDE 5: WARA / WACD SPREAD ──────────────────────────────
+  const s5=pres.addSlide(); s5.background={color:EXP_C.navy};
+  expTopBand(s5,pres,'Net Interest Spread by Tenor','WARA vs WACD per bucket');
+  const wA=(mm.waraBkts||new Array(6).fill(0)).map(v=>v==null?0:+(Number(v)||0).toFixed(2));
+  const wF=(mm.wacdBkts||new Array(6).fill(0)).map(v=>v==null?0:+(Number(v)||0).toFixed(2));
+  const sB=(mm.spreadBkts||new Array(6).fill(0));
+  s5.addChart(pres.charts.BAR,[{name:'WARA (Asset Return %)',labels:tL,values:wA},{name:'WACD (Funding Cost %)',labels:tL,values:wF}],{x:0.2,y:1.12,w:6.1,h:3.55,barDir:'col',barGrouping:'clustered',chartColors:[EXP_C.teal,EXP_C.red],chartArea:{fill:{color:EXP_C.navy3}},catAxisLabelColor:EXP_C.tx2,valAxisLabelColor:EXP_C.tx2,valGridLine:{color:EXP_C.navy4,size:0.5},catGridLine:{style:'none'},showLegend:true,legendPos:'b',showValue:true,dataLabelFontSize:8,dataLabelColor:EXP_C.white});
+  expSecDiv(s5,pres,6.55,1.12,3.2,'SPREAD SUMMARY',EXP_C.amber);
+  const spTbl=[[{text:'Tenor',options:{bold:true,color:EXP_C.teal}},{text:'WARA',options:{bold:true,color:EXP_C.teal}},{text:'WACD',options:{bold:true,color:EXP_C.teal}},{text:'Spread',options:{bold:true,color:EXP_C.teal}}]];
+  tL.forEach((t,i)=>{const sp=sB[i]; spTbl.push([t,wA[i].toFixed(2)+'%',wF[i].toFixed(2)+'%',{text:(sp==null?'—':(sp>=0?'+':'')+sp.toFixed(2)+'%'),options:{color:sp!=null&&sp>=0?EXP_C.green:EXP_C.red,bold:sp!=null}}]);});
+  s5.addTable(spTbl,{x:6.55,y:1.42,w:3.2,h:3.0,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:9,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.42,align:'center',colW:[0.7,0.78,0.78,0.94]});
+  expFooter(s5,pres,6,TOTAL);
+
+  // ── SLIDE 6: DEBTOR BOOK ──────────────────────────────────────
+  const s6=pres.addSlide(); s6.background={color:EXP_C.navy};
+  expTopBand(s6,pres,'Loans/Debtors & IFRS 9 Staging','Receivables portfolio quality');
+  const s1a=_debtorCache.filter(d=>(d.stage||getStage(d._id))===1);
+  const s2a=_debtorCache.filter(d=>(d.stage||getStage(d._id))===2);
+  const s3a=_debtorCache.filter(d=>(d.stage||getStage(d._id))===3);
+  const s1v=s1a.reduce((a,d)=>a+(d.totalOutstanding||0),0),s2v=s2a.reduce((a,d)=>a+(d.totalOutstanding||0),0),s3v=s3a.reduce((a,d)=>a+(d.totalOutstanding||0),0);
+  s6.addChart(pres.charts.PIE,[{name:'Stage',labels:['Stage 1 — Performing','Stage 2 — Watchlist','Stage 3 — Non-Performing'],values:[Math.max(s1v,0.01),Math.max(s2v,0.01),Math.max(s3v,0.01)]}],{x:0.25,y:1.12,w:4.3,h:3.45,chartColors:[EXP_C.green,EXP_C.amber,EXP_C.red],showPercent:true,showLegend:true,legendPos:'b',chartArea:{fill:{color:EXP_C.navy3}},dataLabelColor:EXP_C.white,dataLabelFontSize:11});
+  expSecDiv(s6,pres,4.85,1.12,4.9,'IFRS 9 STAGING SUMMARY',EXP_C.blue);
+  const stgTbl=[
+    [{text:'Stage',options:{bold:true,color:EXP_C.teal}},{text:'Count',options:{bold:true,color:EXP_C.teal}},{text:'Outstanding',options:{bold:true,color:EXP_C.teal}},{text:'ECL Basis',options:{bold:true,color:EXP_C.teal}}],
+    ['Stage 1',s1a.length,expFmtM(s1v),'12-month ECL'],
+    ['Stage 2',s2a.length,expFmtM(s2v),'Lifetime ECL (SICR)'],
+    ['Stage 3',s3a.length,expFmtM(s3v),'Lifetime ECL (Impaired)'],
+    [{text:'TOTAL',options:{bold:true}},_debtorCache.length,expFmtM(m.totalDebtors||0),'—'],
+  ];
+  s6.addTable(stgTbl,{x:4.85,y:1.42,w:4.9,h:2.2,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:10,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.38,align:'center',colW:[1.0,0.8,1.65,1.45]});
+  if(s3a.length>0){
+    s6.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:4.85,y:3.72,w:4.9,h:0.78,fill:{color:EXP_C.red,transparency:90},line:{color:EXP_C.red},rectRadius:0.08});
+    s6.addText([{text:'⚠ ALERT: ',options:{bold:true,color:EXP_C.red}},{text:s3a.length+' debtor'+(s3a.length>1?'s':'')+' ('+expFmtM(s3v)+') are Stage 3. Ensure full provisioning and escalate recovery.',options:{color:EXP_C.tx}}],{x:4.85,y:3.72,w:4.9,h:0.78,fontSize:9,fontFace:'Arial',margin:0.1,valign:'middle'});
+  }
+  expFooter(s6,pres,7,TOTAL);
+
+  // ── SLIDE 7: INVESTMENTS & BORROWINGS ─────────────────────────
+  const s7=pres.addSlide(); s7.background={color:EXP_C.navy};
+  expTopBand(s7,pres,'Investments & Borrowings','Treasury placements and funding schedule');
+  expSecDiv(s7,pres,0.2,1.12,4.65,'INVESTMENT PORTFOLIO',EXP_C.teal);
+  const invTbl=[[{text:'Counterparty',options:{bold:true,color:EXP_C.teal}},{text:'Type',options:{bold:true,color:EXP_C.teal}},{text:'Principal',options:{bold:true,color:EXP_C.teal}},{text:'Rate',options:{bold:true,color:EXP_C.teal}},{text:'Maturity',options:{bold:true,color:EXP_C.teal}}]];
+  _invCache.slice(0,7).forEach(i=>invTbl.push([(i.counterparty||'').substring(0,15),(i.type||'').substring(0,13),expFmtM(i.principal),i.interestRate+'%',i.noMaturity?'Open-ended':fD(i.maturityDate)]));
+  if(_invCache.length>7) invTbl.push(['+ '+(_invCache.length-7)+' more','','','','']);
+  invTbl.push([{text:'TOTAL',options:{bold:true}},'',expFmtM(m.totalInv||0),{text:expPct(m.avgIY||0)+' avg',options:{color:EXP_C.green}},'']);
+  s7.addTable(invTbl,{x:0.2,y:1.42,w:4.65,h:3.85,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:8,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.34,align:'left',colW:[1.45,1.1,0.72,0.52,0.86]});
+  expSecDiv(s7,pres,5.15,1.12,4.65,'BORROWINGS SCHEDULE — TOP 10 LENDERS',EXP_C.red);
+  const borTbl=[[{text:'Lender',options:{bold:true,color:EXP_C.red}},{text:'Type',options:{bold:true,color:EXP_C.red}},{text:'Outstanding',options:{bold:true,color:EXP_C.red}},{text:'Rate',options:{bold:true,color:EXP_C.red}},{text:'Maturity',options:{bold:true,color:EXP_C.red}}]];
+  const borSorted=[..._borrowCache].sort((a,b)=>(b.outstanding||0)-(a.outstanding||0));
+  borSorted.slice(0,10).forEach(b=>borTbl.push([(b.lender||'').substring(0,14),(b.type||'').substring(0,12),expFmtM(b.outstanding),b.interestRate+'%',b.noMaturity?'On demand':fD(b.maturityDate)]));
+  if(borSorted.length>10) borTbl.push(['+ '+(borSorted.length-10)+' more (by size)','','','','']);
+  borTbl.push([{text:'TOTAL (ALL LENDERS)',options:{bold:true}},'',expFmtM(m.totalDebt||0),{text:expPct(m.wacd||0)+' avg',options:{color:EXP_C.red}},'']);
+  s7.addTable(borTbl,{x:5.15,y:1.42,w:4.65,h:3.85,border:{pt:0.5,color:EXP_C.navy4},color:EXP_C.tx,fontSize:7.5,fontFace:'Arial',fill:{color:EXP_C.navy3},rowH:0.29,align:'left',colW:[1.4,1.1,0.85,0.52,0.78]});
+  expFooter(s7,pres,8,TOTAL);
+
+  // ── SLIDE 8: BOARD ADVISORY (Assessment) ─────────────────────
+  const s8=pres.addSlide(); s8.background={color:EXP_C.navy};
+  expTopBand(s8,pres,'Financial Optimisation Assessment','Key performance observations — traffic-light rated');
+  const ptsSlide=(a.pts||[]).slice(0,6);
+  expSecDiv(s8,pres,0.2,1.12,9.6,'FINANCIAL OPTIMISATION ASSESSMENT',EXP_C.blue);
+  ptsSlide.forEach((p,i)=>{
+    const dc=p.c==='gr'?EXP_C.green:p.c==='rd'?EXP_C.red:p.c==='bl'?EXP_C.blue:EXP_C.amber;
+    const col=i<3?0:1; const row=i%3;
+    const bx=0.2+col*4.85; const by=1.48+row*0.97;
+    s8.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:bx,y:by,w:4.6,h:0.82,fill:{color:EXP_C.navy3},line:{color:dc,transparency:60},rectRadius:0.06});
+    s8.addShape(pres.shapes.OVAL,{x:bx+0.12,y:by+0.34,w:0.13,h:0.13,fill:{color:dc},line:{color:dc}});
+    s8.addText(p.t.substring(0,160),{x:bx+0.32,y:by+0.06,w:4.2,h:0.72,fontSize:8.5,color:EXP_C.tx,fontFace:'Arial',margin:0,valign:'middle',wrap:true});
+  });
+  expFooter(s8,pres,9,TOTAL);
+
+  // ── SLIDE 8b+: BOARD RECOMMENDATIONS — 2 per slide, conclusion on own row ──
+  // Layout: usable area y=1.32→5.08 (3.76in). 2 cards × 1.62in = 3.24in + 0.62in conclusion = 3.86in ✓
+  const allRecs=(a.recItems||[]);
+  const RECS_PER_SLIDE=2;
+  // Conclusion gets its own slide if recs fill all pages, else appended after last card
+  const recPageCount=Math.max(1,Math.ceil(allRecs.length/RECS_PER_SLIDE));
+  const dynamicTotal=TOTAL+(recPageCount-1);
+  let recSlideNum=10;
+  for(let pg=0;pg<recPageCount;pg++){
+    const pageRecs=allRecs.slice(pg*RECS_PER_SLIDE,(pg+1)*RECS_PER_SLIDE);
+    const isLast=pg===recPageCount-1;
+    const sRec=pres.addSlide(); sRec.background={color:EXP_C.navy};
+    const pgLabel=recPageCount>1?` (${pg+1} of ${recPageCount})`:'';
+    expTopBand(sRec,pres,'Board Recommendations'+pgLabel,'Observation · Recommendation · Rationale');
+    expSecDiv(sRec,pres,0.2,1.1,9.6,'BOARD RECOMMENDATIONS',EXP_C.amber);
+    // Each card: 1.62in tall; gap 0.1in; start y=1.32
+    const CARD_H=1.62, CARD_GAP=0.1, CARD_START=1.32;
+    pageRecs.forEach((r,i)=>{
+      const dc=r.dot==='gr'?EXP_C.green:r.dot==='rd'?EXP_C.red:EXP_C.amber;
+      const by=CARD_START+i*(CARD_H+CARD_GAP);
+      // Card background
+      sRec.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.2,y:by,w:9.6,h:CARD_H,fill:{color:EXP_C.navy3},line:{color:dc,transparency:65},rectRadius:0.07});
+      // Left accent bar
+      sRec.addShape(pres.shapes.RECTANGLE,{x:0.2,y:by,w:0.07,h:CARD_H,fill:{color:dc},line:{color:dc}});
+      // Number + Title
+      sRec.addText([
+        {text:r.n+'.  ',options:{bold:true,color:EXP_C.amber,fontSize:9.5}},
+        {text:r.title,options:{bold:true,color:EXP_C.tx,fontSize:9.5}}
+      ],{x:0.36,y:by+0.07,w:9.2,h:0.25,fontFace:'Cambria',margin:0,valign:'top'});
+      // Divider line
+      sRec.addShape(pres.shapes.RECTANGLE,{x:0.36,y:by+0.34,w:9.2,h:0.006,fill:{color:EXP_C.navy4},line:{color:EXP_C.navy4}});
+      // Obs
+      sRec.addText([
+        {text:'Observation:  ',options:{bold:true,color:'4da6ff',fontSize:7.5}},
+        {text:r.obs,options:{color:EXP_C.tx2,fontSize:7.5}}
+      ],{x:0.36,y:by+0.38,w:9.2,h:0.36,fontFace:'Arial',margin:0,valign:'top',wrap:true});
+      // Recommendation
+      sRec.addText([
+        {text:'Recommendation:  ',options:{bold:true,color:EXP_C.teal,fontSize:7.5}},
+        {text:r.rec,options:{color:EXP_C.tx,fontSize:7.5}}
+      ],{x:0.36,y:by+0.73,w:9.2,h:0.44,fontFace:'Arial',margin:0,valign:'top',wrap:true});
+      // Rationale
+      sRec.addText([
+        {text:'Rationale:  ',options:{bold:true,color:EXP_C.amber,fontSize:7.5}},
+        {text:r.rat,options:{color:EXP_C.tx3,fontSize:7.5,italic:true}}
+      ],{x:0.36,y:by+1.16,w:9.2,h:0.38,fontFace:'Arial',margin:0,valign:'top',wrap:true});
+    });
+    // Conclusion: fixed at y=4.42 on last page — always below cards, always above footer
+    if(isLast){
+      const concl=(a.conclusion||'');
+      if(concl){
+        sRec.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.2,y:4.42,w:9.6,h:0.62,fill:{color:'002e28'},line:{color:EXP_C.teal,transparency:25},rectRadius:0.08});
+        sRec.addShape(pres.shapes.RECTANGLE,{x:0.2,y:4.42,w:0.07,h:0.62,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
+        sRec.addText([
+          {text:'Conclusion:  ',options:{bold:true,color:EXP_C.teal,fontSize:8.5}},
+          {text:concl,options:{color:EXP_C.tx,fontSize:8}}
+        ],{x:0.36,y:4.42,w:9.3,h:0.62,fontFace:'Arial',margin:0.09,valign:'middle',wrap:true});
+      }
+    }
+    expFooter(sRec,pres,recSlideNum,dynamicTotal);
+    recSlideNum++;
+  }
+
+  // ── SLIDE 9: SIGN-OFF ───────────────────────────────────────────
+  const s9=pres.addSlide(); s9.background={color:EXP_C.navy};
+  s9.addShape(pres.shapes.OVAL,{x:-1.2,y:-1.2,w:5.5,h:5.5,fill:{color:EXP_C.teal,transparency:92},line:{color:EXP_C.teal,transparency:92}});
+  s9.addShape(pres.shapes.OVAL,{x:7,y:2.5,w:4,h:4,fill:{color:EXP_C.purple,transparency:93},line:{color:EXP_C.purple,transparency:93}});
+  s9.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:0.65,w:0.65,h:0.65,fill:{color:EXP_C.teal},line:{color:EXP_C.teal},rectRadius:0.1});
+  s9.addText('FM',{x:0.6,y:0.65,w:0.65,h:0.65,fontSize:13,bold:true,color:EXP_C.navy,align:'center',valign:'middle',margin:0});
+  s9.addText(orgName + ' — Treasury Report',{x:1.42,y:0.78,w:7,h:0.4,fontSize:10,color:EXP_C.teal,fontFace:'Cambria',margin:0});
+  s9.addText('Management Sign-Off',{x:0.6,y:1.35,w:9,h:0.65,fontSize:28,bold:true,color:EXP_C.tx,fontFace:'Cambria',margin:0});
+  s9.addShape(pres.shapes.RECTANGLE,{x:0.6,y:1.98,w:8.8,h:0.02,fill:{color:EXP_C.teal},line:{color:EXP_C.teal}});
+  [{role:'Chief Finance Officer'},{role:'Managing Director / CEO'},{role:'Board Chairman'}].forEach((b,i)=>{
+    const bx=0.4+i*3.15;
+    s9.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:bx,y:2.15,w:2.95,h:1.8,fill:{color:EXP_C.navy3},line:{color:EXP_C.navy4},rectRadius:0.08,shadow:expMakeShadow()});
+    s9.addText(b.role,{x:bx+0.12,y:2.23,w:2.71,h:0.28,fontSize:9,bold:true,color:EXP_C.teal,fontFace:'Cambria',margin:0});
+    s9.addText('Name: ________________________',{x:bx+0.12,y:2.57,w:2.71,h:0.28,fontSize:9,color:EXP_C.tx2,fontFace:'Arial',margin:0});
+    s9.addText('Signature: ___________________',{x:bx+0.12,y:2.92,w:2.71,h:0.28,fontSize:9,color:EXP_C.tx2,fontFace:'Arial',margin:0});
+    s9.addText('Date: _______________________',{x:bx+0.12,y:3.27,w:2.71,h:0.28,fontSize:9,color:EXP_C.tx2,fontFace:'Arial',margin:0});
+    s9.addText('Designation: ________________',{x:bx+0.12,y:3.62,w:2.71,h:0.28,fontSize:9,color:EXP_C.tx3,fontFace:'Arial',margin:0});
+  });
+  s9.addShape(pres.shapes.ROUNDED_RECTANGLE,{x:0.6,y:4.52,w:1.5,h:0.3,fill:{color:EXP_C.navy3},line:{color:EXP_C.navy4},rectRadius:0.08});
+  s9.addText('CONFIDENTIAL',{x:0.6,y:4.52,w:1.5,h:0.3,fontSize:7,bold:true,color:EXP_C.amber,align:'center',valign:'middle',fontFace:'Arial',margin:0,charSpacing:1.5});
+  s9.addText('FM Finance Suite  ·  Generated '+D+'  ·  Prepared by: '+userName,{x:0,y:5.33,w:10,h:0.29,fontSize:7.5,color:EXP_C.tx3,align:'center',fontFace:'Arial',margin:0});
+  expFooter(s9,pres,recSlideNum,dynamicTotal);
+
+  return pres.writeFile({ fileName:'FM_Treasury_Board_AsAt_'+asOfFileTag()+'.pptx' });
+}
+
+async function exportDashboardExcel(){
+  const wb = XLSX.utils.book_new();
+  const a = window.latestAssessment || {};
+  const m = a.metrics || {};
+  const mm = window.latestMaturity || {};
+
+  // Sheet 1: Dashboard summary
+  const dash = [
+    ['FM Finance Suite — Treasury Dashboard Export'],
+    [asOfLabel()],
+    ['Generated', new Date().toLocaleString('en-GB')],
+    [''],
+    ['Metric','Value'],
+    ['Total Deployable Assets', Number(m.totalAssets)||0],
+    ['Total Borrowings', Number(m.totalDebt)||0],
+    ['Total Equity & Reserves', Number(m.totalEquity)||0],
+    ['Total Debtors', Number(m.totalDebtors)||0],
+    ['Investments', Number(m.totalInv)||0],
+    ['Cash', Number(m.totalCash)||0],
+    ['WACC (%)', Number(m.wacc)||0],
+    ['WACD (%)', Number(m.wacd)||0],
+    ['WARA (%)', Number(m.wara)||0],
+    ['Net Interest Spread (%)', Number(m.spread)||0],
+    ['Net Interest Margin (₦)', Number(m.nisAmount)||0],
+    ['  Formula: Total Deployable Assets × (WARA − WACD)', `${Number(m.totalAssets)||0} × ${(Number(m.nisPct)||0).toFixed(2)}%`],
+    ['Debt/Equity Ratio (×)', Number(m.lever)||0],
+    ['Equity/Assets (%)', Number((m.eta||0)*100)],
+    ['Debt/Assets (%)', Number((m.dta||0)*100)],
+  ];
+  const ws1 = XLSX.utils.aoa_to_sheet(dash);
+  ws1['!cols'] = [{wch:32},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Dashboard Summary');
+
+  // Sheet 2: Maturity profile — mirrors every row of the on-screen
+  // Asset & Liability Maturity Profile table exactly.
+  const headers = ['Row', ...TENOR_LBLS, 'TOTAL'];
+  const pct1 = (v,tot) => tot>0 ? +((v/tot)*100).toFixed(2) : null;
+  const matRows = [
+    ['DEPLOYABLE ASSETS', ...TENOR_LBLS.map(()=>null), null],
+    ['Risk Assets (Debtors)',   ...(mm.debtorsBkts||[]).map(v=>Number(v)||0), Number(mm.debtorsTotal)||0],
+    ['Investments',             ...(mm.investBkts||[]).map(v=>Number(v)||0), Number(mm.investTotal)||0],
+    ['Cash & Equivalents',      ...(mm.cashBkts||[]).map(v=>Number(v)||0), Number(mm.cashTotal)||0],
+    ['TOTAL DEPLOYABLE ASSETS', ...(mm.aBkts||[]).map(v=>Number(v)||0), Number(mm.aTotal)||0],
+    ['DEBTS', ...TENOR_LBLS.map(()=>null), null],
+    ['Borrowings',              ...(mm.borrowBkts||[]).map(v=>Number(v)||0), Number(mm.borrowTotal)||0],
+    ['TOTAL DEBT',              ...(mm.lBkts||[]).map(v=>Number(v)||0), Number(mm.lTotal)||0],
+    ['LEADING / (GAP) — Cumulative', ...(mm.gBkts||[]).map(v=>Number(v)||0), Number(mm.gTotal)||0],
+    ['PERIOD CONTRIBUTION AS % OF TOTAL', ...TENOR_LBLS.map(()=>null), null],
+    ['Deployable Assets %', ...(mm.aBkts||[]).map(v=>pct1(v,mm.aTotal)), 100],
+    ['Debts %',             ...(mm.lBkts||[]).map(v=>pct1(v,mm.lTotal)), mm.lTotal>0?100:null],
+    ['NET INTEREST SPREAD', ...TENOR_LBLS.map(()=>null), null],
+    ['WARA (Assets) %',         ...(mm.waraBkts||[]).map(v=>v==null?null:+(v.toFixed(2))), mm.totalWARA!=null?+mm.totalWARA.toFixed(2):null],
+    ['WACD (Liabilities) %',    ...(mm.wacdBkts||[]).map(v=>v==null?null:+(v.toFixed(2))), mm.totalWACD!=null?+mm.totalWACD.toFixed(2):null],
+    ['NIS: Surplus/(Deficit) WARA − WACD', ...(mm.spreadBkts||[]).map(v=>v==null?null:+(v.toFixed(2))), mm.nisPct!=null?+mm.nisPct.toFixed(2):null],
+    ['NIS: Surplus/(Deficit) (₦)',         ...(mm.contribs||[]).map(v=>v==null?null:Math.round(v)), mm.nisAmount!=null?Math.round(mm.nisAmount):null],
+  ];
+  const ws2 = XLSX.utils.aoa_to_sheet([headers, ...matRows]);
+  ws2['!cols'] = [{wch:32}, ...new Array(6).fill({wch:14}), {wch:14}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Maturity Profile');
+
+  // Sheet 3: Borrowings
+  if(_borrowCache.length){
+    const bRows = [['ID','Lender','Type','Principal','Outstanding','Rate %','Tenor (days)','Maturity','Accrued Int.']];
+    _borrowCache.forEach(b=>bRows.push([b.borrowingId,b.lender,b.type,b.principal,b.outstanding,b.interestRate,b.tenorDays,b.noMaturity?'On demand':b.maturityDate,b.accruedInterest||0]));
+    const ws3 = XLSX.utils.aoa_to_sheet(bRows);
+    ws3['!cols'] = [{wch:12},{wch:22},{wch:18},{wch:14},{wch:14},{wch:8},{wch:10},{wch:12},{wch:14}];
+    XLSX.utils.book_append_sheet(wb, ws3, 'Borrowings');
+  }
+
+  // Sheet 4: Investments
+  if(_invCache.length){
+    const iRows = [['ID','Counterparty','Type','Principal','Rate %','Tenor (d)','Date Invested','Maturity','Projected Interest']];
+    _invCache.forEach(i=>{const isOE=i.noMaturity||!i.maturityDate; iRows.push([i.investmentId,i.counterparty,i.type,i.principal,i.interestRate,i.tenorDays,i.dateInvested,isOE?'On demand':i.maturityDate,isOE?'Variable':+(i.principal*(i.interestRate/100)*(i.tenorDays/365)).toFixed(2)]);});
+    const ws4 = XLSX.utils.aoa_to_sheet(iRows);
+    ws4['!cols'] = [{wch:12},{wch:22},{wch:18},{wch:14},{wch:8},{wch:10},{wch:14},{wch:12},{wch:18}];
+    XLSX.utils.book_append_sheet(wb, ws4, 'Investments');
+  }
+
+  // Sheet 5: Cash
+  if(_cashCache.length){
+    const cRows = [['ID','Bank','Account No.','Type','Currency','Balance','Restricted']];
+    _cashCache.forEach(a=>cRows.push([a.accountId,a.bank,a.accountNo,a.type,a.currency,a.balance,a.restricted?'Yes':'No']));
+    const ws5 = XLSX.utils.aoa_to_sheet(cRows);
+    ws5['!cols'] = [{wch:12},{wch:22},{wch:16},{wch:12},{wch:8},{wch:14},{wch:10}];
+    XLSX.utils.book_append_sheet(wb, ws5, 'Cash');
+  }
+
+  XLSX.writeFile(wb, 'FM_Treasury_Dashboard_AsAt_'+asOfFileTag()+'.xlsx');
+}
+
+async function exportDashboardPDF(){
+  const a = window.latestAssessment || {};
+  const m = a.metrics || {};
+  const recItems = a.recItems || [];
+  const tmp = document.createElement('div');
+  // Pure black on white — all text #000, backgrounds white or light grey only
+  tmp.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;padding:32px;background:#ffffff;color:#000000;z-index:9999;font-family:Arial,sans-serif;font-size:12px;line-height:1.6';
+
+  const kpis=[
+    ['Total Deployable Assets',expFmtM(m.totalAssets)],
+    ['Total Borrowings',expFmtM(m.totalDebt)],
+    ['Equity & Reserves',expFmtM(m.totalEquity)],
+    ['Total Funding Base',expFmtM((m.totalEquity||0)+(m.totalDebt||0))],
+    ['Net Asset Cover',expFmtM((m.totalAssets||0)-(m.totalDebt||0))],
+    ['WARA',expPct(m.wara)],
+    ['WACD',expPct(m.wacd)],
+    ['WACC',expPct(m.wacc)],
+    ['Net Interest Spread',(m.spread>=0?'+':'')+expPct(m.spread)],
+    ['Net Interest Margin (₦)',(m.nisAmount>=0?'+':'')+expFmtM(m.nisAmount||0)+'  [Assets × (WARA − WACD) = '+expFmtM(m.totalAssets)+' × '+(m.nisPct>=0?'+':'')+expPct(m.nisPct||0)+']'],
+    ['EVA Signal',((m.wara||0)-(m.wacc||0)>=0?'+':'')+expPct((m.wara||0)-(m.wacc||0))],
+    ['Debt / Equity Ratio',(m.lever||0).toFixed(2)+'×'],
+    ['Equity / Assets',expPct((m.eta||0)*100)],
+    ['Debtor Yield',expPct(m.avgDR)],
+    ['Investment Yield',expPct(m.avgIY)],
+  ];
+
+  const dotChar = p => p.c==='gr'?'●':p.c==='rd'?'●':'●';
+  const dotCol  = p => p.c==='gr'?'#166534':p.c==='rd'?'#991b1b':'#92400e';
+
+  const mm = window.latestMaturity || {};
+  const pN = v => (v==null) ? '—' : (v>0 ? '₦'+expFmt(v) : '—');
+  const pP = v => (v==null) ? '—' : v.toFixed(2)+'%';
+  const matHeadCells = TENOR_LBLS.map(t=>`<th style="border:1px solid #ccc;padding:4px 5px;text-align:right;background:#f0f0f0;color:#000;font-size:9px">${t}</th>`).join('');
+  const matRow = (label, vals, total, opts={}) => `<tr style="${opts.bg?'background:'+opts.bg+';':''}">
+    <td style="border:1px solid #ddd;padding:4px 6px;font-weight:${opts.bold?700:500};color:${opts.color||'#000'};font-size:9.5px">${label}</td>
+    ${vals.map(v=>`<td style="border:1px solid #ddd;padding:4px 5px;text-align:right;color:${opts.color||'#000'};font-size:9px">${opts.pct?pP(v):pN(v)}</td>`).join('')}
+    <td style="border:1px solid #ddd;padding:4px 5px;text-align:right;font-weight:700;color:${opts.color||'#000'};font-size:9.5px">${opts.pct?pP(total):pN(total)}</td>
+  </tr>`;
+  const matSecRow = label => `<tr><td colspan="${TENOR_LBLS.length+2}" style="padding:5px 6px;font-weight:700;font-size:9.5px;color:#000;background:#e8e8e8;border:1px solid #ccc">${label}</td></tr>`;
+  const aTot=mm.aTotal||0, lTot=mm.lTotal||0;
+  const pct1=(v,t)=>t>0?(v/t*100):null;
+  const nisOk=(mm.nisPct||0)>=0;
+  const maturityTableHtml = `
+    <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:8px;border-bottom:1px solid #ccc;padding-bottom:4px">Asset &amp; Liability Maturity Profile (₦) — Cumulative Tenor Gap</div>
+    <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin-bottom:20px">
+      <tr><th style="border:1px solid #ccc;padding:4px 6px;text-align:left;background:#f0f0f0;color:#000;font-size:9px">TENOR</th>${matHeadCells}<th style="border:1px solid #ccc;padding:4px 5px;text-align:right;background:#f0f0f0;color:#000;font-size:9px">TOTAL</th></tr>
+      ${matSecRow('DEPLOYABLE ASSETS')}
+      ${matRow('Risk Assets (Debtors)', mm.debtorsBkts||[], mm.debtorsTotal||0)}
+      ${matRow('Investments', mm.investBkts||[], mm.investTotal||0, {color:'#1d4ed8'})}
+      ${matRow('Cash &amp; Equivalents', mm.cashBkts||[], mm.cashTotal||0)}
+      ${matRow('TOTAL DEPLOYABLE ASSETS', mm.aBkts||[], aTot, {bold:true,bg:'#eefaf6'})}
+      ${matSecRow('DEBTS')}
+      ${matRow('Borrowings', mm.borrowBkts||[], mm.borrowTotal||0, {color:'#b91c1c'})}
+      ${matRow('TOTAL DEBT', mm.lBkts||[], lTot, {bold:true,bg:'#fdecec',color:'#b91c1c'})}
+      ${matRow('LEADING / (GAP) — Cumulative', mm.gBkts||[], mm.gTotal||0, {bold:true})}
+      ${matSecRow('PERIOD CONTRIBUTION AS % OF TOTAL')}
+      ${matRow('Deployable Assets %', (mm.aBkts||[]).map(v=>pct1(v,aTot)), 100, {pct:true})}
+      ${matRow('Debts %', (mm.lBkts||[]).map(v=>pct1(v,lTot)), lTot>0?100:null, {pct:true})}
+      ${matSecRow('NET INTEREST SPREAD')}
+      ${matRow('WARA (Assets) %', mm.waraBkts||[], mm.totalWARA, {pct:true})}
+      ${matRow('WACD (Liabilities) %', mm.wacdBkts||[], mm.totalWACD, {pct:true})}
+      ${matRow('NIS: Surplus/(Deficit) WARA − WACD', mm.spreadBkts||[], mm.nisPct, {pct:true,bold:true,color:nisOk?'#166534':'#991b1b'})}
+    </table>`;
+
+  tmp.innerHTML = `
+    <div style="border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:18px">
+      <div style="font-size:18px;font-weight:700;color:#000">FM Finance Suite — Treasury Intelligence Report</div>
+      <div style="font-size:11px;color:#333;margin-top:4px">${asOfLabel()} &nbsp;|&nbsp; Generated: ${new Date().toLocaleString('en-GB')} &nbsp;|&nbsp; Prepared by: ${_user?.name||'—'} &nbsp;|&nbsp; ${_user?.orgName||_user?.name||'—'}</div>
+    </div>
+
+    <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:8px;border-bottom:1px solid #ccc;padding-bottom:4px">Executive Summary — Key Performance Indicators</div>
+    <table cellpadding="6" cellspacing="0" style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:11.5px">
+      ${kpis.map(([k,v],i)=>`<tr style="background:${i%2===0?'#f7f7f7':'#ffffff'}"><td style="font-weight:600;color:#000;border:1px solid #ddd;width:55%">${k}</td><td style="color:#000;border:1px solid #ddd;font-weight:500">${v}</td></tr>`).join('')}
+    </table>
+
+    ${maturityTableHtml}
+
+    <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:8px;border-bottom:1px solid #ccc;padding-bottom:4px">Financial Optimisation Assessment</div>
+    ${(a.pts||[]).map(p=>`<div style="display:flex;gap:8px;margin-bottom:7px;align-items:flex-start"><span style="color:${dotCol(p)};flex-shrink:0;font-size:14px;line-height:1.4">${dotChar(p)}</span><span style="color:#000;font-size:11.5px">${p.t}</span></div>`).join('')||'<p style="color:#000">No assessment available.</p>'}
+
+    <div style="font-size:14px;font-weight:700;color:#000;margin:20px 0 8px;border-bottom:1px solid #ccc;padding-bottom:4px">Board Recommendations</div>
+    ${recItems.map(r=>`
+      <div style="border:1px solid #ccc;border-radius:4px;margin-bottom:12px;overflow:hidden">
+        <div style="background:#f0f0f0;padding:7px 10px;font-weight:700;font-size:12px;color:#000;border-bottom:1px solid #ccc">${r.n}. ${r.title}</div>
+        <div style="padding:8px 10px">
+          <div style="margin-bottom:5px;font-size:11.5px"><span style="font-weight:700;color:#000">Observation: </span><span style="color:#000">${r.obs}</span></div>
+          <div style="margin-bottom:5px;font-size:11.5px"><span style="font-weight:700;color:#000">Recommendation: </span><span style="color:#000">${r.rec}</span></div>
+          <div style="font-size:11.5px"><span style="font-weight:700;color:#000">Rationale: </span><span style="color:#000">${r.rat}</span></div>
+        </div>
+      </div>`).join('')||'<p style="color:#000">No recommendations available.</p>'}
+
+    ${(a.conclusion)?`<div style="border:2px solid #000;border-radius:4px;padding:10px 14px;margin-top:4px;background:#f7f7f7"><div style="font-weight:700;font-size:12px;color:#000;margin-bottom:4px">Conclusion</div><div style="font-size:11.5px;color:#000">${a.conclusion}</div></div>`:''}
+  `;
+
+  document.body.appendChild(tmp);
+  const canvas = await html2canvas(tmp, { scale:2, backgroundColor:'#ffffff', useCORS:true });
+  const img = canvas.toDataURL('image/png');
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p','pt','a4');
+  const pw = pdf.internal.pageSize.getWidth();
+  const ph_full = (canvas.height * pw) / canvas.width;
+  const pageH = pdf.internal.pageSize.getHeight();
+  // Multi-page: slice image across A4 pages
+  let yPos = 0;
+  while(yPos < ph_full){
+    if(yPos > 0) pdf.addPage();
+    pdf.addImage(img,'PNG',0,-yPos,pw,ph_full);
+    yPos += pageH;
+  }
+  pdf.save('FM_Treasury_Report_AsAt_'+asOfFileTag()+'.pdf');
+  tmp.remove();
+}
+
+// ════════════════════════════════════════════════════
+// EXPORT MODAL WIRING
+// ════════════════════════════════════════════════════
+function setExpStatus(txt, ok){
+  const el = $('exp-status'); if(!el) return;
+  el.textContent = txt;
+  el.style.color = ok ? 'var(--gr)' : 'var(--am)';
+}
+function setExpLoading(btnId, loading){
+  const el = $(btnId); if(!el) return;
+  el.classList.toggle('loading', loading);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Export modal
+  $('btn-export-report').addEventListener('click', () => { $('export-modal').classList.add('on'); });
+  $('exp-close').addEventListener('click', () => { $('export-modal').classList.remove('on'); });
+  $('exp-cancel').addEventListener('click', () => { $('export-modal').classList.remove('on'); });
+
+  // Dynamically load a script, trying multiple CDN sources in order
+  function loadScript(urls){
+    return new Promise(function(resolve, reject){
+      var idx = 0;
+      function tryNext(){
+        if(idx >= urls.length) return reject(new Error('Could not load library from any CDN source. Check your internet connection.'));
+        var s = document.createElement('script');
+        s.src = urls[idx++];
+        s.onload = resolve;
+        s.onerror = function(){ console.warn('Failed to load:', s.src); tryNext(); };
+        document.head.appendChild(s);
+      }
+      tryNext();
+    });
+  }
+  // Poll up to 10s for a global to appear after script load
+  function waitForGlobal(check, timeout){
+    timeout = timeout || 8000;
+    return new Promise(function(resolve, reject){
+      if(check()) return resolve();
+      var interval = 100, start = Date.now();
+      var t = setInterval(function(){
+        if(check()){ clearInterval(t); return resolve(); }
+        if(Date.now()-start > timeout){ clearInterval(t); reject(new Error('Library global not found after load.')); }
+      }, interval);
+    });
+  }
+  // Ensure PptxGenJS is loaded — JSZip must load first (peer dependency)
+  var _pptxLoading = null;
+  function ensurePptxGenJS(){
+    if(typeof PptxGenJS !== 'undefined') return Promise.resolve();
+    if(_pptxLoading) return _pptxLoading;
+    _pptxLoading = loadScript([
+      'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',
+      'https://unpkg.com/jszip@3.10.1/dist/jszip.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
+    ]).then(function(){
+      return waitForGlobal(function(){ return typeof JSZip !== 'undefined'; });
+    }).then(function(){
+      return loadScript([
+        'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js',
+        'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.min.js'
+      ]);
+    }).then(function(){
+      return waitForGlobal(function(){ return typeof PptxGenJS !== 'undefined'; });
+    }).catch(function(e){ _pptxLoading = null; throw e; });
+    return _pptxLoading;
+  }
+  // Ensure XLSX is loaded
+  var _xlsxLoading = null;
+  function ensureXLSX(){
+    if(typeof XLSX !== 'undefined') return Promise.resolve();
+    if(_xlsxLoading) return _xlsxLoading;
+    _xlsxLoading = loadScript([
+      'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+      'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+    ]).then(function(){ return waitForGlobal(function(){ return typeof XLSX !== 'undefined'; }); })
+      .catch(function(e){ _xlsxLoading = null; throw e; });
+    return _xlsxLoading;
+  }
+  // Ensure PDF libs are loaded
+  var _pdfLoading = null;
+  function ensurePDFLibs(){
+    if(typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined') return Promise.resolve();
+    if(_pdfLoading) return _pdfLoading;
+    _pdfLoading = loadScript([
+      'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+      'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
+    ]).then(function(){
+      return loadScript([
+        'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+        'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
+      ]);
+    }).then(function(){ return waitForGlobal(function(){ return typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined'; }); })
+      .catch(function(e){ _pdfLoading = null; throw e; });
+    return _pdfLoading;
+  }
+
+  $('exp-ppt-btn').addEventListener('click', async () => {
+    setExpLoading('exp-ppt-btn', true); setExpStatus('Loading PowerPoint library…', true);
+    try {
+      await ensurePptxGenJS();
+    } catch(e){ setExpStatus('Could not load PptxGenJS: ' + e.message, false); setExpLoading('exp-ppt-btn', false); return; }
+    setExpStatus('Generating 9-slide board deck…', true);
+    try {
+      await exportBoardPPT();
+      setExpStatus('✓ PowerPoint downloaded — check your downloads folder.', true);
+    } catch(e) {
+      console.error('PPT export error:', e);
+      setExpStatus('PPT export failed: ' + e.message, false);
+    }
+    setExpLoading('exp-ppt-btn', false);
+  });
+
+  $('exp-xls-btn').addEventListener('click', async () => {
+    setExpLoading('exp-xls-btn', true); setExpStatus('Loading Excel library…', true);
+    try {
+      await ensureXLSX();
+    } catch(e){ setExpStatus('Could not load XLSX: ' + e.message, false); setExpLoading('exp-xls-btn', false); return; }
+    setExpStatus('Building Excel workbook…', true);
+    try {
+      await exportDashboardExcel();
+      setExpStatus('✓ Excel downloaded.', true);
+    } catch(e) {
+      setExpStatus('Excel export failed: ' + e.message, false);
+    }
+    setExpLoading('exp-xls-btn', false);
+  });
+
+  $('exp-pdf-btn').addEventListener('click', async () => {
+    setExpLoading('exp-pdf-btn', true); setExpStatus('Loading PDF libraries…', true);
+    try {
+      await ensurePDFLibs();
+    } catch(e){ setExpStatus('Could not load PDF libraries: ' + e.message, false); setExpLoading('exp-pdf-btn', false); return; }
+    setExpStatus('Rendering PDF…', true);
+    try {
+      await exportDashboardPDF();
+      setExpStatus('✓ PDF downloaded.', true);
+    } catch(e) {
+      setExpStatus('PDF export failed: ' + e.message, false);
+    }
+    setExpLoading('exp-pdf-btn', false);
+  });
+
+  // Nav init
+  const fb = $('f-all'); if(fb) fb.style.cssText='background:var(--t);color:var(--n);border-color:var(--t)';
+
+  // Safe area (iOS)
+  if(CSS.supports('padding-bottom','env(safe-area-inset-bottom)')){
+    document.getElementById('sidebar').style.paddingBottom='env(safe-area-inset-bottom)';
+    document.getElementById('content').style.paddingBottom='calc(78px + env(safe-area-inset-bottom))';
+  }
+
+  // Load dashboard after auth settles (100ms grace period)
+  setTimeout(loadDashboard, 100);
+});
+</script>
+
+<!-- Backend endpoint note for equity:
+  This frontend calls POST /treasury/equity with { shareCapital, retainedEarnings, otherReserves, costOfEquity }
+  and GET /treasury/equity to retrieve it. Add these two routes to your Express router (eis-recbackend):
+    router.get('/equity',  auth, async (req,res) => { const doc = await Equity.findOne({orgId: req.user.orgId||req.user._id}); res.json({equity: doc||null}); });
+    router.post('/equity', auth, async (req,res) => { const doc = await Equity.findOneAndUpdate({orgId: req.user.orgId||req.user._id}, {...req.body, orgId: req.user.orgId||req.user._id}, {upsert:true,new:true}); res.json({equity:doc}); });
+  Until the backend is deployed, saveEquity() gracefully falls back to localStorage.
+
+  Backend endpoint note for effective dates (all modules):
+  Every Add/Edit save (equity, borrowings, investments, cash) now sends a
+  'effectiveDate' field (YYYY-MM-DD) — this replaces the earlier
+  'effectiveDate' naming. It represents the EFFECTIVE DATE the figure
+  belongs to, and is distinct from any transaction date already on the
+  record (borrowings: valueDate; investments: dateInvested). Persist it
+  into the same dated-history collection used by the '.../history'
+  endpoints (POST body key is also 'effectiveDate' now) so as-of reporting
+  reconstructs correctly.
+
+  Backend endpoint note for uploads (effective date support):
+  The frontend now sends a 'defaultEffectiveDate' (YYYY-MM-DD) field
+  alongside 'file' in the multipart POST to
+  /treasury/{borrowings|investments|cash}/upload. This field is REQUIRED by
+  the dialog — it is never silently defaulted to "today" client-side. Each
+  parsed row may also carry its own 'effective_date' column, which takes
+  precedence over the default when present. Backend upload handlers should
+  resolve, per row: row.effective_date || req.body.defaultEffectiveDate —
+  there should be no implicit "today" fallback, since the whole point is to
+  let one file carry several past effective dates (e.g. Jan/Feb/Mar
+  month-end schedules) each dated correctly rather than all being stamped
+  with the upload date. Write the resolved date into the same dated-history
+  collection used by the manual Add/Edit '.../history' endpoints, keyed as
+  'effectiveDate', so as-of reporting reconstructs correctly regardless of
+  whether data arrived via a form or a bulk upload.
+
+  Date format contract for uploads: every date column INSIDE the uploaded
+  spreadsheet (value_date, maturity_date, effective_date, date_invested) is
+  dd/mm/yyyy, e.g. 31/01/2026 — NOT yyyy-mm-dd and NOT mm/dd/yyyy. This is
+  different from 'defaultEffectiveDate', which comes from an
+  <input type="date"> picker and is therefore always yyyy-mm-dd (a browser
+  constraint, not a choice). The backend's row-level date parser needs to
+  branch accordingly: cell values parse as dd/mm/yyyy, defaultEffectiveDate
+  parses as yyyy-mm-dd.
+
+  Backend endpoint note for borrowings tenor:
+  The frontend now sends/reads 'tenorDays' (integer, tenor in days) instead of
+  'tenorMonths' for borrowings. Update the Borrowing schema/route to accept and
+  return tenorDays. Existing records that still only have tenorMonths continue
+  to display correctly — the frontend converts tenorMonths -> days (×30.44) on
+  the fly wherever tenorDays is missing — but new/edited records should be
+  persisted with tenorDays going forward. Note the bulk upload template column
+  order for borrowings is now: borrowing_id, lender_name, interest_rate,
+  tenor_days, principal, accrued_interest, outstanding, value_date,
+  maturity_date, effective_date, borrowing_type, repayment_schedule, no_maturity.
+-->
+<footer class="fm-legal-footer" style="border-top:1px solid rgba(255,255,255,.08);padding:1.3rem 1.4rem;text-align:center;margin-top:2rem;font-family:'IBM Plex Mono',monospace">
+  <nav style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;margin-bottom:.55rem">
+    <a href="/home/legal/terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Terms</a>
+    <a href="/home/legal/privacy/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy</a>
+    <a href="/home/legal/cookies/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Cookies</a>
+    <a href="/home/legal/disclaimer/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Disclaimer</a>
+    <a href="/home/legal/acceptable-use/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Acceptable Use</a>
+    <a href="/home/legal/ai-consent/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">AI Consent</a>
+    <a href="/home/legal/dpa/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">DPA</a>
+    <a href="/home/legal/data-processing-notice/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Data Processing Notice</a>
+    <a href="/home/legal/subscription-terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Subscription Terms</a>
+    <a href="/home/legal/consent-release/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Consent &amp; Release</a>
+    <a href="/home/legal/privacy-preferences/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy Preferences</a>
+  </nav>
+  <small style="color:#4a6080;font-size:.7rem">&copy; 2026 FM Finance Suite. All rights reserved.</small>
+</footer>
+<script>
+function fmApplyThemeIcon(){
+  var btn = document.getElementById('fm-theme-toggle');
+  if(!btn) return;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '☀️' : '🌙';
+}
+function fmToggleTheme(){
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if(isLight){
+    document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('fm_theme','dark'); }catch(e){}
+  } else {
+    document.documentElement.setAttribute('data-theme','light');
+    try{ localStorage.setItem('fm_theme','light'); }catch(e){}
+  }
+  fmApplyThemeIcon();
+}
+fmApplyThemeIcon();
+</script>
+</body>
+</html>
