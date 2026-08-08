@@ -854,7 +854,7 @@ function openEquityModal(){
        <div class="fld"><label>Other Reserves (₦)</label><input class="finput" type="number" id="eq-res" value="${e.otherReserves}" min="0" step="1000000" placeholder="0"></div>
        <div class="fld"><label>Cost of Equity — Ke (%)</label><input class="finput" type="number" id="eq-ke" value="${e.costOfEquity}" min="0" max="100" step="0.5" placeholder="e.g. 24"></div>
      </div>
-     <div class="fld"><label>Effective Date *</label><input class="finput" type="date" id="eq-effdate" value="${todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The date this capital structure is true as at. Required for as-of reporting.</div></div>
+     <div class="fld"><label>Reporting Date *</label><input class="finput" type="date" id="eq-effdate" value="${todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The period this capital structure is reported as at. Required for as-of reporting.</div></div>
      <div class="nt" style="font-size:11px"><strong>Ke guidance (Nigeria):</strong> Risk-free rate (91-day T-Bill ~20–22%) + equity risk premium 3–7% = 23–27%. MFBs/fintech: 20–25%.</div>`,
     `<button onclick="closeModal()">Cancel</button>
      <button class="bp" onclick="saveEquity()"><span id="eq-save-txt">Save Capital Data</span></button>`
@@ -866,14 +866,14 @@ async function saveEquity(){
   const sc = parseFloat($('eq-cap').value) || 0;
   if(!sc){ err.textContent = 'Share capital is required.'; err.classList.add('on'); return; }
   const effDate = $('eq-effdate')?.value;
-  if(!effDate){ err.textContent = 'Effective date is required.'; err.classList.add('on'); return; }
-  if(_effFrom && effDate<_effFrom){ err.textContent = 'Effective date cannot be before the baseline ('+_effFrom+').'; err.classList.add('on'); return; }
+  if(!effDate){ err.textContent = 'Reporting date is required.'; err.classList.add('on'); return; }
+  if(_effFrom && effDate<_effFrom){ err.textContent = 'Reporting date cannot be before the baseline ('+_effFrom+').'; err.classList.add('on'); return; }
   const payload = {
     shareCapital:     sc,
     retainedEarnings: parseFloat($('eq-ret').value) || 0,
     otherReserves:    parseFloat($('eq-res').value) || 0,
     costOfEquity:     parseFloat($('eq-ke').value)  || 20,
-    effectiveDate:    effDate
+    reportingDate:    effDate
   };
   $('eq-save-txt').textContent = 'Saving…';
   // Always persist to localStorage immediately so refresh never loses data
@@ -927,11 +927,11 @@ async function loadDashboard(){
 // ════════════════════════════════════════════════════
 // AS-OF (HISTORICAL) DASHBOARD
 // ════════════════════════════════════════════════════
-// Every cash/borrowing/investment/equity update now carries an "Effective
+// Every cash/borrowing/investment/equity update now carries a "Reporting
 // Date" (see the save*() functions below) and is stored as a dated version
 // against its entity, never overwritten. To view the treasury position as at
 // any date D, the backend returns — per entity — the latest version whose
-// effective date is <= D. Entities with no version on/before D didn't exist
+// reporting date is <= D. Entities with no version on/before D didn't exist
 // yet as of that date and are correctly excluded.
 //
 // The picker is bounded below by _effFrom (the baseline date the books were
@@ -1097,13 +1097,23 @@ function renderMaturityTable(today, totalDebtors, totalInv, totalCash, totalDebt
     const da=rD.b[i], ia=rI.b[i], tot=da+ia+rC.b[i];
     return tot>0 ? (da*avgDR + ia*avgIY)/tot : null;
   });
-  const wacdBkts = waraBkts.map((w,i) => {
-    if(w==null) return null;
+  // WACD per bucket must be computed independently of whether assets happen
+  // to fall in the same bucket — a bucket can hold debt maturing there with
+  // no debtors/investments maturing there too (or vice versa). Gating this
+  // on waraBkts being non-null was the bug that made the NIS row show "—"
+  // across almost every tenor.
+  const wacdBkts = TENOR_CAPS.map((_,i) => {
     const items = _borrowCache.filter(b=>tenorIdx(daysBetween(today,b.noMaturity?null:b.maturityDate,'demand'))===i);
     const tot = items.reduce((s,b)=>s+b.outstanding,0);
-    return tot>0 ? items.reduce((s,b)=>s+(b.outstanding/tot)*b.interestRate,0) : 0;
+    return tot>0 ? items.reduce((s,b)=>s+(b.outstanding/tot)*b.interestRate,0) : null;
   });
-  const spreadBkts = waraBkts.map((w,i) => w!=null ? w-(wacdBkts[i]??0) : null);
+  // A bucket only shows "—" when it has neither assets nor liabilities at
+  // all; otherwise the missing side contributes 0 so a real spread prints.
+  const spreadBkts = TENOR_CAPS.map((_,i) => {
+    const w = waraBkts[i], c = wacdBkts[i];
+    if(w==null && c==null) return null;
+    return (w||0) - (c||0);
+  });
   const contribs   = aBkts.map((a,i)=>{ const sp=spreadBkts[i]; return sp!=null?(a*(sp/100)):null; });
   const liabPct = localWARA - localWACD;
   const liabCurrency = aTotal * (liabPct/100);
@@ -1390,15 +1400,4 @@ function renderAdvisory({totalAssets,totalDebt,totalEquity,totalDebtors,totalInv
     html += `<div class="advisory-conclusion"><div class="advisory-conclusion-label">Conclusion</div><div class="advisory-conclusion-text">${conclusion}</div></div>`;
     html += '</div>';
   }
-  if(!html) html = '<div class="ep" style="padding:1rem"><div class="ei">📊</div>Enter borrowings, investments, cash and equity data to generate the advisory.</div>';
-  el.innerHTML = html;
-  window.latestAssessment = { pts, recs, recItems, conclusion, metrics:{ totalAssets,totalDebt,totalEquity,totalDebtors,totalInv,totalCash,wacc,wacd,wara,spread,avgIY,avgDR,lever,eta,dta,nisPct,nisAmount } };
-}
-
-// ════════════════════════════════════════════════════
-// DEBTOR BOOK
-// ════════════════════════════════════════════════════
-async function loadLoans(){
-  $('loans-kpis').innerHTML = '<div class="loading-row">Loading…</div>';
-  await fetchReceivables(true); // force refresh
-  renderLoanKPIs(); rende
+  if(!html) html = '<div class="ep" style="padding:1rem"><div class="ei">📊</div>Enter borrowings, investments, cash and equity data to generate the ad
