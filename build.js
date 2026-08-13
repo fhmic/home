@@ -80,8 +80,8 @@ function hashOf(content) {
 function collectReservedNames(html) {
   const names = new Set();
   const attrPatterns = [
-    /\son\w+\s*=\s*"([^"]*)"/gi,
-    /\son\w+\s*=\s*'([^']*)'/gi,
+    /(?<![a-zA-Z0-9_])on\w+\s*=\s*"([^"]*)"/gi,
+    /(?<![a-zA-Z0-9_])on\w+\s*=\s*'([^']*)'/gi,
     /href\s*=\s*"javascript:([^"]*)"/gi,
     /href\s*=\s*'javascript:([^']*)'/gi,
   ];
