@@ -45,6 +45,7 @@ const PAGES = [
   { name: 'receivables', dir: 'receivables' },
   { name: 'recon', dir: 'recon' },
   { name: 'treasury', dir: 'treasury' },
+  { name: 'finance', dir: 'finance' },
   { name: 'legal-terms', dir: 'legal/terms' },
   { name: 'legal-privacy', dir: 'legal/privacy' },
   { name: 'legal-cookies', dir: 'legal/cookies' },
