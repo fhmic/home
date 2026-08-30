@@ -5,14 +5,14 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>Finance Dashboard — Coming Soon | FM Finance Suite</title>
+<title>Finance Dashboard - Coming Soon | FM Finance Suite</title>
 <meta name="description" content="FM Finance Dashboard: cash position monitoring, liquidity management, and investment portfolio tracking for Nigerian finance teams. In active development.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://fhmic.github.io/home/finance/">
 <link rel="alternate" hreflang="en-NG" href="https://fhmic.github.io/home/finance/">
 <link rel="alternate" hreflang="x-default" href="https://fhmic.github.io/home/finance/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Finance Dashboard — Coming Soon | FM Finance Suite">
+<meta property="og:title" content="Finance Dashboard - Coming Soon | FM Finance Suite">
 <meta property="og:description" content="Cash position monitoring, liquidity management, and investment portfolio tracking. In active development.">
 <meta property="og:url" content="https://fhmic.github.io/home/finance/">
 <meta property="og:site_name" content="FM Finance Suite">
@@ -20,12 +20,12 @@
 <meta property="og:image" content="https://fhmic.github.io/home/pix.jpg">
 <meta property="og:image:width" content="400">
 <meta property="og:image:height" content="400">
-<meta property="og:image:alt" content="FM Finance Dashboard — coming soon from FM Finance Suite">
+<meta property="og:image:alt" content="FM Finance Dashboard - coming soon from FM Finance Suite">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Finance Dashboard — Coming Soon | FM Finance Suite">
+<meta name="twitter:title" content="Finance Dashboard - Coming Soon | FM Finance Suite">
 <meta name="twitter:description" content="Cash position monitoring, liquidity management, and investment portfolio tracking. In active development.">
 <meta name="twitter:image" content="https://fhmic.github.io/home/pix.jpg">
-<meta name="twitter:image:alt" content="FM Finance Dashboard — coming soon from FM Finance Suite">
+<meta name="twitter:image:alt" content="FM Finance Dashboard - coming soon from FM Finance Suite">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [
     {"@type": "SoftwareApplication", "name": "Finance Dashboard", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "url": "https://fhmic.github.io/home/finance/", "description": "Cash position monitoring, liquidity management, and investment portfolio tracking. In active development.", "applicationSuite": "FM Finance Suite", "author": {"@type": "Person", "name": "Felix Happy Michael", "url": "https://fhmic.github.io/home/"}, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "NGN"}, "dateModified": "2026-08-13"},
     {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://fhmic.github.io/home/"}, {"@type": "ListItem", "position": 2, "name": "Finance Dashboard", "item": "https://fhmic.github.io/home/finance/"}]}
@@ -80,6 +80,10 @@ h1{font-family:var(--di);font-weight:800;font-size:clamp(2.1rem,5vw,3.1rem);line
 .ledger-title{font-family:var(--mo);font-size:.74rem;color:var(--tx2);text-transform:uppercase;letter-spacing:.08em}
 .ledger-status{display:flex;align-items:center;gap:.4rem;font-family:var(--mo);font-size:.7rem;color:var(--am)}
 .ledger-status i{width:5px;height:5px;border-radius:50%;background:var(--am)}
+.ledger-status.live{color:#22c55e}
+.ledger-status.live i{background:#22c55e}
+.ledger-status.down{color:#e05252}
+.ledger-status.down i{background:#e05252}
 .ledger-rows{display:grid;grid-template-columns:repeat(2,1fr)}
 .lrow{padding:1.1rem 1.25rem;border-bottom:1px solid var(--b);border-right:1px solid var(--b)}
 .lrow:nth-child(2n){border-right:none}
@@ -87,6 +91,9 @@ h1{font-family:var(--di);font-weight:800;font-size:clamp(2.1rem,5vw,3.1rem);line
 .lrow-label{font-family:var(--mo);font-size:.72rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.65rem}
 .redact{height:22px;border-radius:5px;width:64%;position:relative;overflow:hidden;background:var(--n4)}
 .redact::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,var(--sf2) 50%,transparent 70%);background-size:200% 100%;animation:shimmer 2.2s ease-in-out infinite}
+.lrow-value{font-family:var(--mo);font-size:1.15rem;font-weight:700;color:var(--tx)}
+.lrow-value.rd{color:#e05252}
+.lrow-value.err{font-family:inherit;font-size:.78rem;font-weight:400;color:var(--tx3)}
 @keyframes shimmer{0%{background-position:160% 0}100%{background-position:-40% 0}}
 
 .actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:3rem}
@@ -125,18 +132,18 @@ footer a:hover{color:var(--t)}
 <main>
   <span class="eyebrow"><span class="eyebrow-dot"></span>In active development</span>
   <h1>Finance Dashboard</h1>
-  <p class="lede">Cash position monitoring, liquidity management, and investment portfolio tracking — <b>one consolidated view</b> is being built on top of Treasury and Receivables data. Figures below are placeholders until it ships.</p>
+  <p class="lede">Cash position monitoring, liquidity management, and investment portfolio tracking - <b>one consolidated view</b> is being built on top of Treasury and Receivables data. Cash, borrowings, and investment figures below are now live; debtor and ageing data from Receivables is the next piece being added.</p>
 
   <div class="ledger">
     <div class="ledger-head">
-      <span class="ledger-title">Preview — Cash &amp; Liquidity</span>
-      <span class="ledger-status"><i></i>Not yet live</span>
+      <span class="ledger-title">Live - Cash &amp; Liquidity</span>
+      <span class="ledger-status" id="ledger-status"><i></i>Loading...</span>
     </div>
     <div class="ledger-rows">
-      <div class="lrow"><div class="lrow-label">Cash Position</div><div class="redact"></div></div>
-      <div class="lrow"><div class="lrow-label">Total Borrowings</div><div class="redact" style="width:48%"></div></div>
-      <div class="lrow"><div class="lrow-label">Investment Portfolio</div><div class="redact" style="width:71%"></div></div>
-      <div class="lrow"><div class="lrow-label">Net Liquidity Position</div><div class="redact" style="width:56%"></div></div>
+      <div class="lrow"><div class="lrow-label">Cash Position</div><div class="redact" id="lv-cash"></div></div>
+      <div class="lrow"><div class="lrow-label">Total Borrowings</div><div class="redact" id="lv-debt" style="width:48%"></div></div>
+      <div class="lrow"><div class="lrow-label">Investment Portfolio</div><div class="redact" id="lv-inv" style="width:71%"></div></div>
+      <div class="lrow"><div class="lrow-label">Net Liquidity Position</div><div class="redact" id="lv-liq" style="width:56%"></div></div>
     </div>
   </div>
 
@@ -149,7 +156,7 @@ footer a:hover{color:var(--t)}
   </div>
 
   <div class="note">
-    <span><b>In the meantime:</b> live cash, borrowings, and investment figures are already available in Treasury Intelligence, and debtor/ageing data in Receivables Tracker. This page will bring both into one summary view.</span>
+    <span><b>In the meantime:</b> the figures above are pulled live from Treasury Intelligence. Debtor and ageing data from Receivables Tracker is the next piece being consolidated into this view.</span>
   </div>
 </main>
 
@@ -159,6 +166,104 @@ footer a:hover{color:var(--t)}
 
 <script>
 'use strict';
+const API = 'https://eis-recbackend.onrender.com/api';
+const $ = id => document.getElementById(id);
+// Same abbreviation style as Treasury/Receivables (₦ with B/M/K) so a number
+// here always reads identically to the same figure on those pages.
+const fmt = n => { const v=Number(n)||0; if(Math.abs(v)>=1e9)return'₦'+(v/1e9).toFixed(2)+'B'; if(Math.abs(v)>=1e6)return'₦'+(v/1e6).toFixed(2)+'M'; if(Math.abs(v)>=1e3)return'₦'+(v/1e3).toFixed(1)+'K'; return'₦'+v.toFixed(2); };
+
+async function api(ep){
+  const tok = sessionStorage.getItem('FM_token');
+  const r = await fetch(API + ep, { headers: tok ? { 'Authorization':'Bearer '+tok } : {} });
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+// Shows a real value where a redact skeleton bar used to be. Pass an error
+// message instead of a number to show a small "unavailable" note in place
+// of a crash - one module being down (e.g. no Treasury permission on this
+// account) shouldn't take out the other three rows.
+function setLive(id, valueOrErr, isError){
+  const el = $(id); if(!el) return;
+  el.classList.remove('redact');
+  el.className = isError ? 'lrow-value err' : 'lrow-value';
+  el.style.width = '';
+  el.textContent = valueOrErr;
+}
+
+async function loadFinanceSummary(){
+  const tok = sessionStorage.getItem('FM_token');
+  if(!tok){
+    // This page is public (indexed, shareable) unlike Treasury/Receivables,
+    // so a signed-out visitor should still see the marketing copy above -
+    // just prompted to sign in for the live figures, not bounced away.
+    ['lv-cash','lv-debt','lv-inv','lv-liq'].forEach(id => setLive(id, 'Sign in to view', true));
+    const statusEl = $('ledger-status');
+    statusEl.className = 'ledger-status';
+    statusEl.innerHTML = '<i></i><a href="../portal/" style="color:inherit">Sign in to load live figures</a>';
+    return;
+  }
+
+  // Cash, Borrowings and Investments are fetched independently so a
+  // permission gap or a transient error on one never blanks the other two -
+  // each row resolves (or fails) on its own.
+  const [cashR, debtR, invR] = await Promise.allSettled([
+    api('/treasury/cash'),
+    api('/treasury/borrowings'),
+    api('/treasury/investments'),
+  ]);
+
+  // Cash Position: sum of NGN cash balances - matches the "Total NGN Cash"
+  // figure on Treasury's own Cash tab exactly (same field, same filter).
+  let totalCash = 0, cashOk = false;
+  if(cashR.status === 'fulfilled'){
+    totalCash = (cashR.value.accounts||[]).filter(a=>a.currency==='NGN').reduce((s,a)=>s+(Number(a.balance)||0),0);
+    cashOk = true;
+    setLive('lv-cash', fmt(totalCash));
+  } else setLive('lv-cash', 'Unavailable', true);
+
+  // Total Borrowings: sum of outstanding - matches Treasury's Borrowings
+  // "Total Debt" KPI exactly.
+  let totalDebt = 0, debtOk = false;
+  if(debtR.status === 'fulfilled'){
+    totalDebt = (debtR.value.borrowings||[]).reduce((s,b)=>s+(Number(b.outstanding)||0),0);
+    debtOk = true;
+    setLive('lv-debt', fmt(totalDebt));
+  } else setLive('lv-debt', 'Unavailable', true);
+
+  // Investment Portfolio: sum of principal - matches Treasury's Investments
+  // "Portfolio Value" KPI exactly.
+  let totalInv = 0, invOk = false;
+  if(invR.status === 'fulfilled'){
+    totalInv = (invR.value.investments||[]).reduce((s,i)=>s+(Number(i.principal)||0),0);
+    invOk = true;
+    setLive('lv-inv', fmt(totalInv));
+  } else setLive('lv-inv', 'Unavailable', true);
+
+  // Net Liquidity Position: identical formula to Treasury's own Liquidity
+  // tab (Cash + Investments - 10% of Debt, a rule-of-thumb estimate, NOT
+  // the full maturity-ladder gap analysis - see the Liquidity tab for the
+  // detailed bucketed version). Reusing the exact same formula here is
+  // deliberate: two pages showing "Net Liquidity" with different maths is
+  // exactly the kind of disagreement this suite has been audited to avoid.
+  const statusEl = $('ledger-status');
+  if(cashOk && debtOk && invOk){
+    const netLiq = totalCash + totalInv - totalDebt*0.1;
+    setLive('lv-liq', fmt(netLiq));
+    statusEl.className = 'ledger-status live';
+    statusEl.innerHTML = '<i></i>Live';
+  } else if(!cashOk && !debtOk && !invOk){
+    setLive('lv-liq', 'Unavailable', true);
+    statusEl.className = 'ledger-status down';
+    statusEl.innerHTML = '<i></i>Could not reach Treasury';
+  } else {
+    setLive('lv-liq', 'Partial data', true);
+    statusEl.className = 'ledger-status';
+    statusEl.innerHTML = '<i></i>Partial - some figures unavailable';
+  }
+}
+loadFinanceSummary();
+
 function applyThemeIcon(){
   var light=document.documentElement.getAttribute('data-theme')==='light';
   var icon=document.getElementById('theme-icon');
