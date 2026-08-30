@@ -5,14 +5,14 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>Receivables Tracker — IFRS 9 ECL &amp; Debtor Ageing | FM Finance Suite</title>
+<title>Receivables Tracker - IFRS 9 ECL &amp; Debtor Ageing | FM Finance Suite</title>
 <meta name="description" content="Receivables Tracker: debtor ageing analysis, IFRS 9 expected credit loss (ECL) staging, collections management, and PDF/Excel exports. Essential working capital management tool for Nigerian finance teams.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://fhmic.github.io/home/receivables/">
 <link rel="alternate" hreflang="en-NG" href="https://fhmic.github.io/home/receivables/">
 <link rel="alternate" hreflang="x-default" href="https://fhmic.github.io/home/receivables/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Receivables Tracker — IFRS 9 ECL &amp; Debtor Ageing | FM Finance Suite">
+<meta property="og:title" content="Receivables Tracker - IFRS 9 ECL &amp; Debtor Ageing | FM Finance Suite">
 <meta property="og:description" content="Receivables Tracker: debtor ageing analysis, IFRS 9 expected credit loss (ECL) staging, collections management, and PDF/Excel exports. Essential working capital management tool for Nigerian finance teams.">
 <meta property="og:url" content="https://fhmic.github.io/home/receivables/">
 <meta property="og:site_name" content="FM Finance Suite">
@@ -20,12 +20,12 @@
 <meta property="og:image" content="https://fhmic.github.io/home/pix.jpg">
 <meta property="og:image:width" content="400">
 <meta property="og:image:height" content="400">
-<meta property="og:image:alt" content="Receivables Tracker — debtor ageing and IFRS 9 ECL tool from FM Finance Suite">
+<meta property="og:image:alt" content="Receivables Tracker - debtor ageing and IFRS 9 ECL tool from FM Finance Suite">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Receivables Tracker — IFRS 9 ECL &amp; Debtor Ageing | FM Finance Suite">
+<meta name="twitter:title" content="Receivables Tracker - IFRS 9 ECL &amp; Debtor Ageing | FM Finance Suite">
 <meta name="twitter:description" content="Receivables Tracker: debtor ageing analysis, IFRS 9 expected credit loss (ECL) staging, collections management, and PDF/Excel exports. Essential working capital management tool for Nigerian finance teams.">
 <meta name="twitter:image" content="https://fhmic.github.io/home/pix.jpg">
-<meta name="twitter:image:alt" content="Receivables Tracker — debtor ageing and IFRS 9 ECL tool from FM Finance Suite">
+<meta name="twitter:image:alt" content="Receivables Tracker - debtor ageing and IFRS 9 ECL tool from FM Finance Suite">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [
     {"@type": "SoftwareApplication", "name": "Receivables Tracker", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "url": "https://fhmic.github.io/home/receivables/", "description": "Debtor ageing, IFRS 9 ECL staging, and collections management for finance teams with PDF and Excel exports.", "applicationSuite": "FM Finance Suite", "author": {"@type": "Person", "name": "Felix Happy Michael", "url": "https://fhmic.github.io/home/"}, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "NGN"}, "dateModified": "2026-07-25"},
     {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://fhmic.github.io/home/"}, {"@type": "ListItem", "position": 2, "name": "Receivables Tracker", "item": "https://fhmic.github.io/home/receivables/"}]}
@@ -425,7 +425,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
       
       <div class="view on" id="view-dashboard">
         <div class="vhdr">
-          <div><div class="vttl">Portfolio Overview</div><div class="vsub" id="dash-ts">—</div></div>
+          <div><div class="vttl">Portfolio Overview</div><div class="vsub" id="dash-ts">-</div></div>
           <button class="bp" onclick="loadDashboard()">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh
           </button>
@@ -456,7 +456,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
      
       <div class="view" id="view-ageing">
         <div class="vhdr">
-          <div><div class="vttl">Ageing Report</div><div class="vsub" id="ageing-ts">—</div></div>
+          <div><div class="vttl">Ageing Report</div><div class="vsub" id="ageing-ts">-</div></div>
           <div class="vacts">
             <div id="ag-asof-badge" style="display:none;font-size:10px;font-weight:700;letter-spacing:.04em;padding:4px 9px;border-radius:20px;background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">HISTORICAL VIEW</div>
             <input class="finput" type="date" id="ag-asof" style="width:150px;padding:7px 10px" title="View receivables ageing as at a specific date">
@@ -588,7 +588,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
               </div>
             </div>
             <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:6px">
-              <label class="cb" style="font-size:12px"><input type="checkbox" id="ecl-simplified" checked><span>Simplified Approach — use lifetime ECL for trade receivables (IFRS 9 §5.5.15)</span></label>
+              <label class="cb" style="font-size:12px"><input type="checkbox" id="ecl-simplified" checked><span>Simplified Approach - use lifetime ECL for trade receivables (IFRS 9 §5.5.15)</span></label>
               <label class="cb" style="font-size:12px"><input type="checkbox" id="ecl-usematrix" checked><span>Use Provision Matrix rates for PD estimation</span></label>
               <label class="cb" style="font-size:12px"><input type="checkbox" id="ecl-undrawn"><span>Include undrawn limits using CCF</span></label>
             </div>
@@ -606,7 +606,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 
           <!-- Info bar -->
           <div class="nt-info" style="margin-bottom:1rem">
-            <strong style="color:var(--t)">Inline editing:</strong> Edit Classification, Collateral, EIR and Stage Override directly — click Save on each row to persist. Click a debtor name to set ECL defaults for all their invoices at once, or to update SICR indicators and credit-impaired status.
+            <strong style="color:var(--t)">Inline editing:</strong> Edit Classification, Collateral, EIR and Stage Override directly - click Save on each row to persist. Click a debtor name to set ECL defaults for all their invoices at once, or to update SICR indicators and credit-impaired status.
             <span class="ecl-source-badge invoice">invoice</span> = invoice-level override &nbsp;
             <span class="ecl-source-badge debtor">debtor</span> = debtor default &nbsp;
             <span class="ecl-source-badge default">default</span> = system default
@@ -640,7 +640,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           <div class="ecl-panel">
             <div class="ecl-panel-title">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
-              Provision Matrix — Loss Rates by Ageing Bucket (IFRS 9 §5.5.15)
+              Provision Matrix - Loss Rates by Ageing Bucket (IFRS 9 §5.5.15)
             </div>
             <div class="nt-info" style="margin-bottom:1rem">
               These are the historical loss rates applied per ageing bucket under the Simplified Approach. They represent the percentage of the outstanding balance expected to be lost, net of recoveries. Enter rates based on your own historical default experience or use published industry benchmarks. <strong style="color:var(--am)">These rates must be reviewed and documented periodically for audit purposes.</strong>
@@ -671,7 +671,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
               Forward-Looking Scenario Weights (IFRS 9 §5.5.17)
             </div>
             <div class="nt-info" style="margin-bottom:1rem">
-              IFRS 9 requires ECL to be a probability-weighted estimate considering multiple future economic outcomes. Define three scenarios — Base, Upside, and Downside — with their probability weights (must sum to 100%) and macro adjustments relative to your base case. The final weighted ECL = (Base ECL × base%) + (Upside ECL × upside%) + (Downside ECL × downside%).
+              IFRS 9 requires ECL to be a probability-weighted estimate considering multiple future economic outcomes. Define three scenarios - Base, Upside, and Downside - with their probability weights (must sum to 100%) and macro adjustments relative to your base case. The final weighted ECL = (Base ECL × base%) + (Upside ECL × upside%) + (Downside ECL × downside%).
             </div>
             <div class="ecl-scenario-grid">
               <div class="ecl-scenario-card base">
@@ -750,7 +750,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
           <div class="vhdr" style="margin-bottom:1rem">
             <div>
               <div class="section-ttl" style="margin:0">Assumption Log & Model Documentation</div>
-              <div style="font-size:11px;color:var(--tx3);font-family:var(--mo);margin-top:3px">IFRS 7 §35G disclosure — sensitivity analysis and model documentation</div>
+              <div style="font-size:11px;color:var(--tx3);font-family:var(--mo);margin-top:3px">IFRS 7 §35G disclosure - sensitivity analysis and model documentation</div>
             </div>
             <div style="display:flex;gap:.5rem">
               <button onclick="generateAssumptionLog()" id="assump-gen-btn">
@@ -798,7 +798,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 <div id="modal-bg">
   <div class="modal" id="modal-box">
     <div class="mhdr">
-      <div class="mttl" id="modal-title">—</div>
+      <div class="mttl" id="modal-title">-</div>
       <button class="mclose" onclick="closeModal()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -812,7 +812,7 @@ select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xm
 <script>
 'use strict';
 // ════════════════════════════════════════════════════════════
-// FM MODULE-PERMISSION BLOCK (reusable — same as treasury.html,
+// FM MODULE-PERMISSION BLOCK (reusable - same as treasury.html,
 // copy this whole block to any app with the same data-fm-module
 // / data-fm-edit-only markup convention; only _FM_APP_KEY changes).
 // ════════════════════════════════════════════════════════════
@@ -924,7 +924,7 @@ async function apiForm(endpoint, formData) {
 
 const $  = id => document.getElementById(id);
 const fN = n  => n == null || isNaN(n) ? '0.00' : Number(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fD = d  => !d ? '—' : new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+const fD = d  => !d ? '-' : new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 const ts = () => new Date().toISOString().slice(0,10);
 function agAsOfFileTag(){ const s=window.currentAgeingAsOf; return (s&&s.isHistorical) ? s.asOfDate.toISOString().slice(0,10) : ts(); }
 function agAsOfLabel(){ const s=window.currentAgeingAsOf; if(!s||!s.isHistorical) return 'Generated: '+new Date().toLocaleString('en-GB'); return 'As at '+s.asOfDate.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})+' (Historical Snapshot)'; }
@@ -1026,7 +1026,7 @@ function renderDebtors(debtors) {
     return `<tr>
       <td style="width:36px"><input type="checkbox" class="deb-select" onchange="toggleDebtorSelection('${d._id}', this.checked)" ${selectedDebtors.has(d._id)?'checked':''}></td>
       <td><strong>${d.name}</strong>${d.contactPerson?`<div style="font-size:11px;color:var(--tx3)">${d.contactPerson}</div>`:''}</td>
-      <td style="font-family:var(--mo);font-size:11px">${d.email||'—'}</td>
+      <td style="font-family:var(--mo);font-size:11px">${d.email||'-'}</td>
       <td class="nm">₦${fN(d.totalOutstanding)}</td>
       <td><span class="pl ${BUCKET_CLASSES[highBucket]}">${BUCKET_LABELS[highBucket]}</span></td>
       <td class="nm">${d.invoiceCount}</td>
@@ -1068,13 +1068,20 @@ function toggleSelectAllDebtors(select) {
 async function deleteSelectedDebtors() {
   if (!selectedDebtors.size) { toast('Select at least one debtor.','err'); return; }
   if (!confirm(`Delete ${selectedDebtors.size} selected debtor(s)? This cannot be undone.`)) return;
-  try {
-    const ids = [...selectedDebtors];
-    await Promise.all(ids.map(id => api('/debtors/'+id, { method:'DELETE' })));
-    toast('Selected debtors deleted.');
-    selectedDebtors.clear();
-    loadDebtors();
-  } catch(e) { toast(e.message,'err'); }
+  const ids = [...selectedDebtors];
+  // Was Promise.all - one failed delete (permission, stale id, network
+  // blip) rejected the whole batch, so any debtors that HAD already been
+  // deleted server-side never got reflected in the UI (list never
+  // reloaded, selectedDebtors never cleared), making it look like nothing
+  // happened when some records were actually gone. Promise.allSettled lets
+  // every row resolve independently and reports what actually happened.
+  const results = await Promise.allSettled(ids.map(id => api('/debtors/'+id, { method:'DELETE' })));
+  const okIds = ids.filter((id,i) => results[i].status === 'fulfilled');
+  const failCount = ids.length - okIds.length;
+  okIds.forEach(id => selectedDebtors.delete(id));
+  if (failCount === 0) toast(okIds.length>1 || okIds.length===0 ? okIds.length+' debtors deleted.' : 'Debtor deleted.');
+  else toast(okIds.length+' deleted, '+failCount+' failed - still selected below.', 'err');
+  loadDebtors();
 }
 
 function openDebtorModal(id) {
@@ -1122,7 +1129,7 @@ async function deleteDebtor(id, name) {
 }
 async function viewInvoices(debtorId, debtorName) {
   const canEdit = fmCanEdit('debtors');
-  openModal(`Invoices — ${debtorName}`,
+  openModal(`Invoices - ${debtorName}`,
     '<div class="loading-row">Loading invoices…</div>',
     (canEdit?`<button onclick="openInvoiceModal('${debtorId}','${debtorName.replace(/'/g,"\\'")}')" class="bp">+ Add Invoice</button>`:'')+`<button onclick="closeModal()">Close</button>`, true);
   try {
@@ -1136,10 +1143,10 @@ async function viewInvoices(debtorId, debtorName) {
       <td class="nm" style="color:var(--gr)">₦${fN(i.amountPaid)}</td>
       <td class="nm" style="color:var(--rd);font-weight:600">₦${fN(i.balance)}</td>
       <td>${bucketPill(i.ageingBucket, i.daysOverdue)}</td>
-      <td class="nr">${i.description||'—'}</td>
+      <td class="nr">${i.description||'-'}</td>
       <td>${canEdit?`<div style="display:flex;gap:4px">
         <button class="bsm" onclick="openPaymentModal('${i._id}','${i.invoiceNumber}',${i.balance})" title="Record payment" style="padding:4px 8px">₦</button>
-        <button class="bsm bd" onclick="deleteInvoice('${i._id}','${i.invoiceNumber}')" style="padding:4px 8px" title="Delete">
+        <button class="bsm bd" onclick="deleteInvoice('${i._id}','${i.invoiceNumber}','${debtorId}','${debtorName.replace(/'/g,"\\'")}')" style="padding:4px 8px" title="Delete">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
         </button>
       </div>`:''}</td>
@@ -1152,7 +1159,7 @@ async function viewInvoices(debtorId, debtorName) {
 }
 function openInvoiceModal(debtorId, debtorName) {
   if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
-  openModal(`Add Invoice — ${debtorName}`, `
+  openModal(`Add Invoice - ${debtorName}`, `
     <div class="merr" id="inv-err"></div>
     <div class="fg">
       <div class="fld"><label>Invoice Number *</label><input class="finput" id="inv-no" placeholder="e.g. INV-2025-001"></div>
@@ -1182,7 +1189,7 @@ async function saveInvoice(debtorId, debtorName) {
 function openPaymentModal(invId, invNo, balance) {
   if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
   const todayStr0 = new Date().toISOString().slice(0,10);
-  openModal('Record Payment — ' + invNo, `
+  openModal('Record Payment - ' + invNo, `
     <div class="merr" id="pay-err"></div>
     <p style="font-size:13px;color:var(--tx2);margin-bottom:1rem">Current outstanding balance: <strong style="color:var(--rd)">₦${fN(balance)}</strong></p>
     <div class="fld"><label>Payment Amount (₦) *</label><input class="finput" type="number" id="pay-amt" min="0" step="0.01" placeholder="0.00" value="${balance}"></div>
@@ -1206,10 +1213,18 @@ async function recordPayment(invId, currentBalance) {
     toast('Payment recorded.'); closeModal(); loadDebtors();
   } catch(e) { err.textContent=e.message; err.classList.add('on'); $('pay-save-txt').textContent='Record Payment'; }
 }
-async function deleteInvoice(id, no) {
+async function deleteInvoice(id, no, debtorId, debtorName) {
   if(!fmCanEdit('debtors')){toast('You have view-only access to Debtors.','err');return;}
   if (!confirm(`Delete invoice ${no}? This cannot be undone.`)) return;
-  try { await api('/invoices/'+id, { method:'DELETE' }); toast('Invoice deleted.'); }
+  try {
+    await api('/invoices/'+id, { method:'DELETE' });
+    toast('Invoice deleted.');
+    // Previously left the (now stale) invoice list showing the deleted row,
+    // and left the debtor's outstanding total/invoice count on the list
+    // behind it un-refreshed until the user manually reopened the modal.
+    if (debtorId) await viewInvoices(debtorId, debtorName);
+    loadDebtors();
+  }
   catch(e) { toast(e.message,'err'); }
 }
 function openImportModal() {
@@ -1233,13 +1248,12 @@ function openImportModal() {
     <div class="fld" style="margin-bottom:.9rem">
       <label>Default Effective Date *</label>
       <input class="finput" type="date" id="imp-effdate" value="" ${typeof _effFromAR!=='undefined'&&_effFromAR?`min="${_effFromAR}"`:''} max="${todayStr0}">
-      <div style="font-size:11px;color:var(--tx3);margin-top:4px">The effective date this file's balances belong to — NOT automatically today's date, and distinct from Value Date/Maturity Date on each invoice. Used for any row that doesn't have its own <strong>Effective Date</strong> column filled in. To import several past periods (e.g. Jan, Feb, Mar month-end statements) in one file, fill the Effective Date column per row instead — it overrides this default.</div>
+      <div style="font-size:11px;color:var(--tx3);margin-top:4px">The effective date this file's balances belong to - NOT automatically today's date, and distinct from Value Date/Maturity Date on each invoice. Used for any row that doesn't have its own <strong>Effective Date</strong> column filled in. To import several past periods (e.g. Jan, Feb, Mar month-end statements) in one file, fill the Effective Date column per row instead - it overrides this default.</div>
     </div>
 
     <div style="margin:10px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <button class="bp" onclick="downloadSampleFile()">⬇ Download Sample Template</button>
       <label class="cb" style="font-size:12px;margin-left:6px"><input type="checkbox" id="imp-use-balance"><span>Use Debtor Outstanding Balance to recompute Amount Paid</span></label>
-      <label class="cb" style="font-size:12px;margin-left:6px"><input type="checkbox" id="imp-use-maturity"><span>Use Maturity Date to compute past-due if Due Date missing</span></label>
     </div>
 
     <div style="border:1.5px dashed var(--b2);border-radius:var(--r);padding:2rem;text-align:center;cursor:pointer;background:var(--tg);position:relative" id="imp-drop">
@@ -1265,21 +1279,25 @@ function openImportModal() {
 
 // Consolidated importer. A duplicate doImport() previously shadowed this one
 // (JS keeps only the last function declaration with a given name), which
-// silently ignored the useBalance/useMaturity checkboxes and the reporting
-// date entirely — the duplicate has been removed so those options actually
-// take effect.
+// silently ignored the useBalance checkbox and the reporting date entirely -
+// the duplicate has been removed so those options actually take effect.
+// (A second checkbox, "Use Maturity Date to compute past-due if Due Date
+// missing", was removed outright - the backend always falls back to
+// Maturity Date when Due Date is absent regardless of any flag, so the
+// checkbox never controlled anything and just misrepresented the import
+// behavior.)
 //
 // Effective date contract (mirrors the Treasury module): the "Default
 // Effective Date" picked in this dialog is REQUIRED and never assumed to be
-// today — it's sent as 'defaultEffectiveDate'. Each row may also carry its
+// today - it's sent as 'defaultEffectiveDate'. Each row may also carry its
 // own "Effective Date" column which, when present, overrides the default for
 // that row. Backend contract: resolve, per row,
-// row['Effective Date'] || req.body.defaultEffectiveDate — with no implicit
-// "today" fallback — so one file can carry several past effective dates
+// row['Effective Date'] || req.body.defaultEffectiveDate - with no implicit
+// "today" fallback - so one file can carry several past effective dates
 // (e.g. a Jan, Feb, and Mar month-end statement) each dated correctly.
 //
 // Date format contract: every date column in the uploaded file (Value Date,
-// Maturity Date, Effective Date) is dd/mm/yyyy, e.g. 31/01/2026 — NOT
+// Maturity Date, Effective Date) is dd/mm/yyyy, e.g. 31/01/2026 - NOT
 // yyyy-mm-dd and NOT mm/dd/yyyy. The <input type="date"> picker above still
 // submits its own value as yyyy-mm-dd (that's a browser constraint, not a
 // choice), so the backend's row-level date parser needs to branch: values
@@ -1291,7 +1309,7 @@ async function doImport() {
   errEl.classList.remove('on'); okEl.classList.remove('on');
   const defEff = $('imp-effdate')?.value;
   if (!defEff) {
-    errEl.textContent = 'Please select a default effective date before importing — this is never assumed automatically.';
+    errEl.textContent = 'Please select a default effective date before importing - this is never assumed automatically.';
     errEl.classList.add('on');
     return;
   }
@@ -1303,11 +1321,9 @@ async function doImport() {
   $('imp-txt').textContent = 'Importing…'; $('imp-btn').disabled = true;
   try {
     const useBalance = $('imp-use-balance').checked;
-    const useMaturity = $('imp-use-maturity').checked;
     const fd = new FormData();
     fd.append('file', file);
     fd.append('useBalance', useBalance);
-    fd.append('useMaturity', useMaturity);
     fd.append('defaultEffectiveDate', defEff);
     const d = await apiForm('/debtors/import', fd);
     okEl.textContent = d.message + ` (effective date ${defEff} unless overridden per row)`; okEl.classList.add('on');
@@ -1353,7 +1369,7 @@ function downloadSampleFile() {
     "08012345678",
     "100000",
     "Sample invoice narration",
-    "31/01/2026"  // Effective Date (dd/mm/yyyy) — the period this row's balance belongs to (NOT the upload date). Leave blank to fall back to the default effective date chosen in the import dialog.
+    "31/01/2026"  // Effective Date (dd/mm/yyyy) - the period this row's balance belongs to (NOT the upload date). Leave blank to fall back to the default effective date chosen in the import dialog.
   ];
 
   let csvContent = headers.join(",") + "\n" + sampleRow.join(",");
@@ -1396,7 +1412,7 @@ async function loadAgeing() {
 }
 // Reconstructs the ageing report as at a chosen date from each invoice's
 // payment history (dated per-payment, see recordPayment below) rather than
-// a periodic snapshot — so any date from the baseline onward is answerable,
+// a periodic snapshot - so any date from the baseline onward is answerable,
 // not just days someone happened to open the report.
 function handleAgViewAsOfClick(){ loadAgeingAsOf($('ag-asof').value); }
 function handleAgBackToLiveClick(){ $('ag-asof').value=''; loadAgeing(); }
@@ -1414,7 +1430,7 @@ async function loadAgeingAsOf(dateStr) {
   try { res = await api('/receivables/asof?date='+dateStr); }
   catch(e) {
     const msg = (!e.message || e.message==='No response.')
-      ? 'The /api/receivables/asof endpoint returned no data — has the updated server.js been deployed to Render yet?'
+      ? 'The /api/receivables/asof endpoint returned no data - has the updated server.js been deployed to Render yet?'
       : e.message;
     showAgAsOfError(msg);
     return;
@@ -1438,7 +1454,7 @@ function renderAgeingTable(report) {
     return `<tr>
       <td style="font-weight:500">${r.debtor.name}</td>
       ${['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'].map(k =>
-        `<td class="nm" style="color:${(ag[k]||0)>0?BUCKET_COLORS[k]:'var(--tx3)'}">${(ag[k]||0)>0?'₦'+fN(ag[k]):'—'}</td>`
+        `<td class="nm" style="color:${(ag[k]||0)>0?BUCKET_COLORS[k]:'var(--tx3)'}">${(ag[k]||0)>0?'₦'+fN(ag[k]):'-'}</td>`
       ).join('')}
       <td class="nm" style="font-weight:700">₦${fN(r.totalOutstanding)}</td>
     </tr>`;
@@ -1471,7 +1487,7 @@ async function loadReminders() {
       const tpl = deb.ageing['365_plus']>0 ? 'Final Notice' : (deb.ageing['271_365']>0||deb.ageing['181_270']>0||deb.ageing['91_180']>0||deb.ageing['61_90']>0) ? 'Second Reminder' : deb.ageing['31_60']>0 ? 'Second Reminder' : 'First Reminder';
       return `<tr id="rem-row-${deb._id}">
         <td><label class="cb"><input type="checkbox" id="chk-${deb._id}" onchange="updateSendBtn()" ${!deb.email||!canEdit?'disabled title="'+(!deb.email?'No email address':'View-only access')+'"':''}><span>${deb.name}${!deb.email?'<span style="color:var(--rd);font-size:10px;margin-left:6px">no email</span>':''}</span></label></td>
-        <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${deb.email||'—'}</td>
+        <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${deb.email||'-'}</td>
         <td class="nm" style="font-weight:600;color:var(--rd)">₦${fN(deb.totalOutstanding)}</td>
         <td><span class="pl ${BUCKET_CLASSES[highBucket]}">${BUCKET_LABELS[highBucket]}</span></td>
         <td><span class="pl pb">${tpl}</span></td>
@@ -1660,7 +1676,7 @@ function eclComputeRow(row, settings, inflOverride, gdpOverride) {
   const bk = dpd<=0?'current':dpd<=30?'1_30':dpd<=60?'31_60':dpd<=90?'61_90':dpd<=180?'91_180':dpd<=270?'181_270':dpd<=365?'271_365':'365_plus';
 
   if (stage === 3) {
-    pd12 = 1; lifetimePd = 1; pdBasis = 'Stage 3 default — PD = 100%';
+    pd12 = 1; lifetimePd = 1; pdBasis = 'Stage 3 default - PD = 100%';
   } else if (settings.useMatrix && Object.keys(matrix).length) {
 
     const baseRate = pmRate(bk, matrix);
@@ -1862,7 +1878,7 @@ function renderEclPortfolioTable() {
       </td>
       <td>
         <div class="ecl-inline-edit">
-          <input class="ecl-inline-num" type="number" id="eir-${idx}" value="${r.eir||''}" min="0" step="0.5" placeholder="—" onblur="eclFieldChanged(${idx},'eir',this.value)" style="width:60px" ${canEdit?'':'disabled'}>${makeSourceBadge(src.eir||'default')}
+          <input class="ecl-inline-num" type="number" id="eir-${idx}" value="${r.eir||''}" min="0" step="0.5" placeholder="-" onblur="eclFieldChanged(${idx},'eir',this.value)" style="width:60px" ${canEdit?'':'disabled'}>${makeSourceBadge(src.eir||'default')}
         </div>
       </td>
       <td>
@@ -1929,7 +1945,7 @@ async function saveEclRow(idx) {
 
 async function openDebtorEclModal(debtorId, debtorName) {
   if(!fmCanEdit('ecl')){toast('You have view-only access to the ECL model.','err');return;}
-  openModal(`ECL Defaults & SICR — ${debtorName}`, `
+  openModal(`ECL Defaults & SICR - ${debtorName}`, `
     <div class="merr" id="decl-err"></div>
     <div class="nt-info" style="margin-bottom:1rem">ECL defaults apply to all invoices for this debtor unless a specific invoice has its own override. SICR indicators and Credit-Impaired status apply immediately in staging.</div>
 
@@ -1968,7 +1984,7 @@ async function openDebtorEclModal(debtorId, debtorName) {
     </div>
     <label class="cb" style="background:rgba(224,82,82,.07);border:1px solid rgba(224,82,82,.2);border-radius:var(--r);padding:10px 12px">
       <input type="checkbox" id="sicr-impaired">
-      <span><strong style="color:var(--rd)">Credit-Impaired (Stage 3)</strong> — Force all this debtor's invoices to Stage 3 (IFRS 9 §5.5.3). Use when there is objective evidence of impairment.</span>
+      <span><strong style="color:var(--rd)">Credit-Impaired (Stage 3)</strong> - Force all this debtor's invoices to Stage 3 (IFRS 9 §5.5.3). Use when there is objective evidence of impairment.</span>
     </label>`,
     `<button onclick="closeModal()">Cancel</button>
      <button class="bp" onclick="saveDebtorEcl('${debtorId}','${debtorName.replace(/'/g,'\\\'')}')" ><span id="decl-save-txt">Save</span></button>`,
@@ -2049,7 +2065,7 @@ async function loadWriteoffs() {
       <td>${i.debtorName}</td>
       <td class="nm" style="color:var(--rd)">₦${fN(i.writtenOffAmount)}</td>
       <td class="nm">₦${fN(i.amount)}</td>
-      <td class="nr">${i.writtenOffReason||'—'}</td>
+      <td class="nr">${i.writtenOffReason||'-'}</td>
       <td>
         ${canEdit?`<button class="bsm" onclick="restoreInvoice('${i._id}','${i.invoiceNumber}')" style="font-size:10px;padding:3px 9px">Restore</button>`:''}
       </td>
@@ -2100,7 +2116,7 @@ function computeECL() {
   const totalWt   = scenarios.baseWeight + scenarios.upsideWeight + scenarios.downWeight;
 
   if(Math.abs(totalWt - 100) > 0.5) {
-    toast(`Scenario weights sum to ${totalWt}% — must be 100%. Go to the Scenarios tab to fix.`, 'err');
+    toast(`Scenario weights sum to ${totalWt}% - must be 100%. Go to the Scenarios tab to fix.`, 'err');
     return;
   }
 
@@ -2150,9 +2166,9 @@ function computeECL() {
   const stageBar = $('ecl-stages');
   stageBar.style.display = 'grid';
   stageBar.innerHTML = [
-    { cls:'s1', lbl:'Stage 1 — Performing (12M ECL)', rows:s1 },
-    { cls:'s2', lbl:'Stage 2 — SICR / Watchlist (Lifetime ECL)', rows:s2 },
-    { cls:'s3', lbl:'Stage 3 — Default / Impaired (Lifetime ECL)', rows:s3 },
+    { cls:'s1', lbl:'Stage 1 - Performing (12M ECL)', rows:s1 },
+    { cls:'s2', lbl:'Stage 2 - SICR / Watchlist (Lifetime ECL)', rows:s2 },
+    { cls:'s3', lbl:'Stage 3 - Default / Impaired (Lifetime ECL)', rows:s3 },
   ].map(s => {
     const ead = s.rows.reduce((t,r)=>t+r.ead,0);
     const ecl = s.rows.reduce((t,r)=>t+r.ecl,0);
@@ -2210,7 +2226,7 @@ function computeECL() {
   </table></div>`;
 
   $('ecl-export-btn').disabled = false;
-  toast(`ECL computed — Weighted ECL: ₦${fN(totalECL)} across ${eclResults.length} invoices.`);
+  toast(`ECL computed - Weighted ECL: ₦${fN(totalECL)} across ${eclResults.length} invoices.`);
 }
 
 
@@ -2223,7 +2239,7 @@ async function saveEclSnapshot() {
   const totalECL  = eclResults.reduce((s,r)=>s+r.ecl,0);
   const s1=eclResults.filter(r=>r.stage===1).length, s2=eclResults.filter(r=>r.stage===2).length, s3=eclResults.filter(r=>r.stage===3).length;
   try {
-    const label = 'ECL Run — ' + new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    const label = 'ECL Run - ' + new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
     await api('/ecl/snapshots', { method:'POST', body:JSON.stringify({
       label, settings: { ...settings, scenarios },
       summary:{ totalExposure:totalEAD, totalEcl:totalECL, coverageRatio:totalEAD>0?totalECL/totalEAD:0, rowCount:eclResults.length, stage1Count:s1, stage2Count:s2, stage3Count:s3 },
@@ -2238,7 +2254,7 @@ async function loadEclSnapshots() {
   try {
     const d = await api('/ecl/snapshots');
     if(!d.snapshots.length) { el.innerHTML = `<div class="ep" style="padding:1.5rem"><div style="font-size:1.2rem;margin-bottom:8px">📸</div>No snapshots saved yet. Run Compute ECL and save a snapshot.</div>`; return; }
-    const fPct = v => v!=null?(v*100).toFixed(2)+'%':'—';
+    const fPct = v => v!=null?(v*100).toFixed(2)+'%':'-';
     const canEdit = fmCanEdit('ecl');
     el.innerHTML = d.snapshots.map(s=>`<div class="ecl-snap-row">
       <div>
@@ -2338,15 +2354,21 @@ function exportEclXLSX() {
 
 let calibrationData = null;
 
+// NOTE: the Provision Matrix / calibration feature intentionally uses a
+// COARSER 6-bucket scheme (current,1_30,31_60,61_90,91_180,180_plus) -
+// this matches the actual provisionMatrix fields saved on Settings
+// (days1_30…days180plus) and the buckets /api/ecl/calibration-data
+// computes. This is a *different, deliberately simpler* scheme from the
+// 8-bucket one used by the Debtors/Ageing Report tabs (BUCKET_LABELS
+// above) - don't merge them or the calibration table will look up
+// buckets the backend never returns and throw.
 const BUCKET_LABELS_FULL = {
   current:   'Current (0 days)',
   '1_30':    '1–30 Days',
   '31_60':   '31–60 Days',
   '61_90':   '61–90 Days',
   '91_180':  '91–180 Days',
-  '181_270': '181–270 Days',
-  '271_365': '271–365 Days',
-  '365_plus':'365+ Days'
+  '180_plus':'180+ Days'
 };
 
 async function loadCalibrationData() {
@@ -2370,15 +2392,15 @@ async function loadCalibrationData() {
       return;
     }
 
-    const BUCKETS = ['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'];
+    const BUCKETS = ['current','1_30','31_60','61_90','91_180','180_plus'];
     const settings = await api('/ecl/model-settings');
     const pm = settings.provisionMatrix || {};
-    const pmMap = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '181_270':'days181_270', '271_365':'days271_365', '365_plus':'days365plus' };
+    const pmMap = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '180_plus':'days180plus' };
 
     const rows = BUCKETS.map(bk => {
       const s   = d.stats[bk];
       const imp = s.impliedRate;
-      const cur = pm[pmMap[bk]] ?? '—';
+      const cur = pm[pmMap[bk]] ?? '-';
       const chip = imp === null
         ? `<span class="calib-rate-chip none">No data</span>`
         : imp <= 5   ? `<span class="calib-rate-chip low">${imp.toFixed(2)}%</span>`
@@ -2399,7 +2421,7 @@ async function loadCalibrationData() {
         <td class="nm">${s.writtenOff}</td>
         <td class="nm">₦${fN(s.writtenOffAmount)}</td>
         <td>${chip}</td>
-        <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${typeof cur === 'number' ? cur.toFixed(2)+'%' : '—'} ${diffHtml}</td>
+        <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${typeof cur === 'number' ? cur.toFixed(2)+'%' : '-'} ${diffHtml}</td>
       </tr>`;
     }).join('');
 
@@ -2407,11 +2429,11 @@ async function loadCalibrationData() {
       <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
         <div class="kpi" style="flex:1;min-width:140px"><div class="kl">Total Invoices Analysed</div><div class="kv bl">${d.totalInvoices}</div></div>
         <div class="kpi rd" style="flex:1;min-width:140px"><div class="kl">Total Written Off</div><div class="kv rd">${d.totalWrittenOff}</div></div>
-        <div class="kpi" style="flex:1;min-width:140px"><div class="kl">Overall Loss Rate</div><div class="kv am">${d.totalInvoices>0?(d.totalWrittenOff/d.totalInvoices*100).toFixed(2)+'%':'—'}</div></div>
+        <div class="kpi" style="flex:1;min-width:140px"><div class="kl">Overall Loss Rate</div><div class="kv am">${d.totalInvoices>0?(d.totalWrittenOff/d.totalInvoices*100).toFixed(2)+'%':'-'}</div></div>
         <div class="kpi" style="flex:1;min-width:200px"><div class="kl">Data Generated</div><div class="kv" style="font-size:13px;color:var(--tx2)">${new Date(d.generatedAt).toLocaleString('en-GB')}</div></div>
       </div>
       <div class="nt" style="margin-bottom:1rem">
-        <strong>How to read this table:</strong> "Implied Rate" is your historically observed loss rate — the percentage of invoice value in each bucket that was eventually written off. "Current Matrix Rate" is what your Provision Matrix currently uses. A large difference between the two suggests your current rates may need updating.
+        <strong>How to read this table:</strong> "Implied Rate" is your historically observed loss rate - the percentage of invoice value in each bucket that was eventually written off. "Current Matrix Rate" is what your Provision Matrix currently uses. A large difference between the two suggests your current rates may need updating.
       </div>
       <div class="tw" style="margin-bottom:1rem">
         <table class="calib-table">
@@ -2445,10 +2467,10 @@ async function applyCalibrationToMatrix() {
    
     const settings = await api('/ecl/model-settings');
     const pm = settings.provisionMatrix || {};
-    const pmMap = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '181_270':'days181_270', '271_365':'days271_365', '365_plus':'days365plus' };
+    const pmMap = { current:'current', '1_30':'days1_30', '31_60':'days31_60', '61_90':'days61_90', '91_180':'days91_180', '180_plus':'days180plus' };
     const newMatrix = { ...pm };
 
-    const BUCKETS = ['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'];
+    const BUCKETS = ['current','1_30','31_60','61_90','91_180','180_plus'];
     let updated = 0;
     BUCKETS.forEach(bk => {
       const imp = calibrationData.stats[bk]?.impliedRate;
@@ -2481,8 +2503,8 @@ async function generateAssumptionLog() {
   const scenarios = eclReadScenarios();
   const modelSettings = await api('/ecl/model-settings').catch(()=>({provisionMatrix:{},eclScenarios:{}}));
   const pm = modelSettings.provisionMatrix || {};
-  const meRes = await api('/auth/me').catch(()=>({user:{name:'—'}}));
-  const userName = meRes.user?.name || '—';
+  const meRes = await api('/auth/me').catch(()=>({user:{name:'-'}}));
+  const userName = meRes.user?.name || '-';
 
   const totalEAD = eclResults.reduce((s,r)=>s+r.ead,0);
   const totalECL = eclResults.reduce((s,r)=>s+r.ecl,0);
@@ -2546,10 +2568,10 @@ async function generateAssumptionLog() {
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Model Identification
       </div>
-      <div class="assump-row"><span class="ar-lbl">Model Name</span><span class="ar-val">FM Finance Suite — IFRS 9 ECL Model</span></div>
+      <div class="assump-row"><span class="ar-lbl">Model Name</span><span class="ar-val">FM Finance Suite - IFRS 9 ECL Model</span></div>
       <div class="assump-row"><span class="ar-lbl">Computation Date</span><span class="ar-val highlight">${new Date().toLocaleString('en-GB',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}</span></div>
       <div class="assump-row"><span class="ar-lbl">Prepared By</span><span class="ar-val">${userName}</span></div>
-      <div class="assump-row"><span class="ar-lbl">IFRS Standard</span><span class="ar-val">IFRS 9 Financial Instruments — Expected Credit Loss</span></div>
+      <div class="assump-row"><span class="ar-lbl">IFRS Standard</span><span class="ar-val">IFRS 9 Financial Instruments - Expected Credit Loss</span></div>
       <div class="assump-row"><span class="ar-lbl">Applicable Paragraphs</span><span class="ar-val">§5.5.1–5.5.20, §B5.5.1–B5.5.55, IFRS 7 §35G</span></div>
     </div>
 
@@ -2561,8 +2583,8 @@ async function generateAssumptionLog() {
       <div class="assump-row"><span class="ar-lbl">Staging Approach</span><span class="ar-val">3-Stage IFRS 9 Framework (§5.5.3–5.5.5)</span></div>
       <div class="assump-row"><span class="ar-lbl">Stage 1 ECL Horizon</span><span class="ar-val">12 months</span></div>
       <div class="assump-row"><span class="ar-lbl">Stage 2 &amp; 3 ECL Horizon</span><span class="ar-val">Remaining lifetime of each instrument</span></div>
-      <div class="assump-row"><span class="ar-lbl">Trade Receivables Approach</span><span class="ar-val">${settings.simplifiedApproach?'Simplified — lifetime ECL for all trade receivables (§5.5.15)':'General model'}</span></div>
-      <div class="assump-row"><span class="ar-lbl">PD Estimation Method</span><span class="ar-val">${settings.useMatrix?'Provision Matrix — loss rates by ageing bucket (§5.5.15)':'Formula-based (classification + DPD + macro overlay)'}</span></div>
+      <div class="assump-row"><span class="ar-lbl">Trade Receivables Approach</span><span class="ar-val">${settings.simplifiedApproach?'Simplified - lifetime ECL for all trade receivables (§5.5.15)':'General model'}</span></div>
+      <div class="assump-row"><span class="ar-lbl">PD Estimation Method</span><span class="ar-val">${settings.useMatrix?'Provision Matrix - loss rates by ageing bucket (§5.5.15)':'Formula-based (classification + DPD + macro overlay)'}</span></div>
       <div class="assump-row"><span class="ar-lbl">LGD Estimation</span><span class="ar-val">Collateral haircut model (haircut rates: RE 70%, Equipment 50%, Cash 95%, Unsecured 0%)</span></div>
       <div class="assump-row"><span class="ar-lbl">Discount Rate</span><span class="ar-val">Per-invoice EIR where available; fallback ${settings.defaultDiscount}% p.a.</span></div>
       <div class="assump-row"><span class="ar-lbl">Stage 2 DPD Trigger</span><span class="ar-val highlight">${settings.stage2Dpd} days past due</span></div>
@@ -2576,7 +2598,7 @@ async function generateAssumptionLog() {
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
         Provision Matrix Rates Applied
       </div>
-      ${pmRows.map(r=>`<div class="assump-row"><span class="ar-lbl">${r.lbl}</span><span class="ar-val highlight">${(pm[r.key]??'—')}%</span></div>`).join('')}
+      ${pmRows.map(r=>`<div class="assump-row"><span class="ar-lbl">${r.lbl}</span><span class="ar-val highlight">${(pm[r.key]??'-')}%</span></div>`).join('')}
     </div>
 
     <div class="assump-section">
@@ -2607,7 +2629,7 @@ async function generateAssumptionLog() {
     <div class="assump-section">
       <div class="assump-section-title">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Sensitivity Analysis — IFRS 7 §35G
+        Sensitivity Analysis - IFRS 7 §35G
       </div>
       <p style="font-size:12px;color:var(--tx2);margin-bottom:1rem;line-height:1.6">
         The table below shows how the computed ECL changes when all provision matrix rates are shifted uniformly by the stated percentage points. This satisfies IFRS 7 paragraph 35G which requires disclosure of the sensitivity of the loss allowance to changes in key assumptions.
@@ -2624,8 +2646,8 @@ async function generateAssumptionLog() {
                 <td style="font-weight:${sd.shift===0?'600':'400'}">${sd.label}</td>
                 <td style="font-family:var(--mo);font-size:11px">${sd.shift===0?'Baseline':sd.shift>0?'+'+sd.shift+'pp':sd.shift+'pp'}</td>
                 <td class="nm" style="color:${sd.shift===0?'var(--bl)':sd.shift>0?'var(--rd)':'var(--gr)'}">₦${fN(sd.ecl)}</td>
-                <td class="nm" style="color:${delta>0?'var(--rd)':delta<0?'var(--gr)':'var(--tx3)'}">${delta===0?'—':delta>0?'+₦'+fN(delta):'−₦'+fN(Math.abs(delta))}</td>
-                <td class="nm" style="color:${delta>0?'var(--rd)':delta<0?'var(--gr)':'var(--tx3)'}">${sd.shift===0?'—':(delta>=0?'+':'')+deltaPct+'%'}</td>
+                <td class="nm" style="color:${delta>0?'var(--rd)':delta<0?'var(--gr)':'var(--tx3)'}">${delta===0?'-':delta>0?'+₦'+fN(delta):'−₦'+fN(Math.abs(delta))}</td>
+                <td class="nm" style="color:${delta>0?'var(--rd)':delta<0?'var(--gr)':'var(--tx3)'}">${sd.shift===0?'-':(delta>=0?'+':'')+deltaPct+'%'}</td>
               </tr>`;
             }).join('')}
           </tbody>
@@ -2665,7 +2687,7 @@ async function generateAssumptionLog() {
 
 const PAL_DARK = { navy:[10,22,40], navy3:[15,31,61], teal:[0,201,167], tx:[232,237,245], tx2:[143,163,191], tx3:[74,96,128], mutedOff:[200,210,230], divider:[255,255,255], dividerA:15 };
 // Light-mode palette for PDF exports, used when the user has the light/
-// high-contrast UI mode on — printed reports stay legible either way.
+// high-contrast UI mode on - printed reports stay legible either way.
 const PAL_LIGHT = { navy:[238,242,247], navy3:[247,249,252], teal:[0,135,107], tx:[15,23,42], tx2:[71,85,105], tx3:[148,163,184], mutedOff:[100,116,139], divider:[15,23,42], dividerA:20 };
 function fmCurrentReportPalette(){
   try{ return document.documentElement.getAttribute('data-theme')==='light' ? PAL_LIGHT : PAL_DARK; }
@@ -2687,7 +2709,7 @@ async function downloadAssumptionPDF() {
   doc.setFillColor(...PAL.navy); doc.rect(0,0,W,60,'F');
   doc.setFillColor(...PAL.teal); doc.rect(0,0,6,60,'F');
   doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(...PAL.tx);
-  doc.text('FM Finance Suite — IFRS 9 ECL Model',22,25);
+  doc.text('FM Finance Suite - IFRS 9 ECL Model',22,25);
   doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(...PAL.tx2);
   doc.text('Assumption Log & Model Documentation',22,40);
   doc.setFontSize(9); doc.setTextColor(...PAL.tx3);
@@ -2714,8 +2736,8 @@ async function downloadAssumptionPDF() {
 
   sectionHeader('1. METHODOLOGY');
   row('Staging Approach','3-Stage IFRS 9 Framework (§5.5.3–5.5.5)');
-  row('Trade Receivables',settings.simplifiedApproach?'Simplified Approach — Lifetime ECL (§5.5.15)':'General Model');
-  row('PD Estimation',settings.useMatrix?'Provision Matrix — Loss Rates by Ageing Bucket':'Formula-Based');
+  row('Trade Receivables',settings.simplifiedApproach?'Simplified Approach - Lifetime ECL (§5.5.15)':'General Model');
+  row('PD Estimation',settings.useMatrix?'Provision Matrix - Loss Rates by Ageing Bucket':'Formula-Based');
   row('Stage 2 DPD Trigger', settings.stage2Dpd + ' days', true);
   row('Stage 3 DPD Trigger', settings.stage3Dpd + ' days', true);
   row('Base Inflation Rate', settings.inflationRate + '%', true);
@@ -2725,7 +2747,7 @@ async function downloadAssumptionPDF() {
 
   sectionHeader('2. PROVISION MATRIX RATES');
   [{k:'current',l:'Current (0 days)'},{k:'days1_30',l:'1–30 Days'},{k:'days31_60',l:'31–60 Days'},{k:'days61_90',l:'61–90 Days'},{k:'days91_180',l:'91–180 Days'},{k:'days180plus',l:'180+ Days'}]
-    .forEach(r=>row(r.l, (pm[r.k]??'—')+'%', true));
+    .forEach(r=>row(r.l, (pm[r.k]??'-')+'%', true));
   y += 8;
 
   sectionHeader('3. PROBABILITY-WEIGHTED SCENARIOS (§5.5.17)');
@@ -2745,7 +2767,7 @@ async function downloadAssumptionPDF() {
   row('Stage 3 Instruments', s3 + ' invoices');
   y += 8;
 
-  sectionHeader('5. SENSITIVITY ANALYSIS — IFRS 7 §35G');
+  sectionHeader('5. SENSITIVITY ANALYSIS - IFRS 7 §35G');
   doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...PAL.tx2);
   doc.text('Impact of uniform ±1%, ±2%, ±5% shift in all provision matrix rates on total ECL:', 26, y); y += 14;
 
@@ -2759,8 +2781,8 @@ async function downloadAssumptionPDF() {
         sd.label,
         sd.shift===0?'Baseline':sd.shift>0?'+'+sd.shift+'pp':sd.shift+'pp',
         '₦'+N(sd.ecl),
-        delta===0?'—':delta>0?'+₦'+N(delta):'−₦'+N(Math.abs(delta)),
-        sd.shift===0?'—':(delta>=0?'+':'')+deltaPct+'%'
+        delta===0?'-':delta>0?'+₦'+N(delta):'−₦'+N(Math.abs(delta)),
+        sd.shift===0?'-':(delta>=0?'+':'')+deltaPct+'%'
       ];
     }),
     headStyles:{fillColor:[10,22,40],textColor:[0,201,167],fontSize:8,fontStyle:'bold'},
@@ -2795,7 +2817,7 @@ async function downloadAssumptionPDF() {
   for(let i=1; i<=pageCount; i++) {
     doc.setPage(i);
     doc.setFont('helvetica','italic'); doc.setFontSize(7); doc.setTextColor(...PAL.tx3);
-    doc.text('FM Finance Suite — IFRS 9 ECL Model Documentation | Developed by Michael Felix Happy', W/2, doc.internal.pageSize.getHeight()-12, {align:'center'});
+    doc.text('FM Finance Suite - IFRS 9 ECL Model Documentation | Developed by Michael Felix Happy', W/2, doc.internal.pageSize.getHeight()-12, {align:'center'});
     doc.text(`Page ${i} of ${pageCount}`, W-20, doc.internal.pageSize.getHeight()-12, {align:'right'});
   }
 
@@ -2949,7 +2971,7 @@ async function exportAgeingPDF() {
   const COLS=['current','1_30','31_60','61_90','91_180','181_270','271_365','365_plus'];
   const totals=COLS.reduce((a,k)=>{ a[k]=ageingCache.report.reduce((s,r)=>s+(r.ageing[k]||0),0); return a;},{});
   const grandTotal=Object.values(totals).reduce((s,v)=>s+v,0);
-  const body=[...ageingCache.report.map(r=>[r.debtor.name,...COLS.map(k=>(r.ageing[k]||0)>0?'₦'+N(r.ageing[k]):'—'),'₦'+N(r.totalOutstanding)]),['TOTAL',...COLS.map(k=>'₦'+N(totals[k])),'₦'+N(grandTotal)]];
+  const body=[...ageingCache.report.map(r=>[r.debtor.name,...COLS.map(k=>(r.ageing[k]||0)>0?'₦'+N(r.ageing[k]):'-'),'₦'+N(r.totalOutstanding)]),['TOTAL',...COLS.map(k=>'₦'+N(totals[k])),'₦'+N(grandTotal)]];
   doc.autoTable({ startY:64, margin:{left:20,right:20}, head:[['Debtor',...Object.values(BUCKET_LABELS),'Total Outstanding']], body, headStyles:{fillColor:[10,22,40],textColor:[0,201,167],fontSize:8,fontStyle:'bold'}, bodyStyles:{fontSize:8,textColor:[200,210,230]}, alternateRowStyles:{fillColor:[15,31,61]}, styles:{fillColor:[10,22,40],lineColor:[255,255,255,15],lineWidth:0.3}, columnStyles:{0:{cellWidth:80},...COLS.reduce((a,_,i)=>({...a,[i+1]:{halign:'right',cellWidth:60}}),{}),7:{halign:'right',cellWidth:70,fontStyle:'bold'}}, didParseCell:c=>{ if(c.row.index===c.table.body.length-1){c.cell.styles.fontStyle='bold';c.cell.styles.textColor=[0,201,167];} } });
   doc.setFont('helvetica','italic'); doc.setFontSize(8); doc.setTextColor(...PAL.tx3);
   doc.text('Developed by Michael Felix Happy · EIS Finance Suite', W/2, doc.internal.pageSize.getHeight()-12, {align:'center'});
