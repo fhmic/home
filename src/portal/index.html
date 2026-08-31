@@ -784,6 +784,11 @@ var APP_META={
   treasury:    { title:'Treasury Dashboard', desc:'Cash position monitoring, liquidity management and investment portfolio tracking.', icon:'💰', href:'../treasury/', color:'rgba(52,211,153,.1)' },
   capmax:    { title:'Capital Maximization', desc:'Nigerian Investor Portfolio Maximisation Strategy Platform.', icon:'📊', href:'../capmax/', color:'rgba(0,201,167,.12)' }
   };
+// Card grid on the portal home screen shows one tile per app. Treasury and
+// Receivables are intentionally left out of this list (not out of APP_KEYS
+// itself, which the admin permission-management table below still needs in
+// full) now that Finance Dashboard consolidates both into one view.
+var DASHBOARD_KEYS=['jobs','markets','bankrecon','finance','capmax'];
 
 // wake up backend silently
 (function(){fetch(API+'/health',{method:'GET'}).catch(function(){});})();
@@ -968,9 +973,15 @@ function renderResourceGrid(user){
   var grid=document.getElementById('resources-grid');
   grid.innerHTML='';
   var delay=0;
-  APP_KEYS.forEach(function(key){
+  DASHBOARD_KEYS.forEach(function(key){
     var meta=APP_META[key];
-    var allowed=!!perms[key];
+    // Finance Dashboard's live figures are actually authorized by the
+    // underlying treasury/receivables permission bits (that's what its own
+    // API calls check) - the standalone "finance" bit is a separate toggle
+    // in the admin table below, so a member with treasury and/or
+    // receivables access but no explicit "finance" grant should still see
+    // this unlocked, not incorrectly locked out.
+    var allowed=key==='finance' ? !!(perms.finance||perms.treasury||perms.receivables) : !!perms[key];
     var el=document.createElement(allowed?'a':'div');
     if(allowed) el.href=meta.href;
     el.className='rc ani'+(allowed?'':' locked');
@@ -981,7 +992,7 @@ function renderResourceGrid(user){
       '<div class="rc-desc">'+meta.desc+'</div>'+
       (allowed
         ? '<span class="rc-tag live"><span style="width:5px;height:5px;border-radius:50%;background:var(--gr);display:inline-block"></span>Live</span><div class="rc-arr">→</div>'
-        : '<span class="rc-tag locked">No access — contact your admin</span>');
+        : '<span class="rc-tag locked">No access - contact your admin</span>');
     grid.appendChild(el);
   });
 }
