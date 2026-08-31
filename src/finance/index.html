@@ -5,29 +5,29 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>Finance Dashboard - Coming Soon | FM Finance Suite</title>
-<meta name="description" content="FM Finance Dashboard: cash position monitoring, liquidity management, and investment portfolio tracking for Nigerian finance teams. In active development.">
+<title>Finance Dashboard | FM Finance Suite</title>
+<meta name="description" content="FM Finance Dashboard: cash position, liquidity, investments, and receivables ageing for Nigerian finance teams, consolidated from Treasury Intelligence and Receivables Tracker into one live view.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://fhmic.github.io/home/finance/">
 <link rel="alternate" hreflang="en-NG" href="https://fhmic.github.io/home/finance/">
 <link rel="alternate" hreflang="x-default" href="https://fhmic.github.io/home/finance/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Finance Dashboard - Coming Soon | FM Finance Suite">
-<meta property="og:description" content="Cash position monitoring, liquidity management, and investment portfolio tracking. In active development.">
+<meta property="og:title" content="Finance Dashboard | FM Finance Suite">
+<meta property="og:description" content="Cash position, liquidity, investments, and receivables ageing, consolidated in one live view.">
 <meta property="og:url" content="https://fhmic.github.io/home/finance/">
 <meta property="og:site_name" content="FM Finance Suite">
 <meta property="og:locale" content="en_NG">
 <meta property="og:image" content="https://fhmic.github.io/home/pix.jpg">
 <meta property="og:image:width" content="400">
 <meta property="og:image:height" content="400">
-<meta property="og:image:alt" content="FM Finance Dashboard - coming soon from FM Finance Suite">
+<meta property="og:image:alt" content="FM Finance Dashboard from FM Finance Suite">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Finance Dashboard - Coming Soon | FM Finance Suite">
-<meta name="twitter:description" content="Cash position monitoring, liquidity management, and investment portfolio tracking. In active development.">
+<meta name="twitter:title" content="Finance Dashboard | FM Finance Suite">
+<meta name="twitter:description" content="Cash position, liquidity, investments, and receivables ageing, consolidated in one live view.">
 <meta name="twitter:image" content="https://fhmic.github.io/home/pix.jpg">
-<meta name="twitter:image:alt" content="FM Finance Dashboard - coming soon from FM Finance Suite">
+<meta name="twitter:image:alt" content="FM Finance Dashboard from FM Finance Suite">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [
-    {"@type": "SoftwareApplication", "name": "Finance Dashboard", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "url": "https://fhmic.github.io/home/finance/", "description": "Cash position monitoring, liquidity management, and investment portfolio tracking. In active development.", "applicationSuite": "FM Finance Suite", "author": {"@type": "Person", "name": "Felix Happy Michael", "url": "https://fhmic.github.io/home/"}, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "NGN"}, "dateModified": "2026-08-13"},
+    {"@type": "SoftwareApplication", "name": "Finance Dashboard", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "url": "https://fhmic.github.io/home/finance/", "description": "Cash position, liquidity, investments, and receivables ageing, consolidated in one live view.", "applicationSuite": "FM Finance Suite", "author": {"@type": "Person", "name": "Felix Happy Michael", "url": "https://fhmic.github.io/home/"}, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "NGN"}, "dateModified": "2026-08-13"},
     {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://fhmic.github.io/home/"}, {"@type": "ListItem", "position": 2, "name": "Finance Dashboard", "item": "https://fhmic.github.io/home/finance/"}]}
   ]}</script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FN</text></svg>">
@@ -130,13 +130,13 @@ footer a:hover{color:var(--t)}
 </div>
 
 <main>
-  <span class="eyebrow"><span class="eyebrow-dot"></span>In active development</span>
+  <span class="eyebrow"><span class="eyebrow-dot" style="background:var(--gr);box-shadow:0 0 6px var(--gr)"></span>Live</span>
   <h1>Finance Dashboard</h1>
-  <p class="lede">Cash position monitoring, liquidity management, and investment portfolio tracking - <b>one consolidated view</b> is being built on top of Treasury and Receivables data. Cash, borrowings, and investment figures below are now live; debtor and ageing data from Receivables is the next piece being added.</p>
+  <p class="lede">Cash position monitoring, liquidity management, investment portfolio tracking, and receivables ageing - <b>one consolidated view</b> combining Treasury and Receivables data. Every figure below is live.</p>
 
   <div class="ledger">
     <div class="ledger-head">
-      <span class="ledger-title">Live - Cash &amp; Liquidity</span>
+      <span class="ledger-title">Treasury - Cash &amp; Liquidity</span>
       <span class="ledger-status" id="ledger-status"><i></i>Loading...</span>
     </div>
     <div class="ledger-rows">
@@ -144,6 +144,19 @@ footer a:hover{color:var(--t)}
       <div class="lrow"><div class="lrow-label">Total Borrowings</div><div class="redact" id="lv-debt" style="width:48%"></div></div>
       <div class="lrow"><div class="lrow-label">Investment Portfolio</div><div class="redact" id="lv-inv" style="width:71%"></div></div>
       <div class="lrow"><div class="lrow-label">Net Liquidity Position</div><div class="redact" id="lv-liq" style="width:56%"></div></div>
+    </div>
+  </div>
+
+  <div class="ledger" style="margin-top:1.1rem">
+    <div class="ledger-head">
+      <span class="ledger-title">Receivables - Debtors &amp; Ageing</span>
+      <span class="ledger-status" id="ledger-status-2"><i></i>Loading...</span>
+    </div>
+    <div class="ledger-rows">
+      <div class="lrow"><div class="lrow-label">Total Outstanding</div><div class="redact" id="lv-out" style="width:60%"></div></div>
+      <div class="lrow"><div class="lrow-label">Total Overdue</div><div class="redact" id="lv-ovd" style="width:44%"></div></div>
+      <div class="lrow"><div class="lrow-label">Overdue Invoices</div><div class="redact" id="lv-ovdinv" style="width:20%"></div></div>
+      <div class="lrow"><div class="lrow-label">Days Sales Outstanding (DSO)</div><div class="redact" id="lv-dso" style="width:28%"></div></div>
     </div>
   </div>
 
@@ -156,7 +169,7 @@ footer a:hover{color:var(--t)}
   </div>
 
   <div class="note">
-    <span><b>In the meantime:</b> the figures above are pulled live from Treasury Intelligence. Debtor and ageing data from Receivables Tracker is the next piece being consolidated into this view.</span>
+    <span>Need to add, edit, or import records? Use the module links above - this page is a live read-only summary of both.</span>
   </div>
 </main>
 
@@ -197,20 +210,24 @@ async function loadFinanceSummary(){
     // This page is public (indexed, shareable) unlike Treasury/Receivables,
     // so a signed-out visitor should still see the marketing copy above -
     // just prompted to sign in for the live figures, not bounced away.
-    ['lv-cash','lv-debt','lv-inv','lv-liq'].forEach(id => setLive(id, 'Sign in to view', true));
-    const statusEl = $('ledger-status');
-    statusEl.className = 'ledger-status';
-    statusEl.innerHTML = '<i></i><a href="../portal/" style="color:inherit">Sign in to load live figures</a>';
+    ['lv-cash','lv-debt','lv-inv','lv-liq','lv-out','lv-ovd','lv-ovdinv','lv-dso'].forEach(id => setLive(id, 'Sign in to view', true));
+    [['ledger-status','Sign in to load live figures'],['ledger-status-2','Sign in to load live figures']].forEach(([elId,msg])=>{
+      const el = $(elId);
+      el.className = 'ledger-status';
+      el.innerHTML = '<i></i><a href="../portal/" style="color:inherit">'+msg+'</a>';
+    });
     return;
   }
 
-  // Cash, Borrowings and Investments are fetched independently so a
-  // permission gap or a transient error on one never blanks the other two -
-  // each row resolves (or fails) on its own.
-  const [cashR, debtR, invR] = await Promise.allSettled([
+  // Every figure is fetched independently (Treasury's three plus
+  // Receivables' one) so a permission gap or a transient error on any single
+  // source never blanks the others - each row resolves, or fails, on its
+  // own, and each ledger block reports its own status.
+  const [cashR, debtR, invR, recvR] = await Promise.allSettled([
     api('/treasury/cash'),
     api('/treasury/borrowings'),
     api('/treasury/investments'),
+    api('/dashboard'),
   ]);
 
   // Cash Position: sum of NGN cash balances - matches the "Total NGN Cash"
@@ -260,6 +277,25 @@ async function loadFinanceSummary(){
     setLive('lv-liq', 'Partial data', true);
     statusEl.className = 'ledger-status';
     statusEl.innerHTML = '<i></i>Partial - some figures unavailable';
+  }
+
+  // Receivables block: all four figures come from the single /dashboard
+  // call (same endpoint and same stats object Receivables Tracker's own
+  // dashboard tab reads), so this can never disagree with what that page
+  // shows for the same moment.
+  const statusEl2 = $('ledger-status-2');
+  if(recvR.status === 'fulfilled'){
+    const s = recvR.value.stats || {};
+    setLive('lv-out', fmt(s.totalOutstanding));
+    setLive('lv-ovd', fmt(s.totalOverdue));
+    setLive('lv-ovdinv', (s.overdueInvoices ?? 0)+' of '+(s.totalInvoices ?? 0));
+    setLive('lv-dso', (s.dso ?? 0)+' days');
+    statusEl2.className = 'ledger-status live';
+    statusEl2.innerHTML = '<i></i>Live';
+  } else {
+    ['lv-out','lv-ovd','lv-ovdinv','lv-dso'].forEach(id => setLive(id, 'Unavailable', true));
+    statusEl2.className = 'ledger-status down';
+    statusEl2.innerHTML = '<i></i>Could not reach Receivables';
   }
 }
 loadFinanceSummary();
