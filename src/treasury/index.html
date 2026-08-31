@@ -35,7 +35,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <!-- Critical libs loaded eagerly; non-critical deferred -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- PptxGenJS loaded dynamically on first PPT export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -676,15 +676,43 @@ function empty(msg){ return '<div class="ep"><div class="ei">📦</div>' + msg +
 
 // Chart helper - destroys old instance before creating new one
 function mkChart(id, cfg){
-  if(_charts[id]) _charts[id].destroy();
   const c = $(id); if(!c) return;
-  _charts[id] = new Chart(c, cfg);
+  // If Chart.js failed to load entirely (blocked CDN, ad-blocker, offline),
+  // fail loudly INTO the chart's own box instead of throwing - a bare throw
+  // here previously escaped uncaught (mkChart is always called from inside
+  // a setTimeout in renderDashCharts/renderLoans/etc, so it runs outside
+  // the caller's own try/catch) and left the canvas blank with no
+  // indication anything was wrong.
+  if(typeof Chart === 'undefined'){
+    const box = c.closest('.chart-box');
+    if(box) box.innerHTML = '<div class="card-label" style="color:var(--rd)">⚠ Charts library failed to load - check your network or ad-blocker, then refresh.</div>';
+    return;
+  }
+  try {
+    if(_charts[id]) _charts[id].destroy();
+    _charts[id] = new Chart(c, cfg);
+  } catch(e){
+    console.error('mkChart('+id+') failed:', e);
+    const box = c.closest('.chart-box');
+    if(box) box.innerHTML = '<div class="card-label" style="color:var(--rd)">⚠ Chart failed to render: '+e.message+'</div>';
+  }
 }
-Chart.defaults.color = '#8fa3bf';
-Chart.defaults.borderColor = 'rgba(255,255,255,.07)';
-Chart.defaults.font.family = "'IBM Plex Mono',monospace";
-Chart.defaults.font.size = 10;
-Chart.defaults.animation = { duration: 350 }; // faster chart renders
+if(typeof Chart !== 'undefined'){
+  Chart.defaults.color = '#8fa3bf';
+  Chart.defaults.borderColor = 'rgba(255,255,255,.07)';
+  Chart.defaults.font.family = "'IBM Plex Mono',monospace";
+  Chart.defaults.font.size = 10;
+  Chart.defaults.animation = { duration: 350 }; // faster chart renders
+} else {
+  // Guarding this assignment matters beyond just the charts: this used to
+  // be a bare top-level `Chart.defaults.color = ...` statement. If Chart.js
+  // failed to load, that line threw a ReferenceError as the script parsed -
+  // and everything AFTER it in this same script block (switchView, the nav
+  // click listener, the modal-close listener, the logout button listener,
+  // all below) would silently never run, since a top-level throw stops the
+  // rest of that script block's execution, not just chart creation.
+  console.error('Chart.js failed to load - charts will show an inline error; the rest of the app is unaffected.');
+}
 
 // ════════════════════════════════════════════════════
 // NAVIGATION
