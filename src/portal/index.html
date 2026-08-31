@@ -23,7 +23,7 @@
 <meta property="og:image:height" content="400">
 <meta property="og:image:alt" content="FM Resources Portal : sign in to access the FM Finance Suite">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="FM Resources Portal — Sign In | FM Finance Suite">
+<meta name="twitter:title" content="FM Resources Portal - Sign In | FM Finance Suite">
 <meta name="twitter:description" content="FM Resources Portal: sign in or create an account to access the FM Finance Suite of tools. Individual and corporate account management for Nigerian finance professionals.">
 <meta name="twitter:image" content="https://fhmic.github.io/home/pix.jpg">
 <meta name="twitter:image:alt" content="FM Resources Portal : sign in to access the FM Finance Suite">
@@ -413,7 +413,7 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
   </div>
 </div>
 
-<!-- ══ CORPORATE SIGNUP — EMAIL/DOMAIN CHECK STEP ═════════ -->
+<!-- ══ CORPORATE SIGNUP - EMAIL/DOMAIN CHECK STEP ═════════ -->
 <div class="auth-card" id="corp-check-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="corp-check-close">✕</button>
@@ -427,7 +427,7 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
   </div>
 </div>
 
-<!-- ══ CORPORATE SIGNUP — CREATE NEW ORG ═══════════════════ -->
+<!-- ══ CORPORATE SIGNUP - CREATE NEW ORG ═══════════════════ -->
 <div class="auth-card" id="corp-create-card">
   <div class="auth-inner wide ani">
     <button class="ac-close" id="corp-create-close">✕</button>
@@ -463,12 +463,12 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
   </div>
 </div>
 
-<!-- ══ CORPORATE SIGNUP — JOIN EXISTING ORG ════════════════ -->
+<!-- ══ CORPORATE SIGNUP - JOIN EXISTING ORG ════════════════ -->
 <div class="auth-card" id="corp-join-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="corp-join-close">✕</button>
     <div class="ac-brand"><div class="ac-mark" style="background:var(--pu)">FM</div><div class="ac-title">Join Organisation</div></div>
-    <div class="ac-sub" id="corp-join-sub">Your company already has an organisation set up. Request to join — the admin will assign your access.</div>
+    <div class="ac-sub" id="corp-join-sub">Your company already has an organisation set up. Request to join - the admin will assign your access.</div>
     <div class="ac-err" id="cj-err"></div><div class="ac-ok" id="cj-ok"></div>
     <div class="ac-field"><label>Surname</label><input class="ac-inp" type="text" id="cj-surname" placeholder="e.g. Michael"></div>
     <div class="ac-field"><label>Other Names</label><input class="ac-inp" type="text" id="cj-other" placeholder="e.g. Felix Happy"></div>
@@ -483,7 +483,7 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
   </div>
 </div>
 
-<!-- ══ CORPORATE SIGNUP — DOMAIN NOT APPROVED ══════════════ -->
+<!-- ══ CORPORATE SIGNUP - DOMAIN NOT APPROVED ══════════════ -->
 <div class="auth-card" id="corp-blocked-card">
   <div class="auth-inner ani">
     <button class="ac-close" id="corp-blocked-close">✕</button>
@@ -874,7 +874,7 @@ document.getElementById('cc-btn').addEventListener('click',async function(){
       document.getElementById('cb-domain').textContent='@'+d.domain;
       closeAllCards();openCard('corp-blocked-card');
     } else if(d.orgExists){
-      document.getElementById('corp-join-sub').textContent='"'+d.orgName+'" already has an organisation on FM Resources Portal. Request to join — the admin will assign your access.';
+      document.getElementById('corp-join-sub').textContent='"'+d.orgName+'" already has an organisation on FM Resources Portal. Request to join - the admin will assign your access.';
       document.getElementById('cj-email').value=email;
       hideMsg('cj-err','cj-ok');
       ['cj-surname','cj-other','cj-phone'].forEach(function(id){document.getElementById(id).value='';});
@@ -1240,13 +1240,13 @@ function escapeHtml(value){
   return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 function safeText(value){
-  if(value===null||value===undefined) return '—';
-  if(typeof value==='object'){ try{ return JSON.stringify(value); }catch(e){ return '—'; } }
+  if(value===null||value===undefined) return '-';
+  if(typeof value==='object'){ try{ return JSON.stringify(value); }catch(e){ return '-'; } }
   return String(value);
 }
 
 // ═══════════════════════════════════════════════════════════
-// ══ ADMIN PANEL — USERS TAB ══
+// ══ ADMIN PANEL - USERS TAB ══
 // ═══════════════════════════════════════════════════════════
 var _editId=null;
 async function loadUsers(){
@@ -1262,9 +1262,9 @@ async function loadUsers(){
       var id=safeText(u._id),username=safeText(u.username),name=safeText(u.name),email=safeText(u.email),role=safeText(u.role);
       var active=Boolean(u.active);
       var accType=u.accountType==='organisation'?('Corp'+(u.orgName?' · '+escapeHtml(u.orgName):'')):'Individual';
-      var lastLogin='—';
-      if(u.lastLogin){ try{ lastLogin=new Date(u.lastLogin).toLocaleDateString('en-GB'); }catch(e){ lastLogin='—'; } }
-      var expiryCell='<span style="color:var(--tx3)">—</span>';
+      var lastLogin='-';
+      if(u.lastLogin){ try{ lastLogin=new Date(u.lastLogin).toLocaleDateString('en-GB'); }catch(e){ lastLogin='-'; } }
+      var expiryCell='<span style="color:var(--tx3)">-</span>';
       if(role==='admin'){
         expiryCell='<span style="color:var(--tx3);font-size:11px">No expiry</span>';
       } else if(u.accessExpiry){
@@ -1393,7 +1393,7 @@ document.getElementById('ext-submit').addEventListener('click',async function(){
 });
 
 // ═══════════════════════════════════════════════════════════
-// ══ ADMIN PANEL — DOMAIN WHITELIST TAB ══
+// ══ ADMIN PANEL - DOMAIN WHITELIST TAB ══
 // ═══════════════════════════════════════════════════════════
 async function loadDomains(){
   var tbody=document.getElementById('domains-tbody');
@@ -1405,12 +1405,12 @@ async function loadDomains(){
       return;
     }
     tbody.innerHTML=d.domains.map(function(dm){
-      var dateStr='—';
+      var dateStr='-';
       try{ dateStr=new Date(dm.createdAt).toLocaleDateString('en-GB'); }catch(e){}
       return '<tr>'+
         '<td style="font-family:var(--mo);font-size:12px;color:var(--t)">'+escapeHtml(dm.domain)+'</td>'+
-        '<td>'+escapeHtml(dm.label||'—')+'</td>'+
-        '<td style="font-size:11px;color:var(--tx3);font-family:var(--mo)">'+escapeHtml(dm.addedBy||'—')+'</td>'+
+        '<td>'+escapeHtml(dm.label||'-')+'</td>'+
+        '<td style="font-size:11px;color:var(--tx3);font-family:var(--mo)">'+escapeHtml(dm.addedBy||'-')+'</td>'+
         '<td style="font-size:11px;color:var(--tx3);font-family:var(--mo)">'+dateStr+'</td>'+
         '<td><button class="act-btn danger" data-id="'+escapeHtml(dm._id)+'" data-domain="'+escapeHtml(dm.domain)+'" onclick="delDomain(this.dataset.id,this.dataset.domain)">Remove</button></td>'+
       '</tr>';
@@ -1529,7 +1529,7 @@ async function updateMemberRole(id,role){
 // REUSABLE BLOCK: renderModuleRow / toggleModuleRow / updateMemberModulePerm
 // all read from _moduleDefs (populated from the /api/org/team response's
 // moduleDefs field, which server-side comes straight from MODULE_DEFS).
-// To support another app's modules here, nothing in this block changes —
+// To support another app's modules here, nothing in this block changes -
 // it already iterates whatever appKey/moduleKey pairs the server reports.
 function renderModuleRow(member,appKey){
   var modules=_moduleDefs[appKey]||[];
