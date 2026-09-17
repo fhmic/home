@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>(function(){try{var t=localStorage.getItem('fm_theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();</script>
+<script>(function(){try{var t=localStorage.getItem('fm_theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
@@ -30,10 +30,10 @@
     {"@type": "SoftwareApplication", "name": "Treasury Intelligence", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "url": "https://fhmic.github.io/home/treasury/", "description": "WACC/WACD analysis, asset-liability maturity profiling, and board-ready PowerPoint and PDF reports for treasury teams.", "applicationSuite": "FM Finance Suite", "author": {"@type": "Person", "name": "Felix Happy Michael", "url": "https://fhmic.github.io/home/"}, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "NGN"}, "dateModified": "2026-07-25"},
     {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://fhmic.github.io/home/"}, {"@type": "ListItem", "position": 2, "name": "Treasury Intelligence", "item": "https://fhmic.github.io/home/treasury/"}]}
   ]}</script>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2300c9a7'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%230a1628'>FM</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230f5c46'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Arial' font-weight='700' font-size='11' fill='%23f7f5f0'>FM</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <!-- Critical libs loaded eagerly; non-critical deferred -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -43,28 +43,28 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --n:#0a1628;--n2:#0f1f3d;--n3:#162747;--n4:#1c3057;
-  --t:#00c9a7;--t2:#00a98e;--td:rgba(0,201,167,.13);--tg:rgba(0,201,167,.06);
-  --am:#f5a623;--rd:#e05252;--gr:#22c55e;--bl:#63b3ed;--pu:#a78bfa;
-  --tx:#e8edf5;--tx2:#8fa3bf;--tx3:#4a6080;
-  --b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
-  --sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.08);
+  --n:#f7f5f0;--n2:#ffffff;--n3:#f1eee7;--n4:#e4e0d5;--n-rgb:247,245,240;
+  --t:#0f5c46;--t2:#0c4a38;--t-rgb:15,92,70;--td:rgba(15,92,70,.10);--tg:rgba(15,92,70,.05);
+  --am:#9c7a3c;--am-rgb:156,122,60;--rd:#b33a3a;--rd-rgb:179,58,58;--gr:#2f7d52;--gr-rgb:47,125,82;--bl:#2f5c8a;--bl-rgb:47,92,138;--pu:#6b5b95;--pu-rgb:107,91,149;
+  --tx:#181b22;--tx2:#4b5162;--tx3:#6b7182;
+  --b:rgba(20,16,8,.08);--b2:rgba(20,16,8,.13);
+  --sf:rgba(20,16,8,.035);--sf2:rgba(20,16,8,.06);
   --r:10px;--rl:16px;
-  --mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Syne',sans-serif;
-  --sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Fraunces',serif;
+  --sh:0 1px 3px rgba(20,16,8,.04),0 4px 16px rgba(20,16,8,.05);
 }
-html[data-theme="light"]{--n:#f7f9fc;--n2:#ffffff;--n3:#eef2f7;--n4:#e2e8f0;--t:#00876b;--t2:#007a63;--td:rgba(0,135,107,.12);--tg:rgba(0,135,107,.05);--am:#b45309;--rd:#b91c1c;--gr:#15803d;--bl:#1d4ed8;--pu:#6d28d9;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--b:rgba(0,0,0,.08);--b2:rgba(0,0,0,.14);--sf:rgba(0,0,0,.03);--sf2:rgba(0,0,0,.06);--sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);}
+html[data-theme="dark"]{--n:#10141c;--n2:#161c27;--n3:#1b2230;--n4:#232b3c;--n-rgb:16,20,28;--t:#35b98d;--t2:#2ca57e;--t-rgb:53,185,141;--td:rgba(53,185,141,.14);--tg:rgba(53,185,141,.06);--am:#c9a15f;--am-rgb:201,161,95;--rd:#e06b6b;--rd-rgb:224,107,107;--gr:#4caf7b;--gr-rgb:76,175,123;--bl:#6fa8d8;--bl-rgb:111,168,216;--pu:#9c8adb;--pu-rgb:156,138,219;--tx:#edeff3;--tx2:#a7aebb;--tx3:#7c8494;--b:rgba(20,16,8,.07);--b2:rgba(20,16,8,.13);--sf:rgba(20,16,8,.04);--sf2:rgba(20,16,8,.08);--sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);}
 
-html{font-size:15px;-webkit-tap-highlight-color:transparent}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
 #app{display:flex;min-height:100vh;flex-direction:column}
 
 /* ── TOPBAR ── */
 #topbar{background:var(--n2);border-bottom:1px solid var(--b);padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
-.logo{font-family:var(--di);font-weight:700;font-size:16px;letter-spacing:-.03em;color:var(--tx);display:flex;align-items:center;gap:8px}
+.logo{font-family:var(--di);font-weight:700;font-size:16px;letter-spacing:-.01em;color:var(--tx);display:flex;align-items:center;gap:8px}
 .lm{width:28px;height:28px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--n);font-weight:700;flex-shrink:0}
 .la{color:var(--t)}
-.org-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,201,167,.1);border:1px solid rgba(0,201,167,.2);border-radius:20px;padding:2px 10px;font-size:10px;font-family:var(--mo);color:var(--t);margin-left:6px}
+.org-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(var(--t-rgb),.1);border:1px solid rgba(var(--t-rgb),.2);border-radius:20px;padding:2px 10px;font-size:10px;font-family:var(--mo);color:var(--t);margin-left:6px}
 .tbr{display:flex;align-items:center;gap:6px}
 .nav-btn-link{display:flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--b2);border-radius:8px;padding:5px 10px;font-size:11px;font-family:var(--mo);color:var(--tx3);cursor:pointer;transition:all .2s;text-decoration:none;white-space:nowrap}
 .nav-btn-link:hover{background:var(--sf2);color:var(--tx)}
@@ -85,7 +85,7 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 @keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .view.on{animation:fu .25s ease both}
 .vhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.65rem}
-.vttl{font-family:var(--di);font-size:21px;font-weight:700;letter-spacing:-.03em}
+.vttl{font-family:var(--di);font-size:21px;font-weight:700;letter-spacing:-.01em}
 .vsub{font-size:11.5px;color:var(--tx3);font-family:var(--mo);margin-top:2px}
 .vacts{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
 
@@ -95,12 +95,24 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 
 /* ── KPI GRID ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:8px;margin-bottom:1.25rem}
+.inv-alert-panel{margin-bottom:1.1rem;border-radius:var(--rl);overflow:hidden;border:1px solid var(--b2)}
+.ia-row{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.65rem 1rem;font-size:12.5px;border-bottom:1px solid var(--b)}
+.ia-row:last-child{border-bottom:none}
+.ia-row span.ia-txt{flex:1}
+.ia-mat{background:rgba(var(--rd-rgb),.08);color:var(--rd)}
+.ia-soon{background:rgba(var(--am-rgb),.08);color:var(--am)}
+.ia-row strong{color:var(--tx)}
+.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:var(--mo);font-weight:600;letter-spacing:.03em;padding:2px 8px;border-radius:20px}
+.status-badge.st-matured{background:rgba(var(--rd-rgb),.12);color:var(--rd)}
+.status-badge.st-soon{background:rgba(var(--am-rgb),.12);color:var(--am)}
+.status-badge.st-active{background:rgba(var(--t-rgb),.12);color:var(--t)}
+.status-badge.st-open{background:rgba(var(--pu-rgb),.12);color:var(--pu)}
 .kpi{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;will-change:auto}
 .kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:var(--r) 0 0 var(--r)}
 .kpi.tl::before,.kpi.ac::before{background:var(--t)}.kpi.rd::before{background:var(--rd)}.kpi.am::before{background:var(--am)}.kpi.gr::before{background:var(--gr)}.kpi.bl::before{background:var(--bl)}.kpi.pu::before{background:var(--pu)}
-.kpi.ac{border-color:rgba(0,201,167,.3);background:var(--td)}
+.kpi.ac{border-color:rgba(var(--t-rgb),.3);background:var(--td)}
 .kl{font-size:9.5px;font-family:var(--mo);color:var(--tx3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
-.kv{font-family:var(--di);font-size:20px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.kv{font-family:var(--di);font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1}
 .ks{font-size:9.5px;font-family:var(--mo);color:var(--tx2);margin-top:3px}
 .kv.tl{color:var(--t)}.kv.rd{color:var(--rd)}.kv.am{color:var(--am)}.kv.gr{color:var(--gr)}.kv.bl{color:var(--bl)}.kv.pu{color:var(--pu)}
 
@@ -124,36 +136,36 @@ tbody tr:hover{background:var(--sf)}
 
 /* ── MATURITY TABLE ── */
 .mat-tbl{width:100%;border-collapse:collapse;font-size:11px;min-width:720px}
-.mat-tbl th{background:var(--n3);color:var(--t);font-family:var(--mo);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:7px 9px;text-align:right;border-bottom:2px solid rgba(0,201,167,.3);white-space:nowrap}
+.mat-tbl th{background:var(--n3);color:var(--t);font-family:var(--mo);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:7px 9px;text-align:right;border-bottom:2px solid rgba(var(--t-rgb),.3);white-space:nowrap}
 .mat-tbl th:first-child{text-align:left;min-width:155px}
 .mat-tbl td{padding:6px 9px;border-bottom:1px solid var(--b);font-family:var(--mo);font-size:10.5px;text-align:right;color:var(--tx2)}
 .mat-tbl td:first-child{text-align:left;color:var(--tx2);font-family:var(--sa);font-size:11.5px}
 .mat-tbl .sub td{color:var(--tx3);font-size:10px}.mat-tbl .sub td:first-child{padding-left:18px;font-family:var(--sa)}
 .mat-tbl .sec-hdr td{background:transparent;padding:9px 9px 2px;font-size:9px;font-family:var(--mo);letter-spacing:.07em;text-transform:uppercase;border-bottom:none;color:var(--t)}
 .mat-tbl .sec-hdr.rd td{color:var(--rd)}.mat-tbl .sec-hdr.dim td{color:var(--tx3)}
-.mat-tbl .tot-a td{background:rgba(0,201,167,.08);color:var(--t);font-weight:700;border-top:2px solid rgba(0,201,167,.3)!important;font-family:var(--mo)}
+.mat-tbl .tot-a td{background:rgba(var(--t-rgb),.08);color:var(--t);font-weight:700;border-top:2px solid rgba(var(--t-rgb),.3)!important;font-family:var(--mo)}
 .mat-tbl .tot-a td:first-child{font-family:var(--sa)}
-.mat-tbl .tot-l td{background:rgba(224,82,82,.06);color:var(--rd);font-weight:700;border-top:2px solid rgba(224,82,82,.3)!important;font-family:var(--mo)}
+.mat-tbl .tot-l td{background:rgba(var(--rd-rgb),.06);color:var(--rd);font-weight:700;border-top:2px solid rgba(var(--rd-rgb),.3)!important;font-family:var(--mo)}
 .mat-tbl .tot-l td:first-child{font-family:var(--sa)}
-.mat-tbl .gap-row td{background:rgba(99,179,237,.07);font-weight:700;border-top:2px solid var(--b2)!important;font-family:var(--mo)}
+.mat-tbl .gap-row td{background:rgba(var(--bl-rgb),.07);font-weight:700;border-top:2px solid var(--b2)!important;font-family:var(--mo)}
 .mat-tbl .gap-row td:first-child{font-family:var(--sa)}
 .mat-tbl .pct-row td{background:var(--sf);font-size:9.5px;color:var(--tx3);font-family:var(--mo)}
 .mat-tbl .pct-row td:first-child{font-family:var(--mo);font-size:9.5px}
-.mat-tbl .wacd-row td{background:rgba(245,166,35,.05);color:var(--am);font-family:var(--mo)}
-.mat-tbl .wara-row td{background:rgba(0,201,167,.05);color:var(--t);font-family:var(--mo)}
+.mat-tbl .wacd-row td{background:rgba(var(--am-rgb),.05);color:var(--am);font-family:var(--mo)}
+.mat-tbl .wara-row td{background:rgba(var(--t-rgb),.05);color:var(--t);font-family:var(--mo)}
 .mat-tbl .spread-row td{font-weight:700;font-family:var(--mo)}
 
 /* ── PILLS ── */
 .pl{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:600;white-space:nowrap}
-.ps1{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
-.ps2{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2)}
-.ps3{background:rgba(224,82,82,.1);color:var(--rd);border:1px solid rgba(224,82,82,.2)}
-.pg{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
-.pa{background:rgba(245,166,35,.1);color:var(--am);border:1px solid rgba(245,166,35,.2)}
-.pr{background:rgba(224,82,82,.1);color:var(--rd);border:1px solid rgba(224,82,82,.2)}
-.pb{background:rgba(99,179,237,.1);color:var(--bl);border:1px solid rgba(99,179,237,.2)}
-.pp{background:rgba(167,139,250,.1);color:var(--pu);border:1px solid rgba(167,139,250,.2)}
-.pdark{background:rgba(153,27,27,.2);color:#fca5a5;border:1px solid rgba(153,27,27,.4)}
+.ps1{background:rgba(var(--gr-rgb),.1);color:var(--gr);border:1px solid rgba(var(--gr-rgb),.2)}
+.ps2{background:rgba(var(--am-rgb),.1);color:var(--am);border:1px solid rgba(var(--am-rgb),.2)}
+.ps3{background:rgba(var(--rd-rgb),.1);color:var(--rd);border:1px solid rgba(var(--rd-rgb),.2)}
+.pg{background:rgba(var(--gr-rgb),.1);color:var(--gr);border:1px solid rgba(var(--gr-rgb),.2)}
+.pa{background:rgba(var(--am-rgb),.1);color:var(--am);border:1px solid rgba(var(--am-rgb),.2)}
+.pr{background:rgba(var(--rd-rgb),.1);color:var(--rd);border:1px solid rgba(var(--rd-rgb),.2)}
+.pb{background:rgba(var(--bl-rgb),.1);color:var(--bl);border:1px solid rgba(var(--bl-rgb),.2)}
+.pp{background:rgba(var(--pu-rgb),.1);color:var(--pu);border:1px solid rgba(var(--pu-rgb),.2)}
+.pdark{background:rgba(122,35,35,.2);color:#fca5a5;border:1px solid rgba(122,35,35,.4)}
 
 /* ── BUTTONS ── */
 button{font-family:var(--sa);font-size:13px;font-weight:500;border-radius:var(--r);padding:7px 16px;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--tx2);transition:background .15s,color .15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;touch-action:manipulation}
@@ -162,8 +174,8 @@ button:active:not(:disabled){transform:scale(.97)}
 button:disabled{opacity:.35;cursor:not-allowed}
 .bp{background:var(--t);border-color:var(--t);color:var(--n);font-weight:600}
 .bp:hover:not(:disabled){background:var(--t2);color:var(--n)}
-.bd{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
-.bd:hover:not(:disabled){background:rgba(224,82,82,.2)}
+.bd{background:rgba(var(--rd-rgb),.1);border-color:rgba(var(--rd-rgb),.3);color:var(--rd)}
+.bd:hover:not(:disabled){background:rgba(var(--rd-rgb),.2)}
 .bsm{padding:4px 11px;font-size:11.5px}
 
 /* ── FORMS ── */
@@ -171,24 +183,24 @@ button:disabled{opacity:.35;cursor:not-allowed}
 .fld{margin-bottom:.9rem}
 .fld label{display:block;font-size:10.5px;font-family:var(--mo);color:var(--tx2);margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase}
 .finput{width:100%;padding:8px 12px;background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;transition:border-color .15s;outline:none;-webkit-appearance:none}
-.finput:focus{border-color:var(--t);box-shadow:0 0 0 2px rgba(0,201,167,.1)}
+.finput:focus{border-color:var(--t);box-shadow:0 0 0 2px rgba(var(--t-rgb),.1)}
 .finput::placeholder{color:var(--tx3)}
-select.finput{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238fa3bf' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;cursor:pointer}
+select.finput{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%234b5162' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;cursor:pointer}
 
 /* ── MODAL ── */
-#modal-bg{display:none;position:fixed;inset:0;background:rgba(5,12,24,.75);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
+#modal-bg{display:none;position:fixed;inset:0;background:rgba(15,15,18,.75);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
 #modal-bg.on{display:flex}
 .modal{background:var(--n2);border:1px solid var(--b2);border-radius:var(--rl);width:100%;max-width:540px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.5)}
 .modal.wide{max-width:800px}
 .mhdr{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;border-bottom:1px solid var(--b);flex-shrink:0}
 .mttl{font-family:var(--di);font-size:15px;font-weight:600}
 .mclose{width:28px;height:28px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex-shrink:0;touch-action:manipulation}
-.mclose:hover{background:rgba(224,82,82,.1);border-color:rgba(224,82,82,.3);color:var(--rd)}
+.mclose:hover{background:rgba(var(--rd-rgb),.1);border-color:rgba(var(--rd-rgb),.3);color:var(--rd)}
 .mbody{padding:1.4rem;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
 .mfoot{padding:.9rem 1.4rem;border-top:1px solid var(--b);display:flex;justify-content:flex-end;gap:.45rem;flex-shrink:0}
-.merr{display:none;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);border-radius:var(--r);padding:7px 11px;font-size:11.5px;color:var(--rd);margin-bottom:.9rem;font-family:var(--mo)}
+.merr{display:none;background:rgba(var(--rd-rgb),.1);border:1px solid rgba(var(--rd-rgb),.3);border-radius:var(--r);padding:7px 11px;font-size:11.5px;color:var(--rd);margin-bottom:.9rem;font-family:var(--mo)}
 .merr.on{display:block}
-.mok{display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:var(--r);padding:7px 11px;font-size:11.5px;color:var(--gr);margin-bottom:.9rem;font-family:var(--mo)}
+.mok{display:none;background:rgba(var(--gr-rgb),.1);border:1px solid rgba(var(--gr-rgb),.3);border-radius:var(--r);padding:7px 11px;font-size:11.5px;color:var(--gr);margin-bottom:.9rem;font-family:var(--mo)}
 .mok.on{display:block}
 
 /* ── CHARTS ── */
@@ -198,24 +210,24 @@ select.finput{appearance:none;-webkit-appearance:none;background-image:url("data
 /* ── MISC ── */
 .ep{text-align:center;padding:2.5rem 1rem;color:var(--tx3);font-family:var(--mo);font-size:12px}
 .ei{font-size:1.75rem;margin-bottom:8px}
-.nt{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:var(--r);padding:9px 13px;font-size:12px;color:var(--tx2);margin-bottom:.9rem;line-height:1.5}
-.nt-info{background:rgba(0,201,167,.07);border:1px solid rgba(0,201,167,.2);border-radius:var(--r);padding:9px 13px;font-size:12px;color:var(--tx2);margin-bottom:.9rem;line-height:1.5}
+.nt{background:rgba(var(--am-rgb),.07);border:1px solid rgba(var(--am-rgb),.2);border-radius:var(--r);padding:9px 13px;font-size:12px;color:var(--tx2);margin-bottom:.9rem;line-height:1.5}
+.nt-info{background:rgba(var(--t-rgb),.07);border:1px solid rgba(var(--t-rgb),.2);border-radius:var(--r);padding:9px 13px;font-size:12px;color:var(--tx2);margin-bottom:.9rem;line-height:1.5}
 .loading-row{text-align:center;padding:1.75rem;color:var(--tx3);font-family:var(--mo);font-size:12px}
 #toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);padding:9px 16px;font-size:12px;font-family:var(--mo);color:var(--tx);z-index:500;box-shadow:var(--sh);display:none;align-items:center;gap:7px;white-space:nowrap;max-width:90vw}
 #toast.on{display:flex}
-#toast.ok{border-color:rgba(34,197,94,.4);color:var(--gr)}
-#toast.err{border-color:rgba(224,82,82,.4);color:var(--rd)}
+#toast.ok{border-color:rgba(var(--gr-rgb),.4);color:var(--gr)}
+#toast.err{border-color:rgba(var(--rd-rgb),.4);color:var(--rd)}
 .sep{height:1px;background:var(--b);margin:.9rem 0}
 .section-ttl{font-family:var(--di);font-size:14px;font-weight:600;margin-bottom:.9rem}
 .drop-zone{border:2px dashed var(--b2);border-radius:var(--r);padding:1.75rem;text-align:center;cursor:pointer;transition:border-color .2s;display:block}
 .drop-zone:hover{border-color:var(--t)}
 .ulog{background:var(--n);border-radius:8px;padding:11px;max-height:140px;overflow-y:auto;font-size:11px}
-.ulog-row{display:flex;gap:9px;padding:2px 0;border-bottom:1px solid rgba(26,46,74,.2)}
-.bulk-bar{display:none;align-items:center;gap:9px;background:rgba(224,82,82,.08);border:1px solid rgba(224,82,82,.2);border-radius:var(--r);padding:7px 13px;margin-bottom:.7rem;font-size:12px;font-family:var(--mo);color:var(--tx2)}
+.ulog-row{display:flex;gap:9px;padding:2px 0;border-bottom:1px solid rgba(228,224,213,.2)}
+.bulk-bar{display:none;align-items:center;gap:9px;background:rgba(var(--rd-rgb),.08);border:1px solid rgba(var(--rd-rgb),.2);border-radius:var(--r);padding:7px 13px;margin-bottom:.7rem;font-size:12px;font-family:var(--mo);color:var(--tx2)}
 .bulk-bar.on{display:flex}
 input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor:pointer}
 .team-role-badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:10px;font-family:var(--mo);font-weight:600}
-.team-role-admin{background:rgba(0,201,167,.12);color:var(--t);border:1px solid rgba(0,201,167,.25)}
+.team-role-admin{background:rgba(var(--t-rgb),.12);color:var(--t);border:1px solid rgba(var(--t-rgb),.25)}
 .team-role-member{background:var(--sf2);color:var(--tx3);border:1px solid var(--b2)}
 
 /* ── ADVISORY ── */
@@ -227,18 +239,18 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
 .adot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
 .adot.gr{background:var(--gr)}.adot.rd{background:var(--rd)}.adot.am{background:var(--am)}.adot.bl{background:var(--bl)}.adot.pu{background:var(--pu)}
 .advisory-rec-item{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);margin-bottom:.7rem;overflow:hidden}
-.advisory-rec-header{display:flex;align-items:center;gap:8px;padding:9px 13px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--b)}
+.advisory-rec-header{display:flex;align-items:center;gap:8px;padding:9px 13px;background:rgba(20,16,8,.03);border-bottom:1px solid var(--b)}
 .advisory-rec-num{font-size:11px;font-weight:700;color:var(--tx3);font-family:var(--mo);flex-shrink:0}
 .advisory-rec-title{font-size:12px;font-weight:600;color:var(--tx);font-family:var(--di)}
 .advisory-rec-body{padding:10px 13px;display:flex;flex-direction:column;gap:6px}
 .advisory-rec-row{display:flex;gap:6px;font-size:11.5px;color:var(--tx2);line-height:1.65}
 .advisory-rec-label{font-weight:700;color:var(--t);font-family:var(--mo);font-size:10px;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;padding-top:2px;min-width:110px}
-.advisory-conclusion{background:rgba(0,201,167,.06);border:1px solid rgba(0,201,167,.2);border-radius:var(--r);padding:11px 14px;margin-top:.5rem}
+.advisory-conclusion{background:rgba(var(--t-rgb),.06);border:1px solid rgba(var(--t-rgb),.2);border-radius:var(--r);padding:11px 14px;margin-top:.5rem}
 .advisory-conclusion-label{font-size:10px;font-weight:700;color:var(--t);font-family:var(--mo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
 .advisory-conclusion-text{font-size:12px;color:var(--tx2);line-height:1.7}
 
 /* ── EXPORT MODAL ── */
-#export-modal{display:none;position:fixed;inset:0;z-index:650;align-items:center;justify-content:center;padding:1rem;background:rgba(5,12,24,.8);backdrop-filter:blur(4px)}
+#export-modal{display:none;position:fixed;inset:0;z-index:650;align-items:center;justify-content:center;padding:1rem;background:rgba(15,15,18,.8);backdrop-filter:blur(4px)}
 #export-modal.on{display:flex}
 .exp-option{background:var(--n3);border:1px solid var(--b2);border-radius:var(--r);padding:1.1rem 1.25rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px;margin-bottom:.65rem}
 .exp-option:hover{border-color:var(--t);background:var(--td)}
@@ -282,7 +294,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
 </style>
 </head>
 <body>
-<button id="fm-theme-toggle" onclick="fmToggleTheme()" aria-label="Toggle light/dark theme" style="position:fixed;top:14px;right:14px;z-index:99998;width:38px;height:38px;border-radius:50%;border:1px solid rgba(128,128,128,.35);background:rgba(120,120,120,.15);backdrop-filter:blur(6px);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:inherit">🌙</button>
+<button id="fm-theme-toggle" onclick="fmToggleTheme()" aria-label="Toggle light/dark theme" style="position:fixed;bottom:18px;left:18px;z-index:99998;width:38px;height:38px;border-radius:50%;border:1px solid var(--b2);background:var(--n2);backdrop-filter:blur(6px);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:inherit;box-shadow:0 2px 10px rgba(20,16,8,.08)">🌙</button>
 
 <div id="app">
   <div id="topbar">
@@ -353,13 +365,14 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
         <div class="vhdr">
           <div><div class="vttl">Executive Dashboard</div><div class="vsub" id="dash-ts">-</div></div>
           <div style="display:flex;align-items:center;gap:8px">
-            <div id="asof-badge" style="display:none;font-size:10px;font-weight:700;letter-spacing:.04em;padding:4px 9px;border-radius:20px;background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">HISTORICAL VIEW</div>
+            <div id="asof-badge" style="display:none;font-size:10px;font-weight:700;letter-spacing:.04em;padding:4px 9px;border-radius:20px;background:rgba(var(--am-rgb),.15);color:#fbbf24;border:1px solid rgba(var(--am-rgb),.35)">HISTORICAL VIEW</div>
             <input class="finput" type="date" id="dash-asof" style="width:150px;padding:7px 10px" title="View treasury position as at a specific date">
             <button class="bp" id="dash-asof-btn" onclick="handleViewAsOfClick()">View As-Of</button>
             <button class="bp" style="background:transparent;border:1px solid var(--bd)" id="dash-live-btn" onclick="handleBackToLiveClick()" disabled>Back to Live</button>
             <button class="bp" onclick="loadDashboard()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-5.5"/></svg>Refresh</button>
           </div>
         </div>
+        <div id="dash-inv-alert"></div>
         <div class="kpi-grid" id="dash-kpis"><div class="loading-row">Loading…</div></div>
         <div class="wacc-grid" id="dash-wacc"></div>
         <div class="card" style="margin-bottom:1.1rem">
@@ -420,8 +433,29 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
             <button class="bp" onclick="openInvestmentModal()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Investment</button>
           </div>
         </div>
+        <div id="inv-alert-banner"></div>
         <div class="kpi-grid" id="investments-kpis"></div>
         <div class="chart-2" id="investments-charts"></div>
+        <div class="card" id="investments-filters" style="margin-bottom:1.1rem;padding:.85rem 1rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center">
+          <input class="finput" id="inv-search" placeholder="Search ID or counterparty…" style="max-width:220px" oninput="renderInvestments()">
+          <select class="finput" id="inv-status-filter" style="max-width:180px" onchange="renderInvestments()">
+            <option value="all">All statuses</option>
+            <option value="matured">Matured</option>
+            <option value="soon">Maturing soon (≤30d)</option>
+            <option value="active">Active</option>
+            <option value="open">Open-ended</option>
+          </select>
+          <select class="finput" id="inv-type-filter" style="max-width:200px" onchange="renderInvestments()">
+            <option value="all">All types</option>
+            <option>Fixed Deposit</option>
+            <option>Treasury Bills</option>
+            <option>Government Security</option>
+            <option>Commercial Paper</option>
+            <option>Money Market Fund</option>
+            <option>Notice Deposit</option>
+            <option>Other Open-ended</option>
+          </select>
+        </div>
         <div class="card" id="investments-table-wrap"></div>
       </div>
 
@@ -501,15 +535,15 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
     <div class="mbody">
       <p style="font-size:12px;color:var(--tx2);margin-bottom:1rem">Generate a report from the current dashboard data. Load the dashboard first for best results.</p>
       <div class="exp-option" id="exp-ppt-btn">
-        <div class="exp-icon" style="background:rgba(245,166,35,.12)">📊</div>
+        <div class="exp-icon" style="background:rgba(var(--am-rgb),.12)">📊</div>
         <div><div class="exp-label">PowerPoint - Board Deck</div><div class="exp-sub">9-slide board presentation · Charts · Sign-off page</div></div>
       </div>
       <div class="exp-option" id="exp-xls-btn">
-        <div class="exp-icon" style="background:rgba(34,197,94,.12)">📋</div>
+        <div class="exp-icon" style="background:rgba(var(--gr-rgb),.12)">📋</div>
         <div><div class="exp-label">Excel - Data Export</div><div class="exp-sub">Dashboard summary · Maturity profile · KPI table</div></div>
       </div>
       <div class="exp-option" id="exp-pdf-btn">
-        <div class="exp-icon" style="background:rgba(224,82,82,.12)">📄</div>
+        <div class="exp-icon" style="background:rgba(var(--rd-rgb),.12)">📄</div>
         <div><div class="exp-label">PDF - Quick Report</div><div class="exp-sub">One-page snapshot · Advisory · Recommendations</div></div>
       </div>
       <div id="exp-status"></div>
@@ -526,7 +560,7 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
 // GLOBALS & CONSTANTS (module-level scope - accessible everywhere)
 // ════════════════════════════════════════════════════
 const API = 'https://eis-recbackend.onrender.com/api';
-const PAL = ['#00c9a7','#63b3ed','#a78bfa','#f5a623','#22c55e','#e05252'];
+const PAL = ['#0f5c46','#2f5c8a','#6b5b95','#9c7a3c','#2f7d52','#b33a3a'];
 
 // Tenor bucket config - declared at top level so ALL functions can reference them
 const TENOR_CAPS  = [30, 60, 90, 180, 270, 365];
@@ -698,8 +732,8 @@ function mkChart(id, cfg){
   }
 }
 if(typeof Chart !== 'undefined'){
-  Chart.defaults.color = '#8fa3bf';
-  Chart.defaults.borderColor = 'rgba(255,255,255,.07)';
+  Chart.defaults.color = '#4b5162';
+  Chart.defaults.borderColor = 'rgba(20,16,8,.07)';
   Chart.defaults.font.family = "'IBM Plex Mono',monospace";
   Chart.defaults.font.size = 10;
   Chart.defaults.animation = { duration: 350 }; // faster chart renders
@@ -854,8 +888,8 @@ function renderEquity(){
 
   $('equity-charts').innerHTML = '<div class="chart-box"><div class="card-label">Equity Composition</div><canvas id="ch-eq1" height="200"></canvas></div><div class="chart-box"><div class="card-label">Capital Structure</div><canvas id="ch-eq2" height="200"></canvas></div>';
   setTimeout(() => {
-    mkChart('ch-eq1',{type:'doughnut',data:{labels:['Share Capital','Retained Earnings','Other Reserves'],datasets:[{data:[e.shareCapital,e.retainedEarnings,e.otherReserves],backgroundColor:['#00c9a7','#22c55e','#a78bfa'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-    mkChart('ch-eq2',{type:'bar',data:{labels:['Share Capital','Retained Earnings','Other Reserves','Total Debt'],datasets:[{data:[e.shareCapital,e.retainedEarnings,e.otherReserves,totalDebt],backgroundColor:['#00c9a7','#22c55e','#a78bfa','#e05252'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-eq1',{type:'doughnut',data:{labels:['Share Capital','Retained Earnings','Other Reserves'],datasets:[{data:[e.shareCapital,e.retainedEarnings,e.otherReserves],backgroundColor:['#0f5c46','#2f7d52','#6b5b95'],borderColor:'#ffffff',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#4b5162'}}}}});
+    mkChart('ch-eq2',{type:'bar',data:{labels:['Share Capital','Retained Earnings','Other Reserves','Total Debt'],datasets:[{data:[e.shareCapital,e.retainedEarnings,e.otherReserves,totalDebt],backgroundColor:['#0f5c46','#2f7d52','#6b5b95','#b33a3a'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(20,16,8,.07)'}},y:{grid:{color:'rgba(20,16,8,.07)'}}}}});
   }, 60);
 
   $('equity-detail').innerHTML = `<div class="card"><div class="section-ttl" style="font-size:13px;margin-bottom:.9rem">Capital Structure Detail</div>
@@ -1051,6 +1085,7 @@ function renderDashboardState(asOfDate, isHistorical, meta){
 
   window.currentAsOf = { isHistorical, asOfDate: today, meta };
   $('dash-ts').textContent = 'As at ' + today.toLocaleDateString('en-GB', {day:'2-digit',month:'long',year:'numeric'}) + (isHistorical ? '  •  reconstructed from dated records  (debtors shown at current balance)' : '  (' + new Date().toLocaleTimeString('en-GB') + ')');
+  try { renderDashInvAlert(today); } catch(e){ console.error('renderDashInvAlert failed:', e); }
 
   // Run the maturity ladder first - it's the single source of truth for the
   // NIS-in-naira figure (Net Interest Margin), computed off the unrounded
@@ -1194,10 +1229,10 @@ function renderDashCharts(totalDebtors, totalInv, totalCash, totalDebt, totalEqu
   const ag={current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'181_270':0,'271_365':0,'365_plus':0};
   _debtorCache.forEach(d=>Object.keys(ag).forEach(k=>{ag[k]+=((d.ageing||{})[k]||0);}));
   setTimeout(()=>{
-    mkChart('ch-ac',{type:'doughnut',data:{labels:['Debtors','Investments','Cash'],datasets:[{data:[totalDebtors,totalInv,totalCash],backgroundColor:['#00c9a7','#63b3ed','#a78bfa'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-    mkChart('ch-fs',{type:'doughnut',data:{labels:['Borrowings','Equity'],datasets:[{data:[totalDebt,totalEquity||0.01],backgroundColor:['#e05252','#22c55e'],borderColor:'#0f1f3d',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
-    mkChart('ch-rc',{type:'bar',data:{labels:['Debtor Yield','Inv Yield','Cash','WACD','Ke'],datasets:[{data:[+avgDR.toFixed(2),+avgIY.toFixed(2),0,+wacd.toFixed(2),ke],backgroundColor:['#00c9a7','#63b3ed','#4a6080','#e05252','#a78bfa'],borderRadius:5}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'},ticks:{callback:v=>v+'%'}}}}});
-    mkChart('ch-ag',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','181-270d','271-365d','365+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#84cc16','#fbbf24','#f59e0b','#ef4444','#dc2626','#991b1b','#7c2d12'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-ac',{type:'doughnut',data:{labels:['Debtors','Investments','Cash'],datasets:[{data:[totalDebtors,totalInv,totalCash],backgroundColor:['#0f5c46','#2f5c8a','#6b5b95'],borderColor:'#ffffff',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#4b5162'}}}}});
+    mkChart('ch-fs',{type:'doughnut',data:{labels:['Borrowings','Equity'],datasets:[{data:[totalDebt,totalEquity||0.01],backgroundColor:['#b33a3a','#2f7d52'],borderColor:'#ffffff',borderWidth:3}]},options:{cutout:'65%',plugins:{legend:{labels:{color:'#4b5162'}}}}});
+    mkChart('ch-rc',{type:'bar',data:{labels:['Debtor Yield','Inv Yield','Cash','WACD','Ke'],datasets:[{data:[+avgDR.toFixed(2),+avgIY.toFixed(2),0,+wacd.toFixed(2),ke],backgroundColor:['#0f5c46','#2f5c8a','#6b7182','#b33a3a','#6b5b95'],borderRadius:5}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(20,16,8,.07)'}},y:{grid:{color:'rgba(20,16,8,.07)'},ticks:{callback:v=>v+'%'}}}}});
+    mkChart('ch-ag',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','181-270d','271-365d','365+d'],datasets:[{data:Object.values(ag),backgroundColor:['#2f7d52','#84cc16','#fbbf24','#f59e0b','#ef4444','#dc2626','#991b1b','#7c2d12'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(20,16,8,.07)'}},y:{grid:{color:'rgba(20,16,8,.07)'}}}}});
   }, 80);
 }
 
@@ -1462,7 +1497,7 @@ function renderLoanKPIs(){
 function renderLoanChart(){
   const ag={current:0,'1_30':0,'31_60':0,'61_90':0,'91_180':0,'181_270':0,'271_365':0,'365_plus':0};
   _debtorCache.forEach(d=>Object.keys(ag).forEach(k=>{ag[k]+=(d.ageing[k]||0);}));
-  setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','181-270d','271-365d','365+d'],datasets:[{data:Object.values(ag),backgroundColor:['#22c55e','#00c9a7','#63b3ed','#fbbf24','#f5a623','#e05252','#dc2626','#7c2d12'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}}),60);
+  setTimeout(()=>mkChart('ch-loan-aging',{type:'bar',data:{labels:['Current','1-30d','31-60d','61-90d','91-180d','181-270d','271-365d','365+d'],datasets:[{data:Object.values(ag),backgroundColor:['#2f7d52','#0f5c46','#2f5c8a','#fbbf24','#9c7a3c','#b33a3a','#dc2626','#7c2d12'],borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(20,16,8,.07)'}},y:{grid:{color:'rgba(20,16,8,.07)'}}}}}),60);
 }
 function setLoanFilter(btn,stage){
   document.querySelectorAll('#loan-filters button').forEach(b=>b.style.cssText='');
@@ -1529,8 +1564,8 @@ function renderBorrowings(){
   $('borrowings-charts').innerHTML='<div class="chart-box"><div class="card-label">Debt Maturity Profile</div><canvas id="ch-bwm" height="170"></canvas></div><div class="chart-box"><div class="card-label">Debt by Type</div><canvas id="ch-bwt" height="170"></canvas></div>';
   setTimeout(()=>{
     const md=b.map(x=>({n:x.lender.split(' ')[0],v:normNum(x.outstanding),d:x.noMaturity?0:Math.max(0,(new Date(x.maturityDate)-now)/86400000)})).sort((a,c)=>a.d-c.d);
-    mkChart('ch-bwm',{type:'bar',data:{labels:md.map(x=>x.n),datasets:[{data:md.map(x=>x.v),backgroundColor:md.map(x=>x.noMaturity?'#a78bfa':x.d<180?'#e05252':x.d<360?'#f5a623':'#00c9a7'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-bwt',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+    mkChart('ch-bwm',{type:'bar',data:{labels:md.map(x=>x.n),datasets:[{data:md.map(x=>x.v),backgroundColor:md.map(x=>x.noMaturity?'#6b5b95':x.d<180?'#b33a3a':x.d<360?'#9c7a3c':'#0f5c46'),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(20,16,8,.07)'}},y:{grid:{color:'rgba(20,16,8,.07)'}}}}});
+    mkChart('ch-bwt',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#ffffff',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#4b5162'}}}}});
   },60);
   const rows=b.map(x=>`<tr>
     <td style="width:30px"><input type="checkbox" class="row-chk bw-chk" value="${x._id}"></td>
@@ -1538,7 +1573,7 @@ function renderBorrowings(){
     <td><strong>${x.lender}</strong>${x.noMaturity?'<div style="font-size:9px;font-family:var(--mo);color:var(--pu)">OPEN-ENDED</div>':''}</td>
     <td style="color:var(--tx2)">${x.type}</td>
     <td class="nm">${fmt(normNum(x.outstanding))}</td>
-    <td class="nm" style="color:${normNum(x.interestRate)>20?'#e05252':normNum(x.interestRate)>16?'#f5a623':'#22c55e'}">${x.interestRate}%</td>
+    <td class="nm" style="color:${normNum(x.interestRate)>20?'#b33a3a':normNum(x.interestRate)>16?'#9c7a3c':'#2f7d52'}">${x.interestRate}%</td>
     <td class="nm">${x.noMaturity?'Open-ended':bwTenorLabel(x)}</td>
     <td style="color:var(--tx2)">${x.repayment}</td>
     <td style="font-family:var(--mo);color:${x.noMaturity?'var(--pu)':'var(--tx2)'}">${x.noMaturity?'On demand':fD(x.maturityDate)}</td>
@@ -1615,6 +1650,75 @@ async function saveBorrowing(id){
 async function deleteBorrowing(id){ if(!confirm('Delete this facility?'))return; try{await api('/treasury/borrowings/'+id,{method:'DELETE'});toast('Deleted.');loadBorrowings();}catch(e){toast(e.message,'err');} }
 
 // ════════════════════════════════════════════════════
+// INVESTMENTS — maturity tracking helpers
+// ════════════════════════════════════════════════════
+const MATURITY_ALERT_DAYS = 30; // "maturing soon" window
+function daysToMaturity(i, ref){
+  if(i.noMaturity || !i.maturityDate) return null;
+  return Math.ceil((new Date(i.maturityDate) - ref) / 86400000);
+}
+function investmentStatus(i, ref){
+  if(i.noMaturity || !i.maturityDate) return 'open';
+  const d = daysToMaturity(i, ref);
+  if(d < 0) return 'matured';
+  if(d <= MATURITY_ALERT_DAYS) return 'soon';
+  return 'active';
+}
+const STATUS_LABEL = {matured:'Matured', soon:'Maturing Soon', active:'Active', open:'Open-ended'};
+function statusBadge(status, days){
+  const extra = status==='matured' ? ` (${Math.abs(days)}d ago)` : status==='soon' ? ` (${days}d)` : '';
+  return `<span class="status-badge st-${status}">${STATUS_LABEL[status]}${extra}</span>`;
+}
+function investmentBuckets(inv, ref){
+  const order = ['Matured','0-7d','8-30d','31-60d','61-90d','91-180d','181-365d','365d+','Open-ended'];
+  const b = {}; order.forEach(k=>b[k]=0);
+  inv.forEach(i=>{
+    if(i.noMaturity || !i.maturityDate){ b['Open-ended']+=i.principal; return; }
+    const d = daysToMaturity(i, ref);
+    let k;
+    if(d<0) k='Matured'; else if(d<=7) k='0-7d'; else if(d<=30) k='8-30d'; else if(d<=60) k='31-60d';
+    else if(d<=90) k='61-90d'; else if(d<=180) k='91-180d'; else if(d<=365) k='181-365d'; else k='365d+';
+    b[k]+=i.principal;
+  });
+  return {order, values:b};
+}
+function investmentAlerts(inv, ref){
+  const matured = inv.filter(i=>investmentStatus(i,ref)==='matured').sort((a,b)=>new Date(a.maturityDate)-new Date(b.maturityDate));
+  const soon    = inv.filter(i=>investmentStatus(i,ref)==='soon').sort((a,b)=>new Date(a.maturityDate)-new Date(b.maturityDate));
+  return {matured, soon};
+}
+function renderInvAlertPanel(inv, ref, dismissKeyPrefix){
+  const {matured, soon} = investmentAlerts(inv, ref);
+  const dismissed = JSON.parse(sessionStorage.getItem('fm_inv_dismissed')||'[]');
+  const rows = [
+    ...matured.filter(i=>!dismissed.includes(i._id)).map(i=>
+      `<div class="ia-row ia-mat">⚠ <span class="ia-txt"><strong>${i.investmentId}</strong> — ${i.counterparty} matured ${fD(i.maturityDate)} (₦${fmt(i.principal)}).</span>
+        <button class="bsm bp" onclick="openInvestmentModal(null,'${i._id}')">Rollover</button>
+        ${dismissKeyPrefix?`<button class="bsm" onclick="dismissInvAlert('${i._id}')">Dismiss</button>`:''}
+      </div>`),
+    ...soon.filter(i=>!dismissed.includes(i._id)).map(i=>{
+      const d = daysToMaturity(i, new Date());
+      return `<div class="ia-row ia-soon">⏰ <span class="ia-txt"><strong>${i.investmentId}</strong> — ${i.counterparty} matures in ${d}d (${fD(i.maturityDate)}, ₦${fmt(i.principal)}).</span>
+        ${dismissKeyPrefix?`<button class="bsm" onclick="dismissInvAlert('${i._id}')">Dismiss</button>`:''}
+      </div>`;
+    }),
+  ];
+  return rows.length ? `<div class="inv-alert-panel">${rows.join('')}</div>` : '';
+}
+function dismissInvAlert(id){
+  const dismissed = JSON.parse(sessionStorage.getItem('fm_inv_dismissed')||'[]');
+  if(!dismissed.includes(id)) dismissed.push(id);
+  sessionStorage.setItem('fm_inv_dismissed', JSON.stringify(dismissed));
+  renderInvestments();
+  const dash = $('dash-inv-alert'); if(dash) renderDashInvAlert(new Date());
+}
+function renderDashInvAlert(ref){
+  const el = $('dash-inv-alert'); if(!el) return;
+  const panel = renderInvAlertPanel(_invCache, ref, false);
+  el.innerHTML = panel ? `<div class="card-label" style="margin-bottom:.5rem">Investment Maturity Alerts</div>${panel}` : '';
+}
+
+// ════════════════════════════════════════════════════
 // INVESTMENTS
 // ════════════════════════════════════════════════════
 async function loadInvestments(){
@@ -1624,60 +1728,101 @@ async function loadInvestments(){
   renderInvestments();
 }
 function renderInvestments(){
-  const inv=_invCache,total=inv.reduce((s,i)=>s+i.principal,0);
-  const fixedInv=inv.filter(i=>!i.noMaturity&&i.maturityDate);
+  const ref = new Date();
+  const all = _invCache;
+  const total=all.reduce((s,i)=>s+i.principal,0);
+  const fixedInv=all.filter(i=>!i.noMaturity&&i.maturityDate);
   const interest=fixedInv.reduce((a,i)=>a+i.principal*(i.interestRate/100)*(i.tenorDays/365),0);
-  const openEndedInv=inv.filter(i=>i.noMaturity);
-  const avgY=total>0?inv.reduce((a,i)=>a+(i.principal/total)*i.interestRate,0):0;
+  const openEndedInv=all.filter(i=>i.noMaturity);
+  const avgY=total>0?all.reduce((a,i)=>a+(i.principal/total)*i.interestRate,0):0;
+  const matured = all.filter(i=>investmentStatus(i,ref)==='matured');
+  const soon    = all.filter(i=>investmentStatus(i,ref)==='soon');
+
+  $('inv-alert-banner').innerHTML = renderInvAlertPanel(all, ref, true);
+
   $('investments-kpis').innerHTML=[
-    {l:'Portfolio Value',        v:fmt(total),    c:'tl',ac:true,sub:inv.length+' instruments'},
+    {l:'Portfolio Value',        v:fmt(total),    c:'tl',ac:true,sub:all.length+' instruments'},
     {l:'Projected Interest (Fixed)',v:fmt(interest),c:'am',sub:fixedInv.length+' dated instruments'},
     {l:'Weighted Avg Yield',     v:pct(avgY),    c:'gr',sub:'WARA on investments'},
     {l:'Open-ended Holdings',    v:fmt(openEndedInv.reduce((s,i)=>s+i.principal,0)),c:'pu',sub:openEndedInv.length+' (MMF)'},
+    {l:'Matured — Action Needed',v:fmt(matured.reduce((s,i)=>s+i.principal,0)),c:'rd',sub:matured.length+' instrument(s)'},
+    {l:'Maturing ≤30 Days',      v:fmt(soon.reduce((s,i)=>s+i.principal,0)),c:'am',sub:soon.length+' instrument(s)'},
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
-  const typeMap={}; inv.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
-  $('investments-charts').innerHTML='<div class="chart-box"><div class="card-label">Maturity Ladder</div><canvas id="ch-ivl" height="170"></canvas></div><div class="chart-box"><div class="card-label">Portfolio Mix</div><canvas id="ch-ivm" height="170"></canvas></div>';
+
+  const typeMap={}; all.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
+  const buckets = investmentBuckets(all, ref);
+  const bucketColors = {'Matured':'#b33a3a','0-7d':'#c1743a','8-30d':'#9c7a3c','31-60d':'#7d8a3f','61-90d':'#2f7d52','91-180d':'#0f5c46','181-365d':'#2f5c8a','365d+':'#6b5b95','Open-ended':'#6b5b95'};
+  $('investments-charts').innerHTML='<div class="chart-box"><div class="card-label">Maturity Ladder (by time-to-maturity)</div><canvas id="ch-ivl" height="170"></canvas></div><div class="chart-box"><div class="card-label">Portfolio Mix (by type)</div><canvas id="ch-ivm" height="170"></canvas></div>';
   setTimeout(()=>{
-    mkChart('ch-ivl',{type:'bar',data:{labels:fixedInv.map(i=>i.counterparty.split(' ')[0]),datasets:[{label:'Principal',data:fixedInv.map(i=>i.principal),backgroundColor:'#00c9a7',stack:'a'},{label:'Interest',data:fixedInv.map(i=>+(i.principal*(i.interestRate/100)*(i.tenorDays/365)).toFixed(2)),backgroundColor:'#f5a623',borderRadius:4,stack:'a'}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}},y:{stacked:true,grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-ivm',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+    mkChart('ch-ivl',{type:'bar',data:{labels:buckets.order,datasets:[{label:'Principal',data:buckets.order.map(k=>buckets.values[k]),backgroundColor:buckets.order.map(k=>bucketColors[k]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(20,16,8,.07)'}},y:{grid:{color:'rgba(20,16,8,.07)'}}}}});
+    mkChart('ch-ivm',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#ffffff',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#4b5162'}}}}});
   },60);
+
+  // filters
+  const q = ($('inv-search')?.value||'').trim().toLowerCase();
+  const statusFilter = $('inv-status-filter')?.value||'all';
+  const typeFilter = $('inv-type-filter')?.value||'all';
+  let inv = all.filter(i=>{
+    if(q && !((i.investmentId||'').toLowerCase().includes(q) || (i.counterparty||'').toLowerCase().includes(q))) return false;
+    if(statusFilter!=='all' && investmentStatus(i,ref)!==statusFilter) return false;
+    if(typeFilter!=='all' && i.type!==typeFilter) return false;
+    return true;
+  });
+  // sort: matured (most overdue first) → soon (nearest first) → active (nearest first) → open-ended
+  const rank = {matured:0, soon:1, active:2, open:3};
+  inv = inv.slice().sort((a,b)=>{
+    const sa=investmentStatus(a,ref), sb=investmentStatus(b,ref);
+    if(rank[sa]!==rank[sb]) return rank[sa]-rank[sb];
+    if(sa==='open') return 0;
+    return new Date(a.maturityDate)-new Date(b.maturityDate);
+  });
+
   const rows=inv.map(i=>{ const isOE=i.noMaturity||!i.maturityDate; const projInt=isOE?null:i.principal*(i.interestRate/100)*(i.tenorDays/365);
+    const status = investmentStatus(i, ref); const d = daysToMaturity(i, ref);
     return`<tr><td style="width:30px"><input type="checkbox" class="row-chk inv-chk" value="${i._id}"></td>
       <td style="font-family:var(--mo);color:var(--t)">${i.investmentId}</td>
-      <td><strong>${i.counterparty}</strong>${isOE?'<div style="font-size:9px;color:var(--pu)">OPEN-ENDED</div>':''}</td>
+      <td><strong>${i.counterparty}</strong></td>
       <td style="color:var(--tx2)">${i.type}</td><td class="nm">${fmt(i.principal)}</td>
-      <td class="nm" style="color:#22c55e">${i.interestRate}%</td>
+      <td class="nm" style="color:#2f7d52">${i.interestRate}%</td>
       <td class="nm">${isOE?'Open-ended':i.tenorDays+'d'}</td>
       <td style="color:var(--tx2)">${fD(i.dateInvested)}</td>
       <td style="color:${isOE?'var(--pu)':'var(--tx2)'}">${isOE?'On demand':fD(i.maturityDate)}</td>
-      <td class="nm" style="color:${isOE?'var(--tx3)':'#f5a623'}">${isOE?'Variable':fmt(projInt)}${(()=>{const est=estAccrual(i.principal,i.interestRate,lastPostedDate(i,new Date(),'dateInvested'),new Date());return est.amount>0?`<div style="font-size:9px;font-family:var(--mo);color:var(--tx3)" title="Estimated only - not posted, computed from days since last recorded principal">~${fmt(est.amount)} earned to date (${est.days}d)</div>`:'';})()}</td>
+      <td>${statusBadge(status, d)}</td>
+      <td class="nm" style="color:${isOE?'var(--tx3)':'#9c7a3c'}">${isOE?'Variable':fmt(projInt)}${(()=>{const est=estAccrual(i.principal,i.interestRate,lastPostedDate(i,new Date(),'dateInvested'),new Date());return est.amount>0?`<div style="font-size:9px;font-family:var(--mo);color:var(--tx3)" title="Estimated only - not posted, computed from days since last recorded principal">~${fmt(est.amount)} earned to date (${est.days}d)</div>`:'';})()}</td>
       <td><div style="display:flex;gap:3px">
+        ${status==='matured'?`<button class="bsm bp" onclick="openInvestmentModal(null,'${i._id}')" style="padding:3px 7px" title="Roll over into a new placement">↻</button>`:''}
         <button class="bsm" onclick="openInvestmentModal('${i._id}')" style="padding:3px 7px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
         <button class="bsm bd" onclick="deleteInvestment('${i._id}')" style="padding:3px 7px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
       </div></td></tr>`;
   }).join('');
+  const shownTotal = inv.reduce((s,i)=>s+i.principal,0);
+  const shownAvgY = shownTotal>0?inv.reduce((a,i)=>a+(i.principal/shownTotal)*i.interestRate,0):0;
   $('investments-table-wrap').innerHTML=
     `<div class="bulk-bar" id="inv-bulk"><span id="inv-bulk-cnt">0 selected</span><button class="bd bsm" onclick="bulkDeleteInvestments()">Delete Selected</button><button class="bsm" onclick="clearBulkInv()">Clear</button></div>
-    <div class="nt-info" style="margin-bottom:.65rem;font-size:11px">💡 Open-ended instruments (MMF, Notice Deposits) show variable interest.</div>
-    <div class="card-label">Investment Schedule</div><div class="tw"><table>
-    <thead><tr><th style="width:30px"><input type="checkbox" class="row-chk" id="inv-chk-all" onchange="toggleAllChk(this,'.inv-chk','inv-bulk','inv-bulk-cnt')"></th><th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th class="nm">Interest</th><th></th></tr></thead>
-    <tbody>${rows}<tr class="trt"><td></td><td colspan="3" style="text-align:right">TOTAL</td><td class="nm">${fmt(total)}</td><td class="nm">${pct(avgY)}</td><td colspan="5"></td></tr></tbody></table></div>`;
+    <div class="nt-info" style="margin-bottom:.65rem;font-size:11px">💡 Open-ended instruments (MMF, Notice Deposits) show variable interest. Status is computed live from today's date — Matured/Maturing Soon badges update automatically, no manual flagging needed.</div>
+    <div class="card-label">Investment Schedule${inv.length!==all.length?` (${inv.length} of ${all.length} shown)`:''}</div><div class="tw"><table>
+    <thead><tr><th style="width:30px"><input type="checkbox" class="row-chk" id="inv-chk-all" onchange="toggleAllChk(this,'.inv-chk','inv-bulk','inv-bulk-cnt')"></th><th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th>Status</th><th class="nm">Interest</th><th></th></tr></thead>
+    <tbody>${rows||'<tr><td colspan="11" class="loading-row">No investments match the current filters.</td></tr>'}<tr class="trt"><td></td><td colspan="3" style="text-align:right">TOTAL${inv.length!==all.length?' (filtered)':''}</td><td class="nm">${fmt(shownTotal)}</td><td class="nm">${pct(shownAvgY)}</td><td colspan="6"></td></tr></tbody></table></div>`;
   document.querySelectorAll('.inv-chk').forEach(c=>c.addEventListener('change',()=>updateBulkBar('.inv-chk','inv-bulk','inv-bulk-cnt')));
 }
-function openInvestmentModal(id){
+function openInvestmentModal(id, rolloverFromId){
   const i=id?_invCache.find(x=>x._id===id):null; const isOE=i?.noMaturity||false;
+  const rf = rolloverFromId ? _invCache.find(x=>x._id===rolloverFromId) : null;
+  const src = i || rf;
+  const isRollover = !!rf;
   const todayStr0 = new Date().toISOString().slice(0,10);
-  openModal(i?'Edit Investment':'Add Investment',
+  openModal(isRollover?'Rollover Investment (New Placement)':(i?'Edit Investment':'Add Investment'),
     `<div class="merr" id="iv-err"></div>
-    <div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="${i?.investmentId||''}"></div><div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="${i?.counterparty||''}"></div></div>
-    <div class="fld"><label>Type</label><select class="finput" id="ii-type" onchange="onInvTypeChange(this)">${['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper','Money Market Fund','Notice Deposit','Other Open-ended'].map(t=>`<option ${i?.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
-    <div class="fg"><div class="fld"><label>Principal (₦) *</label><input class="finput" type="number" id="ii-prin" value="${i?.principal||''}"></div><div class="fld"><label>Rate (%)</label><input class="finput" type="number" id="ii-rate" value="${i?.interestRate||''}"></div></div>
-    <div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="${i?.dateInvested?.slice(0,10)||''}"></div><div class="fld" id="ii-days-wrap"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="${i?.tenorDays||''}"></div></div>
-    <div class="fld" id="ii-mat-wrap" style="${isOE?'display:none':''}"><label>Maturity Date</label><input class="finput" type="date" id="ii-matdate" value="${i?.maturityDate?.slice(0,10)||''}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">Leave blank to auto-compute from tenor.</div></div>
-    <div class="fld"><label>Principal Effective Date *</label><input class="finput" type="date" id="ii-effdate" value="${i?todayStr0:(i?.dateInvested?.slice(0,10)||todayStr0)}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The period the Principal above is reported as at (distinct from Date Invested, which is when the placement began).</div></div>
-    <div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="ii-nomat" ${isOE?'checked':''} style="accent-color:var(--pu)" onchange="toggleInvMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended (MMF, on-demand)</span></label></div>`,
-    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment('${i?i._id:''}')"><span id="ii-sv">${i?'Save Changes':'Add Investment'}</span></button>`);
-  if(i?.type==='Money Market Fund'||i?.type==='Notice Deposit'||i?.type==='Other Open-ended'){ const cb=$('ii-nomat'); if(cb&&!cb.checked){cb.checked=true;toggleInvMat(cb);} }
+    ${isRollover?`<div class="nt-info" style="margin-bottom:.85rem;font-size:11px">↻ Rolling over ${rf.investmentId} (${rf.counterparty}). This creates a new placement — the matured record stays in your history untouched; delete it separately once you've reconciled the proceeds.</div>`:''}
+    <div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="${isRollover?'':(i?.investmentId||'')}" placeholder="${isRollover?rf.investmentId+'-R':''}"></div><div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="${src?.counterparty||''}"></div></div>
+    <div class="fld"><label>Type</label><select class="finput" id="ii-type" onchange="onInvTypeChange(this)">${['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper','Money Market Fund','Notice Deposit','Other Open-ended'].map(t=>`<option ${src?.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div class="fg"><div class="fld"><label>Principal (₦) *</label><input class="finput" type="number" id="ii-prin" value="${src?.principal||''}"></div><div class="fld"><label>Rate (%)</label><input class="finput" type="number" id="ii-rate" value="${src?.interestRate||''}"></div></div>
+    <div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="${isRollover?(rf.maturityDate?.slice(0,10)||todayStr0):(i?.dateInvested?.slice(0,10)||'')}"></div><div class="fld" id="ii-days-wrap"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="${src?.tenorDays||''}"></div></div>
+    <div class="fld" id="ii-mat-wrap" style="${isOE?'display:none':''}"><label>Maturity Date</label><input class="finput" type="date" id="ii-matdate" value="${isRollover?'':(i?.maturityDate?.slice(0,10)||'')}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">Leave blank to auto-compute from tenor.</div></div>
+    <div class="fld"><label>Principal Effective Date *</label><input class="finput" type="date" id="ii-effdate" value="${(i&&!isRollover)?todayStr0:todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The period the Principal above is reported as at (distinct from Date Invested, which is when the placement began).</div></div>
+    <div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="ii-nomat" ${isOE&&!isRollover?'checked':''} style="accent-color:var(--pu)" onchange="toggleInvMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended (MMF, on-demand)</span></label></div>`,
+    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment('${(i&&!isRollover)?i._id:''}')"><span id="ii-sv">${isRollover?'Create Rolled-Over Placement':(i?'Save Changes':'Add Investment')}</span></button>`);
+  if(!isRollover && (i?.type==='Money Market Fund'||i?.type==='Notice Deposit'||i?.type==='Other Open-ended')){ const cb=$('ii-nomat'); if(cb&&!cb.checked){cb.checked=true;toggleInvMat(cb);} }
 }
 function toggleInvMat(cb){ const w=$('ii-mat-wrap'); if(w) w.style.display=cb.checked?'none':''; }
 function onInvTypeChange(sel){ const cb=$('ii-nomat'); if(!cb) return; if(['Money Market Fund','Notice Deposit','Other Open-ended'].includes(sel.value)){cb.checked=true;toggleInvMat(cb);} }
@@ -1724,15 +1869,15 @@ function renderCash(){
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
   $('cash-charts').innerHTML='<div class="chart-box"><div class="card-label">Cash by Bank (NGN)</div><canvas id="ch-cbn" height="170"></canvas></div><div class="chart-box"><div class="card-label">Restricted vs Unrestricted</div><canvas id="ch-crs" height="170"></canvas></div>';
   setTimeout(()=>{
-    mkChart('ch-cbn',{type:'bar',data:{labels:ngn.map(a=>a.bank.split(' ')[0]),datasets:[{data:ngn.map(a=>a.balance),backgroundColor:ngn.map((a,i)=>a.restricted?'#e05252':PAL[i%PAL.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-crs',{type:'doughnut',data:{labels:['Unrestricted','Restricted'],datasets:[{data:[unres||0.01,totalNGN-unres||0.01],backgroundColor:['#22c55e','#e05252'],borderColor:'#0f1f3d',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}}}});
+    mkChart('ch-cbn',{type:'bar',data:{labels:ngn.map(a=>a.bank.split(' ')[0]),datasets:[{data:ngn.map(a=>a.balance),backgroundColor:ngn.map((a,i)=>a.restricted?'#b33a3a':PAL[i%PAL.length]),borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(20,16,8,.07)'}},y:{grid:{color:'rgba(20,16,8,.07)'}}}}});
+    mkChart('ch-crs',{type:'doughnut',data:{labels:['Unrestricted','Restricted'],datasets:[{data:[unres||0.01,totalNGN-unres||0.01],backgroundColor:['#2f7d52','#b33a3a'],borderColor:'#ffffff',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#4b5162'}}}}});
   },60);
   const rows=ca.map(a=>`<tr>
     <td style="width:30px"><input type="checkbox" class="row-chk cash-chk" value="${a._id}"></td>
     <td style="font-family:var(--mo);color:var(--t)">${a.accountId}</td><td><strong>${a.bank}</strong></td>
     <td style="font-family:var(--mo);font-size:11px;color:var(--tx2)">${a.accountNo}</td>
     <td style="color:var(--tx2)">${a.type}</td>
-    <td style="color:${a.currency==='USD'?'#f5a623':'inherit'}">${a.currency}</td>
+    <td style="color:${a.currency==='USD'?'#9c7a3c':'inherit'}">${a.currency}</td>
     <td class="nm">${fmt(a.balance)}</td>
     <td><span class="pl ${a.restricted?'pr':'pg'}">${a.restricted?'🔒 Restricted':'✓ Available'}</span></td>
     <td><div style="display:flex;gap:3px">
@@ -1806,14 +1951,14 @@ async function loadLiquidity(){
   const gapD=['0-7d','8-30d','31-60d','61-90d','91-180d','181-365d'].map((p,i)=>({p,in:[totalDebtors*.04,totalDebtors*.08,totalDebtors*.12,totalDebtors*.05,totalDebtors*.15,totalDebtors*.20][i],out:[totalDebt*.02,totalDebt*.05,totalDebt*.04,totalDebt*.08,totalDebt*.03,totalDebt*.05][i]}));
   $('liq-charts2').innerHTML='<div class="chart-box"><div class="card-label">Liquidity Gap</div><canvas id="ch-lqg" height="170"></canvas></div><div class="chart-box"><div class="card-label">Sources &amp; Obligations</div><div id="liq-src-inner" style="margin-top:.5rem"></div></div>';
   setTimeout(()=>{
-    mkChart('ch-liq-forecast',{type:'line',data:{labels:liqF.map(d=>d.p),datasets:[{label:'Net Flow',data:liqF.map(d=>d.n),borderColor:'#00c9a7',backgroundColor:'rgba(0,201,167,.08)',fill:true,tension:.4,pointBackgroundColor:'#00c9a7',pointRadius:3},{label:'Cumulative',data:liqF.map(d=>d.c),borderColor:'#63b3ed',fill:false,tension:.3,borderDash:[5,5],pointBackgroundColor:'#63b3ed',pointRadius:3}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
-    mkChart('ch-lqg',{type:'bar',data:{labels:gapD.map(d=>d.p),datasets:[{label:'Inflows',data:gapD.map(d=>d.in),backgroundColor:'#22c55e',borderRadius:4},{label:'Outflows',data:gapD.map(d=>d.out),backgroundColor:'#e05252',borderRadius:4}]},options:{plugins:{legend:{labels:{color:'#8fa3bf'}}},scales:{x:{grid:{color:'rgba(255,255,255,.07)'}},y:{grid:{color:'rgba(255,255,255,.07)'}}}}});
+    mkChart('ch-liq-forecast',{type:'line',data:{labels:liqF.map(d=>d.p),datasets:[{label:'Net Flow',data:liqF.map(d=>d.n),borderColor:'#0f5c46',backgroundColor:'rgba(var(--t-rgb),.08)',fill:true,tension:.4,pointBackgroundColor:'#0f5c46',pointRadius:3},{label:'Cumulative',data:liqF.map(d=>d.c),borderColor:'#2f5c8a',fill:false,tension:.3,borderDash:[5,5],pointBackgroundColor:'#2f5c8a',pointRadius:3}]},options:{plugins:{legend:{labels:{color:'#4b5162'}}},scales:{x:{grid:{color:'rgba(20,16,8,.07)'}},y:{grid:{color:'rgba(20,16,8,.07)'}}}}});
+    mkChart('ch-lqg',{type:'bar',data:{labels:gapD.map(d=>d.p),datasets:[{label:'Inflows',data:gapD.map(d=>d.in),backgroundColor:'#2f7d52',borderRadius:4},{label:'Outflows',data:gapD.map(d=>d.out),backgroundColor:'#b33a3a',borderRadius:4}]},options:{plugins:{legend:{labels:{color:'#4b5162'}}},scales:{x:{grid:{color:'rgba(20,16,8,.07)'}},y:{grid:{color:'rgba(20,16,8,.07)'}}}}});
     const unres=_cashCache.filter(a=>!a.restricted&&a.currency==='NGN').reduce((s,a)=>s+a.balance,0);
     const shortInv=_invCache.filter(i=>i.noMaturity||(i.tenorDays>0&&i.tenorDays<=90)).reduce((s,i)=>s+i.principal,0);
     const el=$('liq-src-inner');
-    if(el)el.innerHTML=[[fmt(unres),'Unrestricted Cash','#00c9a7'],[fmt(shortInv),'Liquid Investments (<90d)','#63b3ed'],[fmt(totalDebtors*.12),'Debtor Collections (est.)','#22c55e']].map(([v,l,c])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:7px"><div style="width:3px;height:13px;border-radius:2px;background:${c}"></div><span style="font-size:12px;color:var(--tx2)">${l}</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:${c}">${v}</span></div>`).join('')+
+    if(el)el.innerHTML=[[fmt(unres),'Unrestricted Cash','#0f5c46'],[fmt(shortInv),'Liquid Investments (<90d)','#2f5c8a'],[fmt(totalDebtors*.12),'Debtor Collections (est.)','#2f7d52']].map(([v,l,c])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(20,16,8,.07)"><div style="display:flex;align-items:center;gap:7px"><div style="width:3px;height:13px;border-radius:2px;background:${c}"></div><span style="font-size:12px;color:var(--tx2)">${l}</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:${c}">${v}</span></div>`).join('')+
       '<div style="font-size:11px;color:var(--tx3);font-family:var(--mo);padding:7px 0">Near-term Obligations:</div>'+
-      [[fmt(totalDebt*.12),'Debt Maturities (<90d)','#e05252'],[fmt(totalDebt*.05),'Estimated Interest (90d)','#f5a623']].map(([v,l,c])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div style="display:flex;align-items:center;gap:7px"><div style="width:3px;height:13px;border-radius:2px;background:${c}"></div><span style="font-size:12px;color:var(--tx2)">${l}</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:${c}">${v}</span></div>`).join('');
+      [[fmt(totalDebt*.12),'Debt Maturities (<90d)','#b33a3a'],[fmt(totalDebt*.05),'Estimated Interest (90d)','#9c7a3c']].map(([v,l,c])=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(20,16,8,.07)"><div style="display:flex;align-items:center;gap:7px"><div style="width:3px;height:13px;border-radius:2px;background:${c}"></div><span style="font-size:12px;color:var(--tx2)">${l}</span></div><span style="font-family:var(--mo);font-size:12px;font-weight:600;color:${c}">${v}</span></div>`).join('');
   },80);
 }
 
@@ -1852,7 +1997,7 @@ function openUploadModal(module){
   const tpl=UPLOAD_TPLS[module];
   const todayStr0 = new Date().toISOString().slice(0,10);
   openModal('Upload '+tpl.label,
-    `<div style="background:var(--td);border:1px solid rgba(0,201,167,.25);border-radius:var(--r);padding:13px 15px;margin-bottom:1.1rem">
+    `<div style="background:var(--td);border:1px solid rgba(var(--t-rgb),.25);border-radius:var(--r);padding:13px 15px;margin-bottom:1.1rem">
       <div style="font-size:13px;font-weight:600;color:var(--tx);margin-bottom:7px">Step 1 - Download the template</div>
       <button onclick="downloadSampleTemplate('${module}')" style="background:var(--t);border-color:var(--t);color:var(--n);font-weight:600;padding:6px 14px;font-size:12px">⬇ Download ${tpl.filename}</button>
     </div>
@@ -1908,7 +2053,7 @@ async function loadTeam(){
     const d=await api('/org/team');
     if(!d.members?.length){ $('team-table').innerHTML=empty('No team members yet.'); return; }
     $('team-table').innerHTML='<div class="tw"><table><thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th></th></tr></thead><tbody>'+
-      d.members.map(m=>'<tr><td><strong>'+m.name+'</strong></td><td style="font-family:var(--mo);font-size:11px">'+m.username+'</td><td style="font-size:12px;color:var(--tx2)">'+m.email+'</td><td><span class="team-role-badge '+(m.orgRole==='admin'?'team-role-admin':'team-role-member')+'">'+m.orgRole+'</span></td><td style="font-size:12px"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:'+(m.active?'#22c55e':'#e05252')+'"></span>'+(m.active?'Active':'Inactive')+'</span></td><td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">'+(m.lastLogin?fD(m.lastLogin):'Never')+'</td><td><button class="bsm bd" onclick="removeTeamMember(\''+m._id+'\')" style="padding:4px 10px">Remove</button></td></tr>').join('')+
+      d.members.map(m=>'<tr><td><strong>'+m.name+'</strong></td><td style="font-family:var(--mo);font-size:11px">'+m.username+'</td><td style="font-size:12px;color:var(--tx2)">'+m.email+'</td><td><span class="team-role-badge '+(m.orgRole==='admin'?'team-role-admin':'team-role-member')+'">'+m.orgRole+'</span></td><td style="font-size:12px"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:'+(m.active?'#2f7d52':'#b33a3a')+'"></span>'+(m.active?'Active':'Inactive')+'</span></td><td style="font-family:var(--mo);font-size:11px;color:var(--tx3)">'+(m.lastLogin?fD(m.lastLogin):'Never')+'</td><td><button class="bsm bd" onclick="removeTeamMember(\''+m._id+'\')" style="padding:4px 10px">Remove</button></td></tr>').join('')+
       '</tbody></table></div>';
   }catch(e){ $('team-table').innerHTML='<div class="nt">⚠ '+e.message+'</div>'; }
 }
@@ -2806,37 +2951,37 @@ document.addEventListener('DOMContentLoaded', () => {
   tenor_days, principal, accrued_interest, outstanding, value_date,
   maturity_date, effective_date, borrowing_type, repayment_schedule, no_maturity.
 -->
-<footer class="fm-legal-footer" style="border-top:1px solid rgba(255,255,255,.08);padding:1.3rem 1.4rem;text-align:center;margin-top:2rem;font-family:'IBM Plex Mono',monospace">
+<footer class="fm-legal-footer" style="border-top:1px solid rgba(20,16,8,.08);padding:1.3rem 1.4rem;text-align:center;margin-top:2rem;font-family:'IBM Plex Mono',monospace">
   <nav style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;margin-bottom:.55rem">
-    <a href="/home/legal/terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Terms</a>
-    <a href="/home/legal/privacy/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy</a>
-    <a href="/home/legal/cookies/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Cookies</a>
-    <a href="/home/legal/disclaimer/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Disclaimer</a>
-    <a href="/home/legal/acceptable-use/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Acceptable Use</a>
-    <a href="/home/legal/ai-consent/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">AI Consent</a>
-    <a href="/home/legal/dpa/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">DPA</a>
-    <a href="/home/legal/data-processing-notice/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Data Processing Notice</a>
-    <a href="/home/legal/subscription-terms/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Subscription Terms</a>
-    <a href="/home/legal/consent-release/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Consent &amp; Release</a>
-    <a href="/home/legal/privacy-preferences/" style="color:#8fa3bf;text-decoration:none;font-size:.74rem">Privacy Preferences</a>
+    <a href="/home/legal/terms/" style="color:#4b5162;text-decoration:none;font-size:.74rem">Terms</a>
+    <a href="/home/legal/privacy/" style="color:#4b5162;text-decoration:none;font-size:.74rem">Privacy</a>
+    <a href="/home/legal/cookies/" style="color:#4b5162;text-decoration:none;font-size:.74rem">Cookies</a>
+    <a href="/home/legal/disclaimer/" style="color:#4b5162;text-decoration:none;font-size:.74rem">Disclaimer</a>
+    <a href="/home/legal/acceptable-use/" style="color:#4b5162;text-decoration:none;font-size:.74rem">Acceptable Use</a>
+    <a href="/home/legal/ai-consent/" style="color:#4b5162;text-decoration:none;font-size:.74rem">AI Consent</a>
+    <a href="/home/legal/dpa/" style="color:#4b5162;text-decoration:none;font-size:.74rem">DPA</a>
+    <a href="/home/legal/data-processing-notice/" style="color:#4b5162;text-decoration:none;font-size:.74rem">Data Processing Notice</a>
+    <a href="/home/legal/subscription-terms/" style="color:#4b5162;text-decoration:none;font-size:.74rem">Subscription Terms</a>
+    <a href="/home/legal/consent-release/" style="color:#4b5162;text-decoration:none;font-size:.74rem">Consent &amp; Release</a>
+    <a href="/home/legal/privacy-preferences/" style="color:#4b5162;text-decoration:none;font-size:.74rem">Privacy Preferences</a>
   </nav>
-  <small style="color:#4a6080;font-size:.7rem">&copy; 2026 FM Finance Suite. All rights reserved.</small>
+  <small style="color:#6b7182;font-size:.7rem">&copy; 2026 FM Finance Suite. All rights reserved.</small>
 </footer>
 <script>
 function fmApplyThemeIcon(){
   var btn = document.getElementById('fm-theme-toggle');
   if(!btn) return;
-  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  btn.textContent = isLight ? '☀️' : '🌙';
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  btn.textContent = isDark ? '☀️' : '🌙';
 }
 function fmToggleTheme(){
-  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  if(isLight){
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if(isDark){
     document.documentElement.removeAttribute('data-theme');
-    try{ localStorage.setItem('fm_theme','dark'); }catch(e){}
-  } else {
-    document.documentElement.setAttribute('data-theme','light');
     try{ localStorage.setItem('fm_theme','light'); }catch(e){}
+  } else {
+    document.documentElement.setAttribute('data-theme','dark');
+    try{ localStorage.setItem('fm_theme','dark'); }catch(e){}
   }
   fmApplyThemeIcon();
 }
