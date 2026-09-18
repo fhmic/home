@@ -53,7 +53,7 @@
   --mo:'IBM Plex Mono',monospace;--sa:'DM Sans',sans-serif;--di:'Fraunces',serif;
   --sh:0 1px 3px rgba(20,16,8,.04),0 4px 16px rgba(20,16,8,.05);
 }
-html[data-theme="dark"]{--n:#10141c;--n2:#161c27;--n3:#1b2230;--n4:#232b3c;--n-rgb:16,20,28;--t:#35b98d;--t2:#2ca57e;--t-rgb:53,185,141;--td:rgba(53,185,141,.14);--tg:rgba(53,185,141,.06);--am:#c9a15f;--am-rgb:201,161,95;--rd:#e06b6b;--rd-rgb:224,107,107;--gr:#4caf7b;--gr-rgb:76,175,123;--bl:#6fa8d8;--bl-rgb:111,168,216;--pu:#9c8adb;--pu-rgb:156,138,219;--tx:#edeff3;--tx2:#a7aebb;--tx3:#7c8494;--b:rgba(20,16,8,.07);--b2:rgba(20,16,8,.13);--sf:rgba(20,16,8,.04);--sf2:rgba(20,16,8,.08);--sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);}
+html[data-theme="dark"]{--n:#10141c;--n2:#161c27;--n3:#1b2230;--n4:#232b3c;--n-rgb:16,20,28;--t:#35b98d;--t2:#2ca57e;--t-rgb:53,185,141;--td:rgba(53,185,141,.14);--tg:rgba(53,185,141,.06);--am:#c9a15f;--am-rgb:201,161,95;--rd:#e06b6b;--rd-rgb:224,107,107;--gr:#4caf7b;--gr-rgb:76,175,123;--bl:#6fa8d8;--bl-rgb:111,168,216;--pu:#9c8adb;--pu-rgb:156,138,219;--tx:#edeff3;--tx2:#a7aebb;--tx3:#7c8494;--b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);--sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.08);--sh:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);}
 
 html{font-size:16px;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
@@ -107,6 +107,8 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 .status-badge.st-soon{background:rgba(var(--am-rgb),.12);color:var(--am)}
 .status-badge.st-active{background:rgba(var(--t-rgb),.12);color:var(--t)}
 .status-badge.st-open{background:rgba(var(--pu-rgb),.12);color:var(--pu)}
+.status-badge.st-closed{background:rgba(20,16,8,.08);color:var(--tx3)}
+.status-badge.st-rolled_over{background:rgba(var(--bl-rgb),.12);color:var(--bl)}
 .kpi{background:var(--n3);border:1px solid var(--b);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;will-change:auto}
 .kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:var(--r) 0 0 var(--r)}
 .kpi.tl::before,.kpi.ac::before{background:var(--t)}.kpi.rd::before{background:var(--rd)}.kpi.am::before{background:var(--am)}.kpi.gr::before{background:var(--gr)}.kpi.bl::before{background:var(--bl)}.kpi.pu::before{background:var(--pu)}
@@ -444,6 +446,8 @@ input[type=checkbox].row-chk{accent-color:var(--t);width:14px;height:14px;cursor
             <option value="soon">Maturing soon (≤30d)</option>
             <option value="active">Active</option>
             <option value="open">Open-ended</option>
+            <option value="rolled_over">Rolled Over</option>
+            <option value="closed">Closed</option>
           </select>
           <select class="finput" id="inv-type-filter" style="max-width:200px" onchange="renderInvestments()">
             <option value="all">All types</option>
@@ -665,8 +669,17 @@ function normalizeInvestments(arr){
   return (arr||[]).map(i=>({
     ...i,
     principal:    normNum(i.principal),
+    originalPrincipal: i.originalPrincipal!=null ? normNum(i.originalPrincipal) : normNum(i.principal),
     interestRate: normNum(i.interestRate),
     tenorDays:    normNum(i.tenorDays),
+    interestType: i.interestType || 'simple',
+    compoundFrequency: i.compoundFrequency || 'annual',
+    valuationMethod: i.valuationMethod || 'rate',
+    status:       i.status || 'active',
+    transactions: Array.isArray(i.transactions) ? i.transactions : [],
+    rateHistory:  Array.isArray(i.rateHistory) && i.rateHistory.length ? i.rateHistory : [{rate:normNum(i.interestRate), asAt:i.dateInvested}],
+    rolledFrom:   i.rolledFrom || null,
+    rolledTo:     i.rolledTo || null,
   }));
 }
 function normalizeCash(arr){
@@ -1650,21 +1663,91 @@ async function saveBorrowing(id){
 async function deleteBorrowing(id){ if(!confirm('Delete this facility?'))return; try{await api('/treasury/borrowings/'+id,{method:'DELETE'});toast('Deleted.');loadBorrowings();}catch(e){toast(e.message,'err');} }
 
 // ════════════════════════════════════════════════════
-// INVESTMENTS — maturity tracking helpers
+// INVESTMENTS — interest math (simple + compound) & maturity tracking
 // ════════════════════════════════════════════════════
+const COMPOUND_PERIODS = {daily:365, monthly:12, quarterly:4, semiannual:2, annual:1};
+const COMPOUND_FREQ_LABEL = {daily:'Daily', monthly:'Monthly', quarterly:'Quarterly', semiannual:'Semi-Annual', annual:'Annual'};
+// Mirrors computeInterest() in server.js - keep the two in sync if either changes.
+function calcInterest(principal, ratePct, days, interestType, compoundFrequency){
+  if(days<=0 || !principal || !ratePct) return 0;
+  const years = days/365;
+  if(interestType==='compound'){
+    const n = COMPOUND_PERIODS[compoundFrequency]||1;
+    return principal*Math.pow(1+(ratePct/100)/n, n*years) - principal;
+  }
+  return principal*(ratePct/100)*years;
+}
+// Day-by-day accrual across a moving rate AND a moving principal - the
+// correct way to compute interest-to-date for a Money Market Fund whose
+// published rate changes daily/periodically independent of top-ups and
+// withdrawals. Simple interest per segment (P × r/365 × days) is standard
+// practice for variable/floating instruments - compounding a rate that's
+// about to change again next period isn't meaningful the way it is for a
+// fixed-rate term deposit.
+function calcAccruedToDate(i, ref){
+  if(i.valuationMethod==='balance'){
+    // No formula at all here - interest-to-date is the sum of every
+    // recorded (newBalance - oldBalance) since the last statement, exactly
+    // as reported. Nothing is estimated for the gap since the last
+    // statement - lastRevaluationDate() below surfaces that gap explicitly
+    // rather than silently projecting into it.
+    return (i.transactions||[]).filter(t=>t.type==='revaluation' && new Date(t.date)<=ref).reduce((s,t)=>s+t.amount, 0);
+  }
+  const rates = (i.rateHistory&&i.rateHistory.length?i.rateHistory:[{rate:i.interestRate, asAt:i.dateInvested}]).slice().sort((a,b)=>new Date(a.asAt)-new Date(b.asAt));
+  const isVariable = rates.length > 1;
+  if(!isVariable){
+    // No recorded rate changes - fall back to the simple/compound formula
+    // the user picked, over the days elapsed since the last posted balance.
+    const since = lastPostedDate(i, ref, 'dateInvested');
+    const days = Math.max(0, Math.floor((ref-since)/86400000));
+    return calcInterest(i.principal, i.interestRate, days, i.interestType, i.compoundFrequency);
+  }
+  // Merge rate-change points and principal-change points (from the
+  // transaction ledger) into one chronological timeline, then walk it
+  // accruing simple interest per segment at whatever principal+rate applied.
+  const principalPts = (i.transactions||[])
+    .filter(t=>['opening','topup','withdrawal','closed','rollover_out'].includes(t.type))
+    .map(t=>({date:new Date(t.date), balance:t.balanceAfter}))
+    .sort((a,b)=>a.date-b.date);
+  if(!principalPts.length) principalPts.push({date:new Date(i.dateInvested), balance:i.principal});
+  const points = [];
+  rates.forEach(r=>points.push({date:new Date(r.asAt), rate:r.rate}));
+  principalPts.forEach(p=>points.push({date:p.date, balance:p.balance}));
+  const uniqDates = [...new Set(points.map(p=>+p.date))].sort((a,b)=>a-b);
+  let curRate = rates[0].rate, curBal = principalPts[0].balance, total = 0;
+  for(let idx=0; idx<uniqDates.length; idx++){
+    const segStart = new Date(uniqDates[idx]);
+    const rateHere = rates.filter(r=>+new Date(r.asAt)<=uniqDates[idx]).pop();
+    const balHere = principalPts.filter(p=>+p.date<=uniqDates[idx]).pop();
+    if(rateHere) curRate = rateHere.rate;
+    if(balHere) curBal = balHere.balance;
+    const segEnd = idx+1<uniqDates.length ? new Date(uniqDates[idx+1]) : ref;
+    if(segEnd<=segStart || segStart>ref) continue;
+    const segDays = Math.min(segEnd, ref) - segStart;
+    if(segDays<=0) continue;
+    total += curBal * (curRate/100) * (segDays/86400000/365);
+  }
+  return total;
+}
+function lastRevaluationDate(i){
+  const revals = (i.transactions||[]).filter(t=>t.type==='revaluation').sort((a,b)=>new Date(b.date)-new Date(a.date));
+  return revals.length ? revals[0].date : i.dateInvested;
+}
 const MATURITY_ALERT_DAYS = 30; // "maturing soon" window
 function daysToMaturity(i, ref){
   if(i.noMaturity || !i.maturityDate) return null;
   return Math.ceil((new Date(i.maturityDate) - ref) / 86400000);
 }
 function investmentStatus(i, ref){
+  if(i.status==='closed') return 'closed';
+  if(i.status==='rolled_over') return 'rolled_over';
   if(i.noMaturity || !i.maturityDate) return 'open';
   const d = daysToMaturity(i, ref);
   if(d < 0) return 'matured';
   if(d <= MATURITY_ALERT_DAYS) return 'soon';
   return 'active';
 }
-const STATUS_LABEL = {matured:'Matured', soon:'Maturing Soon', active:'Active', open:'Open-ended'};
+const STATUS_LABEL = {matured:'Matured', soon:'Maturing Soon', active:'Active', open:'Open-ended', closed:'Closed', rolled_over:'Rolled Over'};
 function statusBadge(status, days){
   const extra = status==='matured' ? ` (${Math.abs(days)}d ago)` : status==='soon' ? ` (${days}d)` : '';
   return `<span class="status-badge st-${status}">${STATUS_LABEL[status]}${extra}</span>`;
@@ -1718,6 +1801,106 @@ function renderDashInvAlert(ref){
   el.innerHTML = panel ? `<div class="card-label" style="margin-bottom:.5rem">Investment Maturity Alerts</div>${panel}` : '';
 }
 
+// ── Movement history (top-ups, withdrawals, rollovers, closure) ──────
+const TX_LABEL = {opening:'Opening', topup:'Top-up', withdrawal:'Withdrawal', interest_capitalized:'Interest Capitalized', rollover_out:'Rolled Out', rollover_in:'Rolled In', closed:'Closed', rate_change:'Rate Change', revaluation:'Statement Update'};
+const TX_COLOR = {opening:'var(--tx2)', topup:'var(--t)', withdrawal:'var(--rd)', interest_capitalized:'var(--am)', rollover_out:'var(--bl)', rollover_in:'var(--bl)', closed:'var(--tx3)', rate_change:'var(--bl)', revaluation:'var(--pu)'};
+function openInvestmentHistoryModal(id){
+  const i = _invCache.find(x=>x._id===id); if(!i) return;
+  const from = i.rolledFrom ? _invCache.find(x=>x._id===i.rolledFrom) : null;
+  const to   = i.rolledTo   ? _invCache.find(x=>x._id===i.rolledTo)   : null;
+  const txs = (i.transactions||[]).slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const rows = txs.length ? txs.map(t=>
+    `<tr><td style="color:var(--tx2)">${fD(t.date)}</td>
+      <td><span style="color:${TX_COLOR[t.type]||'var(--tx2)'};font-family:var(--mo);font-size:11px">${TX_LABEL[t.type]||t.type}</span></td>
+      <td class="nm" style="color:${t.type==='rate_change'?'var(--bl)':(t.amount<0?'var(--rd)':'var(--t)')}">${t.type==='rate_change'?'—':(t.amount>0?'+':'')+fmt(t.amount)}</td>
+      <td class="nm" style="font-weight:600">${fmt(t.balanceAfter)}</td>
+      <td style="color:var(--tx3);font-size:11px">${t.note||''}</td></tr>`
+  ).join('') : '<tr><td colspan="5" class="loading-row">No recorded movements yet.</td></tr>';
+  const linkage = (from||to) ? `<div class="nt-info" style="margin-bottom:.75rem;font-size:11px">
+    ${from?`↩ Rolled over from <strong>${from.investmentId}</strong> (${from.counterparty})<br>`:''}
+    ${to?`↪ Rolled into <strong>${to.investmentId}</strong> (${to.counterparty})`:''}
+  </div>` : '';
+  openModal(`Movement History — ${i.investmentId}`,
+    `${linkage}
+    <div style="display:flex;gap:1.5rem;margin-bottom:1rem;font-family:var(--mo);font-size:11px;color:var(--tx3)">
+      <div>Opening Principal<br><strong style="color:var(--tx);font-size:14px">${fmt(i.originalPrincipal)}</strong></div>
+      <div>Current Balance<br><strong style="color:var(--t);font-size:14px">${fmt(i.principal)}</strong></div>
+      <div>Interest Basis<br><strong style="color:var(--tx);font-size:14px">${i.valuationMethod==='balance'?'Statement-Based (no formula)':(i.rateHistory&&i.rateHistory.length>1?'Variable ('+i.rateHistory.length+' rate changes)':(i.interestType==='compound'?'Compound ('+COMPOUND_FREQ_LABEL[i.compoundFrequency]+')':'Simple'))}</strong></div>
+      <div>Current Rate<br><strong style="color:var(--tx);font-size:14px">${i.valuationMethod==='balance'?(i.interestRate?i.interestRate+'% (indicative)':'—'):i.interestRate+'%'}</strong></div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Date</th><th>Type</th><th class="nm">Amount</th><th class="nm">Balance After</th><th>Note</th></tr></thead><tbody>${rows}</tbody></table></div>`,
+    `<button onclick="closeModal()">Close</button>`, true);
+}
+function openInvTxModal(id, type){
+  const i = _invCache.find(x=>x._id===id); if(!i) return;
+  const label = type==='topup' ? 'Additional Investment (Top-up)' : 'Partial Withdrawal';
+  openModal(label,
+    `<div class="merr" id="itx-err"></div>
+    <div class="nt-info" style="margin-bottom:.75rem;font-size:11px">Current balance: <strong>₦${fmt(i.principal)}</strong></div>
+    <div class="fg"><div class="fld"><label>Amount (₦) *</label><input class="finput" type="number" id="itx-amt" min="0.01" step="0.01"></div><div class="fld"><label>Date *</label><input class="finput" type="date" id="itx-date" value="${new Date().toISOString().slice(0,10)}"></div></div>
+    <div class="fld"><label>Note</label><input class="finput" id="itx-note" placeholder="Optional"></div>`,
+    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvTx('${id}','${type}')"><span id="itx-sv">Save</span></button>`);
+}
+async function saveInvTx(id, type){
+  const err=$('itx-err'); err.classList.remove('on');
+  const amount = +($('itx-amt')?.value||0); const date = $('itx-date')?.value; const note = $('itx-note')?.value||'';
+  if(!amount || amount<=0){ err.textContent='Enter a valid amount.'; err.classList.add('on'); return; }
+  if(!date){ err.textContent='Date is required.'; err.classList.add('on'); return; }
+  $('itx-sv').textContent='Saving…';
+  try{
+    await api('/treasury/investments/'+id+'/transaction', {method:'POST', body:JSON.stringify({type, amount, date, note})});
+    closeModal(); toast(type==='topup'?'Top-up recorded.':'Withdrawal recorded.'); loadInvestments();
+  } catch(e){ err.textContent=e.message; err.classList.add('on'); $('itx-sv').textContent='Save'; }
+}
+function openInvRateModal(id){
+  const i = _invCache.find(x=>x._id===id); if(!i) return;
+  openModal('Record Rate Change — '+i.investmentId,
+    `<div class="merr" id="irt-err"></div>
+    <div class="nt-info" style="margin-bottom:.75rem;font-size:11px">Current rate: <strong>${i.interestRate}%</strong>${i.rateHistory&&i.rateHistory.length>1?` · ${i.rateHistory.length} recorded changes so far`:''}. For instruments like MMFs whose published rate moves daily, log each change here rather than editing the rate directly — interest-to-date is then computed day-by-day at whatever rate actually applied.</div>
+    <div class="fg"><div class="fld"><label>New Rate (%) *</label><input class="finput" type="number" step="0.01" id="irt-rate" value="${i.interestRate}"></div><div class="fld"><label>Effective Date *</label><input class="finput" type="date" id="irt-date" value="${new Date().toISOString().slice(0,10)}"></div></div>
+    <div class="fld"><label>Note</label><input class="finput" id="irt-note" placeholder="Optional"></div>`,
+    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvRate('${id}')"><span id="irt-sv">Save</span></button>`);
+}
+async function saveInvRate(id){
+  const err=$('irt-err'); err.classList.remove('on');
+  const rate = +($('irt-rate')?.value); const effectiveDate = $('irt-date')?.value; const note = $('irt-note')?.value||'';
+  if(rate==null||isNaN(rate)||rate<0){ err.textContent='Enter a valid rate.'; err.classList.add('on'); return; }
+  if(!effectiveDate){ err.textContent='Effective date is required.'; err.classList.add('on'); return; }
+  $('irt-sv').textContent='Saving…';
+  try{
+    await api('/treasury/investments/'+id+'/rate', {method:'POST', body:JSON.stringify({rate, effectiveDate, note})});
+    closeModal(); toast('Rate change recorded.'); loadInvestments();
+  } catch(e){ err.textContent=e.message; err.classList.add('on'); $('irt-sv').textContent='Save'; }
+}
+function openInvValueModal(id){
+  const i = _invCache.find(x=>x._id===id); if(!i) return;
+  openModal('Update Closing Balance — '+i.investmentId,
+    `<div class="merr" id="ival-err"></div>
+    <div class="nt-info" style="margin-bottom:.75rem;font-size:11px">Last recorded balance: <strong>₦${fmt(i.principal)}</strong> (as at ${fD(lastRevaluationDate(i))}). Enter the new closing balance straight off the statement — the gain or loss since last time is recorded automatically, with no formula involved.</div>
+    <div class="fg"><div class="fld"><label>New Closing Balance (₦) *</label><input class="finput" type="number" step="0.01" id="ival-bal" value="${i.principal}"></div><div class="fld"><label>Statement Date *</label><input class="finput" type="date" id="ival-date" value="${new Date().toISOString().slice(0,10)}"></div></div>
+    <div class="fld"><label>Note</label><input class="finput" id="ival-note" placeholder="e.g. September statement"></div>`,
+    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvValue('${id}')"><span id="ival-sv">Save</span></button>`);
+}
+async function saveInvValue(id){
+  const err=$('ival-err'); err.classList.remove('on');
+  const balance = +($('ival-bal')?.value); const date = $('ival-date')?.value; const note = $('ival-note')?.value||'';
+  if(balance==null||isNaN(balance)||balance<0){ err.textContent='Enter a valid balance.'; err.classList.add('on'); return; }
+  if(!date){ err.textContent='Statement date is required.'; err.classList.add('on'); return; }
+  $('ival-sv').textContent='Saving…';
+  try{
+    await api('/treasury/investments/'+id+'/revalue', {method:'POST', body:JSON.stringify({balance, date, note})});
+    closeModal(); toast('Balance updated.'); loadInvestments();
+  } catch(e){ err.textContent=e.message; err.classList.add('on'); $('ival-sv').textContent='Save'; }
+}
+async function closeInvestment(id){
+  const i = _invCache.find(x=>x._id===id); if(!i) return;
+  if(!confirm(`Close/liquidate ${i.investmentId} at its current balance of ₦${fmt(i.principal)}? This cannot be undone.`)) return;
+  try{
+    await api('/treasury/investments/'+id+'/close', {method:'POST', body:JSON.stringify({date:new Date().toISOString().slice(0,10)})});
+    toast('Investment closed.'); loadInvestments();
+  } catch(e){ toast(e.message,'err'); }
+}
+
 // ════════════════════════════════════════════════════
 // INVESTMENTS
 // ════════════════════════════════════════════════════
@@ -1730,18 +1913,21 @@ async function loadInvestments(){
 function renderInvestments(){
   const ref = new Date();
   const all = _invCache;
-  const total=all.reduce((s,i)=>s+i.principal,0);
-  const fixedInv=all.filter(i=>!i.noMaturity&&i.maturityDate);
-  const interest=fixedInv.reduce((a,i)=>a+i.principal*(i.interestRate/100)*(i.tenorDays/365),0);
-  const openEndedInv=all.filter(i=>i.noMaturity);
-  const avgY=total>0?all.reduce((a,i)=>a+(i.principal/total)*i.interestRate,0):0;
-  const matured = all.filter(i=>investmentStatus(i,ref)==='matured');
-  const soon    = all.filter(i=>investmentStatus(i,ref)==='soon');
+  const live = all.filter(i=>i.status!=='closed'&&i.status!=='rolled_over'); // excludes historical/superseded capital
+  const total=live.reduce((s,i)=>s+i.principal,0);
+  const fixedInv=live.filter(i=>!i.noMaturity&&i.maturityDate);
+  const interest=fixedInv.reduce((a,i)=>a+calcInterest(i.principal,i.interestRate,i.tenorDays,i.interestType,i.compoundFrequency),0);
+  const openEndedInv=live.filter(i=>i.noMaturity);
+  const avgY=total>0?live.reduce((a,i)=>a+(i.principal/total)*i.interestRate,0):0;
+  const matured = live.filter(i=>investmentStatus(i,ref)==='matured');
+  const soon    = live.filter(i=>investmentStatus(i,ref)==='soon');
+  const totalToDate = live.reduce((s,i)=>s+calcAccruedToDate(i,ref), 0);
 
-  $('inv-alert-banner').innerHTML = renderInvAlertPanel(all, ref, true);
+  $('inv-alert-banner').innerHTML = renderInvAlertPanel(live, ref, true);
 
   $('investments-kpis').innerHTML=[
-    {l:'Portfolio Value',        v:fmt(total),    c:'tl',ac:true,sub:all.length+' instruments'},
+    {l:'Portfolio Value',        v:fmt(total),    c:'tl',ac:true,sub:live.length+' live instruments'},
+    {l:'Total Interest To-Date', v:fmt(totalToDate),c:'gr',sub:'Simple + compound, live'},
     {l:'Projected Interest (Fixed)',v:fmt(interest),c:'am',sub:fixedInv.length+' dated instruments'},
     {l:'Weighted Avg Yield',     v:pct(avgY),    c:'gr',sub:'WARA on investments'},
     {l:'Open-ended Holdings',    v:fmt(openEndedInv.reduce((s,i)=>s+i.principal,0)),c:'pu',sub:openEndedInv.length+' (MMF)'},
@@ -1749,8 +1935,8 @@ function renderInvestments(){
     {l:'Maturing ≤30 Days',      v:fmt(soon.reduce((s,i)=>s+i.principal,0)),c:'am',sub:soon.length+' instrument(s)'},
   ].map(k=>`<div class="kpi ${k.c}${k.ac?' ac':''}"><div class="kl">${k.l}</div><div class="kv ${k.c}">${k.v}</div><div class="ks">${k.sub}</div></div>`).join('');
 
-  const typeMap={}; all.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
-  const buckets = investmentBuckets(all, ref);
+  const typeMap={}; live.forEach(i=>{typeMap[i.type]=(typeMap[i.type]||0)+i.principal;});
+  const buckets = investmentBuckets(live, ref);
   const bucketColors = {'Matured':'#b33a3a','0-7d':'#c1743a','8-30d':'#9c7a3c','31-60d':'#7d8a3f','61-90d':'#2f7d52','91-180d':'#0f5c46','181-365d':'#2f5c8a','365d+':'#6b5b95','Open-ended':'#6b5b95'};
   $('investments-charts').innerHTML='<div class="chart-box"><div class="card-label">Maturity Ladder (by time-to-maturity)</div><canvas id="ch-ivl" height="170"></canvas></div><div class="chart-box"><div class="card-label">Portfolio Mix (by type)</div><canvas id="ch-ivm" height="170"></canvas></div>';
   setTimeout(()=>{
@@ -1758,7 +1944,9 @@ function renderInvestments(){
     mkChart('ch-ivm',{type:'doughnut',data:{labels:Object.keys(typeMap),datasets:[{data:Object.values(typeMap),backgroundColor:PAL,borderColor:'#ffffff',borderWidth:3}]},options:{plugins:{legend:{labels:{color:'#4b5162'}}}}});
   },60);
 
-  // filters
+  // filters (apply to the FULL cache, including closed/rolled-over — this
+  // table doubles as the audit trail, so historical rows stay reachable
+  // via the status filter rather than disappearing)
   const q = ($('inv-search')?.value||'').trim().toLowerCase();
   const statusFilter = $('inv-status-filter')?.value||'all';
   const typeFilter = $('inv-type-filter')?.value||'all';
@@ -1768,41 +1956,55 @@ function renderInvestments(){
     if(typeFilter!=='all' && i.type!==typeFilter) return false;
     return true;
   });
-  // sort: matured (most overdue first) → soon (nearest first) → active (nearest first) → open-ended
-  const rank = {matured:0, soon:1, active:2, open:3};
+  // sort: matured (most overdue first) → soon → active → open-ended → rolled-over/closed last
+  const rank = {matured:0, soon:1, active:2, open:3, rolled_over:4, closed:5};
   inv = inv.slice().sort((a,b)=>{
     const sa=investmentStatus(a,ref), sb=investmentStatus(b,ref);
     if(rank[sa]!==rank[sb]) return rank[sa]-rank[sb];
-    if(sa==='open') return 0;
+    if(sa==='open'||sa==='rolled_over'||sa==='closed') return 0;
     return new Date(a.maturityDate)-new Date(b.maturityDate);
   });
 
-  const rows=inv.map(i=>{ const isOE=i.noMaturity||!i.maturityDate; const projInt=isOE?null:i.principal*(i.interestRate/100)*(i.tenorDays/365);
+  const rows=inv.map(i=>{ const isOE=i.noMaturity||!i.maturityDate;
     const status = investmentStatus(i, ref); const d = daysToMaturity(i, ref);
-    return`<tr><td style="width:30px"><input type="checkbox" class="row-chk inv-chk" value="${i._id}"></td>
+    const isDone = status==='closed'||status==='rolled_over';
+    const isBalanceMethod = i.valuationMethod==='balance';
+    const isVariable = !isBalanceMethod && i.rateHistory && i.rateHistory.length>1;
+    const projInt=isOE?null:calcInterest(i.principal,i.interestRate,i.tenorDays,i.interestType,i.compoundFrequency);
+    const toDate = calcAccruedToDate(i, ref);
+    const compTag = isBalanceMethod ? '' : (isVariable ? `<div style="font-size:9px;color:var(--bl);font-family:var(--mo)">Variable · ${i.rateHistory.length} changes</div>` : (i.interestType==='compound' ? `<div style="font-size:9px;color:var(--tx3);font-family:var(--mo)">Compound · ${COMPOUND_FREQ_LABEL[i.compoundFrequency]}</div>` : ''));
+    const asAtTag = isBalanceMethod ? `<div style="font-size:9px;color:var(--tx3);font-family:var(--mo)">as at ${fD(lastRevaluationDate(i))}</div>` : '';
+    return`<tr style="${isDone?'opacity:.6':''}"><td style="width:30px"><input type="checkbox" class="row-chk inv-chk" value="${i._id}"></td>
       <td style="font-family:var(--mo);color:var(--t)">${i.investmentId}</td>
       <td><strong>${i.counterparty}</strong></td>
-      <td style="color:var(--tx2)">${i.type}</td><td class="nm">${fmt(i.principal)}</td>
-      <td class="nm" style="color:#2f7d52">${i.interestRate}%</td>
+      <td style="color:var(--tx2)">${i.type}</td><td class="nm">${fmt(i.principal)}${i.originalPrincipal!==i.principal&&!isDone?`<div style="font-size:9px;color:var(--tx3);font-family:var(--mo)">opened ${fmt(i.originalPrincipal)}</div>`:''}</td>
+      <td class="nm" style="color:#2f7d52">${isBalanceMethod?`<span style="color:var(--tx3)">Statement</span>`:i.interestRate+'%'}${compTag}</td>
       <td class="nm">${isOE?'Open-ended':i.tenorDays+'d'}</td>
       <td style="color:var(--tx2)">${fD(i.dateInvested)}</td>
       <td style="color:${isOE?'var(--pu)':'var(--tx2)'}">${isOE?'On demand':fD(i.maturityDate)}</td>
       <td>${statusBadge(status, d)}</td>
-      <td class="nm" style="color:${isOE?'var(--tx3)':'#9c7a3c'}">${isOE?'Variable':fmt(projInt)}${(()=>{const est=estAccrual(i.principal,i.interestRate,lastPostedDate(i,new Date(),'dateInvested'),new Date());return est.amount>0?`<div style="font-size:9px;font-family:var(--mo);color:var(--tx3)" title="Estimated only - not posted, computed from days since last recorded principal">~${fmt(est.amount)} earned to date (${est.days}d)</div>`:'';})()}</td>
-      <td><div style="display:flex;gap:3px">
+      <td class="nm" style="color:${toDate<0?'var(--rd)':'var(--gr)'};font-weight:600">${fmt(toDate)}${asAtTag}</td>
+      <td class="nm" style="color:${isOE?'var(--tx3)':'#9c7a3c'}">${isBalanceMethod?'Not applicable':(isOE?'Variable':fmt(projInt))}</td>
+      <td><div style="display:flex;gap:3px;flex-wrap:wrap">
+        ${!isDone?`<button class="bsm" onclick="openInvTxModal('${i._id}','topup')" style="padding:3px 7px" title="Additional investment">+₦</button>
+        <button class="bsm" onclick="openInvTxModal('${i._id}','withdrawal')" style="padding:3px 7px" title="Partial withdrawal">−₦</button>
+        <button class="bsm" onclick="${isBalanceMethod?`openInvValueModal('${i._id}')`:`openInvRateModal('${i._id}')`}" style="padding:3px 7px" title="${isBalanceMethod?'Update statement closing balance':'Record a rate change'}">${isBalanceMethod?'📥':'%↻'}</button>`:''}
+        <button class="bsm" onclick="openInvestmentHistoryModal('${i._id}')" style="padding:3px 7px" title="Movement history">📜</button>
         ${status==='matured'?`<button class="bsm bp" onclick="openInvestmentModal(null,'${i._id}')" style="padding:3px 7px" title="Roll over into a new placement">↻</button>`:''}
-        <button class="bsm" onclick="openInvestmentModal('${i._id}')" style="padding:3px 7px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
-        <button class="bsm bd" onclick="deleteInvestment('${i._id}')" style="padding:3px 7px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+        ${!isDone?`<button class="bsm" onclick="openInvestmentModal('${i._id}')" style="padding:3px 7px" title="Edit"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button>
+        <button class="bsm" onclick="closeInvestment('${i._id}')" style="padding:3px 7px" title="Close / liquidate">⏹</button>`:''}
+        <button class="bsm bd" onclick="deleteInvestment('${i._id}')" style="padding:3px 7px" title="Delete record"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
       </div></td></tr>`;
   }).join('');
-  const shownTotal = inv.reduce((s,i)=>s+i.principal,0);
-  const shownAvgY = shownTotal>0?inv.reduce((a,i)=>a+(i.principal/shownTotal)*i.interestRate,0):0;
+  const shownLive = inv.filter(i=>i.status!=='closed'&&i.status!=='rolled_over');
+  const shownTotal = shownLive.reduce((s,i)=>s+i.principal,0);
+  const shownAvgY = shownTotal>0?shownLive.reduce((a,i)=>a+(i.principal/shownTotal)*i.interestRate,0):0;
   $('investments-table-wrap').innerHTML=
     `<div class="bulk-bar" id="inv-bulk"><span id="inv-bulk-cnt">0 selected</span><button class="bd bsm" onclick="bulkDeleteInvestments()">Delete Selected</button><button class="bsm" onclick="clearBulkInv()">Clear</button></div>
-    <div class="nt-info" style="margin-bottom:.65rem;font-size:11px">💡 Open-ended instruments (MMF, Notice Deposits) show variable interest. Status is computed live from today's date — Matured/Maturing Soon badges update automatically, no manual flagging needed.</div>
+    <div class="nt-info" style="margin-bottom:.65rem;font-size:11px">💡 Status and interest-to-date are computed live from today's date. Closed/rolled-over rows (dimmed) stay visible here as the audit trail but drop out of the KPI cards and charts above. +₦/−₦ record a top-up or partial withdrawal; 📜 shows the full movement history.</div>
     <div class="card-label">Investment Schedule${inv.length!==all.length?` (${inv.length} of ${all.length} shown)`:''}</div><div class="tw"><table>
-    <thead><tr><th style="width:30px"><input type="checkbox" class="row-chk" id="inv-chk-all" onchange="toggleAllChk(this,'.inv-chk','inv-bulk','inv-bulk-cnt')"></th><th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Principal</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th>Status</th><th class="nm">Interest</th><th></th></tr></thead>
-    <tbody>${rows||'<tr><td colspan="11" class="loading-row">No investments match the current filters.</td></tr>'}<tr class="trt"><td></td><td colspan="3" style="text-align:right">TOTAL${inv.length!==all.length?' (filtered)':''}</td><td class="nm">${fmt(shownTotal)}</td><td class="nm">${pct(shownAvgY)}</td><td colspan="6"></td></tr></tbody></table></div>`;
+    <thead><tr><th style="width:30px"><input type="checkbox" class="row-chk" id="inv-chk-all" onchange="toggleAllChk(this,'.inv-chk','inv-bulk','inv-bulk-cnt')"></th><th>ID</th><th>Counterparty</th><th>Type</th><th class="nm">Balance</th><th class="nm">Rate</th><th class="nm">Tenor</th><th>Date Invested</th><th>Maturity</th><th>Status</th><th class="nm">Interest To-Date</th><th class="nm">Proj. Interest</th><th></th></tr></thead>
+    <tbody>${rows||'<tr><td colspan="12" class="loading-row">No investments match the current filters.</td></tr>'}<tr class="trt"><td></td><td colspan="3" style="text-align:right">TOTAL (live)</td><td class="nm">${fmt(shownTotal)}</td><td class="nm">${pct(shownAvgY)}</td><td colspan="7"></td></tr></tbody></table></div>`;
   document.querySelectorAll('.inv-chk').forEach(c=>c.addEventListener('change',()=>updateBulkBar('.inv-chk','inv-bulk','inv-bulk-cnt')));
 }
 function openInvestmentModal(id, rolloverFromId){
@@ -1816,17 +2018,26 @@ function openInvestmentModal(id, rolloverFromId){
     ${isRollover?`<div class="nt-info" style="margin-bottom:.85rem;font-size:11px">↻ Rolling over ${rf.investmentId} (${rf.counterparty}). This creates a new placement — the matured record stays in your history untouched; delete it separately once you've reconciled the proceeds.</div>`:''}
     <div class="fg"><div class="fld"><label>Investment ID *</label><input class="finput" id="ii-id" value="${isRollover?'':(i?.investmentId||'')}" placeholder="${isRollover?rf.investmentId+'-R':''}"></div><div class="fld"><label>Counterparty *</label><input class="finput" id="ii-cp" value="${src?.counterparty||''}"></div></div>
     <div class="fld"><label>Type</label><select class="finput" id="ii-type" onchange="onInvTypeChange(this)">${['Fixed Deposit','Treasury Bills','Government Security','Commercial Paper','Money Market Fund','Notice Deposit','Other Open-ended'].map(t=>`<option ${src?.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
-    <div class="fg"><div class="fld"><label>Principal (₦) *</label><input class="finput" type="number" id="ii-prin" value="${src?.principal||''}"></div><div class="fld"><label>Rate (%)</label><input class="finput" type="number" id="ii-rate" value="${src?.interestRate||''}"></div></div>
+    <div class="fld"><label>Valuation Method</label><select class="finput" id="ii-valmethod" onchange="toggleValuationMethod(this)">
+      <option value="rate" ${(src?.valuationMethod||'rate')==='rate'?'selected':''}>Rate-Quoted (formula-based)</option>
+      <option value="balance" ${src?.valuationMethod==='balance'?'selected':''}>Statement Balance (record closing balance only)</option>
+    </select><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">Pick "Statement Balance" when your provider only ever gives you a closing balance, not a rate — interest-to-date then comes from the recorded gain, not a formula.</div></div>
+    <div class="fg"><div class="fld"><label>Principal (₦) *</label><input class="finput" type="number" id="ii-prin" value="${src?.principal||''}"></div><div class="fld" id="ii-rate-wrap"><label>Rate (%)</label><input class="finput" type="number" id="ii-rate" value="${src?.interestRate||''}"></div></div>
+    <div class="fg" id="ii-basis-row" style="${src?.valuationMethod==='balance'?'display:none':''}"><div class="fld"><label>Interest Basis</label><select class="finput" id="ii-itype" onchange="toggleInvCompound(this)"><option value="simple" ${(src?.interestType||'simple')==='simple'?'selected':''}>Simple</option><option value="compound" ${src?.interestType==='compound'?'selected':''}>Compound</option></select></div><div class="fld" id="ii-freq-wrap" style="${src?.interestType==='compound'?'':'display:none'}"><label>Compounding Frequency</label><select class="finput" id="ii-freq"><option value="daily" ${src?.compoundFrequency==='daily'?'selected':''}>Daily</option><option value="monthly" ${src?.compoundFrequency==='monthly'?'selected':''}>Monthly</option><option value="quarterly" ${src?.compoundFrequency==='quarterly'?'selected':''}>Quarterly</option><option value="semiannual" ${src?.compoundFrequency==='semiannual'?'selected':''}>Semi-Annual</option><option value="annual" ${(!src||!src.compoundFrequency||src.compoundFrequency==='annual')?'selected':''}>Annual</option></select></div></div>
+    ${(i&&!isRollover)?`<div class="nt-info" id="ii-bal-warn" style="font-size:11px;${src?.valuationMethod==='balance'?'':'display:none'}">⚠ This instrument tracks value by statement balance. Changing Principal here overwrites the balance directly without recording a gain/loss — use "Update Value" (📥) from the table instead so it shows up in Interest To-Date and the movement history.</div>`:''}
     <div class="fg"><div class="fld"><label>Date Invested *</label><input class="finput" type="date" id="ii-date" value="${isRollover?(rf.maturityDate?.slice(0,10)||todayStr0):(i?.dateInvested?.slice(0,10)||'')}"></div><div class="fld" id="ii-days-wrap"><label>Tenor (days)</label><input class="finput" type="number" id="ii-days" value="${src?.tenorDays||''}"></div></div>
     <div class="fld" id="ii-mat-wrap" style="${isOE?'display:none':''}"><label>Maturity Date</label><input class="finput" type="date" id="ii-matdate" value="${isRollover?'':(i?.maturityDate?.slice(0,10)||'')}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">Leave blank to auto-compute from tenor.</div></div>
     <div class="fld"><label>Principal Effective Date *</label><input class="finput" type="date" id="ii-effdate" value="${(i&&!isRollover)?todayStr0:todayStr0}" ${_effFrom?`min="${_effFrom}"`:''} max="${todayStr0}"><div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">The period the Principal above is reported as at (distinct from Date Invested, which is when the placement began).</div></div>
     <div class="fld"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="ii-nomat" ${isOE&&!isRollover?'checked':''} style="accent-color:var(--pu)" onchange="toggleInvMat(this)"><span style="font-size:12px;color:var(--tx2);font-family:var(--mo)">Open-ended (MMF, on-demand)</span></label></div>`,
-    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment('${(i&&!isRollover)?i._id:''}')"><span id="ii-sv">${isRollover?'Create Rolled-Over Placement':(i?'Save Changes':'Add Investment')}</span></button>`);
+    `<button onclick="closeModal()">Cancel</button><button class="bp" onclick="saveInvestment('${(i&&!isRollover)?i._id:''}'${isRollover?`,'${rf._id}'`:''})"><span id="ii-sv">${isRollover?'Create Rolled-Over Placement':(i?'Save Changes':'Add Investment')}</span></button>`);
   if(!isRollover && (i?.type==='Money Market Fund'||i?.type==='Notice Deposit'||i?.type==='Other Open-ended')){ const cb=$('ii-nomat'); if(cb&&!cb.checked){cb.checked=true;toggleInvMat(cb);} }
+  const vmSel=$('ii-valmethod'); if(vmSel) toggleValuationMethod(vmSel);
 }
 function toggleInvMat(cb){ const w=$('ii-mat-wrap'); if(w) w.style.display=cb.checked?'none':''; }
+function toggleValuationMethod(sel){ const w=$('ii-basis-row'); if(w) w.style.display=sel.value==='balance'?'none':''; const lbl=$('ii-rate-wrap')?.querySelector('label'); if(lbl) lbl.textContent = sel.value==='balance' ? 'Indicative Rate (optional)' : 'Rate (%)'; const warn=$('ii-bal-warn'); if(warn) warn.style.display=sel.value==='balance'?'':'none'; }
+function toggleInvCompound(sel){ const w=$('ii-freq-wrap'); if(w) w.style.display=sel.value==='compound'?'':'none'; }
 function onInvTypeChange(sel){ const cb=$('ii-nomat'); if(!cb) return; if(['Money Market Fund','Notice Deposit','Other Open-ended'].includes(sel.value)){cb.checked=true;toggleInvMat(cb);} }
-async function saveInvestment(id){
+async function saveInvestment(id, rolloverFromId){
   const err=$('iv-err'); err.classList.remove('on');
   const noMat=$('ii-nomat')?.checked||false; const dInv=$('ii-date').value; const days=+($('ii-days')?.value||0);
   const explicitMat=$('ii-matdate')?.value;
@@ -1835,15 +2046,16 @@ async function saveInvestment(id){
   const effDate=$('ii-effdate')?.value;
   if(!effDate){err.textContent='Principal effective date is required.';err.classList.add('on');return;}
   if(_effFrom && effDate<_effFrom){err.textContent='Effective date cannot be before the baseline ('+_effFrom+').';err.classList.add('on');return;}
-  const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-prin').value,interestRate:+$('ii-rate').value,dateInvested:dInv,tenorDays:days,noMaturity:noMat,maturityDate,effectiveDate:effDate};
+  const p={investmentId:$('ii-id').value.trim(),counterparty:$('ii-cp').value.trim(),type:$('ii-type').value,principal:+$('ii-prin').value,interestRate:+($('ii-rate').value||0),valuationMethod:$('ii-valmethod')?.value||'rate',interestType:$('ii-itype')?.value||'simple',compoundFrequency:$('ii-freq')?.value||'annual',dateInvested:dInv,tenorDays:days,noMaturity:noMat,maturityDate,effectiveDate:effDate};
   if(!p.investmentId||!p.counterparty||!p.principal){err.textContent='ID, counterparty and principal required.';err.classList.add('on');return;}
+  if(rolloverFromId) p.rolledFrom = rolloverFromId;
   $('ii-sv').textContent='Saving…';
   try{
     let invId=id;
     if(id) await api('/treasury/investments/'+id,{method:'PUT',body:JSON.stringify(p)});
     else { const created=await api('/treasury/investments',{method:'POST',body:JSON.stringify(p)}); invId=created?.investment?._id; }
-    if(invId) await api('/treasury/investments/'+invId+'/history',{method:'POST',body:JSON.stringify({principal:p.principal,effectiveDate:effDate})}).catch(e=>console.warn('History not saved (endpoint may not exist yet):',e.message));
-    closeModal();toast(id?'Updated.':'Added.');loadInvestments();
+    if(invId && !rolloverFromId) await api('/treasury/investments/'+invId+'/history',{method:'POST',body:JSON.stringify({principal:p.principal,effectiveDate:effDate})}).catch(e=>console.warn('History not saved (endpoint may not exist yet):',e.message));
+    closeModal();toast(rolloverFromId?'Rolled over.':(id?'Updated.':'Added.'));loadInvestments();
   }
   catch(e){err.textContent=e.message;err.classList.add('on');$('ii-sv').textContent=id?'Save Changes':'Add Investment';}
 }
