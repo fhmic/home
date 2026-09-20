@@ -96,6 +96,8 @@ body{font-family:var(--sa);background:var(--n);color:var(--tx);min-height:100vh;
 @media(max-width:580px){.fg{grid-template-columns:1fr}}
 .fld label{display:block;font-size:11px;font-family:var(--mo);color:var(--tx2);margin-bottom:7px;letter-spacing:.04em;text-transform:uppercase}
 select{width:100%;padding:10px 36px 10px 14px;background:var(--sf);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234b5162' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;transition:border-color .2s}
+.finput,input[type=number],input[type=text],input[type=date]{width:100%;padding:10px 14px;background:var(--sf);border:1px solid var(--b2);border-radius:var(--r);color:var(--tx);font-family:var(--sa);font-size:13px;transition:border-color .2s}
+.finput:focus,input[type=number]:focus,input[type=text]:focus,input[type=date]:focus{outline:none;border-color:var(--t)}
 select:focus{outline:none;border-color:var(--t)}
 .ib{background:var(--sf);border:1px solid var(--b);border-left:3px solid var(--t);border-radius:var(--r);padding:12px 16px;font-size:12px;color:var(--tx2);line-height:1.65;margin-bottom:1.5rem}
 .ib strong{color:var(--tx);font-family:var(--mo);font-size:11px;display:block;margin-bottom:4px;letter-spacing:.04em}
@@ -345,6 +347,10 @@ Fill in your data using this format before upload. Headers and blank rows are au
         <div class="fld"><label>GL Account date format</label>
           <select id="gf"><option value="DMY">DMY — dd/mm/yyyy (Nigerian default)</option><option value="MDY">MDY — mm/dd/yyyy</option><option value="YMD">YMD — yyyy-mm-dd</option></select>
         </div>
+      </div>
+      <div class="fld"><label>Bank Statement opening balance (₦) — optional</label>
+        <input class="finput" type="number" step="0.01" id="ob" placeholder="e.g. 500000">
+        <div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">Enter this straight off the statement (not auto-detected). If provided, it's used to cross-check that opening balance + inflows − outflows actually ties to the statement's own closing balance — catches a missing row or a misaligned balance column before it skews the reconciliation.</div>
       </div>
       <div class="ib"><strong>MATCHING LOGIC</strong>Outflows: BS Debit ↔ GL Credit &nbsp;·&nbsp; Inflows: BS Credit ↔ GL Debit<br>Amount tolerance ₦0.005 &nbsp;·&nbsp; Date: same month OR within ±7 days across months (Pass 2: ±14 days)<br>Fuzzy scoring: separators replaced in GL narration only; long numeric tokens (NUBAN accounts) score 4 pts</div>
       <div class="row"><button id="bk">← Back</button><button class="bp" id="run">▶ Run reconciliation</button></div>
@@ -597,7 +603,7 @@ data.push({date:dt,narr:String(row[1]||'').trim(),dr:_0x5e7a(row[2]),cr:_0x5e7a(
 }
 return data;
 }
-function _0x1a2b(_0xb2cd6, _0xc3de7, _0xd4ef8, _0xe5f09) {
+function _0x1a2b(_0xb2cd6, _0xc3de7, _0xd4ef8, _0xe5f09, openingBal) {
 const _0x2934d=[];
 const bs=_0x7a8b(_0xb2cd6,_0xd4ef8,'Bank Statement',_0x2934d);
 const gl=_0x7a8b(_0xc3de7,_0xe5f09,'GL Account',_0x2934d);
@@ -687,8 +693,36 @@ const S=(a,k)=>a.reduce((t,r)=>t+r[k],0);
 const totMO=S(_0xf60a1,'bsAmt'),totMI=S(_0x071b2,'bsAmt');
 const totBD=S(_0xd4ef,'amt'),totBC=S(_0xe5f0,'amt');
 const totGC=S(_0xf601a,'amt'),totGD=S(_0x0712b,'amt');
+const bsTotDrCheck=Math.round(bs.reduce((s,r)=>s+r.dr,0)*100)/100;
+const bsTotCrCheck=Math.round(bs.reduce((s,r)=>s+r.cr,0)*100)/100;
 const bsCBrow=[...bs].reverse().find(r=>r.bal!==0);
-const bsCB=bsCBrow?bsCBrow.bal:(bs.length?bs[bs.length-1].bal:0);
+const hasBalCol=bs.some(r=>r.bal!==0);
+// Three possible states for the closing balance:
+//  - 'statement': normal case, read straight off the file's own Balance column.
+//  - 'derived': the file has NO usable Balance column at all (every row read
+//    0 - common with raw CSV exports that only carry debit/credit), so it's
+//    computed as opening + net movement instead of defaulting to a bare 0.
+//    Requires an opening balance to be entered; nothing to derive it from otherwise.
+//  - 'missing': no Balance column AND no opening balance entered - there is
+//    genuinely no way to know the closing balance. Reported as 0 but flagged
+//    so the UI never presents that 0 as if it were a real figure.
+let bsCB, bsCBSource;
+if (hasBalCol) {
+  bsCB = bsCBrow ? bsCBrow.bal : (bs.length ? bs[bs.length-1].bal : 0);
+  bsCBSource = 'statement';
+} else if (openingBal!=null) {
+  bsCB = Math.round((openingBal+bsTotCrCheck-bsTotDrCheck)*100)/100;
+  bsCBSource = 'derived';
+} else {
+  bsCB = 0;
+  bsCBSource = 'missing';
+}
+// The tie-out cross-check only makes sense when bsCB came from the
+// statement itself - if it was derived FROM the opening balance, comparing
+// it back to the opening balance is circular and would trivially always tie.
+const obExpectedClosing=(openingBal!=null&&bsCBSource==='statement')?Math.round((openingBal+bsTotCrCheck-bsTotDrCheck)*100)/100:null;
+const obVariance=obExpectedClosing!=null?Math.round((obExpectedClosing-bsCB)*100)/100:null;
+const obTies=obVariance!=null?Math.abs(obVariance)<0.01:null;
 const glBals=gl.map(r=>r.bal).filter(b=>Math.abs(b)>0.005);
 const cashbookBal=glBals.length>0?glBals[glBals.length-1]:gl.reduce((s,r)=>s+r.dr-r.cr,0);
 const adjBal=Math.round((bsCB+totBD-totBC+totGD-totGC)*100)/100;
@@ -705,7 +739,7 @@ glTotDr:Math.round(gl.reduce((s,r)=>s+r.dr,0)*100)/100,
 glTotCr:Math.round(gl.reduce((s,r)=>s+r.cr,0)*100)/100,
 mOutN:_0xf60a1.length,mInN:_0x071b2.length,
 totMO,totMI,totBD,totBC,totGC,totGD,
-bsCB,adjBal,cashbookBal,variance,ok,fail,gap,
+bsCB,bsCBSource,openingBal,obExpectedClosing,obVariance,obTies,adjBal,cashbookBal,variance,ok,fail,gap,
 integrity:fail===0?'PASS':'REVIEW',
 totalAudit:_0x2934d.length
 },
@@ -735,7 +769,8 @@ const N=n=>(n==null||isNaN(+n))?0:+n;
 (function(){
   var vari=Math.round((N(s.adjBal)-N(s.cashbookBal))*100)/100;
   var rec=Math.abs(vari)<0.01;
-  var aoa=[
+  /* rows 0-29: fixed indices, unaffected by whether an opening balance was entered */
+  var part1=[
     /* 0  */ ['FM BANK RECONCILIATION SUMMARY','',''],
     /* 1  */ ['Elites Integrated Systems  \u00b7  Bank-to-GL Reconciliation Report','',''],
     /* 2  */ ['Generated: '+ts+'    |    Developed by: Michael Felix Happy','',''],
@@ -766,6 +801,31 @@ const N=n=>(n==null||isNaN(+n))?0:+n;
     /* 27 */ ['  Debit  in GL  NOT in BS  \u2014 Amount',N(s.totGD),'NGN'],
     /* 28 */ ['','',''],
     /* 29 */ ['BALANCE RECONCILIATION STATEMENT','',''],
+  ];
+  /* optional rows - shape depends on bsCBSource. Everything after this point shifts
+     down by obRows.length, handled via the `off` offset below rather than re-numbering
+     every row comment by hand (error-prone on a hand-indexed sheet). */
+  var obRows = [], obCurrencyRows = [];
+  if (s.bsCBSource==='statement' && s.openingBal!=null) {
+    obRows = [
+      ['  Bank Statement Opening Balance (as entered)',N(s.openingBal),'NGN'],
+      ['  Expected Closing (Opening + Inflows - Outflows)',N(s.obExpectedClosing),'NGN'],
+      [s.obTies?'  Ties to statement closing balance? YES':'  Ties to statement closing balance? NO - CHECK UPLOAD',s.obTies?0:N(s.obVariance),s.obTies?'':'NGN variance'],
+    ];
+    obCurrencyRows = [0,1,2];
+  } else if (s.bsCBSource==='derived') {
+    obRows = [
+      ['  Bank Statement Opening Balance (as entered)',N(s.openingBal),'NGN'],
+      ['  NOTE: Statement had no usable Balance column - Closing Balance below is derived from Opening + Inflows - Outflows',''  ,''],
+    ];
+    obCurrencyRows = [0];
+  } else if (s.bsCBSource==='missing') {
+    obRows = [
+      ['  WARNING: No Balance column in statement and no Opening Balance entered - Closing Balance below is NOT a real figure','',''],
+    ];
+  }
+  /* rows 30-49 in the original layout; indices below are relative to this array, offset applied when merging into aoa */
+  var part2=[
     /* 30 */ ['  Bank Statement Closing Balance',N(s.bsCB),'NGN'],
     /* 31 */ ['  Add:  Debit in BS not in GL  (bank charges not in books)',N(s.totBD),'NGN  (+)'],
     /* 32 */ ['  Less: Credit in BS not in GL  (bank receipts not in books)',-N(s.totBC),'NGN  (-)'],
@@ -787,21 +847,28 @@ const N=n=>(n==null||isNaN(+n))?0:+n;
     /* 48 */ ['','',''],
     /* 49 */ ['System: FM Financial Tools  |  BRS  |  v4.1  |  All rights reserved','',''],
   ];
+  var off=obRows.length;
+  var aoa=part1.concat(obRows, part2);
 
   var ws=XLSX.utils.aoa_to_sheet(aoa);
 
   /* Column widths */
   ws['!cols']=[{wch:58},{wch:22},{wch:14}];
 
-  /* Merge A:C for title/section-header rows so they read as full-width headings */
-  ws['!merges']=[0,1,2,4,9,14,29,42,49].map(function(r){
+  /* Merge A:C for title/section-header rows so they read as full-width headings.
+     Rows <30 are in part1 (unaffected); 42/49 are in part2, so shift by `off`. */
+  ws['!merges']=[0,1,2,4,9,14,29,42+off,49+off].map(function(r){
     return {s:{r:r,c:0},e:{r:r,c:2}};
   });
 
-  /* Number formats: currency (#,##0.00) and integer (#,##0) for col B */
+  /* Number formats: currency (#,##0.00) and integer (#,##0) for col B.
+     Same split: part1 rows unshifted, part2 rows +off, obRows (when present) sit at 30,31,32. */
   var numC='#,##0.00', numI='#,##0';
-  var currencyRows=[6,7,11,12,16,18,21,23,25,27,30,31,32,33,34,36,38,40];
-  var intRows=[5,10,15,17,20,22,24,26,44,45,46,47];
+  var currencyRows=[6,7,11,12,16,18,21,23,25,27]
+    .concat(obCurrencyRows)
+    .concat([30,31,32,33,34,36,38,40].map(function(r){return r+off;}));
+  var intRows=[5,10,15,17,20,22,24,26]
+    .concat([44,45,46,47].map(function(r){return r+off;}));
   function ea(r){return XLSX.utils.encode_cell({r:r,c:1});}
   currencyRows.forEach(function(r){var a=ea(r);if(ws[a]&&ws[a].t==='n')ws[a].z=numC;});
   intRows.forEach(function(r){var a=ea(r);if(ws[a]&&ws[a].t==='n')ws[a].z=numI;});
@@ -899,7 +966,18 @@ kv('Debit in GL NOT in BS',d._0x0712b.length,[245,166,35]);
 kv('Debit in GL NOT in BS Amount','₦'+fN(s.totGD),[245,166,35]);
 dv();
 sl('Balance Reconciliation Statement');
+if(s.bsCBSource==='statement' && s.openingBal!=null){
+kv('Bank Statement Opening Balance (as entered)','₦'+fN(s.openingBal));
+kv('Expected Closing (Opening + Inflows - Outflows)','₦'+fN(s.obExpectedClosing));
+kv(s.obTies?'Ties to statement closing balance':'DOES NOT TIE - check upload',s.obTies?'—':'₦'+fN(s.obVariance)+' off',s.obTies?[34,197,94]:[224,82,82]);
+}
 kv('Bank Statement Closing Balance','₦'+fN(s.bsCB));
+if(s.bsCBSource==='derived'){
+kv('(derived: no Balance column - opening + net movement)','',[245,166,35]);
+}
+if(s.bsCBSource==='missing'){
+kv('WARNING: no Balance column and no Opening Balance entered','NOT A REAL FIGURE',[224,82,82]);
+}
 kv('Add: Debit in BS not in GL','₦'+fN(s.totBD),[34,197,94]);
 kv('Less: Credit in BS not in GL','(₦'+fN(s.totBC)+')',[224,82,82]);
 kv('Add: Debit in GL not in BS','₦'+fN(s.totGD),[34,197,94]);
@@ -1016,7 +1094,8 @@ const tk=setInterval(()=>{mi=(mi+1)%msgs.length;lm.textContent=msgs[mi];},850);
 _0xcfeb('Processing...');
 try{
 await new Promise(r=>setTimeout(r,80));
-const result=_0x1a2b(_0xST__._0xb2cd6,_0xST__._0xc3de7,$('bf').value,$('gf').value);
+const obRaw=$('ob').value; const obVal=obRaw!==''&&!isNaN(+obRaw)?+obRaw:null;
+const result=_0x1a2b(_0xST__._0xb2cd6,_0xST__._0xc3de7,$('bf').value,$('gf').value,obVal);
 _0xST__.result=result;
 _0x1c2d(result);
 _0xadcf(3); _0xcfeb('Complete');
@@ -1080,10 +1159,24 @@ const vari=s.variance!=null?s.variance:Math.round((s.adjBal-s.cashbookBal)*100)/
 const rec=Math.abs(vari)<0.01;
 const variClass=rec?'ps2':'ng';
 const variLabel=rec?'✓ RECONCILED':'✗ VARIANCE';
+const obTieLabel = s.obTies ? '✓ Ties to the statement closing balance' : '⚠ Does NOT tie to the statement closing balance';
+const obRow = (s.openingBal!=null && s.bsCBSource==='statement') ? `
+<tr><td class="la2">Bank Statement Opening Balance <span style="color:var(--tx3);font-weight:400">(as entered)</span></td><td class="va">₦${fN(s.openingBal)}</td></tr>
+<tr><td class="la2">Expected Closing (Opening + Inflows − Outflows)</td><td class="va">₦${fN(s.obExpectedClosing)}</td></tr>
+<tr><td class="la2" style="${s.obTies?'':'color:var(--rd);font-weight:600'}">${obTieLabel}</td><td class="va ${s.obTies?'':'ng'}" style="${s.obTies?'':'font-weight:600'}">${s.obTies?'—':'₦'+fN(s.obVariance)+' off'}</td></tr>
+${!s.obTies?'<tr><td colspan="2" style="font-size:11px;color:var(--tx3);padding-top:2px">Check for a row the parser skipped, a wrong opening balance, or a misaligned Balance column in the upload. This is separate from the BS-vs-GL reconciliation below, which still runs off the statement closing balance figure.</td></tr>':''}
+` : '';
+const bsCBNote = s.bsCBSource==='derived'
+  ? `<tr><td colspan="2" style="font-size:11px;color:var(--am);padding-top:2px">ℹ This statement had no usable Balance column — closing balance above is derived from your entered opening balance + total inflows/outflows instead of read from the file.</td></tr>`
+  : s.bsCBSource==='missing'
+  ? `<tr><td colspan="2" style="font-size:11px;color:var(--rd);font-weight:600;padding-top:2px">⚠ This statement has no usable Balance column and no opening balance was entered — the ₦0.00 above is NOT a real figure. Go back and enter the opening balance, or the balance section below cannot be trusted.</td></tr>`
+  : '';
 $('t-sum').innerHTML=`
 <div class="stl">Balance reconciliation statement</div>
 <div class="rb"><table>
+${obRow}
 <tr><td class="la2">Bank Statement Closing Balance</td><td class="va">₦${fN(s.bsCB)}</td></tr>
+${bsCBNote}
 <tr><td class="la2">Add: Debit in BS not in GL (bank charges not in books)</td><td class="va ps2">₦${fN(s.totBD)}</td></tr>
 <tr><td class="la2">Less: Credit in BS not in GL (bank receipts not in books)</td><td class="va ng">(₦${fN(s.totBC)})</td></tr>
 <tr><td class="la2">Add: Debit in GL not in BS (deposits in transit)</td><td class="va ps2">₦${fN(s.totGD)}</td></tr>
