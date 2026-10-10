@@ -5,14 +5,14 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FM Bank Reconciliation Engine — Automated Bank-to-GL | FM Finance Suite</title>
+<title>FM Bank Reconciliation Engine - Automated Bank-to-GL | FM Finance Suite</title>
 <meta name="description" content="FM Bank Reconciliation Engine: automate bank-to-GL reconciliation with intelligent fuzzy matching, multi-pass variance tracking, and professional PDF reporting. Designed for Nigerian finance teams and accountants.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://fhmic.github.io/home/recon/">
 <link rel="alternate" hreflang="en-NG" href="https://fhmic.github.io/home/recon/">
 <link rel="alternate" hreflang="x-default" href="https://fhmic.github.io/home/recon/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="FM Bank Reconciliation Engine — Automated Bank-to-GL | FM Finance Suite">
+<meta property="og:title" content="FM Bank Reconciliation Engine - Automated Bank-to-GL | FM Finance Suite">
 <meta property="og:description" content="FM Bank Reconciliation Engine: automate bank-to-GL reconciliation with intelligent fuzzy matching, multi-pass variance tracking, and professional PDF reporting. Designed for Nigerian finance teams and accountants.">
 <meta property="og:url" content="https://fhmic.github.io/home/recon/">
 <meta property="og:site_name" content="FM Finance Suite">
@@ -20,12 +20,12 @@
 <meta property="og:image" content="https://fhmic.github.io/home/pix.jpg">
 <meta property="og:image:width" content="400">
 <meta property="og:image:height" content="400">
-<meta property="og:image:alt" content="FM Bank Reconciliation Engine — automated bank-to-GL reconciliation from FM Finance Suite">
+<meta property="og:image:alt" content="FM Bank Reconciliation Engine - automated bank-to-GL reconciliation from FM Finance Suite">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="FM Bank Reconciliation Engine — Automated Bank-to-GL | FM Finance Suite">
+<meta name="twitter:title" content="FM Bank Reconciliation Engine - Automated Bank-to-GL | FM Finance Suite">
 <meta name="twitter:description" content="FM Bank Reconciliation Engine: automate bank-to-GL reconciliation with intelligent fuzzy matching, multi-pass variance tracking, and professional PDF reporting. Designed for Nigerian finance teams and accountants.">
 <meta name="twitter:image" content="https://fhmic.github.io/home/pix.jpg">
-<meta name="twitter:image:alt" content="FM Bank Reconciliation Engine — automated bank-to-GL reconciliation from FM Finance Suite">
+<meta name="twitter:image:alt" content="FM Bank Reconciliation Engine - automated bank-to-GL reconciliation from FM Finance Suite">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [
     {"@type": "SoftwareApplication", "name": "FM Bank Reconciliation Engine", "applicationCategory": "FinanceApplication", "operatingSystem": "Web", "url": "https://fhmic.github.io/home/recon/", "description": "Automated bank-to-GL reconciliation with fuzzy matching, variance tracking, and PDF reporting.", "applicationSuite": "FM Finance Suite", "author": {"@type": "Person", "name": "Felix Happy Michael", "url": "https://fhmic.github.io/home/"}, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "NGN"}, "dateModified": "2026-07-25"},
     {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://fhmic.github.io/home/"}, {"@type": "ListItem", "position": 2, "name": "Bank Reconciliation Engine", "item": "https://fhmic.github.io/home/recon/"}]}
@@ -275,21 +275,15 @@ button,a,input,select{touch-action:manipulation}
   </div>
   <div id="br">
     <span id="sd"></span>
-    <span id="stx">FM BankRecon — Ready</span>
-    <div class="user-chip">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span id="user-display">User</span>
-    </div>
-
-    
+    <span id="stx">FM BankRecon - Ready</span>
+    <a href="../resources/" class="back-btn" title="Back to Resources">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      <span>Resources</span>
+    </a>
     <a href="../" class="back-btn" title="Back to Homepage">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>Home</span>
     </a>
-    <button class="logout-btn" id="logout-btn" title="Sign out">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      <span>Sign out</span>
-    </button>
   </div>
 </div>
 
@@ -335,18 +329,18 @@ Fill in your data using this format before upload. Headers and blank rows are au
   <div class="pan ani" id="p2">
     <div class="card">
       <div class="ct">Date format settings</div>
-      <div class="cs">Select the date format used in each file. Critical for correct parsing — wrong format misreads dates.</div>
+      <div class="cs">Select the date format used in each file. Critical for correct parsing - wrong format misreads dates.</div>
       <div class="fg">
         <div class="fld"><label>Bank Statement date format</label>
-          <select id="bf"><option value="DMY">DMY — dd/mm/yyyy (Nigerian default)</option><option value="MDY">MDY — mm/dd/yyyy</option><option value="YMD">YMD — yyyy-mm-dd</option></select>
+          <select id="bf"><option value="DMY">DMY - dd/mm/yyyy (Nigerian default)</option><option value="MDY">MDY - mm/dd/yyyy</option><option value="YMD">YMD - yyyy-mm-dd</option></select>
         </div>
         <div class="fld"><label>GL Account date format</label>
-          <select id="gf"><option value="DMY">DMY — dd/mm/yyyy (Nigerian default)</option><option value="MDY">MDY — mm/dd/yyyy</option><option value="YMD">YMD — yyyy-mm-dd</option></select>
+          <select id="gf"><option value="DMY">DMY - dd/mm/yyyy (Nigerian default)</option><option value="MDY">MDY - mm/dd/yyyy</option><option value="YMD">YMD - yyyy-mm-dd</option></select>
         </div>
       </div>
-      <div class="fld"><label>Bank Statement opening balance (₦) — optional</label>
+      <div class="fld"><label>Bank Statement opening balance (₦) - optional</label>
         <input class="finput" type="number" step="0.01" id="ob" placeholder="e.g. 500000">
-        <div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">Enter this straight off the statement (not auto-detected). If provided, it's used to cross-check that opening balance + inflows − outflows actually ties to the statement's own closing balance — catches a missing row or a misaligned balance column before it skews the reconciliation.</div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:3px;font-family:var(--mo)">Enter this straight off the statement (not auto-detected). If provided, it's used to cross-check that opening balance + inflows − outflows actually ties to the statement's own closing balance - catches a missing row or a misaligned balance column before it skews the reconciliation.</div>
       </div>
       <div class="ib"><strong>MATCHING LOGIC</strong>Outflows: BS Debit ↔ GL Credit &nbsp;·&nbsp; Inflows: BS Credit ↔ GL Debit<br>Amount tolerance ₦0.005 &nbsp;·&nbsp; Date: same month OR within ±7 days across months (Pass 2: ±14 days)<br>Fuzzy scoring: separators replaced in GL narration only; long numeric tokens (NUBAN accounts) score 4 pts</div>
       <div class="row"><button id="bk">← Back</button><button class="bp" id="run">▶ Run reconciliation</button></div>
@@ -398,12 +392,6 @@ Fill in your data using this format before upload. Headers and blank rows are au
 
 <script>
 'use strict';
-
-document.getElementById('logout-btn').addEventListener('click',function(){
-  if(!confirm('Sign out?')) return;
-  sessionStorage.removeItem('FM_token');
-  window.location.href='../';
-});
 
 document.addEventListener('DOMContentLoaded', function(){
   const btn = document.getElementById('downloadTemplate');
@@ -869,7 +857,7 @@ sht(nm,rows,[4,12,14,18,44,14]);
 };
 gl6(d._0xf601a,s.totGC,'GL Credit Not in BS');
 gl6(d._0x0712b,s.totGD,'GL Debit Not in BS');
-const auR=d._0x2934d.map(a=>({'Sheet':a.sheet,'Row':a.row,'Original Value':a.original,'Parsed Date':a.parsed||'—','Comment':a.comment}));
+const auR=d._0x2934d.map(a=>({'Sheet':a.sheet,'Row':a.row,'Original Value':a.original,'Parsed Date':a.parsed||'-','Comment':a.comment}));
 sht('Date Audit Log',auR.length?auR:[{'Sheet':'No data','Row':'','Original Value':'','Parsed Date':'','Comment':''}],[16,6,22,14,28]);
 XLSX.writeFile(wb,`FM-BankRecon-${ts}.xlsx`);
 }
@@ -936,7 +924,7 @@ sl('Balance Reconciliation Statement');
 if(s.bsCBSource==='statement' && s.openingBal!=null){
 kv('Bank Statement Opening Balance (as entered)','₦'+fN(s.openingBal));
 kv('Expected Closing (Opening + Inflows - Outflows)','₦'+fN(s.obExpectedClosing));
-kv(s.obTies?'Ties to statement closing balance':'DOES NOT TIE - check upload',s.obTies?'—':'₦'+fN(s.obVariance)+' off',s.obTies?[34,197,94]:[224,82,82]);
+kv(s.obTies?'Ties to statement closing balance':'DOES NOT TIE - check upload',s.obTies?'-':'₦'+fN(s.obVariance)+' off',s.obTies?[34,197,94]:[224,82,82]);
 }
 kv('Bank Statement Closing Balance','₦'+fN(s.bsCB));
 if(s.bsCBSource==='derived'){
@@ -963,7 +951,7 @@ y+=4;
 doc.setFillColor(vcol[0],vcol[1],vcol[2]);
 doc.roundedRect(18,y-13,W-36,22,3,3,'F');
 doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(10,22,40);
-doc.text(rec?'✓  RECONCILED':'✗  VARIANCE',26,y);
+doc.text(rec?'✓  RECONCILED':'� - VARIANCE',26,y);
 doc.text(rec?'₦0.00':'₦'+fN(vari),W-26,y,{align:'right'});
 y+=24; dv();
 sl('Date Parsing'); kv('Dates Parsed OK',s.ok,[34,197,94]); if(s.fail) kv('Parse Failures',s.fail,[224,82,82]);
@@ -982,10 +970,10 @@ styles:{fillColor:PAL.navy,lineColor:PAL.divider,lineWidth:0.3},
 didParseCell:c=>{if(c.row.index===c.table.body.length-1){c.cell.styles.fontStyle='bold';c.cell.styles.textColor=hcol;}}
 });
 };
-aTbl(d._0xf60a1,s.totMO,'Matched Outflows — BS Debit ↔ GL Credit',[0,201,167],
+aTbl(d._0xf60a1,s.totMO,'Matched Outflows - BS Debit ↔ GL Credit',[0,201,167],
 ['#','BS Date','BS Amount (₦)','BS Narration','GL Date','GL Amount (₦)','GL Description','Days','Quality'],
 r=>[r.bsDate,fN(r.bsAmt),r.bsNarr,r.glDate,fN(r.glAmt),r.glNarr,r.dateDiff,r.quality]);
-aTbl(d._0x071b2,s.totMI,'Matched Inflows — BS Credit ↔ GL Debit',[34,197,94],
+aTbl(d._0x071b2,s.totMI,'Matched Inflows - BS Credit ↔ GL Debit',[34,197,94],
 ['#','BS Date','BS Amount (₦)','BS Narration','GL Date','GL Amount (₦)','GL Description','Days','Quality'],
 r=>[r.bsDate,fN(r.bsAmt),r.bsNarr,r.glDate,fN(r.glAmt),r.glNarr,r.dateDiff,r.quality]);
 aTbl(d._0xd4ef,s.totBD,'BS Debit Not in GL',[245,166,35],['#','Date','Amount (₦)','Narration'],r=>[r.date,fN(r.amt),r.narr]);
@@ -997,7 +985,7 @@ if(iss.length){
 ph('Date Audit Log');
 doc.autoTable({startY:y,margin:{left:20,right:20},
 head:[['Sheet','Row','Original Value','Parsed Date','Comment']],
-body:iss.map(a=>[a.sheet,a.row,a.original,a.parsed||'—',a.comment]),
+body:iss.map(a=>[a.sheet,a.row,a.original,a.parsed||'-',a.comment]),
 headStyles:{fillColor:PAL.navy,textColor:PAL.amber,fontSize:8,fontStyle:'bold'},
 bodyStyles:{fontSize:8,textColor:PAL.tableBody},
 alternateRowStyles:{fillColor:[15,31,61]},
@@ -1007,7 +995,7 @@ doc.save(`FM-BankRecon-${ts}.pdf`);
 }
 const _0xST__={bsFile:null,_0xb2cd6:[],glFile:null,_0xc3de7:[],result:null};
 const $=id=>document.getElementById(id);
-const fN=n=>n==null||isNaN(n)?'—':Number(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fN=n=>n==null||isNaN(n)?'-':Number(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
 function _0xadcf(n){
 [1,2,3].forEach(i=>{
 $(`s${i}`).className='si'+(i<n?' dn':i===n?' act':'');
@@ -1020,7 +1008,7 @@ function _0xbeda(m){const e=$('err');e.textContent=m;e.classList.add('on');setTi
 function _0xcfeb(t){$('stx').textContent=t;}
 function _0x3c5e(rows,wid){
 const sl=rows.slice(0,6);
-let h=`<div class="pscr"><div class="plb">Preview — ${sl.length} of ${rows.length} rows</div>
+let h=`<div class="pscr"><div class="plb">Preview - ${sl.length} of ${rows.length} rows</div>
 <table><thead><tr><th>Date</th><th>Narration</th><th>DR</th><th>CR</th><th>Balance</th></tr></thead><tbody>`;
 for(const r of sl) h+=`<tr>${[0,1,2,3,4].map(c=>`<td class="${c>=2?'nm':c===1?'nr':''}">${r[c]??''}</td>`).join('')}</tr>`;
 h+='</tbody></table></div>';
@@ -1034,7 +1022,7 @@ try{
 const raw=await _0x4d6f(file);
 if(isBS){_0xST__.bsFile=file;_0xST__._0xb2cd6=raw;}else{_0xST__.glFile=file;_0xST__._0xc3de7=raw;}
 nm.textContent=file.name;
-cnt.textContent=`${raw.length} rows read — data auto-detected from first date row`;
+cnt.textContent=`${raw.length} rows read - data auto-detected from first date row`;
 _0x3c5e(raw,isBS?'bpv':'gpv');
 }catch(e){
 nm.textContent='⚠ '+e.message; box.classList.remove('ok');
@@ -1078,7 +1066,7 @@ _0xST__.bsFile=_0xST__.glFile=_0xST__.result=null; _0xST__._0xb2cd6=_0xST__._0xc
 ['bn','gn','bc','gc'].forEach(id=>$(id).textContent='');
 ['bpv','gpv'].forEach(id=>$(id).innerHTML='');
 $('nxt').disabled=true; $('res').style.display='none';
-_0xadcf(1); _0xcfeb('FM Bank Recon — Ready');
+_0xadcf(1); _0xcfeb('FM Bank Recon - Ready');
 });
 $('bca').addEventListener('click',e=>{e.stopPropagation();$('dmn').classList.toggle('op');});
 document.addEventListener('click',()=>$('dmn').classList.remove('op'));
@@ -1117,26 +1105,26 @@ _0x5a6b('t-out',d._0xf60a1,s.totMO,true);
 _0x5a6b('t-inf',d._0x071b2,s.totMI,false);
 _0x7c8d('t-bsd',d._0xd4ef,s.totBD,'These are amounts the bank has debited with no corresponding credit entry in the GL. Common causes: bank charges, NIP fees, third-party debits or missed postings.');
 _0x7c8d('t-bsc',d._0xe5f0,s.totBC,'These are amounts credited into your bank account not yet recorded in the GL. Investigate and post the missing receipt entries.');
-_0x9e0f('t-glc',d._0xf601a,s.totGC,'Payments recorded in the GL as credits but not yet on the bank statement — in-transit items or timing differences. Follow up with the bank.');
-_0x9e0f('t-gld',d._0x0712b,s.totGD,'Receipts recorded in the GL as debits not yet on bank statement — cheques in clearing or pending reversals.');
+_0x9e0f('t-glc',d._0xf601a,s.totGC,'Payments recorded in the GL as credits but not yet on the bank statement - in-transit items or timing differences. Follow up with the bank.');
+_0x9e0f('t-gld',d._0x0712b,s.totGD,'Receipts recorded in the GL as debits not yet on bank statement - cheques in clearing or pending reversals.');
 _0x1a3c(d._0x2934d,s);
 }
 function _0x3e4f(s){
 const vari=s.variance!=null?s.variance:Math.round((s.adjBal-s.cashbookBal)*100)/100;
 const rec=Math.abs(vari)<0.01;
 const variClass=rec?'ps2':'ng';
-const variLabel=rec?'✓ RECONCILED':'✗ VARIANCE';
+const variLabel=rec?'✓ RECONCILED':'� -VARIANCE';
 const obTieLabel = s.obTies ? '✓ Ties to the statement closing balance' : '⚠ Does NOT tie to the statement closing balance';
 const obRow = (s.openingBal!=null && s.bsCBSource==='statement') ? `
 <tr><td class="la2">Bank Statement Opening Balance <span style="color:var(--tx3);font-weight:400">(as entered)</span></td><td class="va">₦${fN(s.openingBal)}</td></tr>
 <tr><td class="la2">Expected Closing (Opening + Inflows − Outflows)</td><td class="va">₦${fN(s.obExpectedClosing)}</td></tr>
-<tr><td class="la2" style="${s.obTies?'':'color:var(--rd);font-weight:600'}">${obTieLabel}</td><td class="va ${s.obTies?'':'ng'}" style="${s.obTies?'':'font-weight:600'}">${s.obTies?'—':'₦'+fN(s.obVariance)+' off'}</td></tr>
+<tr><td class="la2" style="${s.obTies?'':'color:var(--rd);font-weight:600'}">${obTieLabel}</td><td class="va ${s.obTies?'':'ng'}" style="${s.obTies?'':'font-weight:600'}">${s.obTies?'-':'₦'+fN(s.obVariance)+' off'}</td></tr>
 ${!s.obTies?'<tr><td colspan="2" style="font-size:11px;color:var(--tx3);padding-top:2px">Check for a row the parser skipped, a wrong opening balance, or a misaligned Balance column in the upload. This is separate from the BS-vs-GL reconciliation below, which still runs off the statement closing balance figure.</td></tr>':''}
 ` : '';
 const bsCBNote = s.bsCBSource==='derived'
-  ? `<tr><td colspan="2" style="font-size:11px;color:var(--am);padding-top:2px">ℹ This statement had no usable Balance column — closing balance above is derived from your entered opening balance + total inflows/outflows instead of read from the file.</td></tr>`
+  ? `<tr><td colspan="2" style="font-size:11px;color:var(--am);padding-top:2px">ℹ This statement had no usable Balance column - closing balance above is derived from your entered opening balance + total inflows/outflows instead of read from the file.</td></tr>`
   : s.bsCBSource==='missing'
-  ? `<tr><td colspan="2" style="font-size:11px;color:var(--rd);font-weight:600;padding-top:2px">⚠ This statement has no usable Balance column and no opening balance was entered — the ₦0.00 above is NOT a real figure. Go back and enter the opening balance, or the balance section below cannot be trusted.</td></tr>`
+  ? `<tr><td colspan="2" style="font-size:11px;color:var(--rd);font-weight:600;padding-top:2px">⚠ This statement has no usable Balance column and no opening balance was entered - the ₦0.00 above is NOT a real figure. Go back and enter the opening balance, or the balance section below cannot be trusted.</td></tr>`
   : '';
 $('t-sum').innerHTML=`
 <div class="stl">Balance reconciliation statement</div>
@@ -1194,11 +1182,11 @@ let h=`<div class="bg">
 ${s.fail?`<span class="pl pr">Failed: ${s.fail}</span>`:''}
 ${s.gap?`<span class="pl pa">Date gaps noted: ${s.gap}</span>`:''}
 </div>`;
-if(!iss.length){$('t-aud').innerHTML=h+_0x2561('All dates parsed cleanly — no issues to review');return;}
+if(!iss.length){$('t-aud').innerHTML=h+_0x2561('All dates parsed cleanly - no issues to review');return;}
 h+=`<div class="tw"><table><thead><tr><th>Sheet</th><th>Row</th><th>Original Value</th><th>Parsed Date</th><th>Status</th></tr></thead><tbody>`;
 for(const a of iss.slice(0,500)){
 const pc=a.comment.includes('FAILED')?'pr':a.comment.includes('GAP')?'pa':'pg';
-h+=`<tr><td>${a.sheet}</td><td style="font-family:var(--mo)">${a.row}</td><td style="font-family:var(--mo);font-size:11px">${a.original}</td><td style="font-family:var(--mo);font-size:11px">${a.parsed||'—'}</td><td><span class="pl ${pc}">${a.comment}</span></td></tr>`;
+h+=`<tr><td>${a.sheet}</td><td style="font-family:var(--mo)">${a.row}</td><td style="font-family:var(--mo);font-size:11px">${a.original}</td><td style="font-family:var(--mo);font-size:11px">${a.parsed||'-'}</td><td><span class="pl ${pc}">${a.comment}</span></td></tr>`;
 }
 h+='</tbody></table></div>';
 $('t-aud').innerHTML=h;
