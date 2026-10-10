@@ -572,12 +572,12 @@ var _NGX=[
   {sym:'NESTLE', name:'Nestlé Nigeria',   price:1490.00,chg:+20.00,pct:+1.36,vol:480000,  sig:'neutral', sec:'Consumer'},
 ];
 var _FXP=[
-  {f:'USD',t:'NGN',fl1:'🇺🇸',fl2:'🇳🇬',rate:1598.50,chg:+2.30, pct:+0.14,rng:[1550,1650],isN:true},
-  {f:'EUR',t:'NGN',fl1:'🇪🇺',fl2:'🇳🇬',rate:1742.80,chg:-5.20, pct:-0.30,rng:[1700,1800],isN:true},
-  {f:'GBP',t:'NGN',fl1:'🇬🇧',fl2:'🇳🇬',rate:2034.60,chg:+8.40, pct:+0.41,rng:[1980,2080],isN:true},
-  {f:'CNY',t:'NGN',fl1:'🇨🇳',fl2:'🇳🇬',rate:220.40, chg:+0.80, pct:+0.36,rng:[210,230],  isN:true},
-  {f:'CAD',t:'NGN',fl1:'🇨🇦',fl2:'🇳🇬',rate:1172.40,chg:+3.20, pct:+0.27,rng:[1120,1220],isN:true},
-  {f:'RUB',t:'NGN',fl1:'🇷🇺',fl2:'🇳🇬',rate:17.84,  chg:-0.12, pct:-0.67,rng:[15,21],    isN:true},
+  {f:'USD',t:'NGN',fl1:'🇺🇸',fl2:'🇳🇬',rate:1370.64,chg:-12.50, pct:-0.91,rng:[1350,1420],isN:true},
+  {f:'EUR',t:'NGN',fl1:'🇪🇺',fl2:'🇳🇬',rate:1494.40,chg:-4.50, pct:-0.30,rng:[1470,1540],isN:true},
+  {f:'GBP',t:'NGN',fl1:'🇬🇧',fl2:'🇳🇬',rate:1744.70,chg:+7.20, pct:+0.41,rng:[1710,1790],isN:true},
+  {f:'CNY',t:'NGN',fl1:'🇨🇳',fl2:'🇳🇬',rate:189.00, chg:+0.70, pct:+0.36,rng:[185,195],  isN:true},
+  {f:'CAD',t:'NGN',fl1:'🇨🇦',fl2:'🇳🇬',rate:1005.30,chg:+2.70, pct:+0.27,rng:[980,1040],isN:true},
+  {f:'RUB',t:'NGN',fl1:'🇷🇺',fl2:'🇳🇬',rate:15.30,  chg:-0.10, pct:-0.65,rng:[13,18],    isN:true},
   {f:'EUR',t:'USD',fl1:'🇪🇺',fl2:'🇺🇸',rate:1.0906, chg:-0.0012,pct:-0.11,rng:[1.07,1.12],isN:false},
   {f:'GBP',t:'USD',fl1:'🇬🇧',fl2:'🇺🇸',rate:1.2722, chg:+0.0034,pct:+0.27,rng:[1.24,1.30],isN:false},
   {f:'USD',t:'JPY',fl1:'🇺🇸',fl2:'🇯🇵',rate:157.42, chg:-0.28, pct:-0.18,rng:[153,162],  isN:false},
@@ -605,28 +605,35 @@ var _CRYPTO=[
 ];
 
 // ── NIGERIA RATES - latest known values as fallback ─────────────────
+// Values below are the most recently published figures as of 10 Oct 2026.
+// The live fetchers (_sCBN / _sNBS / _sTB) attempt to refresh these on
+// page load; on failure these hardcoded values keep the page usable.
+//   MPR 23%      - MPC 307th Meeting, 21-22 Sep 2026 (reset -350bps)
+//   CPI 15.39%   - NBS CPI Report, Aug 2026 (pub. 15 Sep 2026)
+//   T-Bills      - CBN primary-market auction, 23 Sep 2026
+//   GDP 3.89%    - NBS GDP Report, Q1 2026 (pub. 25 May 2026)
 var _NGR=[
-  {id:'mpr', cls:'mpr',lbl:'Monetary Policy Rate',   ttl:'CBN MPR',              rate:26.5, u:'%', meta:'MPC 305th Meeting - May 2026 · Auto-fetches on load',    src:'CBN',  url:'https://cbn.gov.ng',              chg:'SLF: 27.0% · SDF: 22.0%'},
-  {id:'t91', cls:'tbl',lbl:'T-Bill - 91 Day',        ttl:'NTB Stop Rate (91d)',  rate:16.28,u:'%', meta:'Primary Market Auction - 17 Jun 2026 · Auto-fetches on load',src:'CBN',  url:'https://cbn.gov.ng',              chg:'↑ from 15.95% (Mar 2026)'},
-  {id:'t182',cls:'tbl',lbl:'T-Bill - 182 Day',       ttl:'NTB Stop Rate (182d)', rate:16.62,u:'%', meta:'Primary Market Auction - 17 Jun 2026 · Auto-fetches on load',src:'CBN',  url:'https://cbn.gov.ng',              chg:'+3bps from Jun 3 2026 auction'},
-  {id:'t364',cls:'tbl',lbl:'T-Bill - 364 Day',       ttl:'NTB Stop Rate (364d)', rate:17.34,u:'%', meta:'Primary Market Auction - 17 Jun 2026 · Auto-fetches on load',src:'CBN',  url:'https://cbn.gov.ng',              chg:'+99bps from Jun 3 2026 · Largest single-tenor move in 2026'},
-  {id:'mm',  cls:'mm', lbl:'Money Market Rate',      ttl:'NIBOR Overnight',      rate:26.80,u:'%', meta:'Lagos interbank - Jun 2026',      src:'FMDQ', url:'https://fmdqgroup.com',           chg:'+30bps spread over MPR'},
-  {id:'crr', cls:'crr',lbl:'Cash Reserve Ratio',     ttl:'CRR (DMBs)',            rate:45.0, u:'%', meta:'MPC May 2026 · Auto-fetches on load',                    src:'CBN',  url:'https://cbn.gov.ng',              chg:'Merchant Banks: 16%'},
-  {id:'inf', cls:'inf',lbl:'Headline Inflation',     ttl:'CPI Year-on-Year',     rate:15.93,u:'%', meta:'NBS CPI - May 2026 (pub. 15 Jun 2026) · Auto-fetches on load',src:'NBS',  url:'https://nigerianstat.gov.ng',     chg:'↑ from 15.69% (Apr 2026) · Food: 16.96% · Core: 16.82%'},
-  {id:'fx',  cls:'fxr',lbl:'USD/NGN Official Rate',  ttl:'CBN Reference Rate',   rate:1598.50,u:'₦',meta:'I&E Window - Jun 5 2026',        src:'CBN',  url:'https://cbn.gov.ng',              chg:'Parallel: ~₦1,610'},
+  {id:'mpr', cls:'mpr',lbl:'Monetary Policy Rate',   ttl:'CBN MPR',              rate:23.0, u:'%', meta:'MPC 307th Meeting - Sep 2026 · Auto-fetches on load',    src:'CBN',  url:'https://cbn.gov.ng/MonetaryPolicy/decisions.html', chg:'SLF: 23.5% · SDF: 20.0% · Reset -350bps'},
+  {id:'t91', cls:'tbl',lbl:'T-Bill - 91 Day',        ttl:'NTB Stop Rate (91d)',  rate:15.50,u:'%', meta:'Primary Market Auction - 23 Sep 2026 · Auto-fetches on load',src:'CBN',  url:'https://cbn.gov.ng/rates/GovtSecurities.html', chg:'↓ from 16.30% (Aug 2026)'},
+  {id:'t182',cls:'tbl',lbl:'T-Bill - 182 Day',       ttl:'NTB Stop Rate (182d)', rate:15.80,u:'%', meta:'Primary Market Auction - 23 Sep 2026 · Auto-fetches on load',src:'CBN',  url:'https://cbn.gov.ng/rates/GovtSecurities.html', chg:'↓ from 16.50% (Aug 2026)'},
+  {id:'t364',cls:'tbl',lbl:'T-Bill - 364 Day',       ttl:'NTB Stop Rate (364d)', rate:15.89,u:'%', meta:'Primary Market Auction - 23 Sep 2026 · Auto-fetches on load',src:'CBN',  url:'https://cbn.gov.ng/rates/GovtSecurities.html', chg:'↓ from 17.15% (Aug 26 2026) · 10x oversubscribed'},
+  {id:'mm',  cls:'mm', lbl:'Money Market Rate',      ttl:'NIBOR Overnight',      rate:17.50,u:'%', meta:'Lagos interbank - Sep 2026',      src:'FMDQ', url:'https://fmdqgroup.com',           chg:'Below MPR after 350bps cut'},
+  {id:'crr', cls:'crr',lbl:'Cash Reserve Ratio',     ttl:'CRR (DMBs)',            rate:45.0, u:'%', meta:'MPC 307th Sep 2026 · Auto-fetches on load',                    src:'CBN',  url:'https://cbn.gov.ng',              chg:'Merchant Banks: 16% · non-TSA: 75%'},
+  {id:'inf', cls:'inf',lbl:'Headline Inflation',     ttl:'CPI Year-on-Year',     rate:15.39,u:'%', meta:'NBS CPI - Aug 2026 (pub. 15 Sep 2026) · Auto-fetches on load',src:'NBS',  url:'https://nigerianstat.gov.ng',     chg:'↓ from 15.43% (Jul 2026) · Food: 19.57% · Core: 13.29%'},
+  {id:'fx',  cls:'fxr',lbl:'USD/NGN Official Rate',  ttl:'CBN Reference Rate',   rate:1370.64,u:'₦',meta:'I&E Window - Sep 2026',        src:'CBN',  url:'https://cbn.gov.ng',              chg:'Parallel: ~₦1,400'},
   {id:'gdp', cls:'mm', lbl:'Real GDP Growth Rate',    ttl:'GDP Y-o-Y (Q1 2026)',  rate:3.89,u:'%', meta:'NBS GDP Report Q1 2026 - pub. 25 May 2026',    src:'NBS',  url:'https://nigerianstat.gov.ng',             chg:'↑ from 3.13% (Q1 2025) · FY 2025: 3.87%'},
-  {id:'liq', cls:'crr',lbl:'Liquidity Ratio',        ttl:'Min Liquidity Ratio',  rate:30.0, u:'%', meta:'Unchanged - MPC May 2026',        src:'CBN',  url:'https://cbn.gov.ng',              chg:'Unchanged'},
+  {id:'liq', cls:'crr',lbl:'Liquidity Ratio',        ttl:'Min Liquidity Ratio',  rate:30.0, u:'%', meta:'Unchanged - MPC 307th Sep 2026',        src:'CBN',  url:'https://cbn.gov.ng',              chg:'Unchanged'},
 ];
 var _FIT=[
-  {inst:'NTB - 91 Day',   rate:'16.28%',ten:'91 days',  ba:'16.20%',la:'17 Jun 2026',note:'Oversubscribed · 2nd consecutive hike'},
-  {inst:'NTB - 182 Day',  rate:'16.62%',ten:'182 days', ba:'16.50%',la:'17 Jun 2026',note:'Oversubscribed · rates rising 2 auctions'},
-  {inst:'NTB - 364 Day',  rate:'17.34%',ten:'364 days', ba:'17.00%',la:'17 Jun 2026',note:'+99bps · 89% of total auction subscriptions'},
+  {inst:'NTB - 91 Day',   rate:'15.50%',ten:'91 days',  ba:'15.40%',la:'23 Sep 2026',note:'↓ from 16.30% (Aug 2026) · post-MPR cut'},
+  {inst:'NTB - 182 Day',  rate:'15.80%',ten:'182 days', ba:'15.70%',la:'23 Sep 2026',note:'↓ from 16.50% (Aug 2026) · post-MPR cut'},
+  {inst:'NTB - 364 Day',  rate:'15.89%',ten:'364 days', ba:'15.75%',la:'23 Sep 2026',note:'↓ from 17.15% (Aug 26 2026) · 10x oversubscribed'},
   {inst:'FGN Bond 2yr',   rate:'17.80%',ten:'2 years',  ba:'17.60%',la:'Jun 2026',note:'Benchmark bond'},
   {inst:'FGN Bond 5yr',   rate:'18.40%',ten:'5 years',  ba:'18.15%',la:'Jun 2026',note:'DMO tap issue'},
   {inst:'FGN Bond 10yr',  rate:'19.20%',ten:'10 years', ba:'18.95%',la:'Jun 2026',note:'Long anchor rate'},
   {inst:'Eurobond 2031',  rate:'8.75%', ten:'~5yr USD',  ba:'8.60%', la:'Jun 2026',note:'USD-denominated'},
-  {inst:'NIBOR O/N',      rate:'26.80%',ten:'Overnight', ba:'26.70%',la:'Jun 5 2026',note:'Above MPR'},
-  {inst:'NIBOR 30-day',   rate:'27.20%',ten:'30 days',  ba:'27.05%',la:'Jun 5 2026',note:'FMDQ platform'},
+  {inst:'NIBOR O/N',      rate:'17.50%',ten:'Overnight', ba:'17.00%',la:'Sep 2026',note:'Below MPR after 350bps cut'},
+  {inst:'NIBOR 30-day',   rate:'18.00%',ten:'30 days',  ba:'17.50%',la:'Sep 2026',note:'FMDQ platform'},
   {inst:'Real GDP Growth (Q1 2026)',rate:'3.89%',ten:'YoY',ba:'Q4 2025: 4.07%',la:'25 May 2026',note:'NBS · Oil: 2.57% · Non-oil: 3.94%'},
   {inst:'Commercial Paper',rate:'18–20%',ten:'90–180d',  ba:'Market',la:'Ongoing',  note:'OTC market'},
 ];
@@ -797,10 +804,10 @@ function _bngr(){
 }
 function _bngch(){
   if(_ngchI){_ngchI.destroy();_ngchI=null;}
-  var lb=['Jan 24','Mar 24','May 24','Jul 24','Sep 24','Nov 24','Jan 25','Mar 25','May 25','Jul 25','Sep 25','Nov 25','Jan 26','Apr 26','Jun 26'];
-  var mpr=[18.75,22.75,24.75,26.25,27.25,27.50,27.50,27.50,27.50,27.50,27.00,27.00,27.00,26.50,26.50];
-  var tb=[17.00,20.00,22.00,23.00,23.50,23.00,22.60,20.00,18.00,16.50,15.88,16.00,16.20,15.95,17.34];
-  var inf=[29.90,33.20,33.69,34.19,32.70,34.60,34.80,33.20,26.50,22.80,32.15,24.90,26.00,15.69,15.93];
+  var lb=['Jan 24','Mar 24','May 24','Jul 24','Sep 24','Nov 24','Jan 25','Mar 25','May 25','Jul 25','Sep 25','Nov 25','Jan 26','Apr 26','Jun 26','Sep 26'];
+  var mpr=[18.75,22.75,24.75,26.25,27.25,27.50,27.50,27.50,27.50,27.50,27.00,27.00,27.00,26.50,26.50,23.00];
+  var tb=[17.00,20.00,22.00,23.00,23.50,23.00,22.60,20.00,18.00,16.50,15.88,16.00,16.20,15.95,17.34,15.89];
+  var inf=[29.90,33.20,33.69,34.19,32.70,34.60,34.80,33.20,26.50,22.80,32.15,24.90,26.00,15.69,15.93,15.39];
   var cv=_$('_ngch');if(!cv)return;
   _ngchI=new Chart(cv,{type:'line',data:{labels:lb,datasets:[{label:'MPR',data:mpr,borderColor:'#00c9a7',backgroundColor:'rgba(0,201,167,.08)',borderWidth:2,pointRadius:3,tension:.35,fill:false},{label:'T-Bill 364d',data:tb,borderColor:'#f5a623',backgroundColor:'rgba(245,166,35,.08)',borderWidth:2,pointRadius:3,tension:.35,fill:false},{label:'Inflation',data:inf,borderColor:'#e05252',backgroundColor:'rgba(224,82,82,.05)',borderWidth:2,borderDash:[5,4],pointRadius:3,tension:.35,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y.toFixed(2)+'%';}}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#4a6080',font:{size:10},maxRotation:45}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#4a6080',font:{size:10},callback:function(v){return v+'%';}},min:0,max:40}}}});
   window._ngchI=_ngchI;
@@ -968,11 +975,17 @@ async function _ngnHist(dt){
 // ════════════════════════════════════════════════════════════════════
 
 // ── T-Bill rates from CBN ───────────────────────────────────────────
+// NOTE: CBN publishes NTB auction results on GovtSecurities.html, but the
+// table is populated client-side via JS, so static HTML scraping cannot
+// extract the stop rates. This fetcher attempts the pages for status
+// reporting; on failure the hardcoded _NGR/_FIT fallback (updated to the
+// latest published auction) is used. Rates are refreshed manually after
+// each bi-weekly CBN primary-market auction.
 async function _sTB(){
   var urls=[
-    'https://www.cbn.gov.ng/rates/tBillsrates.asp',
     'https://www.cbn.gov.ng/rates/GovtSecurities.html',
-    'https://www.cbn.gov.ng/rates/MacroIndicators.html'
+    'https://www.cbn.gov.ng/rates/MacroIndicators.html',
+    'https://www.cbn.gov.ng/'
   ];
   var html='';
   for(var ui=0;ui<urls.length;ui++){
@@ -1042,10 +1055,14 @@ async function _sNBS(){
   }
   if(!html||html.length<200)throw new Error('NBS page unreachable');
 
-  // Three regex strategies, most to least specific
-  var m=html.match(/Inflation Rate[^)]+\)\s*\(All-Items\)\s*([\d.,\s]+)/i);
-  if(!m)m=html.match(/Inflation Rate[^)]+\)\s*([\d.,\s]+)/i);
-  if(!m)m=html.match(/(\d{2}\.\d{1,2}(?:,\s*\d{1,2}\.\d{1,2}){4,})/);
+  // Strip tags first - the CPI series lives in its own <div> separated from
+  // the "Inflation Rate" label by other elements, so a raw-HTML regex with
+  // \s* can never bridge the gap.
+  var clean=html.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ');
+
+  var m=clean.match(/Inflation Rate[^)]*\)\s*\(All-Items\)\s*([\d.,\s]+)/i);
+  if(!m)m=clean.match(/Inflation Rate[^)]*\)\s*([\d.,\s]+)/i);
+  if(!m)m=clean.match(/(\d{2}\.\d{1,2}(?:,\s*\d{1,2}\.\d{1,2}){4,})/);
   if(!m)throw new Error('NBS inflation series not found');
 
   var series=m[1].trim().split(',')
@@ -1057,54 +1074,86 @@ async function _sNBS(){
   if(headline<5||headline>80)throw new Error('NBS rate implausible: '+headline);
   // Also try to parse GDP growth from the same page
   var gdp=null,gdpPrev=null;
-  var gm=html.match(/GDP grew by\s*([\d.]+)%/i)||html.match(/GDP growth[^\d]{0,20}([\d.]+)%/i)||html.match(/Gross Domestic Product[^\d]{0,40}([\d.]+)%/i);
+  var gm=clean.match(/GDP grew by\s*([\d.]+)%/i)||clean.match(/GDP growth[^\d]{0,20}([\d.]+)%/i)||clean.match(/Gross Domestic Product[^\d]{0,40}([\d.]+)%/i);
   if(gm){gdp=parseFloat(gm[1]);if(gdp<0||gdp>20)gdp=null;}
   return{headline:+headline.toFixed(2),prev:+prev.toFixed(2),series:series,gdp:gdp,gdpPrev:gdpPrev};
 }
 
 // ── MPR / CRR / Liquidity Ratio from CBN ───────────────────────────
+// The MPC decisions page (server-rendered HTML, no JS dependency) lists
+// every meeting newest-first. We grab the FIRST block - the latest decision.
 async function _sCBN(){
   var urls=[
-    'https://www.cbn.gov.ng/MonetaryPolicy/decisions.asp',
-    'https://www.cbn.gov.ng/rates/MacroIndicators.html',
+    'https://www.cbn.gov.ng/MonetaryPolicy/decisions.html',
     'https://www.cbn.gov.ng/'
   ];
   var html='';
   for(var ui=0;ui<urls.length;ui++){
-    try{var h=await _proxyFetch(urls[ui],12000);if(h&&h.length>300){html=h;break;}}
+    try{var h=await _proxyFetch(urls[ui],15000);if(h&&h.length>500){html=h;break;}}
     catch(e){continue;}
   }
   if(!html||html.length<200)throw new Error('CBN MPR page unreachable');
 
-  var clean=html.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ');
-  var mpr=null,crr=null,liq=null;
+  // Isolate the first MPC decision block (newest meeting). The page renders
+  // each meeting as: "Key Decisions ... <date> ... The Committee decided at
+  // the Nth meeting ... to: <bullet list> ...". Everything up to the next
+  // "Key Decisions" heading belongs to the latest meeting.
+  var firstBlock=html;
+  var kbIdx=html.indexOf('Key Decisions');
+  if(kbIdx>=0){
+    var rest=html.slice(kbIdx);
+    var nextIdx=rest.indexOf('Key Decisions', 60);
+    firstBlock=nextIdx>=0?rest.slice(0,nextIdx):rest;
+  }
+  var clean=firstBlock.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ');
 
-  var mprPatterns=[
-    /Monetary Policy Rate[^.]{0,80}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
-    /\bMPR\b[^.]{0,40}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
-    /\bMPR\b[^.]{0,30}?(\d{1,2}(?:\.\d{1,2})?)\s*%/i,
-    /policy rate[^.]{0,50}?(\d{1,2}(?:\.\d{1,2})?)\s*%/i,
-    /policy rate[^.]{0,50}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
-  ];
-  for(var i=0;i<mprPatterns.length;i++){var mm=clean.match(mprPatterns[i]);if(mm){mpr=parseFloat(mm[1]);break;}}
+  // Extract the meeting number so we can report it in the UI
+  var mpcNum=null;
+  var mn=clean.match(/the\s+(\d{2,3})(?:th|rd|nd|st)\s+meeting/i);
+  if(mn)mpcNum=mn[1];
 
-  var crrPatterns=[
-    /Cash Reserve Require?ment[^.]{0,80}?(\d{1,3}(?:\.\d{1,2})?)\s*per\s*cent/i,
-    /\bCRR\b[^.]{0,40}?(\d{1,3}(?:\.\d{1,2})?)\s*per\s*cent/i,
-    /\bCRR\b[^.]{0,30}?(\d{1,3}(?:\.\d{1,2})?)\s*%/i,
-  ];
-  for(var i=0;i<crrPatterns.length;i++){var mc2=clean.match(crrPatterns[i]);if(mc2){crr=parseFloat(mc2[1]);break;}}
+  // Each policy line uses one of these forms:
+  //   "Reset the Monetary Policy Rate at 23 per cent."
+  //   "Retain the Monetary Policy Rate at 26.5 per cent."
+  //   "Raise the MPR from 18.75 per cent to 22.75 per cent;"
+  //   "Reduce the Monetary Policy Rate by 50 basis points to 26.5 per cent."
+  var mpr=null;
+  var mprLine=clean.match(/Monetary Policy Rate[^.]*?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i)
+    ||clean.match(/Reset the MPR at\s*(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i)
+    ||clean.match(/MPR\s+at\s*(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i)
+    ||clean.match(/Reset the Monetary Policy Rate at\s*(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i);
+  if(mprLine)mpr=parseFloat(mprLine[1]);
 
-  var liqPatterns=[
-    /[Ll]iquidity\s*[Rr]atio[^.]{0,80}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i,
-    /[Ll]iquidity\s*[Rr]atio[^.]{0,40}?(\d{1,2}(?:\.\d{1,2})?)\s*%/i,
-  ];
-  for(var i=0;i<liqPatterns.length;i++){var ml2=clean.match(liqPatterns[i]);if(ml2){liq=parseFloat(ml2[1]);break;}}
+  // Corridor: "Recalibrate the Standing Facilities Corridor to +50/-300 basis
+  // points around the MPR." or "Retain ... at +50/-450 basis points."
+  var slf=null,sdf=null;
+  var corr=clean.match(/([+-]?\d{2,4})\s*\/-\s*([+-]?\d{2,4})\s*basis\s*points/i)
+    ||clean.match(/([+-]?\d{2,4})\s*\/\s*-\s*([+-]?\d{2,4})\s*basis\s*points/i);
+  if(corr){
+    slf=parseFloat(corr[1]);sdf=-Math.abs(parseFloat(corr[2]));
+  }
 
-  if(!mpr)throw new Error('MPR not found in CBN page');
-  if(mpr<15||mpr>35)throw new Error('MPR out of plausible range: '+mpr);
-  return{mpr:+mpr.toFixed(2),crr:crr?+crr.toFixed(2):null,liq:liq?+liq.toFixed(2):null,
-    slf:+(mpr+0.5).toFixed(2),sdf:+(mpr-4.5).toFixed(2)};
+  // CRR: "Retain the Cash Reserve Requirement (CRR) for Deposit Money Banks
+  // at 45.00 per cent, Merchant Banks at 16.00 per cent"
+  var crr=null;
+  var crrLine=clean.match(/Cash Reserve Requirement[^.]{0,120}?for\s+(Deposit\s+Money\s+Banks|Commercial\s+Banks)[^.]*(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i)
+    ||clean.match(/Cash Reserve Ratio[^.]{0,120}?for\s+(Deposit\s+Money\s+Banks|Commercial\s+Banks)[^.]*(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i)
+    ||clean.match(/CRR[^.]{0,80}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i);
+  if(crrLine)crr=parseFloat(crrLine[crrLine.length-1]);
+
+  // Liquidity Ratio: "Keep the Liquidity Ratio unchanged at 30.00 per cent."
+  var liq=null;
+  var liqLine=clean.match(/Liquidity Ratio[^.]{0,60}?(\d{1,2}(?:\.\d{1,2})?)\s*per\s*cent/i);
+  if(liqLine)liq=parseFloat(liqLine[1]);
+
+  if(!mpr)throw new Error('MPR not found in CBN decisions page');
+  if(mpr<10||mpr>40)throw new Error('MPR out of plausible range: '+mpr);
+  return{mpr:+mpr.toFixed(2),
+    crr:crr?+crr.toFixed(2):null,
+    liq:liq?+liq.toFixed(2):null,
+    slf:slf?+slf.toFixed(2):+(mpr+0.5).toFixed(2),
+    sdf:sdf?+sdf.toFixed(2):+(mpr-4.5).toFixed(2),
+    mpc:mpcNum||null};
 }
 
 // ── Apply fetched data to _NGR, _FIT and chart ──────────────────────
@@ -1113,12 +1162,15 @@ function _apNG(p){
 
   if(mpc&&mpc.mpr){
     var mi=_NGR.find(function(r){return r.id==='mpr';});
-    if(mi){mi.rate=mpc.mpr;mi.meta='MPC - auto-fetched · cbn.gov.ng';
-      mi.chg='SLF: '+(mpc.slf||'-')+'% · SDF: '+(mpc.sdf||'-')+'%';}
+    if(mi){
+      mi.rate=mpc.mpr;
+      mi.meta='MPC '+(mpc.mpc?'#'+mpc.mpc:'auto-fetched')+' · cbn.gov.ng';
+      mi.chg='SLF: '+(mpc.slf||'-')+'% · SDF: '+(mpc.sdf||'-')+'%';
+    }
     var ci=_NGR.find(function(r){return r.id==='crr';});
-    if(ci&&mpc.crr){ci.rate=mpc.crr;ci.meta='CRR - auto-fetched · cbn.gov.ng';}
+    if(ci&&mpc.crr){ci.rate=mpc.crr;ci.meta='CRR (DMBs) - MPC '+(mpc.mpc?'#'+mpc.mpc:'auto-fetched')+' · cbn.gov.ng';}
     var li=_NGR.find(function(r){return r.id==='liq';});
-    if(li&&mpc.liq){li.rate=mpc.liq;li.meta='Liquidity Ratio - auto-fetched · cbn.gov.ng';}
+    if(li&&mpc.liq){li.rate=mpc.liq;li.meta='Liquidity Ratio - MPC '+(mpc.mpc?'#'+mpc.mpc:'auto-fetched')+' · cbn.gov.ng';}
   }
 
   if(infl&&infl.headline){
