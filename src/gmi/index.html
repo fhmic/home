@@ -875,6 +875,7 @@ window._lkup=async function(){
       }
       var ngnRate=ngnResult.value;
       var dateNote=ngnResult.daysOff>0?' (closest available: '+ngnResult.daysOff+' day(s) from requested date)':'';
+      var warnNote=ngnResult.warning?' ⚠ '+ngnResult.warning:'';
       if(base==='NGN'&&tgt==='USD'){rate=1/ngnRate;}
       else if(base==='USD'&&tgt==='NGN'){rate=ngnRate;}
       else if(base==='NGN'){
@@ -886,7 +887,7 @@ window._lkup=async function(){
         if(!otherToUsd)throw new Error(base+' rate not available for this date');
         rate=otherToUsd*ngnRate;
       }
-      src='Yahoo Finance (USD/NGN=X historical close)'+dateNote;
+      src='Yahoo Finance (USD/NGN=X historical close)'+dateNote+warnNote;
     } else if(hasRUB){
       var nonRub=base==='RUB'?tgt:base;
       var url='https://open.er-api.com/v6/latest/'+nonRub;
@@ -917,7 +918,8 @@ window._lkup=async function(){
         +'• Yahoo Finance has gaps in its USD/NGN=X feed - try a date a few days earlier or later<br>'
         +'• A CORS proxy may be temporarily rate-limited - wait a moment and retry<br>'
         +'• For non-NGN/RUB pairs, frankfurter.dev (ECB data) does not publish on weekends/holidays<br>'
-        +'• RUB only shows the current live rate (historical RUB data is restricted)'
+        +'• RUB only shows the current live rate (historical RUB data is restricted)<br>'
+        +'• If a latest-rate fallback is shown above, it is the most recent available rate, not the rate for the date you selected'
         +'</div>';}
 };
 var _frkSrc='frankfurter.dev (ECB reference rates)';
@@ -963,6 +965,18 @@ async function _ngnHist(dt){
       }catch(e){lastErr=e.message;continue;}
     }
   }
+  // Yahoo failed - try open.er-api.com latest rate as fallback
+  // (free tier does not provide historical NGN data)
+  try{
+    var lr=await fetch('https://open.er-api.com/v6/latest/USD',{signal:_sig(8000)});
+    if(lr.ok){
+      var ld=await lr.json();
+      if(ld.result==='success'&&ld.rates&&ld.rates.NGN){
+        _ngnCache[dt]={value:ld.rates.NGN,daysOff:null,warning:'Historical rate unavailable - showing latest USD/NGN rate ('+ld.time_last_update_utc+')'};
+        return _ngnCache[dt];
+      }
+    }
+  }catch(e2){lastErr+='; latest-rate fallback also failed';}
   _ngnCache[dt]={value:null,daysOff:null,error:lastErr||'All proxies failed'};
   return _ngnCache[dt];
 }
