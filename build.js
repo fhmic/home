@@ -38,6 +38,7 @@ const ROOT_ID = '__shell_root__';
 
 const PAGES = [
   { name: 'index', dir: '' },
+  { name: 'portal', dir: 'portal' },
   { name: 'resources', dir: 'resources' },
   { name: 'gmi', dir: 'gmi' },
   { name: 'job', dir: 'job' },
