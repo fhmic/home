@@ -1171,7 +1171,7 @@ function _apNG(p){
 
 // ── Per-source status display in API bar ────────────────────────────
 function _ngSts(results){
-  var icons=results.map(function(r){return r.status==='fulfilled'?'✓':'�-';});
+  var icons=results.map(function(r){return r.status==='fulfilled'?'✓':'✗';});
   var labels=['MPR','Infl','TBill'];
   var el=_$('_as1');if(!el)return;
   el.innerHTML=icons.map(function(ic,i){

@@ -951,7 +951,7 @@ y+=4;
 doc.setFillColor(vcol[0],vcol[1],vcol[2]);
 doc.roundedRect(18,y-13,W-36,22,3,3,'F');
 doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(10,22,40);
-doc.text(rec?'✓  RECONCILED':'� - VARIANCE',26,y);
+doc.text(rec?'✓  RECONCILED':'✗  VARIANCE',26,y);
 doc.text(rec?'₦0.00':'₦'+fN(vari),W-26,y,{align:'right'});
 y+=24; dv();
 sl('Date Parsing'); kv('Dates Parsed OK',s.ok,[34,197,94]); if(s.fail) kv('Parse Failures',s.fail,[224,82,82]);
@@ -1113,7 +1113,7 @@ function _0x3e4f(s){
 const vari=s.variance!=null?s.variance:Math.round((s.adjBal-s.cashbookBal)*100)/100;
 const rec=Math.abs(vari)<0.01;
 const variClass=rec?'ps2':'ng';
-const variLabel=rec?'✓ RECONCILED':'� -VARIANCE';
+const variLabel=rec?'✓ RECONCILED':'✗ VARIANCE';
 const obTieLabel = s.obTies ? '✓ Ties to the statement closing balance' : '⚠ Does NOT tie to the statement closing balance';
 const obRow = (s.openingBal!=null && s.bsCBSource==='statement') ? `
 <tr><td class="la2">Bank Statement Opening Balance <span style="color:var(--tx3);font-weight:400">(as entered)</span></td><td class="va">₦${fN(s.openingBal)}</td></tr>
