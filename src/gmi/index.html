@@ -287,7 +287,7 @@ button,a,select,input{touch-action:manipulation}
       <span id="_as1" style="font-size:10px;color:var(--tx3)">Loading…</span>
     </div>
     <div class="_uc"><div class="_ld" aria-hidden="true"></div><span id="_un" style="font-family:var(--mo);font-size:11px">Live</span></div>
-    <a href="../portal/" class="_nb2" aria-label="Return to portal">
+    <a href="../" class="_nb2" aria-label="Return to home">
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Portal</span>
     </a>
     <a href="../" class="_nb2" aria-label="Return to home">
@@ -455,14 +455,7 @@ button,a,select,input{touch-action:manipulation}
 <script>
 (function(){
 'use strict';
-var _A='https://eis-recbackend.onrender.com/api';
-var _tok=sessionStorage.getItem('FM_token');
-if(!_tok){window.location.href='../portal/';return;}
-fetch(_A+'/auth/me',{headers:{'Authorization':'Bearer '+_tok}})
-  .then(function(r){return r.json();})
-  .then(function(d){if(d.success&&d.user){var e=document.getElementById('_un');if(e)e.textContent=d.user.name.split(' ')[0];}else{sessionStorage.removeItem('FM_token');window.location.href='../portal/';}})
-  .catch(function(){});
-document.getElementById('_lo').addEventListener('click',function(){if(!confirm('Sign out?'))return;sessionStorage.removeItem('FM_token');window.location.href='../portal/';});
+document.getElementById('_lo').addEventListener('click',function(){if(!confirm('Sign out?'))return;sessionStorage.removeItem('FM_token');window.location.href='../';});
 })();
 
 var _dci=null;

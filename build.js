@@ -38,14 +38,10 @@ const ROOT_ID = '__shell_root__';
 
 const PAGES = [
   { name: 'index', dir: '' },
-  { name: 'capmax', dir: 'capmax' },
+  { name: 'resources', dir: 'resources' },
   { name: 'gmi', dir: 'gmi' },
   { name: 'job', dir: 'job' },
-  { name: 'portal', dir: 'portal' },
-  { name: 'receivables', dir: 'receivables' },
   { name: 'recon', dir: 'recon' },
-  { name: 'treasury', dir: 'treasury' },
-  { name: 'finance', dir: 'finance' },
   { name: 'legal-terms', dir: 'legal/terms' },
   { name: 'legal-privacy', dir: 'legal/privacy' },
   { name: 'legal-cookies', dir: 'legal/cookies' },

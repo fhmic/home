@@ -14,18 +14,20 @@ is a separate Node.js/Express/MongoDB API on Render
 | Path | App | What it does |
 |---|---|---|
 | `/` | **Home** | Personal landing page / CV — background, experience, contact. |
-| `/treasury` | **Treasury Intelligence** | Executive treasury dashboard: cash, borrowings, investments, equity & reserves. Computes WACC, WACD, WARA, leverage, net interest spread, EVA, and a maturity/ALM ladder. Exports to PowerPoint, PDF and Excel. Supports **point-in-time ("As-Of") reporting** — see below. |
-| `/receivables` | **Receivables Tracker** | Debtor and invoice management, ageing report (current / 1–30 / 31–60 / 61–90 / 91–180 / 180+), IFRS 9 Expected Credit Loss (ECL) engine with stage classification, and scenario/stress testing. Ageing report also supports As-Of reporting. |
-| `/capmax` | **CapitalMax** | Bloomberg-terminal-style Nigerian investment portfolio tracker — NGX watchlists, dividend calendar, historical charts, buy/sell ledger, Excel import/export, risk analytics, macro dashboard, and an AI recommendation engine. |
-| `/portal` | **FM Resources Portal** | Sign-in gated resources/admin portal with per-module, per-user access control. |
+| `/resources/` | **Resources Portal** | Landing page linking to all free frontend-dependent tools. No sign-in required. |
 | `/gmi` | **FM Markets** | Global market intelligence dashboard. |
 | `/job` | **FM 360** | Live job intelligence / job portal for the Nigerian market. |
 | `/recon` | **Bank Reconciliation Engine** | Automated bank-statement-to-GL reconciliation. |
 | `/legal` | **Legal & compliance pages** | Terms, privacy, cookies, DPA, acceptable use, AI consent, and other NDPA 2023 / NDPC-aligned policy pages. |
 
-All apps other than Home and the legal pages share one backend, one auth
-system, and one MongoDB database — a user's login and module permissions
-(view/edit per module) carry across the whole suite.
+All apps on this site are frontend-dependent and free to use without sign-in.
+
+## Backend
+
+The Finance Suite backend (Receivables, Treasury, CapitalMax, and the
+authenticated portal) is a separate Node.js/Express/MongoDB service located
+at `C:\Users\ELITES\Documents\GitHub\Home-BackEnd`. It is **not** part of this
+repo and is intended to be built and deployed as its own separate webapp.
 
 ## Point-in-time ("As-Of") reporting
 
